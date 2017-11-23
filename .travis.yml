@@ -4,7 +4,11 @@ language: objective-c
 os: osx
 osx_image: xcode7.2
 
-cache: false
+cache:
+  cocoapods : true
+  directories:
+    - $HOME/.npm
+    - node_modules # NPM packages
 
 install:
   - npm install -g quasar-cli
