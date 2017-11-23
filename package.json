@@ -1,9 +1,9 @@
 {
-  "name": "quasar-app",
-  "productName": "Quasar App",
+  "name": "pico-erp-vuejs-client",
+  "productName": "pico-erp",
   "version": "0.0.1",
-  "description": "A Quasar App",
-  "author": "Your Name <your@email.com>",
+  "description": "pico-erp vuejs client",
+  "author": "system@kd-ace.co.kr",
   "scripts": {
     "clean": "node build/script.clean.js",
     "dev": "node build/script.dev.js",

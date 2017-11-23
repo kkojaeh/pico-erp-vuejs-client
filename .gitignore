@@ -1,5 +1,6 @@
 .DS_Store
 .thumbs.db
+.idea
 node_modules/
 dist/
 npm-debug.log*

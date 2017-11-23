@@ -38,21 +38,7 @@ $ quasar lint
 4. Xcode 설치
    1. App Store 에서 설치
    2. License 동의
-5. IntelliJ 구성
-   1. Plugins
-      1. Install JetBrains plugin…
-         1. Vue.js 설치
-      2. Browse repositories…
-         1. Spock Framework Enhancements 설치
-         2. Lombok Plugin 설치
-   2. Editor > Code Style
-      1. Formatter control
-         1. Enabled formatter markers in comments 활성화
-   3. Build, Execution, Deployment > Compiler > Annotation Processors
-      1. Enable annotation processing 활성화
-      2. Obtain processors from project classpath 활성화
-      3. Build > Rebuild Project 실행
-6. 초기화
+. 초기화
    1. ```sudo ./init.sh``` 실행
    2. 설치 확인
       1. ```cd vuejs/cordova``` 실행
