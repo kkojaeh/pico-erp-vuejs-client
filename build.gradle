@@ -1,0 +1,18 @@
+buildscript {
+
+}
+
+apply plugin: 'base'
+configurations {
+  compile
+}
+
+project.buildDir = 'dist'
+
+task quasarBuild(type: Exec) {
+
+  commandLine 'quasar', 'build'
+
+}
+
+build.dependsOn quasarBuild
