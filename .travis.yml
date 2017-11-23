@@ -11,7 +11,7 @@ install:
   - npm install -g cordova
   - npm install -g ios-deploy --unsafe-perm=true
   - gem install cocoapods
-  - .pod setup
+  - ./pod setup
   -  wget http://dl.google.com/android/android-sdk_r24.4-macosx.zip
   -  tar -xvf android-sdk_r24.4-macosx.zip
   -  echo y | ./android-sdk-macosx/tools/android update sdk --no-ui --all --filter platform-tools
