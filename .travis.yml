@@ -12,6 +12,7 @@ cache:
     - node_modules # NPM packages
 
 before_install:
+  - npm -version
   - npm install -g cordova
 
 before_script:
