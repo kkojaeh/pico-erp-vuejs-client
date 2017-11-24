@@ -23,5 +23,5 @@ before_script:
   - npm install
 
 script:
-  - npm install -g cordova
+  - sudo npm install -g cordova
   - cordova
