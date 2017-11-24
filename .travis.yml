@@ -17,7 +17,7 @@ before_script:
 script:
   - npm install -g quasar-cli
   - npm install -g cordova
-  - npm install -g ios-deploy --unsafe-perm=true
+  - npm install -g ios-deploy --unsafe-perm=true --allow-root
   - pod setup
   -  wget http://dl.google.com/android/android-sdk_r24.4-macosx.zip
   -  tar -xvf android-sdk_r24.4-macosx.zip
@@ -28,7 +28,7 @@ script:
   -  echo y | ./android-sdk-macosx/tools/android update sdk --no-ui --all --filter extra-android-m2repository
   -  echo y | ./android-sdk-macosx/tools/android update sdk --no-ui --all --filter extra-google-m2repository
   -  export ANDROID_HOME=./android-sdk-macosx
-  -  export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/23.0.2
+  -  export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/23.0.2
   # - install plugins etc.
   - cordova prepare
 
