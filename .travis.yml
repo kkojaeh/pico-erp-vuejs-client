@@ -4,13 +4,18 @@ language: objective-c
 os: osx
 osx_image: xcode7.3
 
-cache: false
+cache:
+  cocoapods : true
+  directories:
+    - $HOME/.npm
+    - $HOME/.cocoapods
+    - node_modules # NPM packages
 
 before_script:
   - npm install
 
 script:
-  - npm install cordova
-  - cd node_modules
-  - ls cor*
+  - npm install -g cordova
+  - ls /Users/travis/.nvm/versions/node/v6.0.0/lib
+  - echo $PATH
   - cordova
