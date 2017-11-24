@@ -18,6 +18,8 @@ before_script:
   - npm install
 
 script:
-  - ls /usr/local/lib/node_modules
+  - echo $(npm config get prefix)
+  - ls $(npm config get prefix)
+  - ls $(npm config get prefix)/bin
   - echo $PATH
   - cordova
