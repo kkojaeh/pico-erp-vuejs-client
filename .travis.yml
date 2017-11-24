@@ -4,12 +4,7 @@ language: objective-c
 os: osx
 osx_image: xcode7.3
 
-cache:
-  cocoapods : true
-  directories:
-    - $HOME/.npm
-    - $HOME/.cocoapods
-    - node_modules # NPM packages
+cache: false
 
 before_script:
   - npm install
