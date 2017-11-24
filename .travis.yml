@@ -16,6 +16,6 @@ before_script:
 
 script:
   - npm install -g cordova
-  - ls /Users/travis/.nvm/versions/node/v6.0.0/lib
+  - ls /usr/local/lib/node_modules
   - echo $PATH
   - cordova
