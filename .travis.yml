@@ -16,5 +16,6 @@ before_script:
 
 script:
   - npm install cordova
-  - npm config list
+  - cd node_modules
+  - ls cor*
   - cordova
