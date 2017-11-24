@@ -4,23 +4,24 @@ language: objective-c
 os: osx
 osx_image: xcode7.3
 
-cache:
-  cocoapods : true
-  directories:
-    - $HOME/.npm
-    - $HOME/.cocoapods
-    - node_modules # NPM packages
+cache: false
+#cache:
+#  cocoapods : true
+#  directories:
+#    - $HOME/.npm
+#    - $HOME/.cocoapods
+#    - node_modules # NPM packages
 
 before_install:
-  - npm -version
-  - npm install -g cordova
+  - export LANG=en_US.UTF-8
+  - brew update
+
+install:
+  - npm install -g npm
 
 before_script:
   - npm install
 
 script:
-  - echo $(npm config get prefix)
-  - ls $(npm config get prefix)
-  - ls $(npm config get prefix)/bin
-  - echo $PATH
+  - npm install -g cordova
   - cordova
