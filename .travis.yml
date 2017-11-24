@@ -11,11 +11,13 @@ cache:
     - $HOME/.cocoapods
     - node_modules # NPM packages
 
+before_install:
+  - npm install -g cordova
+
 before_script:
   - npm install
 
 script:
-  - npm install -g cordova
   - ls /usr/local/lib/node_modules
   - echo $PATH
   - cordova
