@@ -18,6 +18,7 @@ script:
   - npm install -g cordova
   - npm config list
   - export PATH="$(npm bin -g):$PATH"
-  - ls $(npm bin -g)
+  - ls $(npm root -g)
+  - ls $(npm root -g)/cordova
   - echo $PATH
   - cordova
