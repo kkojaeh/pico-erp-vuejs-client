@@ -1,11 +1,11 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.hellocordova" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
-    <name>HelloCordova</name>
+d<?xml version='1.0' encoding='utf-8'?>
+<widget id="picoerp.client.vuejs" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
+    <name>Pico ERP</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        Pico ERP client
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="system@kd-ace.co.kr" href="http://acepk.co.kr/">
+      에이스팩 개발자 팀
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -26,4 +26,5 @@
     <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0" />
     <engine name="android" spec="~6.4.0" />
     <engine name="ios" spec="~4.5.4" />
+    <plugin name="cordova-plugin-firebase" spec="^0.1.24" />
 </widget>

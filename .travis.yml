@@ -32,10 +32,15 @@ before_script:
 
 script:
   - quasar build
-  - cd cordova
+  #- cd cordova
   # - install plugins etc.
-  - cordova prepare
+  #- cordova prepare
 
   # build Android and iOS packages
-  - cordova build android --release
+  #- cordova build android --release
   #- cordova build ios --device --release
+
+deploy:
+  provider: firebase
+  token:
+    secure: $FIREBASE_CI_TOKEN
