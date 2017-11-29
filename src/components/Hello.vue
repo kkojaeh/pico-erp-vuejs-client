@@ -48,6 +48,11 @@
           <q-item-main label="Field" sublabel="@quasarframework" >
           </q-item-main>
         </q-item>
+        <q-item @click="route('/field')">
+          <q-item-side icon="rss feed" />
+          <q-item-main label="Field2" sublabel="@quasarframework" >
+          </q-item-main>
+        </q-item>
       </q-list>
     </div>
 
