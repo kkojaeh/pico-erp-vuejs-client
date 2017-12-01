@@ -32,15 +32,8 @@ module.exports = {
     'import/namespace': 2,
     'import/default': 2,
     'import/export': 2,
-    'space-before-function-paren' : 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'brace-style': [0, '1tbs', { 'allowSingleLine': true }],
-    'no-unexpected-multiline' : 0,
-    'func-call-spacing' : 0,
-    'semi' : 0,
-    'no-multi-spaces' : 0,
-    'eol-last' : 0,
-    'no-useless-escape': 0
+    'brace-style': [2, 'stroustrup', { 'allowSingleLine': true }]
   }
 }

@@ -4,6 +4,8 @@ module.exports = {
   // Webpack aliases
   aliases: {
     quasar: path.resolve(__dirname, '../node_modules/quasar-framework/'),
+    vuex: path.resolve(__dirname, '../node_modules/vuex/'),
+    firebase: path.resolve(__dirname, '../node_modules/firebase/'),
     src: path.resolve(__dirname, '../src'),
     assets: path.resolve(__dirname, '../src/assets'),
     '@': path.resolve(__dirname, '../src/components'),
