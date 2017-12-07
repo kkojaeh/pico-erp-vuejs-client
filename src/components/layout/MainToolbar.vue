@@ -1,7 +1,7 @@
 <template>
-  <q-toolbar slot="header" class="glossy" v-show="isFrameNeeded">
-    <q-btn flat @click="$refs.layout.toggleLeft()" >
-      <q-icon name="menu" />
+  <q-toolbar class="glossy">
+    <q-btn flat @click="toggle()">
+      <q-icon name="menu"/>
     </q-btn>
 
     <q-toolbar-title>
@@ -35,26 +35,22 @@
   -->
 </template>
 <script type="text/javascript">
-  import { mapMutations, mapGetters } from 'vuex'
   export default {
-    computed: {
-      ...mapGetters(['isFrameNeeded']),
-      leftDrawer () {
-        return null // this.$parent.$children[1].$refs.leftDrawer
+    computed: {},
+    methods: {
+      toggle () {
+        this.$emit('toggle')
       }
     },
-    methods: {
-      ...mapMutations(['setFrameNeeded'])
-    },
-    components: {
-    }
+    components: {}
   }
 </script>
 <style scoped>
-  .toolbar{
+  .toolbar {
     min-height: 60px;
   }
-  .right-itens a, .right-itens button{
+
+  .right-itens a, .right-itens button {
     margin-right: 10px;
   }
 </style>

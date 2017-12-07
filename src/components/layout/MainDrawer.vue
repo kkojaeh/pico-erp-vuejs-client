@@ -8,6 +8,12 @@
 
     <q-list no-border link inset-delimiter>
       <q-list-header>Essential Links</q-list-header>
+      <q-side-link to="/user">
+        <q-item>
+          <q-item-side icon="account circle"/>
+          <q-item-main label="사용자 관리" sublabel=""/>
+        </q-item>
+      </q-side-link>
       <q-item @click="launch('http://quasar-framework.org')">
         <q-item-side icon="school"/>
         <q-item-main label="Docs" sublabel="quasar-framework.org"/>

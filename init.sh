@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+npm install -g jscs
 npm install -g quasar-cli
 npm install -g cordova
 npm install -g ios-deploy --unsafe-perm=true

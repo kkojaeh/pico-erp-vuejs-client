@@ -1,19 +1,20 @@
 <template>
   <!-- Don't drop "q-app" class -->
-  <div id="q-app">
-    <q-layout
-      ref="layout"
-      view="lHh Lpr fff"
-      :left-class="{'bg-grey-2': true}"
-    >
-      <main-drawer slot="left"></main-drawer>
-      <main-toolbar></main-toolbar>
+  <!--<div class="q-app">-->
+  <q-layout
+    ref="layout"
+    view="lHh Lpr fff"
+    :left-class="{'bg-grey-2': true}"
+  >
+    <main-drawer slot="left" v-if="isFrameNeeded" ></main-drawer>
+    <main-toolbar slot="header" v-if="isFrameNeeded" @toggle="$refs.layout.toggleLeft()"></main-toolbar>
 
-      <router-view/>
-    </q-layout>
-  </div>
+    <router-view/>
+  </q-layout>
+  <!--</div>-->
 </template>
 <script>
+  import { mapGetters } from 'vuex'
   import MainToolbar from './components/layout/MainToolbar.vue'
   import MainDrawer from './components/layout/MainDrawer.vue'
 
@@ -21,9 +22,17 @@
    * Root component
    */
   export default {
+    created () {
+
+    },
+    computed: {
+      ...mapGetters(['isFrameNeeded'])
+    },
     components: {
       MainToolbar,
       MainDrawer
+    },
+    methods: {
     }
   }
 </script>

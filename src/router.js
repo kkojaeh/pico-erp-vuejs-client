@@ -26,7 +26,12 @@ export default new VueRouter({
 
     { path: '/field', component: load('Field') },
 
+    { path: '/sign-in', component: load('SignIn'), meta: { name: 'Form Login' } },
+
+    { path: '/user', component: load('user/UserList'), meta: { name: 'User List' } },
+
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ]
+
 })
