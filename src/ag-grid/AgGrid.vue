@@ -8,7 +8,8 @@
   import { Grid, ComponentUtil } from 'ag-grid'
   import { VueFrameworkFactory } from './vueFrameworkFactory'
   import { VueFrameworkComponentWrapper } from './vueFrameworkComponentWrapper'
-  import debounce from 'lodash.debounce'
+  import { debounce } from 'quasar'
+  import kebabCase from 'kebab-case'
 
   const watchedProperties = {}
   const props = ['gridOptions']
@@ -37,14 +38,9 @@
         if (this._destroyed) {
           return
         }
-
-        // generically look up the eventType
-        let emitter = this[eventType]
-        if (emitter) {
-          emitter(event)
-        }
-        else {
-          // the app isn't listening for this - ignore it
+        let kebabCaseEventType = kebabCase(eventType)
+        if (this.$listeners[kebabCaseEventType] || this._events[kebabCaseEventType]) {
+          this.$emit(kebabCaseEventType, event)
         }
       },
       processChanges (propertyName, val, oldVal) {
@@ -56,7 +52,11 @@
       },
 
       invalidateColumnDefinitions () {
-        this.gridOptions.api.setColumnDefs(this.$slots.default.map(column => column.componentInstance.getColumnDefinition()))
+        this.gridOptions.api.setColumnDefs(
+          this.$slots.default
+            .filter(column => column.componentInstance && column.componentInstance.getColumnDefinition)
+            .map(column => column.componentInstance.getColumnDefinition())
+        )
       }
     },
     created () {
@@ -67,10 +67,12 @@
       let vueFrameworkFactory = new VueFrameworkFactory(this.$el, this)
       let gridOptions = ComponentUtil.copyAttributesToGridOptions(this.gridOptions, this)
 
-      gridOptions.columnDefs = this.$slots.default.map(column => {
-        column.componentInstance.setGrid(this)
-        return column.componentInstance.getColumnDefinition()
-      })
+      gridOptions.columnDefs = this.$slots.default
+        .filter(column => column.componentInstance && column.componentInstance.getColumnDefinition)
+        .map(column => {
+          column.componentInstance.setGrid(this)
+          return column.componentInstance.getColumnDefinition()
+        })
       let gridParams = {
         globalEventListener: this.globalEventListener.bind(this),
         frameworkFactory: vueFrameworkFactory,
@@ -78,6 +80,7 @@
           frameworkComponentWrapper: frameworkComponentWrapper
         }
       }
+      console.log(gridOptions)
       new Grid(this.$el, gridOptions, gridParams)
       this._initialised = true
     },

@@ -1,66 +1,81 @@
 <template>
-  <div class="full-stretch column">
-    <q-fixed-position corner="bottom-right" :offset="[18, 18]" class="column">
-      <q-chip closable small color="tertiary" class="col-auto">
-        고재훈
-        <div class="q-toolbar-subtitle">이름</div>
-      </q-chip>
-      <q-chip closable small color="tertiary" class="col-auto">
-        고재훈
-        <div class="q-toolbar-subtitle">이름</div>
-      </q-chip>
-    </q-fixed-position>
+  <q-layout ref="layout" view="lhh Lpr lFf">
+    <!--<div class="full-stretch column">-->
+
     <q-toolbar slot="header">
       <q-btn flat icon="add">생성</q-btn>
-      <q-chip closable small color="primary">
-        <div class="q-toolbar-subtitle">이름</div>
-        고재훈
-      </q-chip>
+      <c-filter-view>
+        <c-filter-label v-model="condition.name" label="이름"/>
+        <c-filter-label v-model="condition.email" label="Email"/>
+        <c-filter-label v-model="condition.createdDateFrom" label="생성일" suffix="~"/>
+        <c-filter-label v-model="condition.createdDateTo" label="생성일" prefix="~"/>
+      </c-filter-view>
       <q-toolbar-title>
 
         Layout Header
         <span slot="subtitle">Optional subtitle</span>
       </q-toolbar-title>
-      <q-btn flat icon="search">검색
-        <q-popover anchor="top left">
-          <q-card>
-            <q-card-title>
-              검색
-              <q-btn slot="right" flat icon="search"></q-btn>
-            </q-card-title>
-            <q-card-separator/>
-            <q-card-main>
-              <q-input v-model="condition.name" placeholder="이름" float-label="이름" clearable
-                       :error="$v.condition.name.$error"
-                       @keyup.enter="retrieve()"/>
-              <q-alert color="warning" v-if="!$v.condition.name.maxLength" v-show="$v.condition.name.$error">
-                최대 {{ $v.name.$params.maxLength.max }} 글자 입니다.
-              </q-alert>
-              <q-input v-model="condition.email" type="email" placeholder="email" float-label="Email2" clearable
-                       :error="$v.condition.email.$error"
-                       @keyup.enter="retrieve()"/>
-            </q-card-main>
-          </q-card>
-        </q-popover>
+      <q-btn flat icon="search" @click="onSearch()">검색
+        <!-- <q-popover anchor="top left">
+           <q-card>
+             <q-card-title>
+               검색
+               <q-btn slot="right" flat icon="search"></q-btn>
+             </q-card-title>
+             <q-card-separator/>
+             <q-card-main>
+               <q-input v-model="condition.name" placeholder="이름" float-label="이름" clearable
+                        :error="$v.condition.name.$error"
+                        @keyup.enter="retrieve()"/>
+               <q-alert color="warning" v-if="!$v.condition.name.maxLength" v-show="$v.condition.name.$error">
+                 최대 {{ $v.name.$params.maxLength.max }} 글자 입니다.
+               </q-alert>
+               <q-input v-model="condition.email" type="email" placeholder="email" float-label="Email2" clearable
+                        :error="$v.condition.email.$error"
+                        @keyup.enter="retrieve()"/>
+               <q-datetime type="date" float-label="생성일 from" clearable v-model="condition.createdDateFrom" suffix="~"/>
+               <q-datetime type="date" float-label="생성일 to" clearable v-model="condition.createdDateTo" prefix="~"/>
+             </q-card-main>
+           </q-card>
+         </q-popover>-->
       </q-btn>
     </q-toolbar>
 
-    <ag-grid class="ag-theme-material col"
-             rowSelection="multiple"
-             :enableColResize="true"
-             :enableSorting="true"
-             :gridOptions="gridOptions"
-             :rowData="rowData">
-      <ag-grid-column headerName="group" >
-        <ag-grid-column headerName="name1" field="row">
+    <div slot="right">
 
-        </ag-grid-column>
-        <ag-grid-column headerName="name2" field="row2">
+      <q-field icon="account_circle" helper="이름에 포함된 글자를 입력하세요">
+        <q-input v-model="condition.name" float-label="이름" clearable
+                 @keyup.enter="retrieve()"/>
+      </q-field>
 
-        </ag-grid-column>
-      </ag-grid-column>
-    </ag-grid>
-  </div>
+      <q-field icon="email" helper="email 에 포함된 글자를 입력하세요">
+        <q-input v-model="condition.email" type="email" float-label="email" clearable
+                 @keyup.enter="retrieve()"/>
+      </q-field>
+
+      <q-field icon="date_range" helper="생성일이 포함될 기간을 입력하세요">
+        <q-datetime type="date" float-label="생성일(부터)" clearable v-model="condition.createdDateFrom"/>
+        <q-datetime type="date" float-label="생성일(까지)" clearable v-model="condition.createdDateTo"/>
+      </q-field>
+
+    </div>
+
+    <div class="column flex" style="display:block"  >
+      <ag-grid ref="grid" class="ag-theme-material col"
+               row-selection="multiple"
+               enable-server-side-sorting
+               enable-col-resize
+               enable-sorting
+               :gridOptions="gridOptions"
+               :rowData="collection.models">
+        <ag-grid-column field="name" headerName="이름"/>
+        <ag-grid-column field="email" headerName="이메일"/>
+      </ag-grid>
+      <q-pagination class="col-auto" :value="1" :max="3"></q-pagination>
+    </div>
+
+  </q-layout>
+  <!--</div>-->
 
   <!--
 <q-card>
@@ -114,79 +129,16 @@
   import { mapGetters } from 'vuex'
   import { Toast } from 'quasar'
   import { maxLength } from 'vuelidate/lib/validators'
-
+  import { UserCollection } from './UserModel'
+  import AgGridPaginationCollectionMediator from '@/common/AgGridPaginationCollectionMediator'
   // import firebase from 'firebase'
 
   export default {
     data () {
       return {
         gridOptions: {},
-        rowData: [{row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}, {row: '1'}, {row: '2'}],
-        condition: {},
-        table: [{}, {}],
-        config: {
-          refresh: false,
-          filter: false,
-          columnPicker: false,
-          leftStickyColumns: 1,
-          rightStickyColumns: 2,
-          bodyStyle: {
-            // maxHeight: Platform.is.mobile ? '50vh' : '500px'
-          },
-          rowHeight: '50px',
-          responsive: true,
-          pagination: {
-            rowsPerPage: 15,
-            options: [5, 10, 15, 30, 50, 500]
-          },
-          selection: 'multiple',
-          messages: {
-            noData: '<i>warning</i> No data available to show.',
-            noDataAfterFiltering: '<i>warning</i> No results. Please refine your search terms.'
-          }
-        },
-        columns: [{
-          label: 'Date',
-          field: 'isodate',
-          width: '120px',
-          filter: false,
-          sort: 'date',
-          format (value) {
-            return new Date(value).toLocaleString()
-          }
-        }, {
-          label: 'Service',
-          field: 'serviceable',
-          format (value) {
-            if (value === 'Informational') {
-              return '<i class="text-positive">info</i>'
-            }
-            return value
-          },
-          width: '80px'
-        }, {
-          label: 'Message',
-          field: 'message',
-          sort: true,
-          filter: false,
-          width: '500px'
-        }, {
-          label: 'Source',
-          field: 'source',
-          sort: true,
-          filter: false,
-          width: '120px'
-        }, {
-          label: 'Log Number',
-          field: 'log_number',
-          sort: true,
-          width: '100px'
-        }],
-
-        pagination: true,
-        rowHeight: 50,
-        bodyHeightProp: 'maxHeight',
-        bodyHeight: 500
+        collection: new UserCollection(),
+        condition: {}
       }
     },
     validations: {
@@ -196,18 +148,44 @@
         },
         email: {
           maxLength: maxLength(50)
-        }
+        },
+        createdDate: {}
       }
     },
-    created () {
+    mounted () {
+      new AgGridPaginationCollectionMediator(this.$refs.grid, this.collection)
+      this.$refs.layout.hideRight()
     },
     methods: {
+      onSearch () {
+        if (this.$refs.layout.rightState.openedBig || this.$refs.layout.rightState.openedSmall) {
+          this.retrieve()
+        }
+        else {
+          this.$refs.layout.toggleRight()
+        }
+      },
       retrieve () {
+        this.collection.page = 1
+        this.collection.fetch({
+          data: this.condition
+        }).then(() => {
+          if (this.condition.length === 0) {
+            Toast.create('결과가 존재하지 않습니다.')
+          }
+        })
+
+        /*
         this.$v.condition.$touch()
         if (this.$v.condition.$error) {
           Toast.create.warning('데이터가 유효하지 않습니다.')
         }
+        */
+
         // aa
+      },
+      onSortChanged (e) {
+        debugger
       }
     },
     computed: {
@@ -217,9 +195,7 @@
   }
 </script>
 <style scoped>
-  q-fixed-position > * {
-    margin-top: 10px;
-  }
+
   .full-stretch {
     position: absolute;
     top: 0px;

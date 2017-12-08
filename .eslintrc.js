@@ -28,6 +28,8 @@ module.exports = {
     'arrow-parens': 0,
     'one-var': 0,
     'no-new': 0,
+    'padded-blocks': 0,
+    'no-trailing-spaces': 0,
     'import/first': 0,
     'import/named': 2,
     'import/namespace': 2,

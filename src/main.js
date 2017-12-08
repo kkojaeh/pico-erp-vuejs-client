@@ -20,6 +20,8 @@ import firebase from 'firebase'
 import Vuelidate from 'vuelidate'
 import AgGrid from './ag-grid/AgGrid.vue'
 import AgGridColumn from './ag-grid/AgGridColumn.vue'
+import FilterView from '@/common/FilterView.vue'
+import FilterLabel from '@/common/FilterLabel.vue'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
 
@@ -31,6 +33,8 @@ Vue.use(axios)
 Vue.use(Vuelidate)
 Vue.component('ag-grid', AgGrid)
 Vue.component('ag-grid-column', AgGridColumn)
+Vue.component('c-filter-view', FilterView)
+Vue.component('c-filter-label', FilterLabel)
 Vue.config.productionTip = false
 
 if (__THEME === 'mat') {
@@ -65,6 +69,8 @@ Quasar.start(() => {
       firebase.auth().onAuthStateChanged((user) => {
         this.$store.commit('setUser', firebase.auth().currentUser)
         if (user) {
+          user.getIdToken().then(token => localStorage.setItem('API_FIREBASE_TOKEN', token))
+
           // this.$router.push('/success')
         }
         else {

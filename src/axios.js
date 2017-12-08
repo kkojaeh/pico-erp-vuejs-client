@@ -2,21 +2,24 @@ import axios from 'axios'
 import { Loading } from 'quasar'
 
 let loadFunction = config => {
-  Loading.show()
+  config.headers.common['X-Firebase-Auth'] = localStorage.getItem('API_FIREBASE_TOKEN')
+  Loading.show({
+    delay: 100
+  })
   return config
 }
 let finishFunction = response => {
-  Loading.hide()
+  setTimeout(() => Loading.hide(), 500)
   return response
 }
 let errorFunction = error => {
-  Loading.hide()
+  setTimeout(() => Loading.hide(), 500)
   return Promise.reject(error)
 }
 
 const axiosApi =
-  axios.create({ baseURL: document.querySelector('meta[name=api-server-url]').content })
-
+//  axios.create({baseURL: document.querySelector('meta[name=api-server-url]').content})
+  axios.create({baseURL: 'http://127.0.0.1:8080'})
 axiosApi.interceptors.request.use(loadFunction)
 axiosApi.interceptors.response.use(finishFunction, errorFunction)
 
@@ -33,3 +36,5 @@ let clients = {
 export default (Vue) => {
   Object.defineProperties(Vue.prototype, clients)
 }
+
+export { axiosApi as api }
