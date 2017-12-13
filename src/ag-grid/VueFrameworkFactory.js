@@ -1,5 +1,5 @@
 import {BaseFrameworkFactory} from 'ag-grid/main';
-import {VueComponentFactory} from './vueComponentFactory';
+import {VueComponentFactory} from './VueComponentFactory';
 
 export class VueFrameworkFactory {
   constructor($el, parent) {
