@@ -17,9 +17,10 @@
   ComponentUtil.ALL_PROPERTIES.forEach((propertyName) => {
     props.push(propertyName);
 
-    watchedProperties[propertyName] = (val, oldVal) => {
+    watchedProperties[propertyName] = function (val, oldVal) {// eslint-disable-line
       this.processChanges(propertyName, val, oldVal);// eslint-disable-line
-    };
+    }
+    ;
   });
   ComponentUtil.EVENTS.forEach((eventName) => {
     props.push(eventName);

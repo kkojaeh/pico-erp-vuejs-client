@@ -18,6 +18,14 @@
         <ag-grid-column :checkbox-selection="true" :width="50" suppress-sorting/>
         <ag-grid-column field="name" headerName="이름" :width="150"/>
         <ag-grid-column field="email" headerName="이메일" :width="200"/>
+        <ag-grid-column headerName="생성" :marry-children="true">
+          <ag-grid-column field="createdBy.name" headerName="사용자" :width="150"/>
+          <ag-grid-column field="createdDate" headerName="시간" :width="200" :cell-renderer="dateTimeCellRenderer"/>
+        </ag-grid-column>
+        <ag-grid-column headerName="수정" :marry-children="true">
+          <ag-grid-column field="lastModifiedBy.name" headerName="사용자" :width="150"/>
+          <ag-grid-column field="lastModifiedDate" headerName="시간" :width="200" :cell-renderer="dateTimeCellRenderer"/>
+        </ag-grid-column>
       </ag-grid>
 
       <!-- main -->
@@ -72,6 +80,7 @@
 <script>
   import {mapGetters} from 'vuex';
   import {UserCollection} from './UserModel';
+  import {dateTimeCellRenderer} from 'src/ag-grid/AgGridCellRenderers';
 
   export default {
     data() {
@@ -91,7 +100,8 @@
         this.$refs.listView.retrieve();
       },
       onSortChanged(e) {
-      }
+      },
+      dateTimeCellRenderer
     },
     computed: {
       ...mapGetters([])

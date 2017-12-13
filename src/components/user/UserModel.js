@@ -21,6 +21,18 @@ const UserModel = AmpersandModel.extend({
     },
     email: {
       type: 'string'
+    },
+    createdBy: {
+      type: 'object'
+    },
+    createdDate: {
+      type: 'date'
+    },
+    lastModifiedBy: {
+      type: 'object'
+    },
+    lastModifiedDate: {
+      type: 'date'
     }
   }
 });

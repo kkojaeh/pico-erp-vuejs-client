@@ -9,11 +9,11 @@
   import * as _ from 'lodash';
 
   const watchedProperties = {};
-  const props = [];
+  const props = ['cellRenderer'];
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
     props.push(propertyName);
 
-    watchedProperties[propertyName] = (val, oldVal) => {
+    watchedProperties[propertyName] = function (val, oldVal) {// eslint-disable-line
       this.processChanges(propertyName, val, oldVal);// eslint-disable-line
     };
   });
@@ -45,6 +45,12 @@
       },
       setGrid(grid) {
         this._grid = grid;
+        if (this.$slots.default) {
+          this.$slots.default
+          .filter(
+              (column) => column.componentInstance && column.componentInstance.getColumnDefinition)
+          .forEach((column) => column.componentInstance.setGrid(grid));
+        }
       }
     },
     watch: watchedProperties,

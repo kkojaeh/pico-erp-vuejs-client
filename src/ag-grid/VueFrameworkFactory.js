@@ -17,6 +17,7 @@ export class VueFrameworkFactory {
   }
 
   colDefCellRenderer(colDef) {
+    debugger;
     if (colDef.cellRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
           colDef.cellRendererFramework);
