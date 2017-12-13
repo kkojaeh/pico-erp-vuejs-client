@@ -1,13 +1,14 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
 
   // You can use it as state property
   state: {
-    isAuthenticated: false,
+    currentTitle: '',
+    authenticated: false,
     frameNeeded: true,
     authNeeded: true,
     user: null
@@ -15,35 +16,41 @@ export default new Vuex.Store({
 
   // You can use it as a state getter function (probably the best solution)
   getters: {
-    isAuthNeeded (state) {
-      return state.authNeeded
+    authNeeded(state) {
+      return state.authNeeded;
     },
-    isAuthenticated (state) {
-      return state.isAuthenticated
+    authenticated(state) {
+      return state.authenticated;
     },
-    isFrameNeeded (state) {
-      return state.frameNeeded
+    frameNeeded(state) {
+      return state.frameNeeded;
     },
-    getUser (state) {
-      return state.user
+    user(state) {
+      return state.user;
+    },
+    currentTitle(state) {
+      return state.currentTitle;
     }
   },
 
   // Mutation for when you use it as state property
   mutations: {
-    setAuthNeeded (state, payload) {
-      state.authNeeded = payload
+    authNeeded(state, payload) {
+      state.authNeeded = payload;
     },
-    setAuthenticated (state, payload) {
-      state.isAuthenticated = payload
+    authenticated(state, payload) {
+      state.authenticated = payload;
     },
-    setFrameNeeded (state, payload) {
-      state.frameNeeded = payload
+    frameNeeded(state, payload) {
+      state.frameNeeded = payload;
     },
-    setUser (state, payload) {
-      state.user = payload
+    user(state, payload) {
+      state.user = payload;
+    },
+    currentTitle(state, payload) {
+      state.currentTitle = payload;
     }
   },
 
   actions: {}
-})
+});

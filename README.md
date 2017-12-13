@@ -44,3 +44,19 @@ $ quasar lint
       1. ```cd vuejs/cordova``` 실행
       2. ```cordova requirements``` 실행
       3. 오류 내용 없으면 정상
+
+# TODO
+
+## 전역
+- [ ] Quasar i18n
+
+## 모델
+- [ ] Pagination collection
+- [x] Spring Rest Integration(Page, Sort)
+
+## 목록
+- [x] 조회조건(필터 쿼리스트링 화
+- [x] 페이징 쿼리스트링 화
+- [x] 소트 쿼리스트링 화
+- [x] 모델(콜렉션)과 그리드 연계
+- [ ] 조회조건 Responsive 반영

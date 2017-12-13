@@ -14,7 +14,6 @@ module.exports = {
     'kebab-case': path.resolve(__dirname, '../node_modules/kebab-case/'),
     'ampersand-model': path.resolve(__dirname, '../node_modules/ampersand-model/'),
     'ampersand-rest-collection': path.resolve(__dirname, '../node_modules/ampersand-rest-collection/'),
-    'media-type': path.resolve(__dirname, '../node_modules/media-type/'),
     lodash : path.resolve(__dirname, '../node_modules/lodash/'),
     qs : path.resolve(__dirname, '../node_modules/qs/'),
     variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl')

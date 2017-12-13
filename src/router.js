@@ -1,12 +1,15 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
-function load (component) {
+// jscs:disable
+function load(component) {
   // '@' is aliased to src/components
-  return () => import(`@/${component}.vue`)
+  return () => import(`@/${component}.vue`);
 }
+
+// jscs:enable
 
 export default new VueRouter({
   /*
@@ -22,16 +25,32 @@ export default new VueRouter({
    */
 
   routes: [
-    { path: '/', component: load('Hello') },
+    {
+      path: '/',
+      component: load('Dashboard'),
+      name: 'Dashboard',
+      meta: {auth: true, frame: true}
+    },
 
-    { path: '/field', component: load('Field') },
+    {
+      path: '/sign-in',
+      component: load('SignIn'),
+      name: '로그인',
+      meta: {auth: false, frame: false}
+    },
 
-    { path: '/sign-in', component: load('SignIn'), meta: { name: 'Form Login' } },
-
-    { path: '/user', component: load('user/UserList'), meta: { name: 'User List' } },
+    {
+      path: '/user',
+      component: load('user/UserList'),
+      name: '사용자 관리',
+      meta: {auth: true, frame: true},
+      children: [{
+        path: 'form/:id', component: load('UserForm')
+      }]
+    },
 
     // Always leave this last one
-    { path: '*', component: load('Error404') } // Not found
+    {path: '*', component: load('Error404'), meta: {auth: false, frame: false}} // Not found
   ]
 
-})
+});

@@ -40,26 +40,26 @@
 </template>
 
 <script type="text/javascript">
-  import { mapMutations } from 'vuex'
-  import { Toast } from 'quasar'
-  import firebase from 'firebase'
+  import {mapMutations} from 'vuex';
+  import {Toast} from 'quasar';
+  import firebase from 'firebase';
 
   // import Vivus from 'vivus'
-  import { required, email } from 'vuelidate/lib/validators'
+  import {required, email} from 'vuelidate/lib/validators';
 
   export default {
-    mounted () {
+    mounted() {
     },
-    beforeDestroy () {
+    beforeDestroy() {
     },
     computed: {},
-    data () {
+    data() {
       return {
         form: {
           email: '',
           password: ''
         }
-      }
+      };
     },
     validations: {
       form: {
@@ -69,20 +69,20 @@
     },
     methods: {
       ...mapMutations(['setFrameNeeded', 'setAuthNeeded']),
-      signIn () {
-        this.$v.form.$touch()
+      signIn() {
+        this.$v.form.$touch();
         if (this.$v.form.$error) {
-          Toast.create.warning('데이터가 유효하지 않습니다.')
-          return
+          Toast.create.warning('데이터가 유효하지 않습니다.');
+          return;
         }
         firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(() => {
-          this.$router.go(-1)
+          this.$router.go(-1);
         }).catch((error) => {
-          Toast.create.negative(`${error.code} - ${error.message}`)
-        })
+          Toast.create.negative(`${error.code} - ${error.message}`);
+        });
       }
     }
-  }
+  };
 </script>
 <style scoped>
 </style>

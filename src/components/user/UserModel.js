@@ -1,11 +1,11 @@
-import { SpringPaginationCollection } from 'src/model/Collection'
-import AxiosSync from 'src/model/AxiosSync'
-import { api } from 'src/axios'
-import AmpersandModel from 'ampersand-model'
+import {SpringPaginationCollection} from 'src/model/Collection';
+import axiosSync from 'src/model/AxiosSync';
+import {api} from 'src/axios';
+import AmpersandModel from 'ampersand-model';
 
-var UserModel = AmpersandModel.extend({
+const UserModel = AmpersandModel.extend({
   urlRoot: '/v1/user/users',
-  sync: AxiosSync(api),
+  sync: axiosSync(api),
   props: {
     id: {
       type: 'string'
@@ -23,15 +23,15 @@ var UserModel = AmpersandModel.extend({
       type: 'string'
     }
   }
-})
+});
 
-var UserCollection = SpringPaginationCollection.extend({
+const UserCollection = SpringPaginationCollection.extend({
   url: '/v1/user/users',
-  sync: AxiosSync(api),
+  sync: axiosSync(api),
   model: UserModel
-})
+});
 
 export {
   UserModel,
   UserCollection
-}
+};

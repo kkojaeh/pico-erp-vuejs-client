@@ -1,5 +1,6 @@
-const firebaseProjectId = document.querySelector('meta[name=firebase-project-id]').content
-var config
+const firebaseProjectId = document.querySelector(
+    'meta[name=firebase-project-id]').content;
+let config;
 if (firebaseProjectId === 'pico-erp-dev') {
   config = {
     apiKey: 'AIzaSyBaS7v9fhkK6Nn6MBqV02ej5T3ffdDKujc',
@@ -8,9 +9,8 @@ if (firebaseProjectId === 'pico-erp-dev') {
     projectId: 'pico-erp-dev',
     storageBucket: 'pico-erp-dev.appspot.com',
     messagingSenderId: '211743559657'
-  }
-}
-else if (firebaseProjectId === 'pico-erp-prd') {
+  };
+} else if (firebaseProjectId === 'pico-erp-prd') {
   config = {
     apiKey: 'AIzaSyBD3_7mawl1eTovCDWJEO1_0pdj4-0Z75I',
     authDomain: 'pico-erp-prd.firebaseapp.com',
@@ -18,10 +18,9 @@ else if (firebaseProjectId === 'pico-erp-prd') {
     projectId: 'pico-erp-prd',
     storageBucket: 'pico-erp-prd.appspot.com',
     messagingSenderId: '1073558054534'
-  }
-}
-else {
-  throw new Error(`${firebaseProjectId} is not allowed firebase project id`)
+  };
+} else {
+  throw new Error(`${firebaseProjectId} is not allowed firebase project id`);
 }
 
-export { config }
+export {config};

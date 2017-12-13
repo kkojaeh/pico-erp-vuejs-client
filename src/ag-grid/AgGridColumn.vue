@@ -5,54 +5,55 @@
 </template>
 
 <script>
-  import { ColDefUtil } from 'ag-grid'
+  import {ColDefUtil} from 'ag-grid';
+  import * as _ from 'lodash';
 
-  const watchedProperties = {}
-  const props = []
+  const watchedProperties = {};
+  const props = [];
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
-    props.push(propertyName)
+    props.push(propertyName);
 
-    watchedProperties[propertyName] = function (val, oldVal) {
-      this.processChanges(propertyName, val, oldVal)
-    }
-  })
+    watchedProperties[propertyName] = (val, oldVal) => {
+      this.processChanges(propertyName, val, oldVal);// eslint-disable-line
+    };
+  });
 
   export default {
     name: 'ag-grid-column',
     props: props,
-    data () {
+    data() {
       return {
         _initialised: false,
         _grid: null
-      }
+      };
     },
     methods: {
-      processChanges (propertyName, val, oldVal) {
+      processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
-          this._grid.invalidateColumnDefinitions()
+          this._grid.invalidateColumnDefinitions();
         }
       },
-      getColumnDefinition () {
-        let colDef = Object.assign({}, this.$props)
+      getColumnDefinition() {
+        let colDef = _.assign({}, this.$props);
         if (this.$slots.default) {
           colDef.children = this.$slots.default
-            .filter(column => column.componentInstance && column.componentInstance.getColumnDefinition)
-            .map(column => column.componentInstance.getColumnDefinition())
+          .filter(
+              (column) => column.componentInstance && column.componentInstance.getColumnDefinition)
+          .map((column) => column.componentInstance.getColumnDefinition());
         }
-        return colDef
+        return colDef;
       },
-      setGrid (grid) {
-        this._grid = grid
+      setGrid(grid) {
+        this._grid = grid;
       }
     },
     watch: watchedProperties,
-    mounted () {
-      this._initialised = true
+    mounted() {
+      this._initialised = true;
     },
-    destroyed () {
-
+    destroyed() {
     }
-  }
+  };
 </script>
 
 <style>

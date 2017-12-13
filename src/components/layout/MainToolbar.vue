@@ -1,11 +1,11 @@
 <template>
-  <q-toolbar class="glossy">
+  <q-toolbar color="primary">
     <q-btn flat @click="toggle()">
       <q-icon name="menu"/>
     </q-btn>
 
     <q-toolbar-title>
-      Quasar App
+      {{currentTitle}}
       <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
     </q-toolbar-title>
   </q-toolbar>
@@ -35,15 +35,19 @@
   -->
 </template>
 <script type="text/javascript">
+  import {mapGetters} from 'vuex';
+
   export default {
-    computed: {},
+    computed: {
+      ...mapGetters(['currentTitle'])
+    },
     methods: {
-      toggle () {
-        this.$emit('toggle')
+      toggle() {
+        this.$emit('toggle');
       }
     },
     components: {}
-  }
+  };
 </script>
 <style scoped>
   .toolbar {

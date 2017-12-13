@@ -1,5 +1,21 @@
 <template>
   <div>
+    <q-card color="primary" flat v-if="authenticated">
+      <q-card-title>
+        {{ user.displayName }}
+        <span slot="subtitle">{{ user.email }}</span>
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-actions align="end">
+        <q-btn small round flat>
+          <q-icon name="person"/>
+        </q-btn>
+        <q-btn small round flat @click="signOut ()">
+          <q-icon name="exit_to_app"/>
+        </q-btn>
+      </q-card-actions>
+    </q-card>
+
     <!--
       Use <q-side-link> component
       instead of <q-item> for
@@ -7,12 +23,10 @@
     -->
 
     <q-list no-border link inset-delimiter>
-      <q-list-header>Essential Links</q-list-header>
-      <q-side-link to="/user">
-        <q-item>
-          <q-item-side icon="account circle"/>
-          <q-item-main label="사용자 관리" sublabel=""/>
-        </q-item>
+      <q-list-header></q-list-header>
+      <q-side-link item to="/user">
+        <q-item-side icon="account circle"/>
+        <q-item-main label="사용자 관리" sublabel="사용자의 추가/수정/삭제"/>
       </q-side-link>
       <q-item @click="launch('http://quasar-framework.org')">
         <q-item-side icon="school"/>
@@ -39,58 +53,30 @@
   </div>
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  // import firebase from 'firebase'
+  import {mapGetters} from 'vuex';
+  import firebase from 'firebase';
+  import Toast from 'quasar';
 
   export default {
-    data () {
-      return {}
+    data() {
+      return {};
     },
-    created () {
+    created() {
     },
     methods: {
-      logOut () {
+      signOut() {
+        firebase.auth().signOut().then(() => {
+          this.$router.push('/sign-in');
+        }).catch(() => {
+          Toast.create.negative('로그아웃중 오류 발생');
+        });
       }
     },
     computed: {
-      ...mapGetters(['isFrameNeeded', 'isAuthenticated'])
+      ...mapGetters(['user', 'authenticated'])
     }
-  }
+  };
 </script>
-<style scoped>
-  .fixed-bottom {
-    margin-bottom: 1%;
-  }
+<style>
 
-  .fixed-bottom a img {
-    width: 25px;
-    height: 25px;
-  }
-
-  #avatar {
-    padding: 20px;
-  }
-
-  #profile {
-    height: 130px;
-    background-color: #009688;
-  }
-
-  #user-name {
-    left: 90px;
-    bottom: 77px;
-    position: relative;
-    width: 159px;
-  }
-
-  #user-actions {
-    left: 90px;
-    bottom: 71px;
-    position: relative;
-    width: 171px;
-  }
-
-  #menu-collapse {
-    margin-top: 5%;
-  }
 </style>
