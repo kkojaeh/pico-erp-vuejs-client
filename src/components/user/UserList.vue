@@ -1,10 +1,15 @@
 <template>
   <div>
-    <router-view></router-view>
-
+    <q-modal ref="routeModal" @close="$router.go(-1)">
+      <transition name="fade" @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()">
+        <router-view></router-view>
+      </transition>
+    </q-modal>
     <c-list-view ref="listView" :collection="collection" :condition="condition">
       <div slot="action">
-        <q-btn flat icon="add">생성</q-btn>
+        <q-side-link append :to="{ path: 'create' }">
+          <q-btn flat icon="add">생성</q-btn>
+        </q-side-link>
       </div>
 
       <!-- main -->
@@ -20,11 +25,13 @@
         <ag-grid-column field="email" headerName="이메일" :width="200"/>
         <ag-grid-column headerName="생성" :marry-children="true">
           <ag-grid-column field="createdBy.name" headerName="사용자" :width="150"/>
-          <ag-grid-column field="createdDate" headerName="시간" :width="200" :cell-renderer="dateTimeCellRenderer"/>
+          <ag-grid-column field="createdDate" headerName="시간" :width="200"
+                          :cell-renderer="dateTimeCellRenderer"/>
         </ag-grid-column>
         <ag-grid-column headerName="수정" :marry-children="true">
           <ag-grid-column field="lastModifiedBy.name" headerName="사용자" :width="150"/>
-          <ag-grid-column field="lastModifiedDate" headerName="시간" :width="200" :cell-renderer="dateTimeCellRenderer"/>
+          <ag-grid-column field="lastModifiedDate" headerName="시간" :width="200"
+                          :cell-renderer="dateTimeCellRenderer"/>
         </ag-grid-column>
       </ag-grid>
 
@@ -105,6 +112,11 @@
     },
     computed: {
       ...mapGetters([])
+    },
+    watch: {
+      '$route'(to, from) {
+        console.log(to);
+      }
     },
     components: {}
   };

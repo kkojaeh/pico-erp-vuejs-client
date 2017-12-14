@@ -24,33 +24,50 @@ export default new VueRouter({
    * build publicPath back to '' so Cordova builds work again.
    */
 
-  routes: [
-    {
-      path: '/',
-      component: load('Dashboard'),
-      name: 'Dashboard',
-      meta: {auth: true, frame: true}
+  routes: [{
+    path: '/',
+    component: load('Dashboard'),
+    meta: {
+      title: 'Dashboard',
+      auth: true,
+      frame: true
+    }
+  }, {
+    path: '/sign-in',
+    component: load('SignIn'),
+    meta: {
+      title: '로그인',
+      auth: false,
+      frame: false
+    }
+  }, {
+    path: '/user',
+    component: load('user/UserList'),
+    meta: {
+      title: '사용자 관리',
+      auth: true,
+      frame: true
     },
-
-    {
-      path: '/sign-in',
-      component: load('SignIn'),
-      name: '로그인',
-      meta: {auth: false, frame: false}
-    },
-
-    {
-      path: '/user',
-      component: load('user/UserList'),
-      name: '사용자 관리',
-      meta: {auth: true, frame: true},
-      children: [{
-        path: 'form/:id', component: load('UserForm')
-      }]
-    },
-
-    // Always leave this last one
-    {path: '*', component: load('Error404'), meta: {auth: false, frame: false}} // Not found
-  ]
+    children: [{
+      path: 'create',
+      component: load('user/UserForm'),
+      meta: {
+        title: '사용자 관리',
+        auth: true,
+        frame: true
+      },
+      props: {
+        action: 'create'
+      }
+    }]
+  }, {
+    // Not found
+    path: '*',
+    component: load('Error404'),
+    meta: {
+      auth: false,
+      frame: false
+    }
+  }]
 
 });

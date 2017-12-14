@@ -14,7 +14,8 @@ const UserModel = AmpersandModel.extend({
       type: 'string'
     },
     enabled: {
-      type: 'boolean'
+      type: 'boolean',
+      default: true
     },
     phoneNumber: {
       type: 'string'

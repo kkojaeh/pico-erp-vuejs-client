@@ -62,6 +62,11 @@
                     && column.componentInstance.getColumnDefinition)
             .map((column) => column.componentInstance.getColumnDefinition())
         );
+      },
+
+      getColumns() {
+        return (this.$slots.default || [])
+        .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition);
       }
     },
     created() {
@@ -72,9 +77,7 @@
       let vueFrameworkFactory = new VueFrameworkFactory(this.$el, this);
       let gridOptions = ComponentUtil.copyAttributesToGridOptions(this.gridOptions, this);
 
-      gridOptions.columnDefs = this.$slots.default
-      .filter((column) => column.componentInstance && column.componentInstance.getColumnDefinition)
-      .map((column) => {
+      gridOptions.columnDefs = this.getColumns().map((column) => {
         column.componentInstance.setGrid(this);
         return column.componentInstance.getColumnDefinition();
       });

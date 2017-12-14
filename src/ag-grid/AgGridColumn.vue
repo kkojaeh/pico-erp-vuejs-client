@@ -33,24 +33,22 @@
           this._grid.invalidateColumnDefinitions();
         }
       },
+      getChildren() {
+        return (this.$slots.default || [])
+        .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition);
+      },
       getColumnDefinition() {
         let colDef = _.assign({}, this.$props);
-        if (this.$slots.default) {
-          colDef.children = this.$slots.default
-          .filter(
-              (column) => column.componentInstance && column.componentInstance.getColumnDefinition)
-          .map((column) => column.componentInstance.getColumnDefinition());
+        colDef.children = this.getChildren().map(
+            (column) => column.componentInstance.getColumnDefinition());
+        if (!colDef.children.length) {
+          colDef.children = null;
         }
         return colDef;
       },
       setGrid(grid) {
         this._grid = grid;
-        if (this.$slots.default) {
-          this.$slots.default
-          .filter(
-              (column) => column.componentInstance && column.componentInstance.getColumnDefinition)
-          .forEach((column) => column.componentInstance.setGrid(grid));
-        }
+        this.getChildren().forEach((column) => column.componentInstance.setGrid(grid));
       }
     },
     watch: watchedProperties,

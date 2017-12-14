@@ -1,6 +1,3 @@
-import 'ag-grid/dist/styles/ag-grid.css';
-import 'ag-grid/dist/styles/ag-theme-material.css';
-import 'quasar-extras/material-icons';
 import Vue from 'vue';
 import Quasar, * as All from 'quasar';
 import router from './router';
@@ -13,12 +10,17 @@ import AgGrid from './ag-grid/AgGrid.vue';
 import AgGridColumn from './ag-grid/AgGridColumn.vue';
 import FilterSign from '@/common/FilterSign.vue';
 import ListView from '@/common/ListView.vue';
+import PhoneInput from '@/common/PhoneInput.vue';
+
 // === DEFAULT / CUSTOM STYLE ===
 // WARNING! always comment out ONE of the two require() calls below.
 // 1. use next line to activate CUSTOM STYLE (./src/themes)
 // require(`./themes/app.${__THEME}.styl`)
 // 2. or, use next line to activate DEFAULT QUASAR STYLE
 require(`quasar/dist/quasar.${__THEME}.css`);
+import 'ag-grid/dist/styles/ag-grid.css';
+import 'ag-grid/dist/styles/ag-theme-material.css';
+import 'quasar-extras/material-icons';
 // ==============================
 
 // Uncomment the following lines if you need IE11/Edge support
@@ -29,13 +31,14 @@ Vue.use(Quasar, {
   components: All,
   directives: All
 });
-
 Vue.use(axios);
 Vue.use(Vuelidate);
 Vue.component('ag-grid', AgGrid);
 Vue.component('ag-grid-column', AgGridColumn);
 Vue.component('c-filter-sign', FilterSign);
 Vue.component('c-list-view', ListView);
+Vue.component('c-phone-input', PhoneInput);
+
 Vue.config.productionTip = false;
 
 if (__THEME === 'mat') {
@@ -49,7 +52,9 @@ if (__THEME === 'mat') {
 router.beforeEach((to, from, next) => {
   store.commit('authNeeded', to.meta.auth);
   store.commit('frameNeeded', to.meta.frame);
-  store.commit('currentTitle', to.name);
+  if (to.meta.title) {
+    store.commit('currentTitle', to.meta.title);
+  }
   next();
 });
 
