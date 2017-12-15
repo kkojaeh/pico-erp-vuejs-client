@@ -51,8 +51,8 @@
         type: Number,
         default: 20
       },
-      collection: {
-        type: Object,
+      array: {
+        type: Array,
         required: true
       },
       condition: {
@@ -131,7 +131,7 @@
       },
       setPage(value) {
         this.page = value;
-        this.collection.paginate(value);
+        this.array.page = value;
       },
       retrieve(force = false) {
         if (this.pagination) {
@@ -171,13 +171,15 @@
       _fetch() {
         if (this.sortQueryString) {
           let parsedSort = qs.parse(this.sortQueryString, {arrayFormat: 'bracket'});
-          this.collection.sorters = _.keys(parsedSort).map(
+          this.array.sorters = _.keys(parsedSort).map(
               (key) => Sort.createSort(parsedSort[key].field, parsedSort[key].dir));
         }
         if (this.pagination) {
-          this.collection.page = this.page;
+          this.array.page = this.page;
         }
-        return this.collection.fetch({data: this.condition});
+        return this.array.fetch(this.condition).then((a) => {
+          console.log(a[0]);
+        });
       },
 
       _onGridSortChanged(e) {

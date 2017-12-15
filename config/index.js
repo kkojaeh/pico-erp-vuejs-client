@@ -12,8 +12,6 @@ module.exports = {
     assets: path.resolve(__dirname, '../src/assets'),
     '@': path.resolve(__dirname, '../src/components'),
     'kebab-case': path.resolve(__dirname, '../node_modules/kebab-case/'),
-    'ampersand-model': path.resolve(__dirname, '../node_modules/ampersand-model/'),
-    'ampersand-rest-collection': path.resolve(__dirname, '../node_modules/ampersand-rest-collection/'),
     'cleave.js': path.resolve(__dirname, '../node_modules/cleave.js/'),
     'google-libphonenumber': path.resolve(__dirname, '../node_modules/google-libphonenumber/'),
     lodash : path.resolve(__dirname, '../node_modules/lodash/'),

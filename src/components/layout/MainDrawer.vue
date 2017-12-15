@@ -56,6 +56,7 @@
   import {mapGetters} from 'vuex';
   import firebase from 'firebase';
   import Toast from 'quasar';
+  import {confirm} from 'src/util';
 
   export default {
     data() {
@@ -65,10 +66,14 @@
     },
     methods: {
       signOut() {
-        firebase.auth().signOut().then(() => {
-          this.$router.push('/sign-in');
-        }).catch(() => {
-          Toast.create.negative('로그아웃중 오류 발생');
+        confirm('로그아웃 하시겠습니까?').then((ok) => {
+          if (ok) {
+            firebase.auth().signOut().then(() => {
+              this.$router.push('/sign-in');
+            }).catch(() => {
+              Toast.create.negative('로그아웃중 오류 발생');
+            });
+          }
         });
       }
     },

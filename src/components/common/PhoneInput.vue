@@ -109,6 +109,6 @@
     }
   };
 </script>
-<style>
+<style scoped>
   @import '../../statics/phone/style.css';
 </style>

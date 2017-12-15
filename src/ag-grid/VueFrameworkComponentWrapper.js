@@ -34,10 +34,9 @@ class VueFrameworkComponentWrapper {
     let wrapper = new DynamicComponent();
     methodList.forEach((methodName) => {
       wrapper[methodName] = () => {
-        if (wrapper.getFrameworkComponentInstance()[methodName]) {
-          const componentRef = this.getFrameworkComponentInstance();
-          return wrapper.getFrameworkComponentInstance()[methodName].apply(
-              componentRef, arguments); // eslint-disable-line
+        const componentRef = wrapper.getFrameworkComponentInstance();
+        if (componentRef[methodName]) {
+          return (componentRef[methodName]).apply(componentRef, arguments); // eslint-disable-line
         } else {
           console.warn('ag-Grid: missing the method ' + methodName + '()');
           return null;
@@ -46,10 +45,9 @@ class VueFrameworkComponentWrapper {
     });
     optionalMethods.forEach((methodName) => {
       wrapper[methodName] = () => {
-        if (wrapper.getFrameworkComponentInstance()[methodName]) {
-          const componentRef = this.getFrameworkComponentInstance();
-          return wrapper.getFrameworkComponentInstance()[methodName].apply(
-              componentRef, arguments); // eslint-disable-line
+        const componentRef = wrapper.getFrameworkComponentInstance();
+        if (componentRef[methodName]) {
+          return componentRef[methodName].apply(componentRef, arguments); // eslint-disable-line
         }
       };
     });

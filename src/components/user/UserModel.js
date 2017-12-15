@@ -1,8 +1,15 @@
-import {SpringPaginationCollection} from 'src/model/Collection';
-import axiosSync from 'src/model/AxiosSync';
+import {FetchableArray, SpringPaginationArray} from 'src/model/Array';
+import {FetchableModel} from 'src/model/Model';
 import {api} from 'src/axios';
-import AmpersandModel from 'ampersand-model';
 
+console.log(FetchableModel.extend);
+
+export class UserModel extends FetchableModel {
+  url = '/v1/user/users/${id}';
+  axios = api;
+}
+
+/*
 const UserModel = AmpersandModel.extend({
   urlRoot: '/v1/user/users',
   sync: axiosSync(api),
@@ -15,7 +22,7 @@ const UserModel = AmpersandModel.extend({
     },
     enabled: {
       type: 'boolean',
-      default: true
+      default: () => true
     },
     phoneNumber: {
       type: 'string'
@@ -44,7 +51,34 @@ const UserCollection = SpringPaginationCollection.extend({
   model: UserModel
 });
 
-export {
-  UserModel,
-  UserCollection
+const UserRoleModel = AmpersandModel.extend({
+  urlRoot: '/v1/user/users/${id}/role',
+  idAttribute: 'role',
+  props: {
+    id: {
+      type: 'string'
+    },
+    role: {
+      type: 'string'
+    },
+    granted: {
+      type: 'boolean',
+      default: true
+    },
+    description: {
+      type: 'string'
+    }
+  }
+});
+*/
+
+export class UserPaginationArray extends SpringPaginationArray {
+  url = '/v1/user/users';
+  axios = api;
+  model = UserModel;
+}
+
+export class UserRoleArray extends FetchableArray {
+  url = '/v1/user/users/${id}/role';
+  axios = api;
 };

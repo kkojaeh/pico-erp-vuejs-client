@@ -152,7 +152,7 @@ export class VueComponentFactory {
     }
   }
 
-  static createAndMountComponent(params, componentType) {
+  static createAndMountComponent(params, ComponentType) {
     let details = {
       // parent: that.parent,
       data: {
@@ -160,7 +160,7 @@ export class VueComponentFactory {
       }
     };
 
-    let component = componentType(details);
+    let component = new ComponentType(details);
     component.$mount();
     return component;
   }

@@ -1,13 +1,13 @@
 <template>
   <div>
     <q-modal ref="routeModal" @close="$router.go(-1)">
-      <transition name="fade" @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()">
+      <transition name="modal" @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()">
         <router-view></router-view>
       </transition>
     </q-modal>
-    <c-list-view ref="listView" :collection="collection" :condition="condition">
+    <c-list-view ref="listView" :array="array" :condition="condition">
       <div slot="action">
-        <q-side-link append :to="{ path: 'create' }">
+        <q-side-link append :to="{ path: 'create', query: $route.query}">
           <q-btn flat icon="add">생성</q-btn>
         </q-side-link>
       </div>
@@ -19,19 +19,20 @@
                enable-col-resize
                enable-sorting
                :grid-options="gridOptions"
-               :row-data="collection.models">
+               :row-data="array">
         <ag-grid-column :checkbox-selection="true" :width="50" suppress-sorting/>
-        <ag-grid-column field="name" headerName="이름" :width="150"/>
-        <ag-grid-column field="email" headerName="이메일" :width="200"/>
+        <ag-grid-column field="id" header-name="아이디" :width="150"/>
+        <ag-grid-column field="name" header-name="이름" :width="150"/>
+        <ag-grid-column field="email" header-name="이메일" :width="200"/>
         <ag-grid-column headerName="생성" :marry-children="true">
-          <ag-grid-column field="createdBy.name" headerName="사용자" :width="150"/>
-          <ag-grid-column field="createdDate" headerName="시간" :width="200"
-                          :cell-renderer="dateTimeCellRenderer"/>
+          <ag-grid-column field="createdBy.name" header-name="사용자" :width="150"/>
+          <ag-grid-column field="createdDate" header-name="시간" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
         </ag-grid-column>
         <ag-grid-column headerName="수정" :marry-children="true">
-          <ag-grid-column field="lastModifiedBy.name" headerName="사용자" :width="150"/>
-          <ag-grid-column field="lastModifiedDate" headerName="시간" :width="200"
-                          :cell-renderer="dateTimeCellRenderer"/>
+          <ag-grid-column field="lastModifiedBy.name" header-name="사용자" :width="150"/>
+          <ag-grid-column field="lastModifiedDate" header-name="시간" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
         </ag-grid-column>
       </ag-grid>
 
@@ -86,14 +87,13 @@
 </template>
 <script>
   import {mapGetters} from 'vuex';
-  import {UserCollection} from './UserModel';
-  import {dateTimeCellRenderer} from 'src/ag-grid/AgGridCellRenderers';
+  import {UserPaginationArray} from './UserModel';
 
   export default {
     data() {
       return {
         gridOptions: {},
-        collection: new UserCollection(),
+        array: new UserPaginationArray(),
         condition: {
           enabled: true
         }
@@ -107,17 +107,12 @@
         this.$refs.listView.retrieve();
       },
       onSortChanged(e) {
-      },
-      dateTimeCellRenderer
+      }
     },
     computed: {
       ...mapGetters([])
     },
-    watch: {
-      '$route'(to, from) {
-        console.log(to);
-      }
-    },
+
     components: {}
   };
 </script>

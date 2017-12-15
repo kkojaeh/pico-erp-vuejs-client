@@ -34,15 +34,15 @@
         }
       },
       getChildren() {
-        return (this.$slots.default || [])
-        .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition);
+        return (this.$slots.default || []).filter(
+            (c) => c.componentInstance && c.componentInstance.getColumnDefinition);
       },
       getColumnDefinition() {
         let colDef = _.assign({}, this.$props);
         colDef.children = this.getChildren().map(
             (column) => column.componentInstance.getColumnDefinition());
         if (!colDef.children.length) {
-          colDef.children = null;
+          delete colDef.children;
         }
         return colDef;
       },
