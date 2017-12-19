@@ -6,6 +6,7 @@ class VueFrameworkComponentWrapper {
   }
 
   wrap(component, methodList, optionalMethods) {
+    let parent = this._parent;
     let componentType = VueComponentFactory.getComponentType(this._parent,
         component);
     if (!componentType) {
@@ -14,7 +15,8 @@ class VueFrameworkComponentWrapper {
 
     class DynamicComponent {
       init(params) {
-        this.component = VueComponentFactory.createAndMountComponent(params,
+        this.component = VueComponentFactory.createAndMountComponent(
+            parent, params,
             componentType);
       }
 

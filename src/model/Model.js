@@ -1,35 +1,61 @@
 import * as _ from 'lodash';
 import qs from 'qs';
+import Vue from 'vue';
 
-/* eslint-disable */
 export class FetchableModel {
-  axios = null;
-  url = null;
+  get axios() {
+  }
+
+  get url() {
+  }
 
   constructor(data) {
     _.assign(this, data);
   }
 
-  fetch = (data) => {
+  fetch(data) {
+    const o = _.assign({}, this);
+    if (data) {
+      _.assign(o, data);
+    }
     return new Promise((resolve, reject) => {
-      this.axios.get(this.resolveUrl(this.url, data), {data: data}).then(
+      this.axios.get(this.resolveUrl(this.url, o), {data: o}).then(
           (response) => {
             const parsed = this.parse(response);
-            _.assign(this, parsed);
+            _.keys(parsed).forEach((key) => {
+              Vue.set(this, key, parsed[key]);
+            });
             resolve(this);
           }).catch((error) => {
         reject(error);
       });
     });
-  };
+  }
 
-  resolveUrl = (url, data) => {
-    return _.template(url)(data) + (_.includes(url, '?') ? '&' : '?')
-        + qs.stringify(data);
-  };
+  resolveUrl(url, data) {
+    return url + (_.includes(url, '?') ? '&' : '?') + qs.stringify(data);
+  }
 
-  parse = (response) => {
+  parse(response) {
     return response.data;
-  };
+  }
+
+  snapshot() {
+    Object.defineProperty(this, '_snapshot', {
+      value: _.assign({}, this)
+    });
+  }
+
+  hasChanged(property) {
+    if (property) {
+      return !this.equals(this._snapshot[property], this[property]);
+    }
+    return !_.keys(this._snapshot).reduce(
+        (acc, key) => acc && this.equals(this._snapshot[key], this[key]),
+        true);
+  }
+
+  equals(a, b) {
+    return _.isEqual(a, b);
+  }
 };
-/* eslint-enable */

@@ -26,6 +26,7 @@ import AgGridCheckboxRenderer from './ag-grid/AgGridCheckboxRenderer.vue';
 import AgGridCheckboxEditor from './ag-grid/AgGridCheckboxEditor.vue';
 import AgGridDateRenderer from './ag-grid/AgGridDateRenderer.vue';
 import AgGridDatetimeRenderer from './ag-grid/AgGridDatetimeRenderer.vue';
+import AgGridLinkRenderer from './ag-grid/AgGridLinkRenderer.vue';
 
 // import 'quasar-extras/ionicons'
 // import 'quasar-extras/fontawesome'
@@ -48,6 +49,8 @@ export default () => {
   Vue.component('ag-grid-date-renderer', AgGridDateRenderer);
   Vue.component('ag-grid-datetime-renderer', AgGridDatetimeRenderer);
   Vue.component('ag-grid-checkbox-editor', AgGridCheckboxEditor);
+  Vue.component('ag-grid-link-renderer', AgGridLinkRenderer);
+
 
   Vue.config.productionTip = false;
   require(`quasar/dist/quasar.${__THEME}.css`);

@@ -344,7 +344,7 @@ only screen and (min-device-pixel-ratio: 2),
 only screen and (min-resolution: 192dpi),
 only screen and (min-resolution: 2dppx) {
 	.iti-flag {
-		background-size:5630px 15px
+		background-size:5630px 15px;
 	}
 
 }

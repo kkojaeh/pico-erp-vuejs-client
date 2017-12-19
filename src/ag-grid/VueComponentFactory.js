@@ -15,7 +15,7 @@ export class VueComponentFactory {
 
     class CellRendererComponent {
       init(params) {
-        this.component = VueComponentFactory.createAndMountComponent(params,
+        this.component = VueComponentFactory.createAndMountComponent(this.parent, params,
             componentType);
       }
 
@@ -40,7 +40,7 @@ export class VueComponentFactory {
 
     class CellEditor {
       init(params) {
-        this.component = VueComponentFactory.createAndMountComponent(params,
+        this.component = VueComponentFactory.createAndMountComponent(this.parent, params,
             componentType);
       }
 
@@ -95,7 +95,7 @@ export class VueComponentFactory {
 
     class Filter {
       init(params) {
-        this.component = VueComponentFactory.createAndMountComponent(params,
+        this.component = VueComponentFactory.createAndMountComponent(this.parent, params,
             componentType);
       }
 
@@ -152,15 +152,15 @@ export class VueComponentFactory {
     }
   }
 
-  static createAndMountComponent(params, ComponentType) {
+  static createAndMountComponent(parent, params, ComponentType) {
     let details = {
-      // parent: that.parent,
+      parent: parent,
       data: {
         params: params
       }
     };
-
     let component = new ComponentType(details);
+
     component.$mount();
     return component;
   }

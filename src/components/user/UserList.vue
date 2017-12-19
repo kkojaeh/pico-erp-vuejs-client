@@ -1,13 +1,13 @@
 <template>
   <div>
-    <q-modal ref="routeModal" @close="$router.go(-1)">
-      <transition name="modal" @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()">
-        <router-view></router-view>
+    <q-modal ref="routeModal" @close="$router.push({ path: '/user', query: $route.query})">
+      <transition @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()" @leave="$refs.routeModal.close()">
+        <router-view @close="$refs.routeModal.close();"></router-view>
       </transition>
     </q-modal>
     <c-list-view ref="listView" :array="array" :condition="condition">
       <div slot="action">
-        <q-side-link append :to="{ path: 'create', query: $route.query}">
+        <q-side-link :to="{ path: '/user/create', query: $route.query}">
           <q-btn flat icon="add">생성</q-btn>
         </q-side-link>
       </div>
@@ -20,8 +20,10 @@
                enable-sorting
                :grid-options="gridOptions"
                :row-data="array">
-        <ag-grid-column :checkbox-selection="true" :width="50" suppress-sorting/>
-        <ag-grid-column field="id" header-name="아이디" :width="150"/>
+        <!--<ag-grid-column :checkbox-selection="true" :width="50" suppress-sorting/>-->
+        <ag-grid-column field="id" header-name="아이디" :width="150"
+                        cell-renderer-framework="ag-grid-link-renderer"
+                        :cell-renderer-params="{path:'/user/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="150"/>
         <ag-grid-column field="email" header-name="이메일" :width="200"/>
         <ag-grid-column headerName="생성" :marry-children="true">
@@ -34,6 +36,7 @@
           <ag-grid-column field="lastModifiedDate" header-name="시간" :width="200"
                           cell-renderer-framework="ag-grid-datetime-renderer"/>
         </ag-grid-column>
+
       </ag-grid>
 
       <!-- main -->
@@ -107,6 +110,9 @@
         this.$refs.listView.retrieve();
       },
       onSortChanged(e) {
+      },
+      log(text) {
+        console.log(text);
       }
     },
     computed: {

@@ -1,7 +1,10 @@
 import axios from 'axios';
+import * as _ from 'lodash';
 import {Loading} from 'quasar';
+import {Alert} from 'quasar';
 
 let loadFunction = (config) => {
+  config.url = _.template(config.url)(config.data);
   config.headers.common['X-Firebase-Auth'] = localStorage.getItem(
       'API_FIREBASE_TOKEN');
   Loading.show({
@@ -14,7 +17,18 @@ let finishFunction = (response) => {
   return response;
 };
 let errorFunction = (error) => {
-  setTimeout(() => Loading.hide(), 500);
+  Loading.hide();
+
+  let message = error.response.data.message;
+  if (_.isArray(error.response.data.errors)) {
+    message = error.response.data.errors.map((e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
+  }
+  let alert = Alert.create({
+    icon: 'warning',
+    position: 'bottom-right',
+    html: `${message}`
+  });
+  setTimeout(alert.dismiss, 3000);
   return Promise.reject(error);
 };
 

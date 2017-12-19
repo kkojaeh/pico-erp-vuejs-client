@@ -57,17 +57,36 @@ export default new VueRouter({
         frame: true
       },
       props: {
-        action: 'create'
+        action: 'create',
+        closable: true
+      }
+    }, {
+      path: 'show/:id',
+      component: load('user/UserForm'),
+      meta: {
+        title: '사용자 관리',
+        auth: true,
+        frame: true
+      },
+      props: (route) => {
+        return {
+          id: route.params.id,
+          action: 'show',
+          closable: true
+        };
       }
     }]
-  }, {
-    // Not found
-    path: '*',
-    component: load('Error404'),
-    meta: {
-      auth: false,
-      frame: false
+  },
+    {
+      // Not found
+      path: '*',
+      component: load('Error404'),
+      meta: {
+        auth: false,
+        frame: false
+      }
     }
-  }]
+  ]
 
-});
+})
+;

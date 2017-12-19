@@ -58,9 +58,8 @@ export class SpringPaginationArray extends PaginationArray {
       query.sort = this.sorters.map(
           (s) => s.getField() + ',' + s.getDir().toLowerCase());
     }
-    let resolved = _.template(url)(data);
     // array 를 query string 으로 생성시 옵션을 반복으로 사용
-    return resolved + (_.includes(resolved, '?') ? '&' : '?') + qs.stringify(
+    return url + (_.includes(url, '?') ? '&' : '?') + qs.stringify(
         query, {arrayFormat: 'repeat'});
   };
 

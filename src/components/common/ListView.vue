@@ -101,7 +101,8 @@
         page: 1,
         rowsPerPage: this.pageSize,
         conditionVisible: false,
-        pageSizeOptions: pageSizeOptions
+        pageSizeOptions: pageSizeOptions,
+        initialCondition: null
       };
     },
     computed: {
@@ -146,12 +147,20 @@
       _assignQuery(query) {
         if (query) {
           let c = query[this.conditionName];
+          _.keys(this.condition).forEach((key) => {
+            Vue.delete(this.condition, key);
+          });
           if (c) {
-            this.conditionQueryString = c;
             let parsedCondition = qs.parse(c);
             _.keys(parsedCondition).forEach((key) => {
               Vue.set(this.condition, key, parsedCondition[key]);
             });
+            this.conditionQueryString = c;
+          } else {
+            _.keys(this.initialCondition).forEach((key) => {
+              Vue.set(this.condition, key, this.initialCondition[key]);
+            });
+            this.conditionQueryString = qs.stringify(this.condition);
           }
           let s = query[this.sortName];
           if (s) {
@@ -163,8 +172,10 @@
             this.page = Number(p);
           }
         }
-        if (query[this.conditionName] !== undefined) {
+        if (query && query[this.conditionName]) {
           this._fetch();
+        } else {
+          this._clear();
         }
       },
 
@@ -177,9 +188,11 @@
         if (this.pagination) {
           this.array.page = this.page;
         }
-        return this.array.fetch(this.condition).then((a) => {
-          console.log(a[0]);
-        });
+        return this.array.fetch(this.condition);
+      },
+
+      _clear() {
+        this.array.splice(0, this.array.length);
       },
 
       _onGridSortChanged(e) {
@@ -232,6 +245,7 @@
       if (this.grid.gridOptions.enableServerSideSorting) {
         this.grid.$on('sort-changed', this._onGridSortChanged.bind(this));
       }
+      this.initialCondition = _.assign({}, this.condition);
       this._assignQuery(this.$route.query);
     },
     destroyed() {
