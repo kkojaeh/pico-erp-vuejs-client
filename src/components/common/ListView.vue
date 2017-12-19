@@ -220,7 +220,11 @@
         query[this.sortName] = this.sortQueryString;
         query[this.conditionName] = this.conditionQueryString;
         query[this.pageName] = this.page;
-        this.$router.push({path: this.$route.path, query: query});
+        if (_.isEmpty(this.$route.query)) {
+          this.$router.replace({path: this.$route.path, query: query});
+        } else {
+          this.$router.push({path: this.$route.path, query: query});
+        }
       }
     },
     watch: {
