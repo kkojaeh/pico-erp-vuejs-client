@@ -44,12 +44,14 @@ script:
 
 deploy:
   - provider: firebase
+    skip_cleanup: true
     project: "pico-erp-dev"
     token:
       secure: $FIREBASE_CI_TOKEN
     on:
       branch: master
   - provider: firebase
+    skip_cleanup: true
     project: "pico-erp-prd"
     token:
       secure: $FIREBASE_CI_TOKEN
