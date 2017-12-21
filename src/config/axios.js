@@ -18,17 +18,19 @@ let finishFunction = (response) => {
 };
 let errorFunction = (error) => {
   Loading.hide();
-
-  let message = error.response.data.message;
-  if (_.isArray(error.response.data.errors)) {
-    message = error.response.data.errors.map((e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
+  if (error.response) {
+    let message = error.response.data.message;
+    if (_.isArray(error.response.data.errors)) {
+      message = error.response.data.errors.map(
+          (e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
+    }
+    let alert = Alert.create({
+      icon: 'warning',
+      position: 'bottom-right',
+      html: `${message}`
+    });
+    setTimeout(alert.dismiss, 3000);
   }
-  let alert = Alert.create({
-    icon: 'warning',
-    position: 'bottom-right',
-    html: `${message}`
-  });
-  setTimeout(alert.dismiss, 3000);
   return Promise.reject(error);
 };
 

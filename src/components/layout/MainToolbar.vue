@@ -1,6 +1,6 @@
 <template>
   <q-toolbar color="primary">
-    <q-btn flat @click="toggle()">
+    <q-btn flat @click="toggle()" v-if="authenticated">
       <q-icon name="menu"/>
     </q-btn>
 
@@ -39,7 +39,7 @@
 
   export default {
     computed: {
-      ...mapGetters(['currentTitle'])
+      ...mapGetters(['currentTitle', 'authenticated'])
     },
     methods: {
       toggle() {

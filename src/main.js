@@ -1,15 +1,14 @@
 import Vue from 'vue';
 import Quasar from 'quasar';
-import router from './router';
-import store from './store';
-import {config as firebaseConfig} from './firebase';
-import firebase from 'firebase';
-import install from './install';
+import router from './config/router';
+import store from './config/store';
+import install from './config/install';
+import * as auth from './config/auth';
 
 install();
 
-let authorized = false;
-let routerNext;
+let routeNext;
+let routeTo;
 
 router.beforeEach((to, from, next) => {
   store.commit('authNeeded', to.meta.auth);
@@ -17,10 +16,11 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     store.commit('currentTitle', to.meta.title);
   }
-  if (authorized) {
+  if (store.getters.initialized) {
     next();
   } else {
-    routerNext = next;
+    routeNext = next;
+    routeTo = to;
   }
 });
 
@@ -32,30 +32,14 @@ Quasar.start(() => {
     router,
     render: (h) => h(require('./App')),
     created() {
-      firebase.initializeApp(firebaseConfig);
-      firebase.auth().onAuthStateChanged((user) => {
-        this.$store.commit('user', firebase.auth().currentUser);
-        if (user) {
-          user.getIdToken(true).then(
-              (token) => {
-                localStorage.setItem('API_FIREBASE_TOKEN', token);
-                authorized = true;
-                if (routerNext) {
-                  routerNext();
-                }
-              });
-          this.$store.commit('authenticated', true);
-        } else {
-          this.$store.commit('authenticated', false);
-          authorized = true;
-          if (routerNext) {
-            routerNext();
-          }
-          if (this.$store.getters.authNeeded &&
-              !this.$store.getters.authenticated) {
-            this.$router.push('/sign-in');
-          }
+      auth.init().then(() => {
+        if (store.getters.authNeeded &&
+            !store.getters.authenticated) {
+          store.commit('lastAccessRouter', routeTo);
+          router.push('/sign-in');
+          return;
         }
+        routeNext();
       });
     }
   });

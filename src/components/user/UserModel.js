@@ -1,9 +1,7 @@
 import {FetchableArray, SpringPaginationArray} from 'src/model/Array';
 import {FetchableModel} from 'src/model/Model';
-import {api} from 'src/axios';
+import {api} from 'src/config/axios';
 // import {required, minLength, maxLength} from 'vuelidate/lib/validators';
-
-console.log(FetchableModel.extend);
 
 export class UserModel extends FetchableModel {
   get axios() {
@@ -42,69 +40,6 @@ export class UserRoleModel extends FetchableModel {
     });
   }
 }
-
-/*
-const UserModel = AmpersandModel.extend({
-  urlRoot: '/v1/user/users',
-  sync: axiosSync(api),
-  props: {
-    id: {
-      type: 'string'
-    },
-    name: {
-      type: 'string'
-    },
-    enabled: {
-      type: 'boolean',
-      default: () => true
-    },
-    phoneNumber: {
-      type: 'string'
-    },
-    email: {
-      type: 'string'
-    },
-    createdBy: {
-      type: 'object'
-    },
-    createdDate: {
-      type: 'date'
-    },
-    lastModifiedBy: {
-      type: 'object'
-    },
-    lastModifiedDate: {
-      type: 'date'
-    }
-  }
-});
-
-const UserCollection = SpringPaginationCollection.extend({
-  url: '/v1/user/users',
-  sync: axiosSync(api),
-  model: UserModel
-});
-
-const UserRoleModel = AmpersandModel.extend({
-  urlRoot: '/v1/user/users/${id}/role',
-  idAttribute: 'role',
-  props: {
-    id: {
-      type: 'string'
-    },
-    role: {
-      type: 'string'
-    },
-    granted: {
-      type: 'boolean',
-      default: true
-    },
-    description: {
-      type: 'string'
-    }
-  }
-});
-*/
 
 export class UserPaginationArray extends SpringPaginationArray {
   url = '/v1/user/users';

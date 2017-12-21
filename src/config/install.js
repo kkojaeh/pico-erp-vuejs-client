@@ -16,20 +16,20 @@ import Vue from 'vue';
 import Quasar, * as All from 'quasar';
 import axios from './axios';
 import Vuelidate from 'vuelidate';
-import AgGrid from './ag-grid/AgGrid.vue';
-import AgGridColumn from './ag-grid/AgGridColumn.vue';
+import AgGrid from 'src/ag-grid/AgGrid.vue';
+import AgGridColumn from 'src/ag-grid/AgGridColumn.vue';
 import FilterSign from '@/common/FilterSign.vue';
 import ListView from '@/common/ListView.vue';
 import PhoneInput from '@/common/PhoneInput.vue';
 
-import AgGridCheckboxRenderer from './ag-grid/AgGridCheckboxRenderer.vue';
-import AgGridCheckboxEditor from './ag-grid/AgGridCheckboxEditor.vue';
-import AgGridDateRenderer from './ag-grid/AgGridDateRenderer.vue';
-import AgGridDatetimeRenderer from './ag-grid/AgGridDatetimeRenderer.vue';
-import AgGridLinkRenderer from './ag-grid/AgGridLinkRenderer.vue';
+import AgGridCheckboxRenderer from 'src/ag-grid/AgGridCheckboxRenderer.vue';
+import AgGridCheckboxEditor from 'src/ag-grid/AgGridCheckboxEditor.vue';
+import AgGridDateRenderer from 'src/ag-grid/AgGridDateRenderer.vue';
+import AgGridDatetimeRenderer from 'src/ag-grid/AgGridDatetimeRenderer.vue';
+import AgGridLinkRenderer from 'src/ag-grid/AgGridLinkRenderer.vue';
 
 // import 'quasar-extras/ionicons'
-// import 'quasar-extras/fontawesome'
+import 'quasar-extras/fontawesome';
 // import 'quasar-extras/animate'
 
 export default () => {

@@ -1,12 +1,8 @@
 <template>
   <!-- Don't drop "q-app" class -->
   <!--<div class="q-app">-->
-  <q-layout
-      ref="layout"
-      view="lHh Lpr fff"
-      :left-class="{'bg-grey-2': true}"
-  >
-    <main-drawer slot="left" v-if="frameNeeded"></main-drawer>
+  <q-layout ref="layout" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
+    <main-drawer slot="left" v-if="frameNeeded && authenticated"></main-drawer>
     <main-toolbar slot="header" v-if="frameNeeded"
                   @toggle="$refs.layout.toggleLeft()"></main-toolbar>
 
@@ -26,7 +22,7 @@
     created() {
     },
     computed: {
-      ...mapGetters(['frameNeeded'])
+      ...mapGetters(['frameNeeded', 'authenticated'])
     },
     components: {
       MainToolbar,

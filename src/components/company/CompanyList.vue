@@ -79,13 +79,13 @@
 </template>
 <script>
   import {mapGetters} from 'vuex';
-  import {UserPaginationArray} from './UserModel';
+  import {CompanyPaginationArray} from './CompanyModel';
 
   export default {
     data() {
       return {
         gridOptions: {},
-        array: new UserPaginationArray(),
+        array: new CompanyPaginationArray(),
         condition: {
           enabled: true
         }

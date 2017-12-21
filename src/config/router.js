@@ -76,16 +76,23 @@ export default new VueRouter({
         };
       }
     }]
-  },
-    {
-      // Not found
-      path: '*',
-      component: load('Error404'),
-      meta: {
-        auth: false,
-        frame: false
-      }
+  }, {
+    path: '/company',
+    component: load('company/CompanyList'),
+    meta: {
+      title: '회사 관리',
+      auth: true,
+      frame: true
     }
+  }, {
+    // Not found
+    path: '*',
+    component: load('Error404'),
+    meta: {
+      auth: false,
+      frame: false
+    }
+  }
   ]
 
 })

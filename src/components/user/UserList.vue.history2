@@ -1,35 +1,26 @@
 <template>
   <div>
-    <!-- child -->
-
     <q-modal ref="routeModal" @close="$router.push({ path: '/user', query: $route.query})">
       <transition @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()" @leave="$refs.routeModal.close()">
         <router-view @close="$refs.routeModal.close();"></router-view>
       </transition>
     </q-modal>
-
-    <!-- child -->
-
     <c-list-view ref="listView" :array="array" :condition="condition">
-
-      <!-- action -->
-
       <div slot="action">
         <q-side-link :to="{ path: '/user/create', query: $route.query}">
           <q-btn flat icon="add">생성</q-btn>
         </q-side-link>
       </div>
 
-      <!-- action -->
-
       <!-- main -->
       <ag-grid ref="grid" class="ag-theme-material"
-               row-selection="single"
+               row-selection="multiple"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :grid-options="gridOptions"
                :row-data="array">
+        <!--<ag-grid-column :checkbox-selection="true" :width="50" suppress-sorting/>-->
         <ag-grid-column field="id" header-name="아이디" :width="150"
                         cell-renderer-framework="ag-grid-link-renderer"
                         :cell-renderer-params="{path:'/user/show/${id}', query:$route.query}"/>
@@ -58,6 +49,23 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
+      <!--
+      <q-field slot="condition" icon="email" helper="email 에 포함된 글자를 입력하세요" class="col-xs-11 col-md-4 col-xl-3">
+        <q-input v-model="condition.email" type="email" float-label="email" clearable
+                 @keyup.enter="retrieve()"/>
+      </q-field>
+
+
+      <q-field slot="condition" icon="date_range" helper="생성일이 포함될 기간을 입력하세요" class="col-xs-11 col-md-4 col-xl-3">
+        <q-datetime type="date" float-label="생성일(부터)" clearable v-model="condition.createdDateFrom"/>
+      </q-field>
+
+      <q-field slot="condition" icon="date_range" helper="생성일이 포함될 기간을 입력하세요" class="col-xs-11 col-md-4 col-xl-3">
+        <q-datetime type="date" float-label="생성일(까지)" clearable v-model="condition.createdDateTo"/>
+      </q-field>
+
+      -->
+
       <q-field slot="condition" icon="check_circle" helper="활성화된 사용자만 포함 합니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-toggle label="활성화 여부" clearable v-model="condition.enabled"/>
@@ -66,13 +74,16 @@
       <!-- condition -->
 
       <!-- filter -->
-
       <c-filter-sign slot="filter" v-model="condition.name" label="이름"/>
+      <!--
+      <c-filter-sign slot="filter" v-model="condition.email" label="Email"/>
+      <c-filter-sign slot="filter" v-model="condition.createdDateFrom" label="생성일" suffix="~" adjust-time="first"/>
+      <c-filter-sign slot="filter" v-model="condition.createdDateTo" label="생성일" prefix="~" adjust-time="last"/>
+      -->
       <c-filter-sign slot="filter" v-model="condition.enabled" label="활성화 여부" boolean
                      true-label="활성화 대상"
                      false-label="비활성화 대상" immutable/>
       <!-- filter -->
-
     </c-list-view>
   </div>
 
@@ -97,6 +108,11 @@
     methods: {
       retrieve() {
         this.$refs.listView.retrieve();
+      },
+      onSortChanged(e) {
+      },
+      log(text) {
+        console.log(text);
       }
     },
     computed: {

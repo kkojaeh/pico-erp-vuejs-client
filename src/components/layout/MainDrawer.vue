@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-card color="primary" flat v-if="authenticated">
+    <q-card color="primary" flat v-if="user">
       <q-card-title>
         {{ user.displayName }}
         <span slot="subtitle">{{ user.email }}</span>
@@ -10,52 +10,34 @@
         <q-btn small round flat>
           <q-icon name="person"/>
         </q-btn>
-        <q-btn small round flat @click="signOut ()">
+        <q-btn small round flat @click="_onSignOutClick()">
           <q-icon name="exit_to_app"/>
         </q-btn>
       </q-card-actions>
     </q-card>
 
-    <!--
-      Use <q-side-link> component
-      instead of <q-item> for
-      internal vue-router navigation
-    -->
+    <q-list separator no-border link inset-delimiter>
+      <!-- collapsible to hide sub-level menu entries -->
 
-    <q-list no-border link inset-delimiter>
-      <q-list-header></q-list-header>
-      <q-side-link item to="/user">
-        <q-item-side icon="account circle"/>
-        <q-item-main label="사용자 관리" sublabel="사용자의 추가/수정/삭제"/>
-      </q-side-link>
-      <q-item @click="launch('http://quasar-framework.org')">
-        <q-item-side icon="school"/>
-        <q-item-main label="Docs" sublabel="quasar-framework.org"/>
-      </q-item>
-      <q-item @click="launch('http://forum.quasar-framework.org')">
-        <q-item-side icon="record_voice_over"/>
-        <q-item-main label="Forum" sublabel="forum.quasar-framework.org"/>
-      </q-item>
-      <q-item @click="launch('https://gitter.im/quasarframework/Lobby')">
-        <q-item-side icon="chat"/>
-        <q-item-main label="Gitter Channel" sublabel="Quasar Lobby"/>
-      </q-item>
-      <q-item @click="launch('https://twitter.com/quasarframework')">
-        <q-item-side icon="rss feed"/>
-        <q-item-main label="Twitter" sublabel="@quasarframework"/>
-      </q-item>
-      <q-item @click="route('/field')">
-        <q-item-side icon="rss feed"/>
-        <q-item-main label="Field" sublabel="@quasarframework">
-        </q-item-main>
-      </q-item>
+      <q-collapsible v-for="menu in grantedMenus" :icon="menu.icon" :label="menu.name"
+                     :key="menu.id"
+                     v-if="menu.children && menu.children.length" opened>
+        <q-side-link link item :to="child.url" v-for="child in menu.children" :key="child.id">
+          <q-item>
+            <q-item-side :icon="child.icon"/>
+            <q-item-main :label="child.name"/>
+          </q-item>
+        </q-side-link>
+
+      </q-collapsible>
+
     </q-list>
   </div>
 </template>
 <script>
-  import {mapGetters} from 'vuex';
-  import firebase from 'firebase';
   import Toast from 'quasar';
+  import {mapGetters} from 'vuex';
+  import * as auth from 'src/config/auth';
   import {confirm} from 'src/util';
 
   export default {
@@ -65,10 +47,10 @@
     created() {
     },
     methods: {
-      signOut() {
+      _onSignOutClick() {
         confirm('로그아웃 하시겠습니까?').then((ok) => {
           if (ok) {
-            firebase.auth().signOut().then(() => {
+            auth.signOut().then(() => {
               this.$router.push('/sign-in');
             }).catch(() => {
               Toast.create.negative('로그아웃중 오류 발생');
@@ -78,7 +60,10 @@
       }
     },
     computed: {
-      ...mapGetters(['user', 'authenticated'])
+      ...mapGetters(['user', 'grantedMenus'])
+    },
+    mounted() {
+
     }
   };
 </script>

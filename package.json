@@ -18,6 +18,7 @@
     "firebase": "4.6.2",
     "firebaseui": "^2.5.1",
     "google-libphonenumber": "^3.0.9",
+    "js-queue": "^2.0.0",
     "kebab-case": "^1.0.0",
     "lodash": "^4.17.4",
     "qs": "^6.5.1",
