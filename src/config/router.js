@@ -83,7 +83,35 @@ export default new VueRouter({
       title: '회사 관리',
       auth: true,
       frame: true
-    }
+    },
+    children: [{
+      path: 'create',
+      component: load('company/CompanyForm'),
+      meta: {
+        title: '회사 관리',
+        auth: true,
+        frame: true
+      },
+      props: {
+        action: 'create',
+        closable: true
+      }
+    }, {
+      path: 'show/:id',
+      component: load('company/CompanyForm'),
+      meta: {
+        title: '회사 관리',
+        auth: true,
+        frame: true
+      },
+      props: (route) => {
+        return {
+          id: route.params.id,
+          action: 'show',
+          closable: true
+        };
+      }
+    }]
   }, {
     // Not found
     path: '*',

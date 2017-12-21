@@ -1,22 +1,25 @@
 <template>
   <div class="no-wrap row">
-    <q-select v-model="region" :options="regions" filter class="col-2"
+    <q-select v-model="region" :options="regions" filter class="col-2 no-padding" :disable="disable || readonly"
               :display-value="`<div class='iti-flag ${region.toLowerCase()}'></div>`"></q-select>
-    <q-input ref="numberInput" type="tel" v-model="number" class="col-10"></q-input>
+    <c-cleave-input class="col-10" type="tel" v-model="model"
+                    :cleave-options="cleaveOptions" :stack-label="stackLabel" :float-label="floatLabel" :disable="disable"
+                    :readonly="readonly"></c-cleave-input>
   </div>
 </template>
 
 <script>
+  import InputMixin from './InputMixin';
   import phoneRegions from './PhoneRegions.js';
   import {PhoneNumberFormat, PhoneNumberUtil} from 'google-libphonenumber';
-  import Cleave from 'cleave.js';
-  import CleavePhoneI18n from 'cleave.js/dist/addons/cleave-phone.i18n.js';// eslint-disable-line
-  // import * as _ from 'lodash';
+  import CCleaveInput from './CleaveInput.vue';
 
   let phoneNumberUtil = PhoneNumberUtil.getInstance();
 
   export default {
+    components: {CCleaveInput},
     name: 'c-phone-input',
+    mixins: [InputMixin],
     props: {
       value: {
         type: String
@@ -27,9 +30,6 @@
       },
       availableRegions: {
         type: Array
-      },
-      floatLabel: {
-        type: String
       }
     },
     data() {
@@ -42,70 +42,60 @@
         };
       });
       return {
+        cleaveOptions: {
+          phone: true,
+          delimiter: '-',
+          phoneRegionCode: this.defaultRegion
+        },
         region: this.defaultRegion,
-        number: '',
+        model: '',
         regions: regions,
         cleave: null
       };
     },
     computed: {},
     methods: {
-      _fromValue(value) {
+      _parseValue(value) {
         if (value) {
-          const parsed = phoneNumberUtil.parse(value, this.region);
-          this.region = phoneNumberUtil.getRegionCodeForNumber(parsed);
-          // this.cleave.setRawValue(phoneNumberUtil.format(parsed, PhoneNumberFormat.NATIONAL));
-          this.cleave.setRawValue(phoneNumberUtil.format(parsed, PhoneNumberFormat.NATIONAL));
-        } else {
-          this.region = this.defaultRegion;
-          this.cleave.setRawValue('');
-        }
-      },
-
-      _toValue() {
-        let rawValue = this.cleave.getRawValue();
-        if (rawValue) {
           try {
-            const parsed = phoneNumberUtil.parse(rawValue, this.region);
+            const parsed = phoneNumberUtil.parse(value, this.region);
             if (phoneNumberUtil.isValidNumber(parsed)) {
-              this.$emit('input', phoneNumberUtil.format(parsed, PhoneNumberFormat.E164));
+              this.region = phoneNumberUtil.getRegionCodeForNumber(parsed);
+              this.model = phoneNumberUtil.format(parsed, PhoneNumberFormat.NATIONAL);
             }
           } catch (e) {
           }
         } else {
-          this.$emit('input', null);
+          this.model = null;
         }
       },
-
-      _onNumberChange(e) {
-        this._toValue();
+      _onCleaveInput(input) {
+        this.model = input;
       }
     },
     watch: {
       value(to) {
-        this._fromValue(to);
+        this._parseValue(to);
+      },
+      model(to) {
+        let value = to;
+        if (value) {
+          try {
+            const parsed = phoneNumberUtil.parse(value, this.region);
+            if (phoneNumberUtil.isValidNumber(parsed)) {
+              value = phoneNumberUtil.format(parsed, PhoneNumberFormat.E164);
+            }
+          } catch (e) {
+          }
+        }
+        this.$emit('input', value);
       },
       region(to) {
-        this.cleave.setPhoneRegionCode(to);
-        this._toValue();
+        this.cleaveOptions.phoneRegionCode = to;
       }
     },
     mounted() {
-      // quasar 에서 처리하는 이벤트 핸들링을 제거
-      let input = this.$refs.numberInput.$el.querySelector('input');
-      input.parentNode.innerHTML = input.parentNode.innerHTML + ' ';
-      input = this.$refs.numberInput.$el.querySelector('input');
-      this.cleave = new Cleave(input,
-          {
-            phone: true,
-            phoneRegionCode: this.region
-          });
-      input.addEventListener('input', this._onNumberChange);
-      this._fromValue(this.value);
-    },
-    destroyed() {
-      this.cleave.destroy();
-      this.cleave = null;
+      this._parseValue(this.value);
     }
   };
 </script>

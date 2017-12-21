@@ -12,16 +12,16 @@ export class CompanyModel extends FetchableModel {
   };
 
   create() {
-    return this.axios.post('/user/users', this);
+    return this.axios.post('/company/companies', this);
   }
 
   update() {
-    return this.axios.put('/user/users/${id}', this);
+    return this.axios.put('/company/companies/${id}', this);
   }
 }
 
 export class CompanyPaginationArray extends SpringPaginationArray {
-  url = '/user/users';
+  url = '/company/companies';
   axios = api;
   model = CompanyModel;
 }

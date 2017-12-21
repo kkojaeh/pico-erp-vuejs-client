@@ -33,11 +33,11 @@
           <q-input v-model="model.email" float-label="이메일" type="email"/>
         </q-field>
 
-        <q-field icon="phone" helper="핸드폰 번호를 입력하세요"
+        <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.phoneNumber.$error"
-                 :error-label="getErrorLabel(this.$v.model.phoneNumber)">
-          <c-phone-input v-model="model.phoneNumber" clearable/>
+                 :error="this.$v.model.mobilePhoneNumber.$error"
+                 :error-label="getErrorLabel(this.$v.model.mobilePhoneNumber)">
+          <c-phone-input v-model="model.mobilePhoneNumber" clearable/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 로그인이 불가합니다"
@@ -144,7 +144,7 @@
             minLength: minLength(1),
             maxLength: maxLength(50)
           },
-          phoneNumber: {
+          mobilePhoneNumber: {
             required,
             minLength: minLength(2),
             maxLength: maxLength(50)
@@ -184,7 +184,6 @@
             if (ok) {
               this.save().then(() => {
                 positive('저장 되었습니다');
-                // this.$router.push({path: '/user', query: this.$route.query});
                 this.$emit('close');
               });
             }
@@ -217,8 +216,6 @@
         }).then((array) => {
           array.forEach((item) => item.snapshot());
         });
-      },
-      _onRoleCellValueChanged(e) {
       }
     },
     computed: {

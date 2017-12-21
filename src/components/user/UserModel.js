@@ -1,7 +1,6 @@
 import {FetchableArray, SpringPaginationArray} from 'src/model/Array';
 import {FetchableModel} from 'src/model/Model';
 import {api} from 'src/config/axios';
-// import {required, minLength, maxLength} from 'vuelidate/lib/validators';
 
 export class UserModel extends FetchableModel {
   get axios() {
