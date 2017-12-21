@@ -18,7 +18,7 @@ import axios from './axios';
 import Vuelidate from 'vuelidate';
 import AgGrid from 'src/ag-grid/AgGrid.vue';
 import AgGridColumn from 'src/ag-grid/AgGridColumn.vue';
-import FilterSign from '@/common/FilterSign.vue';
+import FilterChip from '@/common/FilterChip.vue';
 import ListView from '@/common/ListView.vue';
 import PhoneInput from '@/common/PhoneInput.vue';
 
@@ -42,7 +42,7 @@ export default () => {
   Vue.use(Vuelidate);
   Vue.component('ag-grid', AgGrid);
   Vue.component('ag-grid-column', AgGridColumn);
-  Vue.component('c-filter-sign', FilterSign);
+  Vue.component('c-filter-chip', FilterChip);
   Vue.component('c-list-view', ListView);
   Vue.component('c-phone-input', PhoneInput);
   Vue.component('ag-grid-checkbox-renderer', AgGridCheckboxRenderer);

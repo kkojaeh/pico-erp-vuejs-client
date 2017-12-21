@@ -8,20 +8,20 @@ export class CompanyModel extends FetchableModel {
   }
 
   get url() {
-    return '/v1/user/users/${id}';
+    return '/company/companies/${id}';
   };
 
   create() {
-    return this.axios.post('/v1/user/users', this);
+    return this.axios.post('/user/users', this);
   }
 
   update() {
-    return this.axios.put('/v1/user/users/${id}', this);
+    return this.axios.put('/user/users/${id}', this);
   }
 }
 
 export class CompanyPaginationArray extends SpringPaginationArray {
-  url = '/v1/user/users';
+  url = '/user/users';
   axios = api;
   model = CompanyModel;
 }

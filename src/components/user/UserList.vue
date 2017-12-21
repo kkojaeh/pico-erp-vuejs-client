@@ -67,8 +67,8 @@
 
       <!-- filter -->
 
-      <c-filter-sign slot="filter" v-model="condition.name" label="이름"/>
-      <c-filter-sign slot="filter" v-model="condition.enabled" label="활성화 여부" boolean
+      <c-filter-chip slot="filter-chip" v-model="condition.name" label="이름"/>
+      <c-filter-chip slot="filter-chip" v-model="condition.enabled" label="활성화 여부" boolean
                      true-label="활성화 대상"
                      false-label="비활성화 대상" immutable/>
       <!-- filter -->

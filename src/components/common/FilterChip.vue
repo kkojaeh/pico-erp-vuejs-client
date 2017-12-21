@@ -1,6 +1,6 @@
 <template>
   <q-chip v-show="printValue" :closable="!immutable" color="primary" small detail square
-          @close="onClose">
+          @close="_onClose">
     <div class="q-toolbar-subtitle">{{label}}</div>
     {{prefix}} {{printValue}} {{suffix}}
   </q-chip>
@@ -13,7 +13,7 @@
   const booleanRegExp = /^(true|false)$/;
 
   export default {
-    name: 'c-filter-sign',
+    name: 'c-filter-chip',
     props: {
       value: null,
       label: {
@@ -34,6 +34,10 @@
         default: 'YYYY-MM-DD'
       },
       boolean: {
+        type: Boolean,
+        default: false
+      },
+      date: {
         type: Boolean,
         default: false
       },
@@ -60,12 +64,13 @@
     },
 
     methods: {
-      onClose() {
+      _onClose() {
         this.$emit('input', null);
+        this.$emit('remove');
       },
       resolveForSpecialValue(value) {
         if (typeof value === 'string') {
-          if (iso8601RegExp.test(value)) {
+          if (this.date && iso8601RegExp.test(value)) {
             let parsedDate = this.adjustDate(new Date(Date.parse(value)));
             this.$emit('input', parsedDate.toISOString());
             return parsedDate;
@@ -121,6 +126,7 @@
     },
     mounted() {
       this.printValue = this.print(this.resolveForSpecialValue(this.value));
+      console.log(this.$parent);
     },
     destroyed() {
 

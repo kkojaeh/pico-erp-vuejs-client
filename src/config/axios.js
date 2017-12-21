@@ -3,10 +3,13 @@ import * as _ from 'lodash';
 import {Loading} from 'quasar';
 import {Alert} from 'quasar';
 
+let apiVersion = 'v1';
+
 let loadFunction = (config) => {
   config.url = _.template(config.url)(config.data);
   config.headers.common['X-Firebase-Auth'] = localStorage.getItem(
       'API_FIREBASE_TOKEN');
+  config.headers.common['Accept'] = `application/vnd.acepk.${apiVersion}+json`;
   Loading.show({
     delay: 100
   });

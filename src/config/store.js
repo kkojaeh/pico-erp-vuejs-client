@@ -6,7 +6,7 @@ import {api} from './axios';
 Vue.use(Vuex);
 
 class UserMenuArray extends FetchableArray {
-  url = '/v1/user/me/menus';
+  url = '/user/me/menus';
   axios = api;
 };
 

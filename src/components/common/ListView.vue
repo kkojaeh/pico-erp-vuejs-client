@@ -6,7 +6,7 @@
       </q-toolbar-title>
       <transition name="fade">
         <div class="list-view-filter" ref="filterBox">
-          <slot name="filter"></slot>
+          <slot name="filter-chip"></slot>
         </div>
       </transition>
       <q-btn flat icon="search" @click="_onSearch()">검색</q-btn>
@@ -225,6 +225,10 @@
         } else {
           this.$router.push({path: this.$route.path, query: query});
         }
+      },
+
+      _onFilterChipRemove() {
+        this.retrieve();
       }
     },
     watch: {
@@ -251,6 +255,12 @@
       }
       this.initialCondition = _.assign({}, this.condition);
       this._assignQuery(this.$route.query);
+
+      // TODO: 현재 slot 으로 할당 되는 컴포넌트에 대하여 이벤트 리스닝이 함수형으로 밖에 안되어 이렇게 처리 내용이 가변적이게 되면 동작이 보장 안됨
+      let filterChips = this.$slots['filter-chip'];
+      (filterChips || []).forEach((chip) => {
+        chip.componentInstance.$on('remove', this._onFilterChipRemove);
+      });
     },
     destroyed() {
 
