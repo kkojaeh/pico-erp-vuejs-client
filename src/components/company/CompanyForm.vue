@@ -66,7 +66,7 @@
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="this.$v.model.mobilePhoneNumber.$error"
                  :error-label="getErrorLabel(this.$v.model.mobilePhoneNumber)">
-          <c-phone-input v-model="model.mobilePhoneNumber" float-label="핸드폰 번호" clearable />
+          <c-phone-input v-model="model.mobilePhoneNumber" float-label="핸드폰 번호" clearable/>
         </q-field>
 
         <q-field icon="phone" helper="전화 번호를 입력하세요"
@@ -103,7 +103,6 @@
   import {CompanyModel} from './CompanyModel';
   import {positive, confirm, warning, getErrorLabel, phoneNumber} from 'src/util';
   import {required, minLength, maxLength} from 'vuelidate/lib/validators';
-  // import Cleave from 'cleave.js';
 
   export default {
     props: {
@@ -120,7 +119,6 @@
     },
     data() {
       return {
-        isRegistrationNumber: true,
         model: {
           enabled: true
         },
@@ -134,7 +132,18 @@
           id: {
             required,
             minLength: minLength(2),
-            maxLength: maxLength(50)
+            maxLength: maxLength(50),
+            exists: (value) => {
+              if (this.action !== 'create') {
+                return true;
+              }
+              if (!value) {
+                return true;
+              }
+              return new Promise((resolve, reject) => {
+                this.model.exists().then((exists) => resolve(!exists)).catch(reject);
+              });
+            }
           },
           name: {
             required,
@@ -143,7 +152,21 @@
           },
           registrationOrDunsNo: {
             minLength: minLength(1),
-            maxLength: maxLength(20)
+            maxLength: maxLength(20),
+            exists: (value) => {
+              if (!value) {
+                return true;
+              }
+              return new Promise((resolve, reject) => {
+                this.model.existsByRegistrationOrDunsNo().then((exists, data) => {
+                  if (data && data.id === this.model.id) {
+                    resolve(true);
+                  } else {
+                    resolve(!exists);
+                  }
+                }).catch(reject);
+              });
+            }
           },
           representative: {
             minLength: minLength(1),
@@ -175,8 +198,6 @@
       create() {
         this.creating = true;
         this.model = new CompanyModel({
-          registrationOrDunsNo: '1111111111',
-          mobilePhoneNumber: '+821091526830',
           enabled: true
         });
       },
@@ -190,19 +211,20 @@
         this.model.fetch();
       },
       _onSaveClick() {
-        this.$v.model.$touch();
-        if (this.$v.model.$error) {
-          warning('입력이 유효하지 않습니다');
-        } else {
-          confirm('저장 하시겠습니까?').then((ok) => {
-            if (ok) {
-              this.save().then(() => {
-                positive('저장 되었습니다');
-                this.$emit('close');
-              });
-            }
-          });
-        }
+        this.$v.model.$$touch().then(() => {
+          if (this.$v.model.$error) {
+            warning('입력이 유효하지 않습니다');
+          } else {
+            confirm('저장 하시겠습니까?').then((ok) => {
+              if (ok) {
+                this.save().then(() => {
+                  positive('저장 되었습니다');
+                  this.$emit('close');
+                });
+              }
+            });
+          }
+        });
       },
       save() {
         return new Promise((resolve, reject) => {

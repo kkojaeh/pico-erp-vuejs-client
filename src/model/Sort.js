@@ -1,3 +1,6 @@
+import qs from 'qs';
+import * as _ from 'lodash';
+
 export default class Sort {
   constructor(field, dir = 'ASC') {
     if (!field) {
@@ -13,6 +16,27 @@ export default class Sort {
 
   getDir() {
     return this.dir;
+  }
+
+  static toQueryString(sorts) {
+    return qs.stringify(sorts.map((s) => {
+      let o = {};
+      o[s.field] = s.dir;
+      return o;
+    }), {
+      arrayFormat: 'repeat'
+    });
+  }
+
+  static parseQueryString(queryString) {
+    let parsed = qs.parse(queryString);
+    return _.values(parsed).map((o) => {
+      let sort;
+      _.forIn(o, (value, key) => {
+        sort = new Sort(key, value);
+      });
+      return sort;
+    });
   }
 
   static createSort(field, dir) {

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as _ from 'lodash';
-import {Loading} from 'quasar';
-import {Alert} from 'quasar';
+import {Alert, Loading} from 'quasar';
 
 let apiVersion = 'v1';
 
@@ -19,8 +18,8 @@ let finishFunction = (response) => {
   setTimeout(() => Loading.hide(), 500);
   return response;
 };
-let errorFunction = (error) => {
-  Loading.hide();
+
+let errorHandler = (error) => {
   if (error.response) {
     let message = error.response.data.message;
     if (_.isArray(error.response.data.errors)) {
@@ -33,6 +32,15 @@ let errorFunction = (error) => {
       html: `${message}`
     });
     setTimeout(alert.dismiss, 3000);
+  }
+};
+
+let errorFunction = (error) => {
+  Loading.hide();
+  if (!error.config.preventDefault) {
+    errorHandler(error);
+  } else {
+    error.resumePreventDefault = _.bind(errorHandler, null, error);
   }
   return Promise.reject(error);
 };

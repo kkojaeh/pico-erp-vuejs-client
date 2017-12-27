@@ -165,7 +165,6 @@
           let s = query[this.sortName];
           if (s) {
             this.sortQueryString = s;
-            this._applyGridSort();
           }
           let p = query[this.pageName];
           if (p) {
@@ -181,9 +180,7 @@
 
       _fetch() {
         if (this.sortQueryString) {
-          let parsedSort = qs.parse(this.sortQueryString, {arrayFormat: 'bracket'});
-          this.array.sorters = _.keys(parsedSort).map(
-              (key) => Sort.createSort(parsedSort[key].field, parsedSort[key].dir));
+          this.array.sorters = Sort.parseQueryString(this.sortQueryString);
         }
         if (this.pagination) {
           this.array.page = this.page;
@@ -196,18 +193,22 @@
       },
 
       _onGridSortChanged(e) {
-        this.sortQueryString = qs.stringify(
-            e.api.getSortModel().map((sm) => Sort.createSort(sm.colId, sm.sort)),
-            {arrayFormat: 'bracket'});
+        this.sortQueryString = Sort.toQueryString(
+            e.api.getSortModel().map((sm) => Sort.createSort(sm.colId, sm.sort))
+        );
+      },
+
+      _onGridComponentStateChanged(e) {
+        this._applyGridSort();
       },
 
       _applyGridSort() {
         if (this.sortQueryString) {
-          let parsed = qs.parse(this.sortQueryString, {arrayFormat: 'bracket'});
-          this.grid.gridOptions.api.setSortModel(_.keys(parsed).map((key) => {
+          let parsed = Sort.parseQueryString(this.sortQueryString);
+          this.grid.gridOptions.api.setSortModel(parsed.map((value) => {
             return {
-              colId: parsed[key].field,
-              sort: parsed[key].dir.toLowerCase()
+              colId: value.getField(),
+              sort: value.getDir().toLowerCase()
             };
           }));
         } else {
@@ -250,6 +251,8 @@
     },
     mounted() {
       this.grid = this.$slots.default.reduce((acc, cur) => acc.tag ? acc : cur).componentInstance;
+      this.grid.$on('component-state-changed',
+          _.debounce(this._onGridComponentStateChanged.bind(this), 500));
       if (this.grid.gridOptions.enableServerSideSorting) {
         this.grid.$on('sort-changed', this._onGridSortChanged.bind(this));
       }
@@ -263,7 +266,6 @@
       });
     },
     destroyed() {
-
     }
   };
 </script>

@@ -18,6 +18,46 @@ export class CompanyModel extends FetchableModel {
   update() {
     return this.axios.put('/company/companies/${id}', this);
   }
+
+  exists() {
+    return new Promise((resolve, reject) => {
+      this.axios.get('/company/companies/${id}', {
+        data: this,
+        preventDefault: true
+      })
+      .then((data) => {
+        resolve(true, data);
+      })
+      .catch((e) => {
+        if (e.response.status == 404) {
+          resolve(false);
+        } else {
+          e.resumePreventDefault();
+          reject(e);
+        }
+      });
+    });
+  }
+
+  existsByRegistrationOrDunsNo() {
+    return new Promise((resolve, reject) => {
+      this.axios.get('/company/companies/${registrationOrDunsNo}?registrationOrDunsNo=true', {
+        data: this,
+        preventDefault: true
+      })
+      .then((data) => {
+        resolve(true, data);
+      })
+      .catch((e) => {
+        if (e.response.status == 404) {
+          resolve(false);
+        } else {
+          e.resumePreventDefault();
+          reject(e);
+        }
+      });
+    });
+  }
 }
 
 export class CompanyPaginationArray extends SpringPaginationArray {

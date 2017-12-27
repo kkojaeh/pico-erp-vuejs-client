@@ -126,7 +126,6 @@
     },
     mounted() {
       this.printValue = this.print(this.resolveForSpecialValue(this.value));
-      console.log(this.$parent);
     },
     destroyed() {
 
