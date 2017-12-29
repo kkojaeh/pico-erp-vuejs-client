@@ -2,11 +2,7 @@
   <div>
     <!-- child -->
 
-    <q-modal ref="routeModal" @close="$router.push({ path: '/user', query: $route.query})">
-      <transition @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()" @leave="$refs.routeModal.close()">
-        <router-view @close="$refs.routeModal.close();"></router-view>
-      </transition>
-    </q-modal>
+    <router-view></router-view>
 
     <!-- child -->
 
@@ -33,12 +29,15 @@
         <ag-grid-column field="id" header-name="아이디" :width="150"
                         cell-renderer-framework="ag-grid-link-renderer"
                         :cell-renderer-params="{path:'/company/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="name" header-name="이름" :width="150"/>
-
-        <ag-grid-column field="registrationOrDunsNo" header-name="사업자(DUNS)번호" :width="200"/>
-        <ag-grid-column field="representative" header-name="대표자" :width="150"/>
-        <ag-grid-column field="createdBy.name" header-name="전화번호" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="핸드폰번호" :width="200"/>
+        <ag-grid-column field="name" header-name="이름" :width="200"/>
+        <ag-grid-column field="registrationOrDunsNo" header-name="사업자(DUNS)번호" :width="170"
+                        cell-renderer-framework="ag-grid-cleave-renderer"
+                        :cell-renderer-params="{cleaveOptions:{ delimiter: '-', blocks: [3, 2, 5]}}"/>
+        <ag-grid-column field="representative" header-name="대표자" :width="100"/>
+        <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="130"
+                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
+        <ag-grid-column field="mobilePhoneNumber" header-name="핸드폰번호" :width="130"
+                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
 
       </ag-grid>
 

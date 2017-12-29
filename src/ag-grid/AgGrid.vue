@@ -9,7 +9,6 @@
   import {VueFrameworkFactory} from './VueFrameworkFactory';
   import {VueFrameworkComponentWrapper} from './VueFrameworkComponentWrapper';
   import * as _ from 'lodash';
-  import kebabCase from 'kebab-case';
   import i18n from 'src/i18n/Grid';
 
   const watchedProperties = {};
@@ -17,8 +16,8 @@
   ComponentUtil.ALL_PROPERTIES.forEach((propertyName) => {
     props.push(propertyName);
 
-    watchedProperties[propertyName] = function (val, oldVal) {// eslint-disable-line
-      this.processChanges(propertyName, val, oldVal);// eslint-disable-line
+    watchedProperties[propertyName] = function (val, oldVal) {
+      this.processChanges(propertyName, val, oldVal);
     }
     ;
   });
@@ -40,7 +39,7 @@
         if (this._destroyed) {
           return;
         }
-        let kebabCaseEventType = kebabCase(eventType);
+        let kebabCaseEventType = _.kebabCase(eventType);
         if (this.$listeners[kebabCaseEventType] || this._events[kebabCaseEventType]) {
           this.$emit(kebabCaseEventType, event);
         }
@@ -55,13 +54,15 @@
       },
 
       invalidateColumnDefinitions() {
-        this.gridOptions.api.setColumnDefs(
-            this.$slots.default
-            .filter(
-                (column) => column.componentInstance
-                    && column.componentInstance.getColumnDefinition)
-            .map((column) => column.componentInstance.getColumnDefinition())
-        );
+        if (this.gridOptions.api) {
+          this.gridOptions.api.setColumnDefs(
+              this.$slots.default
+              .filter(
+                  (column) => column.componentInstance
+                      && column.componentInstance.getColumnDefinition)
+              .map((column) => column.componentInstance.getColumnDefinition())
+          );
+        }
       },
 
       getColumns() {

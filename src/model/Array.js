@@ -8,20 +8,14 @@ export class FetchableArray extends Array {
   url = null;
   model = null;
 
-  fetch = (data) => {
-    return new Promise((resolve, reject) => {
-      this.axios.get(this.resolveUrl(this.url, data), {data: data}).then(
-          (response) => {
-            let parsed = this.parse(response);
-            if (this.model) {
-              parsed = parsed.map((o) => new this.model(o));
-            }
-            this.splice.apply(this, [0, this.length].concat(parsed));
-            resolve(parsed);
-          }).catch((error) => {
-        reject(error);
-      });
-    });
+  fetch = async (data) => {
+    let result = await this.axios.get(this.resolveUrl(this.url, data), {data: data});
+    let parsed = this.parse(result);
+    if (this.model) {
+      parsed = parsed.map((o) => new this.model(o));
+    }
+    this.splice.apply(this, [0, this.length].concat(parsed));
+    return parsed;
   };
 
   resolveUrl = (url, data) => {

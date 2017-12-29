@@ -15,29 +15,29 @@
 
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.id.$error" :error-label="getErrorLabel(this.$v.model.id)">
+                 :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.name.$error"
-                 :error-label="getErrorLabel(this.$v.model.name)">
+                 :error="!!model.$errors.name"
+                 :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름"/>
         </q-field>
 
         <q-field icon="email" helper="사용하는 이메일을 입력하세요(로그인에 사용됩니다)"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.email.$error"
-                 :error-label="getErrorLabel(this.$v.model.email)">
+                 :error="!!model.$errors.email"
+                 :error-label="model.$errors.email">
           <q-input v-model="model.email" float-label="이메일" type="email"/>
         </q-field>
 
         <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.mobilePhoneNumber.$error"
-                 :error-label="getErrorLabel(this.$v.model.mobilePhoneNumber)">
-          <c-phone-input v-model="model.mobilePhoneNumber" clearable/>
+                 :error="!!model.$errors.mobilePhoneNumber"
+                 :error-label="model.$errors.mobilePhoneNumber">
+          <c-phone-number-input v-model="model.mobilePhoneNumber" clearable float-label="핸드폰 번호"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 로그인이 불가합니다"
@@ -69,8 +69,7 @@
                  enable-col-resize
                  enable-sorting
                  :grid-options="roleGridOptions"
-                 :row-data="roleArray"
-                 @cell-value-changed="_onRoleCellValueChanged">
+                 :row-data="roleArray">
           <ag-grid-column field="granted" header-name="승인여부" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
@@ -89,6 +88,12 @@
       <q-toolbar-title>
       </q-toolbar-title>
       <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+      <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.open()"
+             v-show="!creating">이력
+        <q-modal ref="auditModal" @open="$refs.auditViewer.load()" anchor="top left">
+          <audit-viewer ref="auditViewer" url="/audit/user/${id}" :data="model"></audit-viewer>
+        </q-modal>
+      </q-btn>
       <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
     </q-toolbar>
 
@@ -99,7 +104,7 @@
   import {mapGetters} from 'vuex';
   import {UserModel, UserRoleArray} from './UserModel';
   import {positive, confirm, warning, getErrorLabel} from 'src/util';
-  import {required, minLength, maxLength, email} from 'vuelidate/lib/validators';
+  import AuditViewer from '@/audit/AuditViewer.vue';
 
   export default {
     props: {
@@ -116,111 +121,65 @@
     },
     data() {
       return {
-        model: {
-          enabled: true
-        },
+        model: new UserModel(),
         creating: false,
         roleArray: new UserRoleArray(),
         roleGridOptions: {},
         enabled: true
       };
     },
-    validations() {
-      return {
-        model: {
-          id: {
-            required,
-            minLength: minLength(2),
-            maxLength: maxLength(50)
-          },
-          name: {
-            required,
-            minLength: minLength(2),
-            maxLength: maxLength(50)
-          },
-          email: {
-            required,
-            email,
-            minLength: minLength(1),
-            maxLength: maxLength(50)
-          },
-          mobilePhoneNumber: {
-            required,
-            minLength: minLength(2),
-            maxLength: maxLength(50)
-          }
-        }
-      };
-    },
     mounted() {
       this.$nextTick(() => this[this.action]());
     },
     methods: {
-      getErrorLabel,
-      create() {
+      async create() {
         this.creating = true;
-        this.model = new UserModel({
-          enabled: true
-        });
-        this.fetchRoles();
+        await this.fetchRoles();
       },
-      show() {
+      async show() {
         this.creating = false;
-        this.model = new UserModel({
-          id: this.id,
-          enabled: true
-        });
         this.model.id = this.id;
-        this.model.fetch().then(() => {
-          this.fetchRoles();
-        });
+        await this.model.fetch();
+        await this.fetchRoles();
       },
-      _onSaveClick() {
-        this.$v.model.$touch();
-        if (this.$v.model.$error) {
-          warning('입력이 유효하지 않습니다');
+      async _onSaveClick() {
+        let valid = this.creating ? await this.model.validateForCreate() : await this.model.validateForUpdate();
+        if (valid) {
+          let ok = await confirm('저장 하시겠습니까?');
+          await this.save();
+          positive('저장 되었습니다');
+          this.$emit('close');
         } else {
-          confirm('저장 하시겠습니까?').then((ok) => {
-            if (ok) {
-              this.save().then(() => {
-                positive('저장 되었습니다');
-                this.$emit('close');
-              });
-            }
-          });
+          warning('입력이 유효하지 않습니다');
         }
       },
-      save() {
-        return new Promise((resolve, reject) => {
-          if (this.creating) {
-            this.model.create().then(() => {
-              this.saveRoles().then(resolve);
-            }).catch(reject);
-          } else {
-            this.model.update().then(() => {
-              this.saveRoles().then(resolve);
-            }).catch(reject);
-          }
-        });
+      async save() {
+        if (this.creating) {
+          await this.model.create();
+          await this.saveRoles();
+        } else {
+          await this.model.update();
+          await this.saveRoles();
+        }
       },
-      saveRoles() {
-        return Promise.all(this.roleArray.filter((role) => role.hasChanged('granted'))
+      async saveRoles() {
+        await Promise.all(this.roleArray
+        .filter((role) => role.hasChanged('granted'))
         .map((role) => {
           role.id = this.model.id;
           return role.granted ? role.grant() : role.revoke();
         }));
       },
-      fetchRoles() {
-        return this.roleArray.fetch({
+      async fetchRoles() {
+        let array = await this.roleArray.fetch({
           id: this.model.id || ' '
-        }).then((array) => {
-          array.forEach((item) => item.snapshot());
         });
+        array.forEach((item) => item.snapshot());
       }
     },
     computed: {
       ...mapGetters([])
     },
-    components: {}
+    components: {AuditViewer}
   };
 </script>

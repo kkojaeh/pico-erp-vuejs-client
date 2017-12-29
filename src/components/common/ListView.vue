@@ -203,6 +203,9 @@
       },
 
       _applyGridSort() {
+        if (!this.grid.gridOptions.api) {
+          return;
+        }
         if (this.sortQueryString) {
           let parsed = Sort.parseQueryString(this.sortQueryString);
           this.grid.gridOptions.api.setSortModel(parsed.map((value) => {

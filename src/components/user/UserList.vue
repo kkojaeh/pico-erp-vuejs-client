@@ -2,11 +2,7 @@
   <div>
     <!-- child -->
 
-    <q-modal ref="routeModal" @close="$router.push({ path: '/user', query: $route.query})">
-      <transition @enter="$refs.routeModal.open()" @appear="$refs.routeModal.open()" @leave="$refs.routeModal.close()">
-        <router-view @close="$refs.routeModal.close();"></router-view>
-      </transition>
-    </q-modal>
+    <router-view></router-view>
 
     <!-- child -->
 

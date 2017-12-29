@@ -10,11 +10,12 @@
 
   const watchedProperties = {};
   const props = ['cellRenderer'];
+
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
     props.push(propertyName);
 
-    watchedProperties[propertyName] = function (val, oldVal) {// eslint-disable-line
-      this.processChanges(propertyName, val, oldVal);// eslint-disable-line
+    watchedProperties[propertyName] = function (val, oldVal) {
+      this.processChanges(propertyName, val, oldVal);
     };
   });
 

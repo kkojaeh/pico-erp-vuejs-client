@@ -1,5 +1,4 @@
 export default {
-  /*
   af: {
     code: 'af',
     name: 'Afghanistan (‫افغانستان‬‎)',
@@ -1200,14 +1199,12 @@ export default {
     dialCode: 27,
     example: '071 123 4567'
   },
-  */
   kr: {
     code: 'kr',
     name: 'South Korea (대한민국)',
     dialCode: 82,
     example: '010-0000-0000'
   },
-  /*
   ss: {
     code: 'ss',
     name: 'South Sudan (‫جنوب السودان‬‎)',
@@ -1352,14 +1349,12 @@ export default {
     dialCode: 688,
     example: '901234'
   },
-  */
   us: {
     code: 'us',
     name: 'United States',
     dialCode: 1,
     example: '(201) 555-0123'
-  }
-/*
+  },
   gb: {
     code: 'gb',
     name: 'United Kingdom',
@@ -1462,5 +1457,4 @@ export default {
     dialCode: 358,
     example: '041 2345678'
   }
-  */
 };

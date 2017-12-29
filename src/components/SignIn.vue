@@ -8,17 +8,15 @@
         <q-card-separator/>
         <q-card-main>
           <q-field icon="email" helper="이메일을 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
-                   :error="this.$v.form.email.$error"
-                   :error-label="getErrorLabel(this.$v.form.email)">
+                   :error="!!form.$errors.email"
+                   :error-label="form.$errors.email">
             <q-input v-model="form.email" type="email" float-label="이메일"
                      clearable @keyup.enter="signIn()"/>
           </q-field>
           <q-field icon="fa-unlock-alt" helper="패스워드를 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
-                   :error="this.$v.form.password.$error"
-                   :error-label="getErrorLabel(this.$v.form.password)">
-            <q-input v-model="form.password" type="password" float-label="패스워드" clearable
-                     :error="$v.form.password.$error"
-                     @keyup.enter="signIn()"/>
+                   :error="!!form.$errors.password"
+                   :error-label="form.$errors.password">
+            <q-input v-model="form.password" type="password" float-label="패스워드" clearable @keyup.enter="signIn()"/>
           </q-field>
         </q-card-main>
         <q-card-separator/>
@@ -29,24 +27,31 @@
       </q-card>
     </div>
   </div>
-  <!--<div class="layout-padding docs-input row justify-center">-->
-  <!---->
-  <!--<q-input v-model="form.email" type="email" placeholder="email" float-label="Email" clearable-->
-  <!--:error="$v.form.email.$error"/>-->
-  <!--<q-input v-model="form.password" type="password" float-label="Password" clearable-->
-  <!--:error="$v.form.password.$error"/>-->
-  <!--<q-btn color="primary" @click="signIn()">Sign In</q-btn>-->
-  <!--</div>-->
-  <!--</div>-->
 </template>
 
 <script type="text/javascript">
   import {Dialog} from 'quasar';
-  import {warning, negative, positive, getErrorLabel} from 'src/util';
+  import {warning, negative, positive} from 'src/util';
   import {mapGetters} from 'vuex';
   import firebase from 'firebase';
   import * as auth from 'src/config/auth';
-  import {required, email} from 'vuelidate/lib/validators';
+  import {Model} from 'src/model/Model';
+  import validate from 'validate.js';
+
+  class SignInModel extends Model {
+    async validate() {
+      let constraints = {
+        email: {
+          presence: true,
+          email: true
+        },
+        password: {
+          presence: true
+        }
+      };
+      return await this.$validate(constraints);
+    }
+  };
 
   export default {
     mounted() {
@@ -56,15 +61,8 @@
     computed: {},
     data() {
       return {
-        form: {
-        }
+        form: new SignInModel()
       };
-    },
-    validations: {
-      form: {
-        email: {required, email},
-        password: {required}
-      }
     },
     mounted() {
     },
@@ -72,20 +70,19 @@
       ...mapGetters(['lastAccessRouter'])
     },
     methods: {
-      getErrorLabel,
-      signIn() {
-        this.$v.form.$touch();
-        if (this.$v.form.$error) {
-          warning('데이터가 유효하지 않습니다.');
-          return;
-        }
-        auth.signIn(this.form.email, this.form.password).then(() => {
-          auth.init().then(() => {
+      async signIn() {
+        let valid = await this.form.validate();
+        if (valid) {
+          try {
+            await auth.signIn(this.form.email, this.form.password);
+            await auth.init();
             this.$router.push(this.lastAccessRouter);
-          });
-        }).catch((error) => {
-          negative(`${error.code} - ${error.message}`);
-        });
+          } catch (e) {
+            negative(`${e.code} - ${e.message}`);
+          }
+        } else {
+          warning('데이터가 유효하지 않습니다.');
+        }
       },
       passwordReset() {
         Dialog.create({
@@ -102,18 +99,14 @@
             '취소',
             {
               label: '전송',
-              handler: (data) => {
-                if (data.email && email(data.email)) {
-                  firebase.auth().sendPasswordResetEmail(
-                      data.email, {
-                        // url: location.href
-                      })
-                  .then(() => {
+              handler: async (data) => {
+                if (data.email && !validate.single(data.email, {email: true})) {
+                  try {
+                    await firebase.auth().sendPasswordResetEmail(data.email, {});
                     positive('전송이 완료 되었습니다 이메일을 확인하세요');
-                  })
-                  .catch((error) => {
+                  } catch (error) {
                     negative(`${error.code} - ${error.message}`);
-                  });
+                  }
                 } else {
                   warning('이메일 양식이 아닙니다');
                   this.passwordReset();

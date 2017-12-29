@@ -67,15 +67,6 @@ export default {
       if (!this.disable) {
         this.$refs.input.focus();
       }
-    },
-    __onClick(e) {
-      this.focus();
-      this.$emit('click', e);
-    },
-    __onFocus(e) {
-      clearTimeout(this.timer);
-      this.focused = true;
-      this.$emit('focus', e);
     }
   }
 };

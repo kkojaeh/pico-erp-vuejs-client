@@ -1,9 +1,11 @@
 <template>
   <div class="no-wrap row">
-    <q-select v-model="region" :options="regions" filter class="col-2 no-padding" :disable="disable || readonly"
+    <q-select v-model="region" :options="regions" filter class="col-1 no-padding"
+              style="min-width:50px;" :disable="disable || readonly"
               :display-value="`<div class='iti-flag ${region.toLowerCase()}'></div>`"></q-select>
-    <c-cleave-input class="col-10" type="tel" v-model="model"
-                    :cleave-options="cleaveOptions" :stack-label="stackLabel" :float-label="floatLabel" :disable="disable"
+    <c-cleave-input class="col-11" type="tel" v-model="model"
+                    :cleave-options="cleaveOptions" :stack-label="stackLabel"
+                    :float-label="floatLabel" :disable="disable"
                     :readonly="readonly"></c-cleave-input>
   </div>
 </template>
@@ -29,11 +31,13 @@
         default: 'KR'
       },
       availableRegions: {
-        type: Array
+        type: Array,
+        default: () => ['KR', 'US']
       }
     },
     data() {
       let regions = (this.availableRegions || _.keys(phoneRegions)).map((region) => {
+        region = region.toLowerCase();
         let info = phoneRegions[region];
         return {
           label: info.name,

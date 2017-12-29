@@ -15,11 +15,9 @@
       :before="before"
       :after="after"
       :color="color"
+      :focused="focused"
 
       :length="length"
-
-      @click="__onClick"
-      @focus="__onFocus"
   >
 
     <input type="tel" ref="input" @input="_onInput"
@@ -28,7 +26,9 @@
            :disabled="disable"
            :readonly="readonly"
            :maxlength="maxLength"
-           :placeholder="placeholder"/>
+           :placeholder="placeholder"
+           @focus="__onFocus"
+           @blur="__onInputBlur"/>
   </q-input-frame>
 </template>
 
@@ -51,7 +51,8 @@
     data() {
       return {
         cleave: null,
-        model: this.value
+        model: this.value,
+        focused: false
       };
     },
     computed: {},
@@ -68,7 +69,22 @@
           this.model = this.cleave.getRawValue();
           this.$emit('input', this.model);
         });
-      }
+      },
+      __onFocus (e) {
+        clearTimeout(this.timer);
+        this.focused = true;
+        this.$emit('focus', e);
+      },
+      __onInputBlur (e) {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.__onBlur(e)
+        }, 200);
+      },
+      __onBlur (e) {
+        this.focused = false;
+        this.$emit('blur', e);
+      },
     },
     watch: {
       cleaveOptions: {

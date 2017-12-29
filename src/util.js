@@ -1,9 +1,5 @@
 import {Alert, Dialog} from 'quasar';
 import * as _ from 'lodash';
-import ValidationMessages from 'src/i18n/Validation';
-import {PhoneNumberUtil} from 'google-libphonenumber';
-
-let phoneNumberUtil = PhoneNumberUtil.getInstance();
 
 export function confirm(message) {
   return new Promise((resolve, reject) => {
@@ -65,25 +61,3 @@ export function info(message) {
   });
   setTimeout(alert.dismiss, 4000);
 };
-
-export function getErrorLabel(vuelidate) {
-  if (vuelidate.$error) {
-    return _.keys(vuelidate.$params)
-    .filter((param) => !vuelidate[param])
-    .map((param) => _.template(ValidationMessages[param])(
-        vuelidate.$params[param]))
-    .join('<br>');
-  }
-  return null;
-};
-
-export function phoneNumber(value) {
-  if (value === '' || value === undefined || value === null) {
-    return true;
-  }
-  try {
-    const parsed = phoneNumberUtil.parse(value, null);
-    return phoneNumberUtil.isValidNumber(parsed);
-  } catch (e) {}
-  return false;
-}

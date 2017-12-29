@@ -30,7 +30,6 @@ Quasar.start(() => {
     store,
     el: '#q-app',
     router,
-    render: (h) => h(require('./App')),
     created() {
       auth.init().then(() => {
         if (store.getters.authNeeded &&
@@ -41,6 +40,7 @@ Quasar.start(() => {
         }
         routeNext();
       });
-    }
+    },
+    render: (h) => h(require('./App'))
   });
 });

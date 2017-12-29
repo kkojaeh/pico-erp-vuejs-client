@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 let visitor = (model) => {
   if (model.$touch) {
-    model.$$touch = function () {// eslint-disable-line
+    model.$$touch = function () {
       let me = this;
       return new Promise((resolve) => {
         me.$touch();
@@ -23,7 +23,7 @@ let visitor = (model) => {
 };
 
 export default {
-  beforeMount: function () {// eslint-disable-line
+  beforeMount: function () {
     if (this.$v) {
       visitor(this.$v);
     }

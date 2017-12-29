@@ -1,15 +1,44 @@
 import Vue from 'vue';
+// import {QModal} from 'quasar';
 import VueRouter from 'vue-router';
+import {load} from './router/default';
+import user from './router/user';
+import company from './router/company';
 
 Vue.use(VueRouter);
 
-// jscs:disable
-function load(component) {
-  // '@' is aliased to src/components
-  return () => import(`@/${component}.vue`);
-}
+let routes = [{
+  path: '/',
+  component: load('Dashboard'),
+  meta: {
+    title: 'Dashboard',
+    auth: true,
+    frame: true
+  }
+}, {
+  path: '/sign-in',
+  component: load('SignIn'),
+  meta: {
+    title: '로그인',
+    auth: false,
+    frame: false
+  }
+}];
 
-// jscs:enable
+routes.push(user);
+
+routes.push(company);
+
+// 절대 마지막에 있어야 함
+routes.push({
+  // Not found
+  path: '*',
+  component: load('Error404'),
+  meta: {
+    auth: false,
+    frame: false
+  }
+});
 
 export default new VueRouter({
   /*
@@ -24,104 +53,6 @@ export default new VueRouter({
    * build publicPath back to '' so Cordova builds work again.
    */
 
-  routes: [{
-    path: '/',
-    component: load('Dashboard'),
-    meta: {
-      title: 'Dashboard',
-      auth: true,
-      frame: true
-    }
-  }, {
-    path: '/sign-in',
-    component: load('SignIn'),
-    meta: {
-      title: '로그인',
-      auth: false,
-      frame: false
-    }
-  }, {
-    path: '/user',
-    component: load('user/UserList'),
-    meta: {
-      title: '사용자 관리',
-      auth: true,
-      frame: true
-    },
-    children: [{
-      path: 'create',
-      component: load('user/UserForm'),
-      meta: {
-        title: '사용자 관리',
-        auth: true,
-        frame: true
-      },
-      props: {
-        action: 'create',
-        closable: true
-      }
-    }, {
-      path: 'show/:id',
-      component: load('user/UserForm'),
-      meta: {
-        title: '사용자 관리',
-        auth: true,
-        frame: true
-      },
-      props: (route) => {
-        return {
-          id: route.params.id,
-          action: 'show',
-          closable: true
-        };
-      }
-    }]
-  }, {
-    path: '/company',
-    component: load('company/CompanyList'),
-    meta: {
-      title: '회사 관리',
-      auth: true,
-      frame: true
-    },
-    children: [{
-      path: 'create',
-      component: load('company/CompanyForm'),
-      meta: {
-        title: '회사 관리',
-        auth: true,
-        frame: true
-      },
-      props: {
-        action: 'create',
-        closable: true
-      }
-    }, {
-      path: 'show/:id',
-      component: load('company/CompanyForm'),
-      meta: {
-        title: '회사 관리',
-        auth: true,
-        frame: true
-      },
-      props: (route) => {
-        return {
-          id: route.params.id,
-          action: 'show',
-          closable: true
-        };
-      }
-    }]
-  }, {
-    // Not found
-    path: '*',
-    component: load('Error404'),
-    meta: {
-      auth: false,
-      frame: false
-    }
-  }
-  ]
+  routes
 
-})
-;
+});

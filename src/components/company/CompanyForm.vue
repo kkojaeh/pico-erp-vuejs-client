@@ -15,24 +15,31 @@
 
         <q-field icon="perm_identity" helper="회사를 식별하는 아이디를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.id.$error" :error-label="getErrorLabel(this.$v.model.id)">
+                 :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="코드" :readonly="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.name.$error"
-                 :error-label="getErrorLabel(this.$v.model.name)">
+                 :error="!!model.$errors.name"
+                 :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름"/>
         </q-field>
 
-        <q-field ref="registrationOrDunsNo" icon="email" helper="사업자등록번호 또는 D-U-N-S Number 를 입력하세요"
+        <q-field ref="registrationOrDunsNo" icon="email" helper="사업자(또는 DUNS)번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.registrationOrDunsNo.$error"
-                 :error-label="getErrorLabel(this.$v.model.registrationOrDunsNo)">
+                 :error="!!model.$errors.registrationOrDunsNo"
+                 :error-label="model.$errors.registrationOrDunsNo">
           <c-cleave-input v-model="model.registrationOrDunsNo" type="email"
                           :cleave-options="{ delimiter: '-', blocks: [3, 2, 5]}"
-                          float-label="사업자등록 번호 또는 D-U-N-S Number"/>
+                          float-label="사업자(DUNS)번호"/>
+        </q-field>
+
+        <q-field icon="account_circle" helper="대표자 이름을 입력하세요"
+                 class="col-xs-11 col-md-4 col-xl-3"
+                 :error="!!model.$errors.representative"
+                 :error-label="model.$errors.representative">
+          <q-input v-model="model.representative" float-label="대표자"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
@@ -55,32 +62,30 @@
 
       <q-card-main>
 
-        <q-field icon="account_circle" helper="대표자 이름을 입력하세요"
-                 class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.representative.$error"
-                 :error-label="getErrorLabel(this.$v.model.representative)">
-          <q-input v-model="model.representative" float-label="이름"/>
-        </q-field>
-
         <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.mobilePhoneNumber.$error"
-                 :error-label="getErrorLabel(this.$v.model.mobilePhoneNumber)">
-          <c-phone-input v-model="model.mobilePhoneNumber" float-label="핸드폰 번호" clearable/>
+                 :error="!!model.$errors.mobilePhoneNumber"
+                 :error-label="model.$errors.mobilePhoneNumber">
+          <c-phone-number-input v-model="model.mobilePhoneNumber" float-label="핸드폰 번호" clearable/>
         </q-field>
 
         <q-field icon="phone" helper="전화 번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.telephoneNumber.$error"
-                 :error-label="getErrorLabel(this.$v.model.telephoneNumber)">
-          <c-phone-input v-model="model.telephoneNumber" float-label="전화번호" clearable/>
+                 :error="!!model.$errors.telephoneNumber"
+                 :error-label="model.$errors.telephoneNumber">
+          <c-phone-number-input v-model="model.telephoneNumber" float-label="전화번호" clearable/>
         </q-field>
 
         <q-field icon="fa-fax" helper="FAX 번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
-                 :error="this.$v.model.faxNumber.$error"
-                 :error-label="getErrorLabel(this.$v.model.faxNumber)">
-          <c-phone-input v-model="model.faxNumber" float-label="FAX 번호" clearable/>
+                 :error="!!model.$errors.faxNumber"
+                 :error-label="model.$errors.faxNumber">
+          <c-phone-number-input v-model="model.faxNumber" float-label="FAX 번호" clearable/>
+        </q-field>
+
+        <q-field icon="fa-map-marker" helper="회사의 주소를 입력하세요"
+                 class="col-xs-11 col-md-4 col-xl-3">
+          <c-address-input v-model="model.address"/>
         </q-field>
 
       </q-card-main>
@@ -101,7 +106,7 @@
 <script>
   import {mapGetters} from 'vuex';
   import {CompanyModel} from './CompanyModel';
-  import {positive, confirm, warning, getErrorLabel, phoneNumber} from 'src/util';
+  import {positive, confirm, warning} from 'src/util';
   import {required, minLength, maxLength} from 'vuelidate/lib/validators';
 
   export default {
@@ -119,121 +124,39 @@
     },
     data() {
       return {
-        model: {
-          enabled: true
-        },
+        model: new CompanyModel(),
         creating: false,
         enabled: true
-      };
-    },
-    validations() {
-      return {
-        model: {
-          id: {
-            required,
-            minLength: minLength(2),
-            maxLength: maxLength(50),
-            exists: (value) => {
-              if (this.action !== 'create') {
-                return true;
-              }
-              if (!value) {
-                return true;
-              }
-              return new Promise((resolve, reject) => {
-                this.model.exists().then((exists) => resolve(!exists)).catch(reject);
-              });
-            }
-          },
-          name: {
-            required,
-            minLength: minLength(2),
-            maxLength: maxLength(50)
-          },
-          registrationOrDunsNo: {
-            minLength: minLength(1),
-            maxLength: maxLength(20),
-            exists: (value) => {
-              if (!value) {
-                return true;
-              }
-              return new Promise((resolve, reject) => {
-                this.model.existsByRegistrationOrDunsNo().then((exists, data) => {
-                  if (data && data.id === this.model.id) {
-                    resolve(true);
-                  } else {
-                    resolve(!exists);
-                  }
-                }).catch(reject);
-              });
-            }
-          },
-          representative: {
-            minLength: minLength(1),
-            maxLength: maxLength(20)
-          },
-          mobilePhoneNumber: {
-            minLength: minLength(2),
-            maxLength: maxLength(20),
-            phoneNumber
-          },
-          faxNumber: {
-            minLength: minLength(2),
-            maxLength: maxLength(20),
-            phoneNumber
-          },
-          telephoneNumber: {
-            minLength: minLength(2),
-            maxLength: maxLength(20),
-            phoneNumber
-          }
-        }
       };
     },
     mounted() {
       this.$nextTick(() => this[this.action]());
     },
     methods: {
-      getErrorLabel,
-      create() {
+      async create() {
         this.creating = true;
-        this.model = new CompanyModel({
-          enabled: true
-        });
       },
-      show() {
+      async show() {
         this.creating = false;
-        this.model = new CompanyModel({
-          id: this.id,
-          enabled: true
-        });
         this.model.id = this.id;
-        this.model.fetch();
+        await this.model.fetch();
       },
-      _onSaveClick() {
-        this.$v.model.$$touch().then(() => {
-          if (this.$v.model.$error) {
-            warning('입력이 유효하지 않습니다');
-          } else {
-            confirm('저장 하시겠습니까?').then((ok) => {
-              if (ok) {
-                this.save().then(() => {
-                  positive('저장 되었습니다');
-                  this.$emit('close');
-                });
-              }
-            });
-          }
-        });
+      async _onSaveClick() {
+        let valid = this.creating ? await this.model.validateForCreate() : await this.model.validateForUpdate();
+        if(valid){
+          await this.save();
+          positive('저장 되었습니다');
+          this.$emit('close');
+        }else{
+          warning('입력이 유효하지 않습니다');
+        }
       },
-      save() {
-        return new Promise((resolve, reject) => {
-          if (this.creating) {
-            this.model.create().then(resolve).catch(reject);
-          } else {
-            this.model.update().then(resolve).catch(reject);
-          }
-        });
+      async save() {
+        if (this.creating) {
+          await this.model.create();
+        } else {
+          await this.model.update();
+        }
       }
     },
     computed: {

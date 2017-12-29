@@ -16,6 +16,8 @@ module.exports = {
     'google-libphonenumber': path.resolve(__dirname, '../node_modules/google-libphonenumber/'),
     lodash : path.resolve(__dirname, '../node_modules/lodash/'),
     qs : path.resolve(__dirname, '../node_modules/qs/'),
+    moment :path.resolve(__dirname, '../node_modules/moment/'),
+    'validate.js' :path.resolve(__dirname, '../node_modules/validate.js/'),
     variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl')
   },
 
