@@ -21,6 +21,8 @@ export class Model {
       this.$errors = {};
       return true;
     } catch (e) {
+      console.log(e);
+      debugger;
       _.keys(e).forEach((key) => {
         Vue.set(this.$errors, key, e[key].join('\n'));
       });

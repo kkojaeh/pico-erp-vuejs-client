@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as _ from 'lodash';
 import {Alert, Loading} from 'quasar';
+import {init} from 'src/config/auth';
 
 let apiVersion = 'v1';
 
@@ -20,19 +21,47 @@ let finishFunction = (response) => {
   return response;
 };
 
-let errorHandler = (error) => {
-  if (error.response) {
-    let message = error.response.data.message;
-    if (_.isArray(error.response.data.errors)) {
-      message = error.response.data.errors.map(
-          (e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
+let statusHandlers = {
+  '401': (error) => {
+    let message = error.response.data.message.toLowerCase();
+    if (message.indexOf('verify') > -1 && message.indexOf('token') > -1) {
+      init().then(() => {
+        let alert = Alert.create({
+          icon: 'warning',
+          position: 'bottom-right',
+          html: '인증을 갱신하였습니다<br>다시 시도 하세요'
+        });
+        setTimeout(alert.dismiss, 3000);
+      });
+      return true;
     }
-    let alert = Alert.create({
-      icon: 'warning',
-      position: 'bottom-right',
-      html: `${message}`
-    });
-    setTimeout(alert.dismiss, 3000);
+  }
+};
+
+let errorHandler = (error) => {
+  console.log(arguments);
+  debugger;
+  if (error.response) {
+    let statusHandler = statusHandlers[error.response.status];
+    let preventDefault;
+    if (statusHandler) {
+      debugger;
+
+      preventDefault = !!statusHandler(error);
+    }
+    if (!preventDefault) {
+      let message = error.response.data.message;
+      if (_.isArray(error.response.data.errors)) {
+        message = error.response.data.errors.map(
+            (e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
+      }
+      let alert = Alert.create({
+        icon: 'warning',
+        position: 'bottom-right',
+        html: `${message}`
+      });
+      setTimeout(alert.dismiss, 3000);
+    }
   }
 };
 

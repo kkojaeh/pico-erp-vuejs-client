@@ -16,30 +16,30 @@
         <q-field icon="perm_identity" helper="회사를 식별하는 아이디를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="코드" :readonly="!creating"/>
+          <q-input v-model="model.id" float-label="코드" :readonly="!creating" clearable/>
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름"/>
+          <q-input v-model="model.name" float-label="이름" clearable/>
         </q-field>
 
         <q-field ref="registrationOrDunsNo" icon="email" helper="사업자(또는 DUNS)번호를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.registrationOrDunsNo"
                  :error-label="model.$errors.registrationOrDunsNo">
-          <c-cleave-input v-model="model.registrationOrDunsNo" type="email"
+          <c-cleave-input v-model="model.registrationOrDunsNo" type="text"
                           :cleave-options="{ delimiter: '-', blocks: [3, 2, 5]}"
-                          float-label="사업자(DUNS)번호"/>
+                          float-label="사업자(DUNS)번호" clearable/>
         </q-field>
 
         <q-field icon="account_circle" helper="대표자 이름을 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.representative"
                  :error-label="model.$errors.representative">
-          <q-input v-model="model.representative" float-label="대표자"/>
+          <q-input v-model="model.representative" float-label="대표자" clearable/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
@@ -97,6 +97,12 @@
       <q-toolbar-title>
       </q-toolbar-title>
       <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+      <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.open()"
+             v-show="!creating">이력
+        <q-modal ref="auditModal" @open="$refs.auditViewer.load()">
+          <audit-viewer ref="auditViewer" url="/audit/company/${id}" :data="model"></audit-viewer>
+        </q-modal>
+      </q-btn>
       <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
     </q-toolbar>
 
@@ -108,6 +114,7 @@
   import {CompanyModel} from './CompanyModel';
   import {positive, confirm, warning} from 'src/util';
   import {required, minLength, maxLength} from 'vuelidate/lib/validators';
+  import AuditViewer from '@/audit/AuditViewer.vue';
 
   export default {
     props: {
@@ -142,12 +149,13 @@
         await this.model.fetch();
       },
       async _onSaveClick() {
-        let valid = this.creating ? await this.model.validateForCreate() : await this.model.validateForUpdate();
-        if(valid){
+        let valid = this.creating ? await this.model.validateForCreate()
+            : await this.model.validateForUpdate();
+        if (valid) {
           await this.save();
           positive('저장 되었습니다');
           this.$emit('close');
-        }else{
+        } else {
           warning('입력이 유효하지 않습니다');
         }
       },
@@ -162,6 +170,8 @@
     computed: {
       ...mapGetters([])
     },
-    components: {}
+    components: {
+      AuditViewer
+    }
   };
 </script>

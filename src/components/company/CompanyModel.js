@@ -58,7 +58,7 @@ export class CompanyModel extends FetchableModel {
         length: {minimum: 2, maximum: 50}
       },
       registrationOrDunsNo: {
-        length: {minimum: 1, maximum: 20},
+        length: {minimum: 9, maximum: 20},
         exists: async (value) => {
           if (!value) {
             return;
@@ -67,7 +67,7 @@ export class CompanyModel extends FetchableModel {
           if (result && result.id !== this.id) {
             return;
           } else {
-            return true;
+            return !!result;
           }
         }
       },

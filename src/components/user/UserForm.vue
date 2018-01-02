@@ -90,7 +90,7 @@
       <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
       <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.open()"
              v-show="!creating">이력
-        <q-modal ref="auditModal" @open="$refs.auditViewer.load()" anchor="top left">
+        <q-modal ref="auditModal" @open="$refs.auditViewer.load()">
           <audit-viewer ref="auditViewer" url="/audit/user/${id}" :data="model"></audit-viewer>
         </q-modal>
       </q-btn>

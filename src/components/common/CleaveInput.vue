@@ -29,6 +29,13 @@
            :placeholder="placeholder"
            @focus="__onFocus"
            @blur="__onInputBlur"/>
+    <q-icon
+        v-if="editable && clearable && length"
+        slot="after"
+        name="cancel"
+        class="q-if-control"
+        @click="clear"
+    ></q-icon>
   </q-input-frame>
 </template>
 
@@ -46,7 +53,8 @@
       cleaveOptions: {
         type: Object,
         required: true
-      }
+      },
+      clearable: Boolean
     },
     data() {
       return {
@@ -55,7 +63,16 @@
         focused: false
       };
     },
-    computed: {},
+    computed: {
+      length() {
+        return this.model !== null && this.model !== undefined
+            ? ('' + this.model).length
+            : 0;
+      },
+      editable() {
+        return !this.disable && !this.readonly;
+      }
+    },
     methods: {
       _initCleave() {
         if (this.cleave) {
@@ -70,21 +87,31 @@
           this.$emit('input', this.model);
         });
       },
-      __onFocus (e) {
+      __onFocus(e) {
         clearTimeout(this.timer);
         this.focused = true;
         this.$emit('focus', e);
       },
-      __onInputBlur (e) {
+      __onInputBlur(e) {
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
           this.__onBlur(e)
         }, 200);
       },
-      __onBlur (e) {
+      __onBlur(e) {
         this.focused = false;
         this.$emit('blur', e);
       },
+
+      clear() {
+        clearTimeout(this.timer);
+        this.focus();
+        if (this.editable) {
+          this.model = this.isNumber ? null : '';
+          this.cleave.setRawValue(this.model);
+          this.$emit('input', this.model);
+        }
+      }
     },
     watch: {
       cleaveOptions: {
