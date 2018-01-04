@@ -35,33 +35,36 @@ let statusHandlers = {
       });
       return true;
     }
+  },
+  '403': (error) => {
+    // TODO: 인증여부에 따라 로그인 페이지로 이동?
+    return;
   }
 };
 
 let errorHandler = (error) => {
-  console.log(arguments);
-  debugger;
+  let message = error.message;
+  let preventDefault;
   if (error.response) {
     let statusHandler = statusHandlers[error.response.status];
-    let preventDefault;
     if (statusHandler) {
-      debugger;
-
       preventDefault = !!statusHandler(error);
     }
     if (!preventDefault) {
-      let message = error.response.data.message;
+      message = error.response.data.message;
       if (_.isArray(error.response.data.errors)) {
         message = error.response.data.errors.map(
             (e) => `${e.field} : ${e.defaultMessage}`).join('<br>');
       }
-      let alert = Alert.create({
-        icon: 'warning',
-        position: 'bottom-right',
-        html: `${message}`
-      });
-      setTimeout(alert.dismiss, 3000);
     }
+  }
+  if (!preventDefault) {
+    let alert = Alert.create({
+      icon: 'warning',
+      position: 'bottom-right',
+      html: `${message}`
+    });
+    setTimeout(alert.dismiss, 3000);
   }
 };
 

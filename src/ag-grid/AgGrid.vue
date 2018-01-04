@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="ag-grid-wrapper">
     <slot></slot>
   </div>
 </template>
@@ -69,6 +69,7 @@
         return (this.$slots.default || [])
         .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition);
       }
+
     },
     created() {
       this.invalidateColumnDefinitions = _.debounce(this.invalidateColumnDefinitions, 500);
@@ -104,4 +105,15 @@
 </script>
 
 <style>
+  .ag-grid-wrapper {
+    position: relative;
+  }
+
+  .ag-grid-wrapper > * {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+  }
 </style>

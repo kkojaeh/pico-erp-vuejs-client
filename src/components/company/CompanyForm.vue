@@ -1,6 +1,6 @@
 <template>
 
-  <div class="row">
+  <div class="row" style="min-width: 70vw;">
 
     <q-card class="col-xs-12 col-xl-6 no-margin" flat>
 
@@ -16,7 +16,8 @@
         <q-field icon="perm_identity" helper="회사를 식별하는 아이디를 입력하세요"
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="코드" :readonly="!creating" clearable/>
+          <c-cleave-input v-model="model.id" float-label="코드" :readonly="!creating" clearable
+                          :cleave-options="{uppercase:true, blocks: [5]}" class="ime-mode-disabled"/>
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
@@ -31,7 +32,7 @@
                  :error="!!model.$errors.registrationOrDunsNo"
                  :error-label="model.$errors.registrationOrDunsNo">
           <c-cleave-input v-model="model.registrationOrDunsNo" type="text"
-                          :cleave-options="{ delimiter: '-', blocks: [3, 2, 5]}"
+                          :cleave-options="{ numericOnly: true, delimiter: '-', blocks: [3, 2, 5]}"
                           float-label="사업자(DUNS)번호" clearable/>
         </q-field>
 
@@ -45,6 +46,15 @@
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
                  class="col-xs-11 col-md-4 col-xl-3">
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
+        </q-field>
+
+        <q-field icon="fa-building-o" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
+                 class="col-xs-11 col-md-4 col-xl-3">
+          <div class="row justify-between">
+            <q-checkbox label="공급사" v-model="model.supplier"/>
+            <q-checkbox label="고객사" v-model="model.customer"/>
+            <q-checkbox label="외주사" v-model="model.outsourcing"/>
+          </div>
         </q-field>
 
       </q-card-main>
@@ -113,7 +123,6 @@
   import {mapGetters} from 'vuex';
   import {CompanyModel} from './CompanyModel';
   import {positive, confirm, warning} from 'src/util';
-  import {required, minLength, maxLength} from 'vuelidate/lib/validators';
   import AuditViewer from '@/audit/AuditViewer.vue';
 
   export default {

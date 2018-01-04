@@ -1,15 +1,21 @@
 import {load, wrapModal} from './default';
 
-let meta = {
+let userMeta = {
   title: '사용자 관리',
   auth: true,
   frame: true
 };
 
-export default {
+let groupMeta = {
+  title: '그룹 관리',
+  auth: true,
+  frame: true
+};
+
+export default [{
   path: '/user',
   component: load('user/UserList'),
-  meta,
+  meta: userMeta,
   children: [{
     path: 'create',
     component: wrapModal(load('user/UserForm'), {
@@ -17,7 +23,7 @@ export default {
         this.$router.push({path: '/user', query: this.$route.query});
       }
     }),
-    meta,
+    meta: userMeta,
     props: {
       action: 'create',
       closable: true
@@ -29,7 +35,7 @@ export default {
         this.$router.push({path: '/user', query: this.$route.query});
       }
     }),
-    meta,
+    meta: userMeta,
     props: (route) => {
       return {
         id: route.params.id,
@@ -38,4 +44,36 @@ export default {
       };
     }
   }]
-};
+}, {
+  path: '/group',
+  component: load('user/GroupList'),
+  meta: groupMeta,
+  children: [{
+    path: 'create',
+    component: wrapModal(load('user/GroupForm'), {
+      onModalClose() {
+        this.$router.push({path: '/group', query: this.$route.query});
+      }
+    }),
+    meta: groupMeta,
+    props: {
+      action: 'create',
+      closable: true
+    }
+  }, {
+    path: 'show/:id',
+    component: wrapModal(load('user/GroupForm'), {
+      onModalClose() {
+        this.$router.push({path: '/group', query: this.$route.query});
+      }
+    }),
+    meta: groupMeta,
+    props: (route) => {
+      return {
+        id: route.params.id,
+        action: 'show',
+        closable: true
+      };
+    }
+  }]
+}];

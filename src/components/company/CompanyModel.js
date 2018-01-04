@@ -7,7 +7,10 @@ export class CompanyModel extends FetchableModel {
   get defaults() {
     return {
       address: {},
-      enabled: true
+      enabled: true,
+      supplier: false,
+      customer: false,
+      outsourcing: false
     };
   }
 
@@ -42,6 +45,12 @@ export class CompanyModel extends FetchableModel {
       id: {
         presence: true,
         length: {minimum: 3, maximum: 5},
+        format: {
+          pattern: '[A-Z0-9]{3,5}',
+          message: ({
+            ko: '형식이 틀립니다(영문 대문자/숫자 조합 3~5 글자입니다)'
+          })[navigator.language]
+        },
         exists: async (value) => {
           if (!value) {
             return;

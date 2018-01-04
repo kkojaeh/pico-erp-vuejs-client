@@ -25,9 +25,9 @@ let routes = [{
   }
 }];
 
-routes.push(user);
+routes = routes.concat(user);
 
-routes.push(company);
+routes = routes.concat(company);
 
 // 절대 마지막에 있어야 함
 routes.push({

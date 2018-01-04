@@ -51,6 +51,15 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
+      <q-field slot="condition" icon="fa-building-o" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <div class="row justify-between">
+          <q-checkbox label="공급사" v-model="condition.supplier"/>
+          <q-checkbox label="고객사" v-model="condition.customer"/>
+          <q-checkbox label="외주사" v-model="condition.outsourcing"/>
+        </div>
+      </q-field>
+
       <q-field slot="condition" icon="check_circle" helper="활성화된 회사만 포함 합니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-toggle label="활성화 여부" clearable v-model="condition.enabled"/>
@@ -61,9 +70,14 @@
       <!-- filter -->
 
       <c-filter-chip slot="filter-chip" v-model="condition.name" label="이름"/>
-      <c-filter-chip slot="filter-chip" v-model="condition.enabled" label="활성화 여부" boolean
-                     true-label="활성화 대상"
-                     false-label="비활성화 대상" immutable/>
+      <c-filter-chip slot="filter-chip" v-model="condition.enabled" label="활성화" boolean
+                     true-label="포함" false-label="제외" immutable/>
+      <c-filter-chip slot="filter-chip" v-model="condition.supplier" label="공급사" boolean
+                     true-label="포함" false-label="제외" immutable/>
+      <c-filter-chip slot="filter-chip" v-model="condition.customer" label="고객사" boolean
+                     true-label="포함" false-label="제외" immutable/>
+      <c-filter-chip slot="filter-chip" v-model="condition.outsourcing" label="외주사" boolean
+                     true-label="포함" false-label="제외" immutable/>
       <!-- filter -->
 
     </c-list-view>
@@ -80,11 +94,13 @@
         gridOptions: {},
         array: new CompanyPaginationArray(),
         condition: {
-          enabled: true
+          enabled: true,
+          supplier: true,
+          customer: true,
+          outsourcing: true
         }
       };
     },
-    validations: {},
     mounted() {
     },
     methods: {

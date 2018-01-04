@@ -80,15 +80,15 @@ export class UserRoleModel extends FetchableModel {
   }
 
   get url() {
-    return '/user/users/${id}/role';
+    return '/user/users/${userId}/role';
   };
 
   grant() {
-    return this.axios.post('/user/users/${id}/role', this);
+    return this.axios.post('/user/users/${userId}/role', this);
   }
 
   revoke() {
-    return this.axios.delete('/user/users/${id}/role', {
+    return this.axios.delete('/user/users/${userId}/role', {
       data: this
     });
   }
@@ -104,4 +104,16 @@ export class UserRoleArray extends FetchableArray {
   url = '/user/users/${id}/role';
   axios = api;
   model = UserRoleModel;
+};
+
+export class UserLabelArray extends FetchableArray {
+  url = '/user/labels/user';
+  axios = api;
+
+  query = (keyword) => {
+    return this.fetch({
+      query: keyword
+    });
+  };
+
 };

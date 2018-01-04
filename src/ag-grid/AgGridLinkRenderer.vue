@@ -13,10 +13,20 @@
     methods: {},
     computed: {
       to() {
-        return {
-          path: _.template(this.params.path)(this.params.data),
-          query: this.params.query
-        };
+        let location = {};
+        if (this.params.path) {
+          location.path = _.template(this.params.path)(this.params.data);
+        }
+        if (this.params.query) {
+          location.query = this.params.query;
+        }
+        if (this.params.name) {
+          location.name = this.params.name;
+        }
+        if (this.params.params) {
+          location.params = this.params.params;
+        }
+        return location;
       },
       icon() {
         return this.params.icon;

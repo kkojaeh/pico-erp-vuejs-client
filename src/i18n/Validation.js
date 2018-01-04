@@ -13,6 +13,7 @@ exports.ko = () => {
   validate.validators.inclusion.message = '^%{value} 는 목록에 포함되지 않습니다';
   validate.validators.url.message = 'URL 형식이 아닙니다';
   validate.validators.presence.message = '필수 입력입니다';
+  validate.validators.format.message = '형식이 틀립니다';
   validate.validators.length.notValid = '잘못된 길이 입니다';
   validate.validators.length.wrongLength = '잘못된 길이 입니다 (%{count} 글자)';
   validate.validators.length.tooShort = '길이가 너무 짧습니다 (최소 %{count} 자 이상)';

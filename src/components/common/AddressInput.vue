@@ -5,8 +5,8 @@
                v-model="model.postalCode" readonly></q-input>
       <div class="col-8 no-padding row justify-end">
         <q-btn flat icon="search" @click="find()" v-if="!(disable || readonly)">우편번호 찾기</q-btn>
-        <q-btn flat @click="clear()" v-if="!(disable || readonly)">
-          <q-icon name="clear" />
+        <q-btn flat @click="clear()" v-if="!(disable || readonly) && exists">
+          <q-icon name="clear"/>
         </q-btn>
       </div>
     </div>
@@ -37,7 +37,11 @@
         model: {}
       };
     },
-    computed: {},
+    computed: {
+      exists() {
+        return this.model.postalCode || this.model.street || this.model.detail;
+      }
+    },
     methods: {
       find() {
         let width = 500;

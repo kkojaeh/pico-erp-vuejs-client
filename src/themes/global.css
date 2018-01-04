@@ -1,0 +1,17 @@
+*[disabled] {
+  pointer-events: none;
+}
+
+.ime-mode-active input{
+  -webkit-ime-mode:active;
+  -moz-ime-mode:active;
+  -ms-ime-mode:active;
+  ime-mode:active;
+}
+
+.ime-mode-disabled input{
+  -webkit-ime-mode:disabled;
+  -moz-ime-mode:disabled;
+  -ms-ime-mode:disabled;
+  ime-mode:disabled;
+}

@@ -3,6 +3,8 @@ import qs from 'qs';
 import Vue from 'vue';
 import validate from 'validate.js';
 
+const ERROR = Symbol('ERROR');
+
 export class Model {
 
   constructor(data) {
@@ -21,17 +23,17 @@ export class Model {
       this.$errors = {};
       return true;
     } catch (e) {
-      console.log(e);
-      debugger;
-      _.keys(e).forEach((key) => {
-        Vue.set(this.$errors, key, e[key].join('\n'));
-      });
-      return false;
+      if (!_.isError(e)) {
+        _.keys(e).forEach((key) => {
+          Vue.set(this.$errors, key, e[key].join('\n'));
+        });
+        return false;
+      }
     }
   }
 }
 
-export class FetchableModel extends Model{
+export class FetchableModel extends Model {
   get axios() {
   }
 
