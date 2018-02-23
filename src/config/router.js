@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import {load} from './router/default';
 import user from './router/user';
 import company from './router/company';
+import example from './router/example';
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,8 @@ let routes = [{
 routes = routes.concat(user);
 
 routes = routes.concat(company);
+
+routes = routes.concat(example);
 
 // 절대 마지막에 있어야 함
 routes.push({

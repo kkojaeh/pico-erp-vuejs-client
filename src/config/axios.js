@@ -6,9 +6,12 @@ import {init} from 'src/config/auth';
 let apiVersion = 'v1';
 
 let loadFunction = (config) => {
+  // data 가 존재하지 않으면 Content-Type 이 삭제 되는 문제 수정
+  config.data = config.data || {};
   config.url = _.template(config.url)(config.data);
   config.headers['X-Firebase-Auth'] = localStorage.getItem(
       'API_FIREBASE_TOKEN');
+
   config.headers['Accept'] = `application/vnd.acepk.${apiVersion}+json`;
   config.headers['Content-Type'] = `application/vnd.acepk.${apiVersion}+json`;
   Loading.show({

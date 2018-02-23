@@ -18,6 +18,7 @@ import ListView from '@/common/ListView.vue';
 import CleaveInput from '@/common/CleaveInput.vue';
 import PhoneNumberInput from '@/common/PhoneNumberInput.vue';
 import AddressInput from '@/common/AddressInput.vue';
+import Attachment from '@/common/Attachment.vue';
 
 import AgGridCheckboxRenderer from 'src/ag-grid/AgGridCheckboxRenderer.vue';
 import AgGridCheckboxEditor from 'src/ag-grid/AgGridCheckboxEditor.vue';
@@ -53,13 +54,16 @@ export default () => {
   });
 
   Vue.use(axios);
-  Vue.component('ag-grid', AgGrid);
-  Vue.component('ag-grid-column', AgGridColumn);
+
   Vue.component('c-filter-chip', FilterChip);
   Vue.component('c-list-view', ListView);
   Vue.component('c-cleave-input', CleaveInput);
   Vue.component('c-phone-number-input', PhoneNumberInput);
   Vue.component('c-address-input', AddressInput);
+  Vue.component('c-attachment', Attachment);
+
+  Vue.component('ag-grid', AgGrid);
+  Vue.component('ag-grid-column', AgGridColumn);
   Vue.component('ag-grid-checkbox-renderer', AgGridCheckboxRenderer);
   Vue.component('ag-grid-date-renderer', AgGridDateRenderer);
   Vue.component('ag-grid-datetime-renderer', AgGridDatetimeRenderer);
@@ -68,8 +72,6 @@ export default () => {
   Vue.component('ag-grid-cleave-renderer', AgGridCleaveRenderer);
   Vue.component('ag-grid-phone-number-renderer', AgGridPhoneNumberRenderer);
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer);
-
-
 
   Vue.config.productionTip = false;
   require(`quasar/dist/quasar.${__THEME}.css`);

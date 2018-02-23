@@ -18,7 +18,9 @@ module.exports = {
     qs : path.resolve(__dirname, '../node_modules/qs/'),
     moment :path.resolve(__dirname, '../node_modules/moment/'),
     'validate.js' :path.resolve(__dirname, '../node_modules/validate.js/'),
-    variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl')
+    variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl'),
+    dropzone : path.resolve(__dirname, '../node_modules/dropzone/'),
+    uppy : path.resolve(__dirname, '../node_modules/uppy/')
   },
 
   // Progress Bar Webpack plugin format
