@@ -1,4 +1,4 @@
-export class AbstractAttachmentModel {
+export class AttachmentModel {
 
   /**
    * 아이디로 조회하고 자신을 반환한다
@@ -57,12 +57,20 @@ export class AbstractAttachmentModel {
   }
 
   /**
-   * 이미지 타입이 아닌 Content-Type 에 해당하는 아이콘의 URL 을 반환
+   * 이미지 타입이 아닌 이름 에 해당하는 아이콘의 URL 을 반환
    * @param {string} name 파일 이름
+   * @returns {string} 아이콘의 URL
+   */
+  static iconUrlByName(name) {
+    return '';
+  }
+
+  /**
+   * 이미지 타입이 아닌 Content-Type 에 해당하는 아이콘의 URL 을 반환
    * @param {string} contentType 컨텐츠 타입
    * @returns {string} 아이콘의 URL
    */
-  static iconUrl(name, contentType) {
+  static iconUrlByContentType(contentType) {
     return '';
   }
 

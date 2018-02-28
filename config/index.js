@@ -4,23 +4,11 @@ module.exports = {
   // Webpack aliases
   aliases: {
     quasar: path.resolve(__dirname, '../node_modules/quasar-framework/'),
-    'ag-grid': path.resolve(__dirname, '../node_modules/ag-grid/'),
-    axios: path.resolve(__dirname, '../node_modules/axios/'),
-    vuex: path.resolve(__dirname, '../node_modules/vuex/'),
-    firebase: path.resolve(__dirname, '../node_modules/firebase/'),
     src: path.resolve(__dirname, '../src'),
     assets: path.resolve(__dirname, '../src/assets'),
     '@': path.resolve(__dirname, '../src/components'),
-    'kebab-case': path.resolve(__dirname, '../node_modules/kebab-case/'),
-    'cleave.js': path.resolve(__dirname, '../node_modules/cleave.js/'),
-    'google-libphonenumber': path.resolve(__dirname, '../node_modules/google-libphonenumber/'),
-    lodash : path.resolve(__dirname, '../node_modules/lodash/'),
-    qs : path.resolve(__dirname, '../node_modules/qs/'),
-    moment :path.resolve(__dirname, '../node_modules/moment/'),
-    'validate.js' :path.resolve(__dirname, '../node_modules/validate.js/'),
     variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl'),
-    dropzone : path.resolve(__dirname, '../node_modules/dropzone/'),
-    uppy : path.resolve(__dirname, '../node_modules/uppy/')
+    '@ckeditor': path.resolve(__dirname, '../node_modules/@ckeditor/')
   },
 
   // Progress Bar Webpack plugin format

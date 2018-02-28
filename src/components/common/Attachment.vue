@@ -1,21 +1,21 @@
 <template>
-  <abstract-attachment ref="attachment" v-model="model" :model-type="modelType"
+  <uppy-attachment ref="attachment" v-model="model" :model-type="modelType"
                        :multiple="multiple" :max-file-size="maxFileSize"
                        :max-number-of-files="maxNumberOfFiles" :category="category">
-  </abstract-attachment>
+  </uppy-attachment>
 
 </template>
 
 <script>
-  import AbstractAttachment from 'src/attachment/AbstractAttachment.vue'
+  import UppyAttachment from 'src/integration/attachment/UppyAttachment.vue'
   import {
-    AbstractAttachmentModel,
+    AttachmentModel,
     AttachmentFileModel
-  } from 'src/attachment/AbstractAttachmentModel'
+  } from 'src/integration/attachment/AttachmentModel'
   import {api} from 'src/config/axios';
   import * as _ from 'lodash';
 
-  class AttachmentModel extends AbstractAttachmentModel {
+  class DefaultAttachmentModel extends AttachmentModel {
 
     async fetch(id) {
       const response = await api.get(`/attachment/attachments/${id}`, {});
@@ -44,18 +44,20 @@
     }
 
     get files() {
+      return this.items.map(this.mapFile.bind(this));
+    }
+
+    mapFile(item){
       const id = this.id;
       const host = api.defaults.baseURL;
-      return this.items.map((item) => {
-        return new AttachmentFileModel.Builder(this)
-        .id(item.id)
-        .name(item.name)
-        .size(item.contentLength)
-        .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}`)
-        .download(`${host}/attachment/attachments/${id}/items/${item.id}`)
-        .type(item.contentType)
-        .build()
-      });
+      return new AttachmentFileModel.Builder(this)
+      .id(item.id)
+      .name(item.name)
+      .size(item.contentLength)
+      .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}`)
+      .download(`${host}/attachment/attachments/${id}/items/${item.id}`)
+      .type(item.contentType)
+      .build()
     }
 
     get uploadUrl() {
@@ -64,7 +66,16 @@
       return `${host}/attachment/attachments/${id}/items`;
     }
 
-    static iconUrl(name, contentType) {
+    static iconUrlByName(name, contentType) {
+      const host = api.defaults.baseURL;
+      if(contentType) {
+        return `${host}/attachment/icons/${contentType}`;
+      }
+      const extension = name.substring(name.lastIndexOf('.'));
+      return `${host}/attachment/icons/${extension}`;
+    }
+
+    static iconUrlByContentType(name, contentType) {
       const host = api.defaults.baseURL;
       if(contentType) {
         return `${host}/attachment/icons/${contentType}`;
@@ -74,12 +85,14 @@
     }
 
     async addFile(file) {
-      this.items.push({
+      const item = {
         id: file.id,
         name: file.name,
         contentLength: file.size,
         contentType: file.type
-      });
+      };
+      this.items.push(item);
+      return this.mapFile(item);
     }
 
     async removeFile(fileId) {
@@ -100,9 +113,12 @@
         type: Boolean,
         default: false
       },
+      /**
+       * 최대 파일 사이즈 MB
+       */
       maxFileSize: {
         type: Number,
-        default: 20
+        default: 1
       },
       maxNumberOfFiles: {
         type: Number,
@@ -117,12 +133,12 @@
       }
     },
     components: {
-      'abstract-attachment': AbstractAttachment
+      'uppy-attachment': UppyAttachment
     },
     data() {
       return {
         model: null,
-        modelType: AttachmentModel
+        modelType: DefaultAttachmentModel
       }
     },
     watch: {

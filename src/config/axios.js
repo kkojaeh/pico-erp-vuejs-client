@@ -81,8 +81,10 @@ let errorFunction = (error) => {
   return Promise.reject(error);
 };
 
-const axiosApi = axios.create(
-    {baseURL: document.querySelector('meta[name=api-server-url]').content});
+const axiosApi = axios.create({
+  baseURL: document.querySelector('meta[name=api-server-url]').content,
+  withCredentials: true
+});
 
 axiosApi.interceptors.request.use(loadFunction);
 axiosApi.interceptors.response.use(finishFunction, errorFunction);

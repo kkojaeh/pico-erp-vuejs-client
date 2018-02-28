@@ -11,23 +11,24 @@ import Vue from 'vue';
 import Quasar, * as All from 'quasar';
 import axios from './axios';
 import mixin from './mixin';
-import AgGrid from 'src/ag-grid/AgGrid.vue';
-import AgGridColumn from 'src/ag-grid/AgGridColumn.vue';
+import AgGrid from 'src/integration/ag-grid/AgGrid.vue';
+import AgGridColumn from 'src/integration/ag-grid/AgGridColumn.vue';
 import FilterChip from '@/common/FilterChip.vue';
 import ListView from '@/common/ListView.vue';
 import CleaveInput from '@/common/CleaveInput.vue';
 import PhoneNumberInput from '@/common/PhoneNumberInput.vue';
 import AddressInput from '@/common/AddressInput.vue';
 import Attachment from '@/common/Attachment.vue';
+import HtmlEditor from '@/common/HtmlEditor.vue';
 
-import AgGridCheckboxRenderer from 'src/ag-grid/AgGridCheckboxRenderer.vue';
-import AgGridCheckboxEditor from 'src/ag-grid/AgGridCheckboxEditor.vue';
-import AgGridDateRenderer from 'src/ag-grid/AgGridDateRenderer.vue';
-import AgGridDatetimeRenderer from 'src/ag-grid/AgGridDatetimeRenderer.vue';
-import AgGridLinkRenderer from 'src/ag-grid/AgGridLinkRenderer.vue';
-import AgGridIconRenderer from 'src/ag-grid/AgGridIconRenderer.vue';
-import AgGridCleaveRenderer from 'src/ag-grid/AgGridCleaveRenderer.vue';
-import AgGridPhoneNumberRenderer from 'src/ag-grid/AgGridPhoneNumberRenderer.vue';
+import AgGridCheckboxRenderer from 'src/integration/ag-grid/AgGridCheckboxRenderer.vue';
+import AgGridCheckboxEditor from 'src/integration/ag-grid/AgGridCheckboxEditor.vue';
+import AgGridDateRenderer from 'src/integration/ag-grid/AgGridDateRenderer.vue';
+import AgGridDatetimeRenderer from 'src/integration/ag-grid/AgGridDatetimeRenderer.vue';
+import AgGridLinkRenderer from 'src/integration/ag-grid/AgGridLinkRenderer.vue';
+import AgGridIconRenderer from 'src/integration/ag-grid/AgGridIconRenderer.vue';
+import AgGridCleaveRenderer from 'src/integration/ag-grid/AgGridCleaveRenderer.vue';
+import AgGridPhoneNumberRenderer from 'src/integration/ag-grid/AgGridPhoneNumberRenderer.vue';
 
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
@@ -61,6 +62,8 @@ export default () => {
   Vue.component('c-phone-number-input', PhoneNumberInput);
   Vue.component('c-address-input', AddressInput);
   Vue.component('c-attachment', Attachment);
+  Vue.component('c-html-editor', HtmlEditor);
+
 
   Vue.component('ag-grid', AgGrid);
   Vue.component('ag-grid-column', AgGridColumn);
