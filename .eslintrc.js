@@ -2,13 +2,17 @@ module.exports = {
   root: true,
   parserOptions: {
     parser: "babel-eslint",
-    ecmaVersion: 2017,
     sourceType: 'module'
   },
   env: {
     browser: true
   },
   extends: [
+    // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
+    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
+    // 'plugin:vue/essential',
+    // https://github.com/standard/standard/blob/master/docs/RULES-en.md
+    // 'standard'
     // 'google'
     'plugin:vue/recommended'
   ],
@@ -17,10 +21,9 @@ module.exports = {
     'html'
   ],
   globals: {
+    'ga': true, // Google Analytics
     'cordova': true,
-    'DEV': true,
-    'PROD': true,
-    '__THEME': true
+    '__statics': true
   },
   // add your custom rules here
   'rules': {
@@ -32,11 +35,11 @@ module.exports = {
       2,
       "never"
     ],
-    "space-before-function-paren": ["error", {
-      "anonymous": "always",
-      "named": "never",
-      "asyncArrow": "always"
-    }],
+    // "space-before-function-paren": ["error", {
+    //   "anonymous": "always",
+    //   "named": "never",
+    //   "asyncArrow": "always"
+    // }],
     "valid-jsdoc": 2,
     "require-jsdoc": ["error", {
       "require": {

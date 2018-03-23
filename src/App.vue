@@ -1,35 +1,30 @@
 <template>
-  <!-- Don't drop "q-app" class -->
-  <!--<div class="q-app">-->
-  <q-layout ref="layout" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
-    <main-drawer slot="left" v-if="frameNeeded && authenticated"></main-drawer>
-    <main-toolbar slot="header" v-if="frameNeeded"
-                  @toggle="$refs.layout.toggleLeft()"></main-toolbar>
-
-    <router-view/>
-  </q-layout>
-  <!--</div>-->
+  <div id="q-app">
+    <router-view />
+  </div>
 </template>
-<script>
-  import {mapGetters} from 'vuex';
-  import MainToolbar from './components/layout/MainToolbar.vue';
-  import MainDrawer from './components/layout/MainDrawer.vue';
 
-  /*
-   * Root component
-   */
+<script>
   export default {
-    created() {
-    },
-    computed: {
-      ...mapGetters(['frameNeeded', 'authenticated'])
-    },
-    components: {
-      MainToolbar,
-      MainDrawer
-    },
-    methods: {}
-  };
+    name: 'App',
+    async created() {
+      await this.$auth.init()
+      const store = this.$store;
+      const router = this.$router;
+      const routeTo = store.getters['route/to'];
+      if(routeTo){
+        const authorized = await store.dispatch('auth/authenticate', routeTo.meta.authorize);
+        if (authorized) {
+          const routeNext = store.getters['route/next'];
+          routeNext();
+        }else{
+          store.commit('route/lastAccessed', routeTo);
+          router.push('/sign-in');
+        }
+      }
+    }
+  }
 </script>
 
-<style></style>
+<style>
+</style>
