@@ -1,0 +1,238 @@
+<template>
+  <!-- style="min-width: 70vw; max-width:95vw" -->
+  <q-layout class="row items-baseline layout-padding" view="hHh Lpr fFf">
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        기본 정보
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-field icon="account_circle" helper="프로젝트 이름을 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.name"
+                 :error-label="model.$errors.name">
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
+        </q-field>
+
+        <q-field ref="registrationNumber" icon="fa-user" helper="담당자를 선택하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.managerId"
+                 :error-label="model.$errors.managerId">
+          <c-autocomplete-select float-label="담당자" v-model="model.managerId"
+                                 :label.sync="model.managerName" :options="userLabels"
+                                 label-field="label" value-field="value"
+                                 @search="onManagerSearch">
+            <template slot="option" slot-scope="option">
+              {{option.label}}<br>
+              {{option.stamp}} - {{option.subLabel}}
+            </template>
+          </c-autocomplete-select>
+        </q-field>
+
+        <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
+                 class="col-xs-11 col-md-11 col-xl-11">
+          <c-html-editor v-model="model.description"></c-html-editor>
+        </q-field>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        고객 정보
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-field icon="fa-building-o" helper="고객사를 선택하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.customerId"
+                 :error-label="model.$errors.customerId">
+          <c-autocomplete-select float-label="고객사" v-model="model.customerId"
+                                 :label.sync="model.customerName" :options="companyLabels"
+                                 label-field="label" value-field="value"
+                                 @search="onCustomerSearch">
+            <template slot="option" slot-scope="option">
+              {{option.label}}<br>
+              {{option.stamp}} - {{option.subLabel}}
+            </template>
+          </c-autocomplete-select>
+        </q-field>
+
+        <q-field icon="account_circle" helper="고객 담당자 이름을 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.customerManagerContact.name"
+                 :error-label="model.$errors.customerManagerContact.name">
+          <q-input v-model="model.customerManagerContact.name" float-label="고객 담당자 이름"
+                   class="ime-mode-active"/>
+        </q-field>
+
+        <q-field icon="email" helper="고객 담당자 이메일을 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.customerManagerContact.email"
+                 :error-label="model.$errors.customerManagerContact.email">
+          <q-input v-model="model.customerManagerContact.email" type="email"
+                   float-label="고객 담당자 이메일"
+                   class="ime-mode-disabled"/>
+        </q-field>
+
+        <q-field icon="fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.mobilePhoneNumber"
+                 :error-label="model.$errors.mobilePhoneNumber">
+          <c-phone-number-input v-model="model.customerManagerContact.mobilePhoneNumber"
+                                float-label="고객 담당자 핸드폰 번호"
+                                class="ime-mode-disabled"/>
+        </q-field>
+
+        <q-field icon="phone" helper="고객 담당자 전화 번호를 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.telephoneNumber"
+                 :error-label="model.$errors.telephoneNumber">
+          <c-phone-number-input v-model="model.customerManagerContact.telephoneNumber"
+                                float-label="고객 담당자 전화번호"
+                                class="ime-mode-disabled"/>
+        </q-field>
+
+        <q-field icon="fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.faxNumber"
+                 :error-label="model.$errors.faxNumber">
+          <c-phone-number-input v-model="model.customerManagerContact.faxNumber"
+                                float-label="고객 담당자 FAX 번호"
+                                class="ime-mode-disabled"/>
+        </q-field>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card v-if="model.commentSubjectId" class="col-12" flat>
+
+      <q-card-title>
+        댓글
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="row gutter-md">
+
+        <comment-list class="col-xs-12 col-md-11 col-xl-11 no-border"
+            subjectType="project" :subject="model.commentSubjectId"></comment-list>
+
+      </q-card-main>
+
+    </q-card>
+
+
+    <q-layout-footer>
+      <q-toolbar>
+        <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+        <q-toolbar-title>
+        </q-toolbar-title>
+        <!--
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        -->
+        <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
+               v-show="!creating">이력
+          <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
+            <audit-viewer ref="auditViewer" url="/audit/project/${id}" :data="model"></audit-viewer>
+          </q-modal>
+        </q-btn>
+        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+      </q-toolbar>
+    </q-layout-footer>
+
+
+  </q-layout>
+
+</template>
+<script>
+  import { mapGetters } from 'vuex'
+  import { ProjectModel } from './project-model'
+  import { CompanyLabelArray } from 'src/pages/company/company-model'
+  import { UserLabelArray } from 'src/pages/user/user-model'
+  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
+  import CommentList from 'src/pages/comment/comment-list.vue'
+
+  export default {
+    props: {
+      action: {
+        type: String
+      },
+      id: {
+        type: String
+      },
+      closable: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data () {
+      return {
+        model: new ProjectModel(),
+        companyLabels: new CompanyLabelArray(),
+        userLabels: new UserLabelArray(),
+        creating: false,
+        enabled: true
+      }
+    },
+    mounted () {
+      this.$nextTick(() => this[this.action]())
+    },
+    methods: {
+      async onCustomerSearch (keyword, done) {
+        await this.companyLabels.query(keyword)
+        done()
+      },
+      async onManagerSearch (keyword, done) {
+        await this.userLabels.query(keyword)
+        done()
+      },
+      async create () {
+        this.creating = true
+      },
+      async show () {
+        this.creating = false
+        this.model.id = this.id
+        await this.model.fetch()
+      },
+      async _onSaveClick () {
+        let valid = this.creating ? await this.model.validateForCreate()
+          : await this.model.validateForUpdate()
+        if (valid) {
+          await this.save()
+          this.$alert.positive('저장 되었습니다')
+          this.$emit('close')
+        } else {
+          this.$alert.warning('입력이 유효하지 않습니다')
+        }
+      },
+      async save () {
+        if (this.creating) {
+          await this.model.create()
+        } else {
+          await this.model.update()
+        }
+      }
+    },
+    computed: {
+      ...mapGetters([])
+    },
+    components: {
+      AuditViewer,
+      CommentList
+    }
+  }
+</script>

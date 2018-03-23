@@ -1,0 +1,57 @@
+// app global css
+
+.q-field-helper
+  font-size: 9px
+  text-align: right
+
+.q-if-label
+  font-weight: bold
+
+*[disabled]
+  pointer-events: none
+
+*.ime-mode-active
+  input
+    -webkit-ime-mode: active
+    -moz-ime-mode: active
+    -ms-ime-mode: active
+    ime-mode: active
+
+*.ime-mode-disabled
+  input
+    -webkit-ime-mode: disabled
+    -moz-ime-mode: disabled
+    -ms-ime-mode: disabled
+    ime-mode: disabled
+
+.v-select.dropdown
+  .clear
+    display: none
+  .dropdown-toggle
+    border: none
+    padding-right: 8px
+    display: flex
+    flex-direction: row
+    width: 100%
+    input
+      flex: 1
+      width: auto !important
+      height: 19px !important
+    .selected-tag
+      display: block
+      white-space: nowrap
+      width: auto
+      margin : 0px
+      padding: 0px
+      height: 19px
+
+
+.v-select
+  .open-indicator
+    bottom: -5px !important
+  .dropdown-menu
+    border: 1px solid rgba(0, 0, 0, .26) !important
+    border-radius: 2px 2px 2px 2px !important
+  .dropdown-toggle
+    .clear
+      bottom: 6px !important
