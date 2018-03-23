@@ -7,12 +7,12 @@ osx_image: xcode8.3
 cache:
   cocoapods : true
   directories:
-    - $HOME/.npm
+    #- $HOME/.npm
     - $HOME/.cocoapods
     - node_modules # NPM packages
 
 before_install:
-  - npm install -g quasar-cli@^0.6.4
+  - npm install -g quasar-cli@^0.15.12
 #  - npm install -g cordova@^7.1.0
 #  - npm install -g ios-deploy --unsafe-perm=true --allow-root
 #  - pod setup
