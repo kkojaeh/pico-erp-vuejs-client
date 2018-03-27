@@ -84,6 +84,7 @@
         })
         const prefix = '#comment-'
         const hash = this.$route.hash || ''
+        debugger
         if (hash.startsWith(prefix)) {
           const commentId = hash.substring(prefix.length)
           setTimeout(() => {

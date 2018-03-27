@@ -36,7 +36,7 @@ module.exports = function (ctx) {
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '"pico-erp-dev"'
       },
       scopeHoisting: true,
-      vueRouterMode: 'hash',
+      vueRouterMode: 'history',
       // gzip: true,
       // analyze: true,
       // extractCSS: false,
