@@ -1,6 +1,8 @@
 /* eslint-disable */
-var exports = {}
-exports['ko-KR'] = exports.ko = {
+import { language, languageAliases } from './index'
+
+const exports = {}
+exports.ko = {
   Uppy: {
     strings: {
       youCanOnlyUploadX: {
@@ -79,4 +81,4 @@ exports['ko-KR'] = exports.ko = {
     }
   }
 }
-export default exports[navigator.language]
+export default languageAliases(exports)[language]

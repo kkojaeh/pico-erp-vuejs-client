@@ -5,62 +5,61 @@
 </template>
 
 <script>
-  import {ColDefUtil} from 'ag-grid';
-  import * as _ from 'lodash';
+  import { ColDefUtil } from 'ag-grid'
+  import * as _ from 'lodash'
 
-  const watchedProperties = {};
-  const props = ['cellRenderer'];
+  const watchedProperties = {}
+  const props = ['cellRenderer']
 
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
-    props.push(propertyName);
+    props.push(propertyName)
 
     watchedProperties[propertyName] = function (val, oldVal) {
-      this.processChanges(propertyName, val, oldVal);
-    };
-  });
+      this.processChanges(propertyName, val, oldVal)
+    }
+  })
 
   export default {
     name: 'ag-grid-column',
     props: props,
-    data() {
+    data () {
       return {
         _initialised: false
-      };
+      }
     },
     methods: {
-      processChanges(propertyName, val, oldVal) {
+      processChanges (propertyName, val, oldVal) {
         if (this._initialised) {
-          if(!this._grid){
+          if (!this._grid) {
             this.setGrid(this.findGrid())
           }
-          this._grid.invalidateColumnDefinitions();
-
+          this._grid.invalidateColumnDefinitions()
 
         }
       },
-      getChildren() {
+      getChildren () {
         return (this.$slots.default || []).filter(
-            (c) => c.componentInstance && c.componentInstance.getColumnDefinition);
+          (c) => c.componentInstance && c.componentInstance.getColumnDefinition)
       },
-      getColumnDefinition() {
-        let colDef = _.assign({}, this.$props);
+      getColumnDefinition () {
+        let colDef = _.assign({}, this.$props)
         colDef.children = this.getChildren().map(
-            (column) => column.componentInstance.getColumnDefinition());
+          (column) => column.componentInstance.getColumnDefinition())
         if (!colDef.children.length) {
-          delete colDef.children;
+          delete colDef.children
         }
-        return colDef;
+        return colDef
       },
-      setGrid(grid) {
-        this._grid = grid;
-        this.getChildren().forEach((column) => column.componentInstance.setGrid(grid));
+      setGrid (grid) {
+        this._grid = grid
+        this.getChildren().forEach((column) => column.componentInstance.setGrid(grid))
       },
-      findGrid(){
+      findGrid () {
         let parent = this.$parent
-        while(parent){
-          if(parent.isAgGrid){
+        while (parent) {
+          if (parent.isAgGrid) {
             break
-          }else{
+          } else {
             parent = parent.$parent
           }
         }
@@ -68,13 +67,13 @@
       }
     },
     watch: watchedProperties,
-    mounted() {
-      this._initialised = true;
+    mounted () {
+      this._initialised = true
     },
-    destroyed() {
+    destroyed () {
       this._grid = null
     }
-  };
+  }
 </script>
 
 <style>

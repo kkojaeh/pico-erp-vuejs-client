@@ -6,7 +6,7 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
 
       <!-- action -->
 
@@ -70,13 +70,13 @@
 
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
       <c-list-filter-label slot="filter-label" v-model="filters.enabled" label="활성화"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.supplier" label="공급사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.customer" label="고객사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.outsourcing" label="외주사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <!-- filter -->
 
     </c-list-view>
@@ -85,11 +85,11 @@
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
-  import {mapGetters} from 'vuex';
-  import {CompanyPaginationArray} from './company-model';
+  import { mapGetters } from 'vuex'
+  import { CompanyPaginationArray } from './company-model'
 
   export default {
-    data() {
+    data () {
       return {
         array: new CompanyPaginationArray(),
         filters: {
@@ -99,9 +99,9 @@
           outsourcing: true
         },
         dataAdjuster: null
-      };
+      }
     },
-    mounted() {
+    mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {
         enabled: Boolean,
         supplier: Boolean,
@@ -110,8 +110,8 @@
       })
     },
     methods: {
-      retrieve() {
-        this.$refs.listView.retrieve();
+      retrieve () {
+        this.$refs.listView.retrieve()
       }
     },
     computed: {
@@ -128,5 +128,5 @@
     },
 
     components: {}
-  };
+  }
 </script>

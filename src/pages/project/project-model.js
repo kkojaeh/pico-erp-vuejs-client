@@ -10,6 +10,12 @@ export class ProjectModel extends FetchableModel {
     }
   }
 
+  get defaultErrors () {
+    return {
+      customerManagerContact: {}
+    }
+  }
+
   get axios () {
     return api
   }

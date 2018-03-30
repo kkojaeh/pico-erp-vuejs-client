@@ -6,7 +6,7 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
 
       <!-- action -->
 
@@ -53,7 +53,7 @@
       <q-field slot="filter" icon="fa-building-o" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select ref="statuses" float-label="상태" v-model="filters.statuses"
-                  :options="statuses" multiple></q-select>
+                  :options="statusLabels" multiple></q-select>
       </q-field>
 
       <q-field slot="filter" icon="check_circle" helper="활성화된 회사만 포함 합니다"
@@ -66,8 +66,9 @@
       <!-- filter -->
 
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.statuses" :print-value="statusesLabel"
-                    label="상태"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.statuses"
+                           :print-value="statusesLabel"
+                           label="상태"/>
       <!-- filter -->
 
     </c-list-view>
@@ -78,7 +79,7 @@
   import { DataAdjuster } from 'src/model/data'
   import {
     QuotationPaginationArray,
-    QuotationSatausArray,
+    QuotationSatusArray,
     QuotationExpiryPolicyArray
   } from './quotation-model'
 
@@ -88,8 +89,8 @@
     data () {
       return {
         array: new QuotationPaginationArray(),
-        statuses: new QuotationSatausArray(),
-        expiryPolicies: new QuotationExpiryPolicyArray(),
+        statusLabels: new QuotationSatusArray(),
+        expiryPolicyLabels: new QuotationExpiryPolicyArray(),
         companies: new CompanyLabelArray(),
         filters: new {
           name: null,
@@ -99,10 +100,9 @@
       }
     },
     mounted () {
-      this.dataAdjuster = new DataAdjuster(this.filters, {
-      })
-      this.statuses.fetch()
-      this.expiryPolicies.fetch()
+      this.dataAdjuster = new DataAdjuster(this.filters, {})
+      this.statusLabels.fetch()
+      this.expiryPolicyLabels.fetch()
     },
     methods: {
       retrieve () {
@@ -111,12 +111,11 @@
     },
     computed: {
       statusesLabel () {
-        if (this.statuses.fetched) {
-          return this.filters.statuses.map(
-            value => this.statuses.find(status => status.value == value).label).join(', ')
-        } else {
-          return
-        }
+        return this.filters.statuses.map(
+          value => this.statusLabels.find(status => status.value == value))
+        .filter(data => data)
+        .map(data => data.label)
+        .join(', ')
       }
     },
 

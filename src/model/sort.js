@@ -1,45 +1,45 @@
-import qs from 'qs';
-import * as _ from 'lodash';
+import qs from 'qs'
+import * as _ from 'lodash'
 
 export default class Sort {
-  constructor(field, dir = 'ASC') {
+  constructor (field, dir = 'ASC') {
     if (!field) {
-      throw new Error('field is null');
+      throw new Error('field is null')
     }
-    this.field = field;
-    this.dir = dir.toUpperCase();
+    this.field = field
+    this.dir = dir.toUpperCase()
   }
 
-  getField() {
-    return this.field;
-  }
-
-  getDir() {
-    return this.dir;
-  }
-
-  static toQueryString(sorts) {
+  static toQueryString (sorts) {
     return qs.stringify(sorts.map((s) => {
-      let o = {};
-      o[s.field] = s.dir;
-      return o;
+      let o = {}
+      o[s.field] = s.dir
+      return o
     }), {
       arrayFormat: 'repeat'
-    });
+    })
   }
 
-  static parseQueryString(queryString) {
-    let parsed = qs.parse(queryString);
+  static parseQueryString (queryString) {
+    let parsed = qs.parse(queryString)
     return _.values(parsed).map((o) => {
-      let sort;
+      let sort
       _.forIn(o, (value, key) => {
-        sort = new Sort(key, value);
-      });
-      return sort;
-    });
+        sort = new Sort(key, value)
+      })
+      return sort
+    })
   }
 
-  static createSort(field, dir) {
-    return new Sort(field, dir);
+  static createSort (field, dir) {
+    return new Sort(field, dir)
+  }
+
+  getField () {
+    return this.field
+  }
+
+  getDir () {
+    return this.dir
   }
 }

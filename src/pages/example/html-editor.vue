@@ -16,21 +16,21 @@
   export default {
 
     components: {
-      'comment-list' : CommentList
+      'comment-list': CommentList
     },
 
     methods: {
-      set(){
-        this.html = "<p>hello</p>";
+      set () {
+        this.html = '<p>hello</p>'
       }
     },
-    beforeDestroy() {
+    beforeDestroy () {
 
     },
-    created() {
+    created () {
 
     },
-    data() {
+    data () {
       return {
         html: '<p>우리나라</p>',
         readonly: false

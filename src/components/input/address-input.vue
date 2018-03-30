@@ -18,9 +18,9 @@
 </template>
 
 <script>
-  import InputMixin from './input-mixin';
+  import InputMixin from './input-mixin'
 
-  let PostCode = window.daum.Postcode;
+  let PostCode = window.daum.Postcode
 
   export default {
     name: 'c-address-input',
@@ -30,27 +30,27 @@
         type: Object
       }
     },
-    data() {
+    data () {
       return {
         model: {}
-      };
+      }
     },
     computed: {
-      exists() {
-        return this.model.postalCode || this.model.street || this.model.detail;
+      exists () {
+        return this.model.postalCode || this.model.street || this.model.detail
       }
     },
     methods: {
-      find() {
-        let width = 500;
-        let height = 600;
+      find () {
+        let width = 500
+        let height = 600
         let p = new PostCode({
           oncomplete: (data) => {
-            this.$set(this.model, 'postalCode', data.zonecode);
-            this.$set(this.model, 'street', data.roadAddress);
-            this.$set(this.model, 'detail', null);
+            this.$set(this.model, 'postalCode', data.zonecode)
+            this.$set(this.model, 'street', data.roadAddress)
+            this.$set(this.model, 'detail', null)
           }
-        });
+        })
         // open({q: '검색어', left: '팝업위치 x값', top: '팝업위치 y값', popupName: '팝업이름', autoClose: '자동닫힘유무'})
         p.open({
           q: this.model.street,
@@ -58,27 +58,27 @@
           left: (window.screen.width / 2) - (width / 2),
           top: (window.screen.height / 2) - (height / 2)
           // autoClose: true
-        });
+        })
       },
-      clear() {
-        this.model.postalCode = null;
-        this.model.street = null;
-        this.model.detail = null;
+      clear () {
+        this.model.postalCode = null
+        this.model.street = null
+        this.model.detail = null
       }
     },
     watch: {
       model: {
-        handler(to, from) {
-          this.$emit('input', to);
+        handler (to, from) {
+          this.$emit('input', to)
         },
         deep: true
       },
-      value(to) {
-        this.model = to || {};
+      value (to) {
+        this.model = to || {}
       }
     },
-    mounted() {
-      this.model = this.value;
+    mounted () {
+      this.model = this.value
     }
-  };
+  }
 </script>

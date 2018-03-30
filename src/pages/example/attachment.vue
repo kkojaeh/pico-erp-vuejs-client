@@ -8,7 +8,8 @@
       <i class="on-left">search</i>
       set value
     </button>
-    <c-attachment ref="attachment" v-model="attachmentId" category="quotation" multiple></c-attachment>
+    <c-attachment ref="attachment" v-model="attachmentId" category="quotation"
+                  multiple></c-attachment>
   </div>
 
 </template>
@@ -17,24 +18,23 @@
 
   export default {
 
-    components: {
-    },
+    components: {},
 
     methods: {
-      save() {
+      save () {
         var att = this.$refs.attachment
         att.save().then((result) => {
           console.log(result)
         })
       }
     },
-    beforeDestroy() {
+    beforeDestroy () {
 
     },
-    created() {
+    created () {
 
     },
-    data() {
+    data () {
       return {
         attachmentId: null
       }

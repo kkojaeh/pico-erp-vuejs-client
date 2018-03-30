@@ -129,7 +129,7 @@
       <q-card-main class="row gutter-md">
 
         <comment-list class="col-xs-12 col-md-11 col-xl-11 no-border"
-            subjectType="project" :subject="model.commentSubjectId"></comment-list>
+                      subjectType="project" :subject="model.commentSubjectId"></comment-list>
 
       </q-card-main>
 

@@ -99,7 +99,7 @@
     margin: 8px;
   }
 
-  .q-layout-page-container{
+  .q-layout-page-container {
     position: absolute;
     top: 0px;
     bottom: 0px;

@@ -6,7 +6,7 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
 
       <!-- action -->
 
@@ -74,8 +74,7 @@
       }
     },
     mounted () {
-      this.dataAdjuster = new DataAdjuster(this.filters, {
-      })
+      this.dataAdjuster = new DataAdjuster(this.filters, {})
     },
     methods: {
       retrieve () {

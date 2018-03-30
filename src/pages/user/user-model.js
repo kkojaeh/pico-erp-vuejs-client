@@ -1,49 +1,49 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array';
-import {exists, FetchableModel} from 'src/model/model';
-import {api} from 'src/plugins/axios';
+import { FetchableArray, SpringPaginationArray } from 'src/model/array'
+import { exists, FetchableModel } from 'src/model/model'
+import { api } from 'src/plugins/axios'
 
 export class UserModel extends FetchableModel {
 
-  get defaults() {
+  get defaults () {
     return {
       enabled: true
-    };
+    }
   }
 
-  get axios() {
-    return api;
+  get axios () {
+    return api
   }
 
-  get url() {
-    return '/user/users/${id}';
+  get url () {
+    return '/user/users/${id}'
   };
 
-  create() {
-    return this.axios.post('/user/users', this);
+  create () {
+    return this.axios.post('/user/users', this)
   }
 
-  update() {
-    return this.axios.put('/user/users/${id}', this);
+  update () {
+    return this.axios.put('/user/users/${id}', this)
   }
 
-  exists() {
-    return exists(this.axios, '/user/users/${id}', this);
+  exists () {
+    return exists(this.axios, '/user/users/${id}', this)
   }
 
-  async validate(state) {
+  async validate (state) {
     let constraints = {
       id: {
         presence: true,
         length: {minimum: 2, maximum: 50},
         exists: async (value) => {
           if (!value) {
-            return;
+            return
           }
           if (!state !== 'create') {
-            return;
+            return
           }
-          let result = await this.exists();
-          return result;
+          let result = await this.exists()
+          return result
         }
       },
       name: {
@@ -60,60 +60,60 @@ export class UserModel extends FetchableModel {
         phoneNumber: true,
         length: {minimum: 2, maximum: 50}
       }
-    };
-    return await this.$validate(constraints);
+    }
+    return await this.$validate(constraints)
   }
 
-  async validateForCreate() {
-    return await this.validate('create');
+  async validateForCreate () {
+    return await this.validate('create')
   }
 
-  async validateForUpdate() {
-    return await this.validate('update');
+  async validateForUpdate () {
+    return await this.validate('update')
   }
 
 }
 
 export class UserRoleModel extends FetchableModel {
-  get axios() {
-    return api;
+  get axios () {
+    return api
   }
 
-  get url() {
-    return '/user/users/${userId}/role';
+  get url () {
+    return '/user/users/${userId}/role'
   };
 
-  grant() {
-    return this.axios.post('/user/users/${userId}/role', this);
+  grant () {
+    return this.axios.post('/user/users/${userId}/role', this)
   }
 
-  revoke() {
+  revoke () {
     return this.axios.delete('/user/users/${userId}/role', {
       data: this
-    });
+    })
   }
 }
 
 export class UserPaginationArray extends SpringPaginationArray {
-  url = '/user/users';
-  axios = api;
-  model = UserModel;
+  url = '/user/users'
+  axios = api
+  model = UserModel
 }
 
 export class UserRoleArray extends FetchableArray {
-  url = '/user/users/${id}/role';
-  axios = api;
-  model = UserRoleModel;
-};
+  url = '/user/users/${id}/role'
+  axios = api
+  model = UserRoleModel
+}
 
 export class UserLabelArray extends FetchableArray {
-  url = '/user/user-query-labels';
-  axios = api;
+  url = '/user/user-query-labels'
+  axios = api
 
   query = (keyword) => {
     return this.fetch({
       query: keyword
-    });
-  };
+    })
+  }
 
-};
+}

@@ -16,7 +16,7 @@
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!creating" :hide-underline="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
@@ -47,7 +47,8 @@
                           cell-editor-framework="ag-grid-checkbox-editor"
                           :editable="true"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
-          <ag-grid-column field="roleDescription" header-name="설명" :width="250"/>
+          <ag-grid-column field="roleName" header-name="코드" :width="200"/>
+          <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
       </q-tab-pane>
       <q-tab-pane :disabled="creating" name="tab-2" class="column no-border"

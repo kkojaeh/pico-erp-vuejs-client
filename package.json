@@ -22,7 +22,7 @@
     "lzutf8": "^0.5.0",
     "moment": "^2.20.1",
     "qs": "^6.5.1",
-    "quasar-extras": "0.x",
+    "quasar-extras": "^1.0.2",
     "quasar-framework": "^0.15.4",
     "tributejs": "^3.2.0",
     "uppy": "^0.22.2",

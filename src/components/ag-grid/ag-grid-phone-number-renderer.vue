@@ -3,27 +3,27 @@
 </template>
 
 <script>
-  import {PhoneNumberFormat, PhoneNumberUtil} from 'google-libphonenumber';
+  import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
 
-  let phoneNumberUtil = PhoneNumberUtil.getInstance();
+  let phoneNumberUtil = PhoneNumberUtil.getInstance()
 
   export default {
     name: 'ag-grid-phone-number-renderer',
     methods: {
-      value() {
-        let value = this.params.value;
+      value () {
+        let value = this.params.value
         if (value) {
           try {
-            const parsed = phoneNumberUtil.parse(value);
+            const parsed = phoneNumberUtil.parse(value)
             if (phoneNumberUtil.isValidNumber(parsed)) {
-              return phoneNumberUtil.format(parsed, PhoneNumberFormat.NATIONAL);
+              return phoneNumberUtil.format(parsed, PhoneNumberFormat.NATIONAL)
             }
           } catch (e) {
           }
         } else {
-          return null;
+          return null
         }
       }
     }
-  };
+  }
 </script>

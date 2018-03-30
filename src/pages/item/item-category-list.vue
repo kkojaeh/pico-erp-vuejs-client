@@ -1,0 +1,159 @@
+<template>
+  <div>
+    <!-- child -->
+
+    <router-view></router-view>
+
+    <!-- child -->
+
+    <c-list-view ref="listView" :array="array" :filters="filters" filter-always prevent-fetch
+                 @fetched="onFetched">
+
+      <!-- action -->
+
+      <div slot="action">
+        <q-btn-dropdown label="생성" flat>
+          <!-- dropdown content -->
+          <q-list>
+            <router-link :to="{ path: '/item-category/create', query: $route.query}">
+              <q-item>
+                <q-item-side icon="add"/>
+                <q-item-main label="최상위 분류"/>
+              </q-item>
+            </router-link>
+            <router-link :event="selectedParentId ? 'click' : ''"
+                         :disabled="!selectedParentId"
+                         :to="{ path: `/item-category/create/${selectedParentId}`, query: $route.query}">
+              <q-item>
+                <q-item-side icon="add"/>
+                <q-item-main label="선택 분류의 하위 분류"/>
+              </q-item>
+            </router-link>
+          </q-list>
+        </q-btn-dropdown>
+      </div>
+
+      <!-- action -->
+
+      <!-- main -->
+      <ag-grid ref="grid" class="ag-theme-material"
+               row-selection="single"
+               enable-server-side-sorting
+               enable-col-resize
+               enable-sorting
+               enable-filter
+               :get-node-child-details="getNodeChildDetails"
+               :row-data="array"
+               @selection-changed="onGridSelectionChanged">
+        <ag-grid-column field="name" header-name="이름" cellRenderer="agGroupCellRenderer"
+                        :width="400" :checkbox-selection="true"
+                        :cell-renderer-params="{
+                          innerRendererFramework: 'ag-grid-link-renderer',
+                          suppressCount: true,
+                          path:'/item-category/show/${id}',
+                          query:$route.query
+                        }"/>
+        <ag-grid-column field="code" header-name="코드" :width="100"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
+                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+      </ag-grid>
+
+      <!-- main -->
+
+      <!-- filters -->
+
+      <q-field slot="filter" icon="search" helper="포함된 글자를 입력하세요"
+               class="col-xs-11 col-md-6 col-xl-6">
+        <q-input v-model="filters.keyword" clearable
+                 @keyup.enter="retrieve()"></q-input>
+      </q-field>
+
+
+      <!-- filters -->
+
+      <!-- filter -->
+
+      <c-list-filter-label slot="filter-label" v-model="filters.keyword" label="단어"/>
+      <!-- filter -->
+
+    </c-list-view>
+  </div>
+
+</template>
+<script>
+  import { DataAdjuster } from 'src/model/data'
+  import { mapGetters } from 'vuex'
+  import { UserLabelArray } from 'src/pages/user/user-model'
+  import { ItemCategoryHierarchyArray } from './item-category-model'
+  import * as _ from 'lodash'
+
+  export default {
+    data () {
+      return {
+        array: new ItemCategoryHierarchyArray(),
+        userLabels: new UserLabelArray(),
+        filters: {
+          keyword: null
+        },
+        selected: null,
+        dataAdjuster: null,
+        lastFetchedTime: null
+      }
+    },
+    watch: {
+      'filters': {
+        deep: true,
+        handler () {
+          this.dataAdjuster.adjust()
+        }
+      }
+    },
+    mounted () {
+      this.dataAdjuster = new DataAdjuster(this.filters, {})
+    },
+    methods: {
+      retrieve () {
+        this.$refs.listView.retrieve()
+      },
+      async onManagerSearch (keyword, done) {
+        await this.userLabels.query(keyword)
+        done()
+      },
+      getNodeChildDetails (data) {
+        if (data.children) {
+          return {
+            group: true,
+            expanded: true,
+            // provide ag-Grid with the children of this group
+            children: data.children,
+            // the key is used by the default group cellRenderer
+            key: data.id
+          }
+        }
+        return null
+      },
+      async onFetched (event) {
+        // 10 초 이내는 서버에 요청하지 않음
+        if (Date.now() - (this.lastFetchedTime) > 10000) {
+          await this.array.fetch()
+          this.lastFetchedTime = Date.now()
+        }
+        this.applyFilter()
+      },
+      applyFilter () {
+        const grid = this.$refs.grid
+        grid.api.setQuickFilter(this.filters.keyword)
+      },
+      onGridSelectionChanged (event) {
+        this.selected = event.api.getSelectedRows()[0]
+      }
+    },
+    computed: {
+      selectedParentId () {
+        return this.selected ? this.selected.id : null
+      }
+
+    }
+  }
+</script>

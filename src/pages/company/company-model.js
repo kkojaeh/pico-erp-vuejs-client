@@ -1,6 +1,7 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, FetchableModel } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import { language, languageAliases } from 'src/i18n'
 
 export class CompanyModel extends FetchableModel {
 
@@ -47,9 +48,9 @@ export class CompanyModel extends FetchableModel {
         length: {minimum: 3, maximum: 5},
         format: {
           pattern: '[A-Z0-9]{3,5}',
-          message: ({
+          message: languageAliases({
             ko: '형식이 틀립니다(영문 대문자/숫자 조합 3~5 글자입니다)'
-          })[navigator.language]
+          })[language]
         },
         exists: async (value) => {
           if (!value) {

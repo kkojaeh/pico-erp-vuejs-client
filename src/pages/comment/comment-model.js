@@ -1,5 +1,5 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel } from 'src/model/model'
+import { SpringPaginationArray } from 'src/model/array'
+import { FetchableModel } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
 export class CommentModel extends FetchableModel {

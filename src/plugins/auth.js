@@ -29,7 +29,6 @@ if (firebaseProjectId === 'pico-erp-dev') {
 
 let filebaseApp
 
-
 export function signIn (email, password) {
   return firebase.auth().signInWithEmailAndPassword(email, password)
 }
@@ -75,16 +74,16 @@ export default ({Vue}) => {
 
 /**
 
- hasRole([role])	Returns true if the current principal has the specified role.
- hasAnyRole([role1,role2])	Returns true
+ hasRole([role])  Returns true if the current principal has the specified role.
+ hasAnyRole([role1,role2])  Returns true
  if the current principal has any of the supplied roles (given as a comma-separated list of strings)
- principal	Allows direct access to the principal object representing the current user
- authentication	Allows direct access to the current Authentication object obtained from the SecurityContext
- permitAll	Always evaluates to true
- denyAll	Always evaluates to false
- isAnonymous()	Returns true if the current principal is an anonymous user
- isRememberMe()	Returns true if the current principal is a remember-me user
- isAuthenticated()	Returns true if the user is not anonymous
+ principal  Allows direct access to the principal object representing the current user
+ authentication  Allows direct access to the current Authentication object obtained from the SecurityContext
+ permitAll  Always evaluates to true
+ denyAll  Always evaluates to false
+ isAnonymous()  Returns true if the current principal is an anonymous user
+ isRememberMe()  Returns true if the current principal is a remember-me user
+ isAuthenticated()  Returns true if the user is not anonymous
  isFullyAuthenticated()
 
  */

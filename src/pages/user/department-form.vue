@@ -16,7 +16,7 @@
         <q-field icon="perm_identity" helper="부서를 식별하는 아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!creating" :hide-underline="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="부서 이름을 입력하세요"
@@ -56,7 +56,8 @@
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
                v-show="!creating">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" url="/audit/department/${id}" :data="model"></audit-viewer>
+            <audit-viewer ref="auditViewer" url="/audit/department/${id}"
+                          :data="model"></audit-viewer>
           </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
@@ -127,8 +128,7 @@
         }
       }
     },
-    computed: {
-    },
+    computed: {},
     components: {
       AuditViewer
     }

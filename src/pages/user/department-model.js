@@ -1,6 +1,7 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, FetchableModel, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import { language, languageAliases } from 'src/i18n'
 
 export class DepartmentModel extends FetchableModel {
 
@@ -38,10 +39,9 @@ export class DepartmentModel extends FetchableModel {
         length: {minimum: 2, maximum: 50},
         format: {
           pattern: '\\w',
-          message: ({
-            ko: '형식이 틀립니다(영문 및 숫자 _ 만 사용가능합니다)',
-            "ko-KR": '형식이 틀립니다(영문 및 숫자 및 `_` 만 사용가능합니다)'
-          })[navigator.language]
+          message: languageAliases({
+            ko: '형식이 틀립니다(영문 및 숫자 _ 만 사용가능합니다)'
+          })[language]
         },
         exists: async (value) => {
           if (!value) {

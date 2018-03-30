@@ -6,18 +6,18 @@
   export default {
     name: 'ag-grid-checkbox-renderer',
     methods: {
-      _onChange(value) {
-        this.params.setValue(value);
+      _onChange (value) {
+        this.params.setValue(value)
       },
-      refresh() {
+      refresh () {
       }
     },
     computed: {
-      editable() {
-        return this.params.column.isCellEditable(this.params.node);
+      editable () {
+        return this.params.column.isCellEditable(this.params.node)
       }
     }
-  };
+  }
 </script>
 
 <style>

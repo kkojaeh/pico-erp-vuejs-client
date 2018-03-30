@@ -17,7 +17,8 @@
                  class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <c-cleave-input v-model="model.id" float-label="코드" :readonly="!creating" clearable
-                          :cleave-options="{uppercase:true, blocks: [5]}" class="ime-mode-disabled"/>
+                          :cleave-options="{uppercase:true, blocks: [5]}"
+                          class="ime-mode-disabled" :hide-underline="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
@@ -120,9 +121,9 @@
 
 </template>
 <script>
-  import {mapGetters} from 'vuex';
-  import {QuotationModel} from './quotation-model';
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue';
+  import { mapGetters } from 'vuex'
+  import { QuotationModel } from './quotation-model'
+  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
     props: {
@@ -137,41 +138,41 @@
         default: false
       }
     },
-    data() {
+    data () {
       return {
         model: new QuotationModel(),
         creating: false,
         enabled: true
-      };
+      }
     },
-    mounted() {
-      this.$nextTick(() => this[this.action]());
+    mounted () {
+      this.$nextTick(() => this[this.action]())
     },
     methods: {
-      async create() {
-        this.creating = true;
+      async create () {
+        this.creating = true
       },
-      async show() {
-        this.creating = false;
-        this.model.id = this.id;
-        await this.model.fetch();
+      async show () {
+        this.creating = false
+        this.model.id = this.id
+        await this.model.fetch()
       },
-      async _onSaveClick() {
+      async _onSaveClick () {
         let valid = this.creating ? await this.model.validateForCreate()
-            : await this.model.validateForUpdate();
+          : await this.model.validateForUpdate()
         if (valid) {
-          await this.save();
-          this.$alert.positive('저장 되었습니다');
-          this.$emit('close');
+          await this.save()
+          this.$alert.positive('저장 되었습니다')
+          this.$emit('close')
         } else {
-          this.$alert.warning('입력이 유효하지 않습니다');
+          this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save() {
+      async save () {
         if (this.creating) {
-          await this.model.create();
+          await this.model.create()
         } else {
-          await this.model.update();
+          await this.model.update()
         }
       }
     },
@@ -181,5 +182,5 @@
     components: {
       AuditViewer
     }
-  };
+  }
 </script>

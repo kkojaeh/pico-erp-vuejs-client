@@ -69,7 +69,13 @@
       getColumns () {
         return (this.$slots.default || [])
         .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition)
+      },
+
+      createCellRendererFramework(component) {
+        const params = this._gridParams
+        debugger
       }
+
 
     },
     created () {
@@ -85,7 +91,7 @@
         column.componentInstance.setGrid(this)
         return column.componentInstance.getColumnDefinition()
       })
-      let gridParams = {
+      this._gridParams = {
         globalEventListener: this.globalEventListener.bind(this),
         frameworkFactory: vueFrameworkFactory,
         seedBeanInstances: {
@@ -93,14 +99,20 @@
         }
       }
       gridOptions.localeText = i18n
-      new Grid(this.$el, gridOptions, gridParams)
+      new Grid(this.$el, gridOptions,  this._gridParams)
       this._initialised = true
     },
     watch: watchedProperties,
+    computed: {
+      api () {
+        return this.gridOptions.api
+      }
+    },
     destroyed () {
       if (this._initialised) {
         this.gridOptions.api.destroy()
         this.gridOptions = null
+        this._gridParams = null
         this._destroyed = true
       }
     }

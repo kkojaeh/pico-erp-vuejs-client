@@ -1457,4 +1457,4 @@ export default {
     dialCode: 358,
     example: '041 2345678'
   }
-};
+}

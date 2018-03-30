@@ -10,17 +10,21 @@ export class Model {
   constructor (data) {
     _.assign(this, data)
     _.defaults(this, this.defaults)
-    this.$errors = _.assign({}, this.defaults)
+    this.$errors = this.defaultErrors
   }
 
   get defaults () {
     return {}
   }
 
+  get defaultErrors () {
+    return {}
+  }
+
   async $validate (constraints) {
     try {
       await validate.async(this, constraints, {fullMessages: false})
-      this.$errors = _.assign({}, this.defaults)
+      this.$errors = this.defaultErrors
       return true
     } catch (e) {
       if (!_.isError(e)) {

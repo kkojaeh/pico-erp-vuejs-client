@@ -1,4 +1,5 @@
 import Quasar from 'quasar'
+import { language, languageAliases } from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
 
@@ -22,20 +23,22 @@ import AgGridLinkRenderer from 'src/components/ag-grid/ag-grid-link-renderer.vue
 import AgGridIconRenderer from 'src/components/ag-grid/ag-grid-icon-renderer.vue'
 import AgGridCleaveRenderer from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
 import AgGridPhoneNumberRenderer from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
+import AgGridArrayLabelRenderer from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
 import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
-const language = Quasar.i18n.getLocale()
-import(`quasar-framework/i18n/${language}`).then(lang => {
-  Quasar.i18n.set(lang.default)
+
+const lang = language
+
+import(`quasar-framework/i18n/${lang}`).then(data => {
+  Quasar.i18n.set(data.default)
 })
-moment.locale({
-  'ko-kr' : 'ko',
-  'ko' : 'ko'
-}[language])
+moment.locale(languageAliases({
+  'ko': 'ko'
+})[language])
 
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
@@ -59,4 +62,6 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-cleave-renderer', AgGridCleaveRenderer)
   Vue.component('ag-grid-phone-number-renderer', AgGridPhoneNumberRenderer)
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)
+  Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
+
 }

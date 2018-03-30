@@ -1,59 +1,60 @@
-import {SpringPaginationArray, FetchableArray} from 'src/model/array';
-import {exists, FetchableModel} from 'src/model/model';
-import {api} from 'src/plugins/axios';
+import { FetchableArray, SpringPaginationArray } from 'src/model/array'
+import { exists, FetchableModel } from 'src/model/model'
+import { api } from 'src/plugins/axios'
+import { language, languageAliases } from 'src/i18n'
 
 export class QuotationModel extends FetchableModel {
 
-  get defaults() {
+  get defaults () {
     return {
       address: {},
       enabled: true,
       supplier: false,
       customer: false,
       outsourcing: false
-    };
+    }
   }
 
-  get axios() {
-    return api;
+  get axios () {
+    return api
   }
 
-  get url() {
-    return '/quotation/quotations/${id}';
+  get url () {
+    return '/quotation/quotations/${id}'
   };
 
-  create() {
-    return this.axios.post('/quotation/quotations', this);
+  create () {
+    return this.axios.post('/quotation/quotations', this)
   }
 
-  update() {
-    return this.axios.put('/quotation/quotations/${id}', this);
+  update () {
+    return this.axios.put('/quotation/quotations/${id}', this)
   }
 
-  exists() {
-    return exists(this.axios, '/quotation/quotations/${id}', this);
+  exists () {
+    return exists(this.axios, '/quotation/quotations/${id}', this)
   }
 
-  async validate(state) {
+  async validate (state) {
     let constraints = {
       id: {
         presence: true,
         length: {minimum: 3, maximum: 5},
         format: {
           pattern: '[A-Z0-9]{3,5}',
-          message: ({
+          message: languageAliases({
             ko: '형식이 틀립니다(영문 대문자/숫자 조합 3~5 글자입니다)'
-          })[navigator.language]
+          })[language]
         },
         exists: async (value) => {
           if (!value) {
-            return;
+            return
           }
           if (state !== 'create') {
-            return;
+            return
           }
-          let result = await this.exists();
-          return result;
+          let result = await this.exists()
+          return result
         }
       },
       name: {
@@ -64,13 +65,13 @@ export class QuotationModel extends FetchableModel {
         length: {minimum: 9, maximum: 20},
         exists: async (value) => {
           if (!value) {
-            return;
+            return
           }
-          let result = await this.existsByRegistrationOrDunsNo();
+          let result = await this.existsByRegistrationOrDunsNo()
           if (result && result.id !== this.id) {
-            return;
+            return
           } else {
-            return !!result;
+            return !!result
           }
         }
       },
@@ -89,34 +90,34 @@ export class QuotationModel extends FetchableModel {
         phoneNumber: true,
         length: {minimum: 2, maximum: 20}
       }
-    };
+    }
 
-    return await this.$validate(constraints);
+    return await this.$validate(constraints)
   }
 
-  async validateForCreate() {
+  async validateForCreate () {
     return await
-        this.validate('create');
+      this.validate('create')
   }
 
-  async validateForUpdate() {
+  async validateForUpdate () {
     return await
-        this.validate('update');
+      this.validate('update')
   }
 }
 
 export class QuotationPaginationArray extends SpringPaginationArray {
-  url = '/quotation/quotations';
-  axios = api;
-  model = QuotationModel;
+  url = '/quotation/quotations'
+  axios = api
+  model = QuotationModel
 }
 
-export class QuotationSatausArray extends FetchableArray {
-  url = '/quotation/status-labels';
-  axios = api;
+export class QuotationSatusArray extends FetchableArray {
+  url = '/quotation/status-labels'
+  axios = api
 }
 
 export class QuotationExpiryPolicyArray extends FetchableArray {
-  url = '/quotation/expiry-policy-labels';
-  axios = api;
+  url = '/quotation/expiry-policy-labels'
+  axios = api
 }

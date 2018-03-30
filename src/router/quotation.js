@@ -2,7 +2,7 @@ import { wrapModal } from './default'
 
 let meta = {
   title: '견적 관리',
-  authorize: "hasRole('QUOTATION_MANAGER')"
+  authorize: 'hasRole(\'QUOTATION_MANAGER\')'
 }
 
 export default [{

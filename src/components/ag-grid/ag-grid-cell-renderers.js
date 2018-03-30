@@ -1,15 +1,15 @@
-import {date} from 'quasar';
+import { date } from 'quasar'
 
-export function dateCellRenderer(params) {
+export function dateCellRenderer (params) {
   if (params.value) {
-    return date.formatDate(params.value, 'YYYY-MM-DD');
+    return date.formatDate(params.value, 'YYYY-MM-DD')
   }
-  return null;
-};
+  return null
+}
 
-export function dateTimeCellRenderer(params) {
+export function dateTimeCellRenderer (params) {
   if (params.value) {
-    return date.formatDate(params.value, 'YYYY-MM-DD HH:mm:ss');
+    return date.formatDate(params.value, 'YYYY-MM-DD HH:mm:ss')
   }
-  return null;
-};
+  return null
+}

@@ -2,7 +2,7 @@ import { wrapModal } from './default'
 
 let meta = {
   title: '회사 관리',
-  authorize: "hasRole('COMPANY_MANAGER')"
+  authorize: 'hasRole(\'COMPANY_MANAGER\')'
 }
 
 export default [{

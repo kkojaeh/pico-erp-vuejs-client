@@ -9,25 +9,25 @@
   export default {
     name: 'ag-grid-checkbox-editor',
     methods: {
-      _onChange(value) {
-        this.params.api.stopEditing();
+      _onChange (value) {
+        this.params.api.stopEditing()
       },
-      refresh() {
+      refresh () {
       },
-      getValue() {
-        return this.params.value;
+      getValue () {
+        return this.params.value
       },
-      isPopup() {
-        return false;
+      isPopup () {
+        return false
       }
     },
     computed: {},
-    mounted() {
+    mounted () {
       this.$nextTick(() => {
-        this.$refs.checkbox.$el.focus();
-      });
+        this.$refs.checkbox.$el.focus()
+      })
     }
-  };
+  }
 </script>
 
 <style>

@@ -7,6 +7,10 @@
 .q-if-label
   font-weight: bold
 
+
+a[disabled] > *
+  opacity: 0.5
+
 *[disabled]
   pointer-events: none
 
@@ -41,10 +45,9 @@
       display: block
       white-space: nowrap
       width: auto
-      margin : 0px
+      margin: 0px
       padding: 0px
       height: 19px
-
 
 .v-select
   .open-indicator

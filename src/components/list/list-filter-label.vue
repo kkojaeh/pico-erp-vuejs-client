@@ -34,6 +34,8 @@
       },
       printValue: {
         type: String
+      },
+      clearValue: {
       }
     },
     data () {
@@ -44,7 +46,7 @@
 
     methods: {
       _onHide () {
-        this.$emit('input', null)
+        this.$emit('input', this.clearValue)
         this.$emit('remove')
       },
 

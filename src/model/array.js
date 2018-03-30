@@ -15,10 +15,12 @@ export class FetchableArray extends Array {
     let result = await this.axios.get(this.resolveUrl(this.url, data),
       {data: data})
     let parsed = this.parse(result)
-    if (this.model) {
-      parsed = parsed.map((o) => new this.model(o))
+    if (parsed) {
+      if (this.model) {
+        parsed = parsed.map((o) => new this.model(o))
+      }
+      this.splice.apply(this, [0, this.length].concat(parsed))
     }
-    this.splice.apply(this, [0, this.length].concat(parsed))
     this.fetching = false
     this.fetched = true
     return parsed
@@ -53,7 +55,7 @@ export class SpringPaginationArray extends PaginationArray {
     }
     _.keys(data).forEach((key) => {
       let value = data[key]
-      if (value !== undefined && value !== null && value !== '' && !_.isObject(value)) {
+      if (value !== undefined && value !== null && value !== '') {
         query[key] = value
       }
     })

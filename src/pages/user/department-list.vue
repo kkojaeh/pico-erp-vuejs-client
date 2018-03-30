@@ -6,7 +6,7 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
 
       <!-- action -->
 
@@ -88,10 +88,7 @@
         filters: {
           name: null,
           managerId: null,
-          managerName: null,
-          customerManagerName: null,
-          startCreatedDate: null,
-          endCreatedDate: null
+          managerName: null
         },
         dataAdjuster: null
       }
@@ -105,8 +102,7 @@
       }
     },
     mounted () {
-      this.dataAdjuster = new DataAdjuster(this.filters, {
-      })
+      this.dataAdjuster = new DataAdjuster(this.filters, {})
     },
     methods: {
       retrieve () {
@@ -117,7 +113,6 @@
         done()
       }
     },
-    computed: {
-    }
+    computed: {}
   }
 </script>

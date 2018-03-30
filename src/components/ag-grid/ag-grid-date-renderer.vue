@@ -3,18 +3,18 @@
 </template>
 
 <script>
-  import {date} from 'quasar';
+  import { date } from 'quasar'
 
   export default {
     name: 'ag-grid-date-renderer',
     methods: {
-      value() {
-        return date.formatDate(this.params.value, 'YYYY-MM-DD');
+      value () {
+        return date.formatDate(this.params.value, 'YYYY-MM-DD')
       }
     },
-    mounted() {
+    mounted () {
     }
-  };
+  }
 </script>
 
 <style>

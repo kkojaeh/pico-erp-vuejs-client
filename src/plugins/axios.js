@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as _ from 'lodash'
 import { Loading, Notify } from 'quasar'
-import {init} from './auth'
+import { init } from './auth'
 
 let apiVersion = 'v1'
 

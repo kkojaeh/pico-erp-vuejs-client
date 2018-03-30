@@ -12,7 +12,7 @@
       <q-btn flat icon="search" @click="_onSearch()">검색</q-btn>
     </q-toolbar>
     <transition name="fade">
-      <div class="list-view-filter row gutter-sm no-margin" v-show="filtersVisible">
+      <div class="list-view-filter row gutter-sm no-margin" v-show="filterAlways || filtersVisible">
         <slot name="filter"></slot>
       </div>
     </transition>
@@ -45,7 +45,7 @@
     props: {
       pagination: {
         type: Boolean,
-        default: true
+        default: false
       },
       pageSize: {
         type: Number,
@@ -82,6 +82,14 @@
       pageName: {
         type: String,
         default: 'p'
+      },
+      filterAlways: {
+        type: Boolean,
+        default: false
+      },
+      preventFetch: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -196,12 +204,15 @@
           array.page = this.page
           array.size = this.rowsPerPage
         }
-        await this.array.fetch(this.filters)
+        if(!this.preventFetch){
+          await this.array.fetch(this.filters)
+        }
         if (this.pagination) {
           this.entries = array.total
           this.page = array.page
           this.size = array.size
         }
+        this.$emit('fetched', this.array)
         return this.array
       },
 
@@ -305,6 +316,7 @@
 
   .list-view-filter {
     padding-right: 10px;
+    width:100%;
   }
 
   .list-view-pagination-bar {

@@ -147,8 +147,8 @@
 
       _onSelectSearch (keyword, loading) {
         keyword = this.$el.querySelector('input').value
-        if(this.lastQueried === keyword){
-          return;
+        if (this.lastQueried === keyword) {
+          return
         }
         this.lastQueried = keyword
         loading(true)

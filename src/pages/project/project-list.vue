@@ -6,7 +6,7 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
 
       <!-- action -->
 
@@ -167,7 +167,6 @@
         done()
       }
     },
-    computed: {
-    }
+    computed: {}
   }
 </script>

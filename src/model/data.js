@@ -103,7 +103,7 @@ export class DataAdjuster {
         order: adjuster.order || 0
       })
     })
-    this.targets = _.sortBy(targets, ['order']);
+    this.targets = _.sortBy(targets, ['order'])
     this.data = data
     this.adjust()
   }
