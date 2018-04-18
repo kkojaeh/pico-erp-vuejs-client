@@ -29,5 +29,12 @@ export default ({app, router, Vue}) => {
     }
   }
 
+  validate.validators.function = function (value, options, key, attributes) {
+    if (_.isArray(options)) {
+      return options
+    }
+    return options
+  }
+
   message()
 }

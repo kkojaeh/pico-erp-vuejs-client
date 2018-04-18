@@ -62,13 +62,45 @@ export function init () {
   })
 }
 
-export default ({Vue}) => {
+const authenticator = new Function('authentication', 'authorize',
+  `with(authentication){return eval(authorize)}`)
+
+export const authenticate = (authorize) => {
+  if (!authorize) {
+    return true
+  }
+  const authentication = store.getters['auth/authentication']
+  return authenticator(authentication, authorize)
+}
+
+export default ({Vue, store}) => {
 
   Vue.prototype.$auth = {
     signIn,
     signOut,
     init
   }
+
+  Vue.mixin({
+    beforeCreate: function () {
+      const options = this.$options
+      const authorized = options.authorized
+      if (authorized) {
+        const $authorized = {}
+        _.forIn(authorized,
+          (value, key) => $authorized[key] = authenticate(value))
+        if (!options.computed) {
+          options.computed = {}
+        }
+        if (options.computed.$authorized) {
+          return
+        }
+        options.computed.$authorized = function () {
+          return $authorized
+        }
+      }
+    }
+  })
 
 }
 

@@ -35,8 +35,7 @@
       printValue: {
         type: String
       },
-      clearValue: {
-      }
+      clearValue: {}
     },
     data () {
       return {

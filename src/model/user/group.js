@@ -1,31 +1,29 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel } from 'src/model/model'
+import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
-export class GroupModel extends FetchableModel {
+export class GroupModel extends Model {
 
   get defaults () {
     return {}
   }
 
-  get axios () {
-    return api
+  static async get (id) {
+    const response = await api.get(`/user/groups/${id}`)
+    return new GroupModel(response.data)
   }
 
-  get url () {
-    return '/user/groups/${id}'
-  };
-
-  create () {
-    return this.axios.post('/user/groups', this)
+  static async exists (id) {
+    return await exists(api, `/user/groups/${id}`)
   }
 
-  update () {
-    return this.axios.put('/user/groups/${id}', this)
+  async create () {
+    const response = await api.post('/user/groups', this)
+    this.assign(response.data)
   }
 
-  exists () {
-    return exists(this.axios, '/user/groups/${id}', this)
+  async update () {
+    await api.put(`/user/groups/${this.id}`, this)
   }
 
   async validate (state) {
@@ -40,7 +38,7 @@ export class GroupModel extends FetchableModel {
           if (!state !== 'create') {
             return
           }
-          let result = await this.exists()
+          let result = await GroupModel.exists(value)
           return result
         }
       },
@@ -52,57 +50,42 @@ export class GroupModel extends FetchableModel {
     return await this.$validate(constraints)
   }
 
-  async validateForCreate () {
+  async validateCreate () {
     return await this.validate('create')
   }
 
-  async validateForUpdate () {
+  async validateUpdate () {
     return await this.validate('update')
   }
 
 }
 
 export class GroupArray extends SpringPaginationArray {
-  url = '/user/groups'
+  url = '/user/groups?${$QS}'
   axios = api
   model = GroupModel
 }
 
-export class GroupRoleModel extends FetchableModel {
-  get axios () {
-    return api
+export class GroupRoleModel extends Model {
+
+  async grant () {
+    await api.post(`/user/groups/${this.groupId}/role`, this)
   }
 
-  get url () {
-    return '/user/groups/${groupId}/role'
-  };
-
-  grant () {
-    return this.axios.post('/user/groups/${groupId}/role', this)
-  }
-
-  revoke () {
-    return this.axios.delete('/user/groups/${groupId}/role', {
+  async revoke () {
+    await api.delete(`/user/groups/${this.groupId}/role`, {
       data: this
     })
   }
 }
 
-export class GroupUserModel extends FetchableModel {
-  get axios () {
-    return api
+export class GroupUserModel extends Model {
+  async add () {
+    await api.post(`/user/groups/${this.groupId}/user`, this)
   }
 
-  get url () {
-    return '/user/groups/${groupId}/user'
-  };
-
-  add () {
-    return this.axios.post('/user/groups/${groupId}/user', this)
-  }
-
-  remove () {
-    return this.axios.delete('/user/groups/${groupId}/user', {
+  async remove () {
+    await api.delete(`/user/groups/${this.groupId}/user`, {
       data: this
     })
   }

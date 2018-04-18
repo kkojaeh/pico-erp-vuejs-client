@@ -1,19 +1,12 @@
 <template>
   <div class="col gutter-sm">
-    <div class="row justify-between with-padding">
-      <q-input class="col-4 no-padding" style="min-width:100px;" float-label="우편번호"
-               v-model="model.postalCode" readonly></q-input>
-      <div class="col-7 no-padding row justify-end">
-        <q-btn flat icon="search" @click="find()" v-if="!(disable || readonly)"></q-btn>
-        <q-btn flat icon="clear" @click="clear()" v-if="!(disable || readonly) && exists"></q-btn>
-      </div>
-    </div>
-    <div>
-      <q-input float-label="도로주소" v-model="model.street" readonly></q-input>
-    </div>
-    <div>
-      <q-input float-label="상세주소" v-model="model.detail"></q-input>
-    </div>
+    <q-input class="col-8" style="min-width:150px;" float-label="우편번호"
+             v-model="model.postalCode" readonly hide-underline>
+      <q-btn flat icon="search" @click="find()" v-if="!(disable || readonly)"></q-btn>
+      <q-btn flat icon="clear" @click="clear()" v-if="!(disable || readonly) && exists"></q-btn>
+    </q-input>
+    <q-input float-label="도로주소" v-model="model.street" readonly hide-underline></q-input>
+    <q-input float-label="상세주소" v-model="model.detail"></q-input>
   </div>
 </template>
 

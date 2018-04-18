@@ -1,8 +1,8 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel, uuid } from 'src/model/model'
+import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
-export class ProjectModel extends FetchableModel {
+export class ProjectModel extends Model {
 
   get defaults () {
     return {
@@ -16,25 +16,23 @@ export class ProjectModel extends FetchableModel {
     }
   }
 
-  get axios () {
-    return api
+  static async get (id) {
+    const response = await api.get(`/project/projects/${id}`)
+    return new ProcessModel(response.data)
   }
 
-  get url () {
-    return '/project/projects/${id}'
-  };
+  static async exists (id) {
+    return await exists(api, `/project/projects/${id}`)
+  }
 
-  create () {
+  async create () {
     this.id = uuid()
-    return this.axios.post('/project/projects', this)
+    const response = await api.post('/project/projects', this)
+    this.assign(response.data)
   }
 
-  update () {
-    return this.axios.put('/project/projects/${id}', this)
-  }
-
-  exists () {
-    return exists(this.axios, '/project/projects/${id}', this)
+  async update () {
+    await api.put(`/project/projects/${this.id}`, this)
   }
 
   async validate (state) {
@@ -78,30 +76,30 @@ export class ProjectModel extends FetchableModel {
     return await this.$validate(constraints)
   }
 
-  async validateForCreate () {
+  async validateCreate () {
     return await
       this.validate('create')
   }
 
-  async validateForUpdate () {
+  async validateUpdate () {
     return await
       this.validate('update')
   }
 }
 
 export class ProjectPaginationArray extends SpringPaginationArray {
-  url = '/project/projects'
+  url = '/project/projects?${$QS}'
   axios = api
   model = ProjectModel
 }
 
 export class ProjectLabelArray extends FetchableArray {
-  url = '/project/project-query-labels'
+  url = '/project/project-query-labels?${$QS}'
   axios = api
 
   query = (keyword) => {
     return this.fetch({
-      query: keyword
+      query: keyword || ''
     })
   }
 }

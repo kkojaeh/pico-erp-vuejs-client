@@ -1,7 +1,8 @@
 <template>
   <uppy-attachment ref="attachment" v-model="model" :model-type="modelType"
                    :multiple="multiple" :max-file-size="maxFileSize"
-                   :max-number-of-files="maxNumberOfFiles" :category="category">
+                   :max-number-of-files="maxNumberOfFiles" :category="category"
+                   :readonly="readonly">
   </uppy-attachment>
 
 </template>
@@ -130,6 +131,10 @@
       category: {
         type: String,
         required: true
+      },
+      readonly: {
+        type: Boolean,
+        default: false
       }
     },
     components: {

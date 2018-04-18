@@ -1,11 +1,11 @@
 <template>
 
-  <div class="row" style="min-width: 70vw;">
+  <q-page class="row">
 
     <q-card class="col-xs-12 col-xl-6 no-margin" flat>
 
       <q-card-title>
-        기본 정보
+        견적 정보
       </q-card-title>
 
       <q-card-separator/>
@@ -49,7 +49,7 @@
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
         </q-field>
 
-        <q-field icon="fa-building-o" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
+        <q-field icon="fa-building" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
                  class="col-xs-11 col-md-4 col-xl-3">
           <div class="row justify-between">
             <q-checkbox label="공급사" v-model="model.supplier"/>
@@ -104,25 +104,25 @@
     </q-card>
 
     <q-toolbar>
-      <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+      <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
       <q-toolbar-title>
       </q-toolbar-title>
       <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
       <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
              v-show="!creating">이력
         <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-          <audit-viewer ref="auditViewer" url="/audit/company/${id}" :data="model"></audit-viewer>
+          <audit-viewer ref="auditViewer" :url="`/audit/company/${model.id}`"></audit-viewer>
         </q-modal>
       </q-btn>
       <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
     </q-toolbar>
 
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { QuotationModel } from './quotation-model'
+  import { QuotationModel } from 'src/model/quotation'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -146,24 +146,31 @@
       }
     },
     mounted () {
-      this.$nextTick(() => this[this.action]())
+      if (this.action) {
+        this.$nextTick(() => this[this.action]())
+      }
     },
     methods: {
       async create () {
         this.creating = true
+        this.model = new QuotationModel()
       },
       async show () {
         this.creating = false
-        this.model.id = this.id
-        await this.model.fetch()
+        this.model = await QuotationModel.get(this.id)
       },
       async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateForCreate()
-          : await this.model.validateForUpdate()
+        let valid = this.creating ? await this.model.validateCreate()
+          : await this.model.validateUpdate()
         if (valid) {
-          await this.save()
-          this.$alert.positive('저장 되었습니다')
-          this.$emit('close')
+          const ok = await this.$alert.confirm('저장 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            this.$alert.positive('저장 되었습니다')
+            if (this.closable) {
+              this.$closeOverlay()
+            }
+          }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }

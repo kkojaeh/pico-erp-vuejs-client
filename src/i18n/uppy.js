@@ -32,7 +32,7 @@ exports.ko = {
       done: '완료',
       localDisk: '내 PC',
       myDevice: '내 장치',
-      dropPasteImport: '여기에 파일을 놓거나 붙여넣기 하세요, 하나 또는 그이상의 위치에서 불러오게 됩니다.',
+      dropPasteImport: '여기에 파일을 놓거나 붙여넣기 하세요, 하나 또는 복수의 파일을 위치에서 불러오게 됩니다.',
       dropPaste: '여기에 파일을 놓거나 붙여넣기 하세요',
       browse: '찾아보기',
       fileProgress: '파일 진행중입니다',

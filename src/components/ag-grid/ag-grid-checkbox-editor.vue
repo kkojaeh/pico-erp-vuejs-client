@@ -1,6 +1,6 @@
 <template>
   <q-checkbox ref="checkbox" v-model="params.value"
-              @change="_onChange"></q-checkbox>
+              @input="_onInput"></q-checkbox>
 </template>
 
 <script>
@@ -9,7 +9,7 @@
   export default {
     name: 'ag-grid-checkbox-editor',
     methods: {
-      _onChange (value) {
+      _onInput (value) {
         this.params.api.stopEditing()
       },
       refresh () {

@@ -1,41 +1,38 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel, uuid } from 'src/model/model'
+import { FetchableArray } from 'src/model/array'
+import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
 
-export class ItemCategoryModel extends FetchableModel {
+export class ItemCategoryModel extends Model {
 
   constructor (data) {
-   super(data);
-   if(data && data.children){
-     data.children = data.children.map(child => new ItemCategoryModel(child))
-   }
-  }
-
-  get defaults () {
-    return {
+    super(data)
+    if (data && data.children) {
+      data.children = data.children.map(child => new ItemCategoryModel(child))
     }
   }
 
-  get axios () {
-    return api
+  get defaults () {
+    return {}
   }
 
-  get url () {
-    return '/item/categories/${id}'
-  };
+  static async get (id) {
+    const response = await api.get(`/item/categories/${id}`)
+    return new ItemCategoryModel(response.data)
+  }
 
-  create () {
+  static async exists (id) {
+    return await exists(api, `/item/categories/${id}`)
+  }
+
+  async create () {
     this.id = uuid()
-    return this.axios.post('/item/categories', this)
+    const response = await api.post('/item/categories', this)
+    this.assign(response.data)
   }
 
-  update () {
-    return this.axios.put('/item/categories/${id}', this)
-  }
-
-  exists () {
-    return exists(this.axios, '/item/categories/${id}', this)
+  async update () {
+    return api.put(`/item/categories/${this.id}`, this)
   }
 
   async validate (state) {
@@ -59,30 +56,31 @@ export class ItemCategoryModel extends FetchableModel {
     return await this.$validate(constraints)
   }
 
-  async validateForCreate () {
+  async validateCreate () {
     return await
       this.validate('create')
   }
 
-  async validateForUpdate () {
+  async validateUpdate () {
     return await
       this.validate('update')
   }
+
 }
 
-  export class ItemCategoryHierarchyArray extends FetchableArray {
+export class ItemCategoryHierarchyArray extends FetchableArray {
   url = '/item/categories'
   axios = api
   model = ItemCategoryModel
 }
 
 export class ItemCategoryLabelArray extends FetchableArray {
-  url = '/item/category-query-labels'
+  url = '/item/category-query-labels?${$QS}'
   axios = api
 
   query = (keyword) => {
     return this.fetch({
-      query: keyword
+      query: keyword || ''
     })
   }
 }

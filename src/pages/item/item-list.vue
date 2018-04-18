@@ -1,12 +1,10 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
-
     <router-view></router-view>
 
     <!-- child -->
-
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +17,14 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="code" header-name="코드" :width="130"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/item/show/${id}', query:$route.query}"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
         <ag-grid-column field="name" header-name="이름" :width="300"/>
@@ -64,18 +62,18 @@
 
       <q-field slot="filter" icon="fa-comment" helper="품목의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-select ref="statuses" float-label="상태" v-model="filters.statuses"
+        <q-select float-label="상태" v-model="filters.statuses"
                   :options="statusLabels" multiple chips></q-select>
       </q-field>
 
       <q-field slot="filter" icon="fa-comment" helper="품목의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-select ref="statuses" float-label="유형" v-model="filters.types"
+        <q-select float-label="유형" v-model="filters.types"
                   :options="typeLabels" multiple chips></q-select>
       </q-field>
 
 
-      <q-field slot="filter" icon="fa-building-o" helper="고객사를 선택하세요"
+      <q-field slot="filter" icon="fa-building" helper="고객사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
@@ -89,7 +87,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="품목 분류를 선택하세요"
+      <q-field slot="filter" icon="fa-tag" helper="품목 분류를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.categoryId"
@@ -120,15 +118,20 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { ItemCategoryLabelArray } from './item-category-model'
-  import { ItemPaginationArray, ItemStatusArray, ItemTypeArray } from './item-model'
-  import { CompanyLabelArray } from 'src/pages/company/company-model'
+  import {
+    ItemPaginationArray,
+    ItemStatusArray,
+    ItemTypeArray,
+    ItemCategoryLabelArray
+  } from 'src/model/item'
+  import { CompanyLabelArray } from 'src/model/company'
   import * as _ from 'lodash'
 
   export default {
@@ -164,6 +167,8 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       this.statusLabels.fetch()
       this.typeLabels.fetch()
+      this.categoryLabels.query()
+      this.companyLabels.query()
     },
     methods: {
       retrieve () {

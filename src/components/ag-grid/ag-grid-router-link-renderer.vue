@@ -1,6 +1,5 @@
 <template>
   <router-link :to="to">
-    <q-icon :name="icon" size="1.5rem" v-if="icon"/>
     {{value}}
   </router-link>
 </template>
@@ -9,7 +8,7 @@
   import * as _ from 'lodash'
 
   export default {
-    name: 'ag-grid-link-renderer',
+    name: 'ag-grid-router-link-renderer',
     methods: {},
     computed: {
       to () {
@@ -28,9 +27,6 @@
         }
         return location
       },
-      icon () {
-        return this.params.icon
-      },
       value () {
         return this.params.value
       }
@@ -41,5 +37,7 @@
 <style scoped>
   a {
     text-decoration: underline;
+    display: inline-block;
+    width: 100%;
   }
 </style>

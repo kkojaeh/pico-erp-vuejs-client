@@ -1,12 +1,12 @@
 <template>
-  <q-checkbox v-model="params.value" :disable="!editable" @change="_onChange"></q-checkbox>
+  <q-checkbox v-model="params.value" :disable="!editable" @input="_onInput"></q-checkbox>
 </template>
 
 <script>
   export default {
     name: 'ag-grid-checkbox-renderer',
     methods: {
-      _onChange (value) {
+      _onInput (value) {
         this.params.setValue(value)
       },
       refresh () {

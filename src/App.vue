@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import { authenticate } from 'src/plugins/auth'
+
   export default {
     name: 'App',
     async created () {
@@ -13,7 +15,7 @@
       const router = this.$router
       const routeTo = store.getters['route/to']
       if (routeTo) {
-        const authorized = await store.dispatch('auth/authenticate', routeTo.meta.authorize)
+        const authorized = authenticate(routeTo.meta.authorize)
         if (authorized) {
           const routeNext = store.getters['route/next']
           routeNext()

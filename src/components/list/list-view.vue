@@ -1,26 +1,29 @@
 <template>
-  <div class="fit column">
-    <q-toolbar>
+  <div class="column fit">
+    <q-toolbar ref="top">
       <slot name="action"></slot>
       <q-toolbar-title>
       </q-toolbar-title>
       <transition name="fade">
-        <div ref="filterBox">
+        <div ref="labels">
           <slot name="filter-label"></slot>
         </div>
       </transition>
-      <q-btn flat icon="search" @click="_onSearch()">검색</q-btn>
+      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger">검색</q-btn>
     </q-toolbar>
     <transition name="fade">
-      <div class="list-view-filter row gutter-sm no-margin" v-show="filterAlways || filtersVisible">
+      <div ref="filters" class="list-view-filter row gutter-sm no-margin"
+           v-show="filterAlways || filtersVisible">
         <slot name="filter"></slot>
       </div>
     </transition>
 
-    <div class="list-view-content">
+    <div class="list-view-content col-grow">
       <slot name="default"></slot>
     </div>
-    <q-toolbar v-if="pagination" inverted flat class="justify-between list-view-pagination-bar">
+
+    <q-toolbar v-if="pagination" inverted flat class="justify-between list-view-pagination-bar"
+               ref="bottom">
       <q-field>
         <q-select v-model="rowsPerPage" :options="pageSizeOptions"></q-select>
       </q-field>
@@ -88,6 +91,14 @@
         default: false
       },
       preventFetch: {
+        type: Boolean,
+        default: false
+      },
+      hideTrigger: {
+        type: Boolean,
+        default: false
+      },
+      preventRoute: {
         type: Boolean,
         default: false
       }
@@ -204,7 +215,7 @@
           array.page = this.page
           array.size = this.rowsPerPage
         }
-        if(!this.preventFetch){
+        if (!this.preventFetch) {
           await this.array.fetch(this.filters)
         }
         if (this.pagination) {
@@ -252,10 +263,14 @@
         query[this.sortName] = this.sortQueryString
         query[this.filtersName] = this.filtersQueryString
         query[this.pageName] = this.page
-        if (_.isEmpty(this.$route.query)) {
-          this.$router.replace({path: this.$route.path, query: query})
+        if (this.preventRoute) {
+          this._assignQuery(query)
         } else {
-          this.$router.push({path: this.$route.path, query: query})
+          if (_.isEmpty(this.$route.query)) {
+            this.$router.replace({path: this.$route.path, query: query})
+          } else {
+            this.$router.push({path: this.$route.path, query: query})
+          }
         }
       },
 
@@ -304,11 +319,6 @@
 
 <style>
 
-  .list-view-content {
-    height: auto;
-    flex: 1;
-  }
-
   .list-view-content > * {
     height: 100%;
     width: 100%;
@@ -316,7 +326,7 @@
 
   .list-view-filter {
     padding-right: 10px;
-    width:100%;
+    width: 100%;
   }
 
   .list-view-pagination-bar {

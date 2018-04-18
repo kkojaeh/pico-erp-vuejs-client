@@ -1,9 +1,9 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel } from 'src/model/model'
+import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
 
-export class CompanyModel extends FetchableModel {
+export class QuotationModel extends Model {
 
   get defaults () {
     return {
@@ -15,30 +15,22 @@ export class CompanyModel extends FetchableModel {
     }
   }
 
-  get axios () {
-    return api
+  static async get (id) {
+    const response = await api.get(`/quotation/quotations/${id}`)
+    return new QuotationModel(response.data)
   }
 
-  get url () {
-    return '/company/companies/${id}'
-  };
-
-  create () {
-    return this.axios.post('/company/companies', this)
+  static async exists (id) {
+    return await exists(api, `/quotation/quotations/${id}`)
   }
 
-  update () {
-    return this.axios.put('/company/companies/${id}', this)
+  async create () {
+    const response = await api.post('/quotation/quotations', this)
+    this.assign(response.data)
   }
 
-  exists () {
-    return exists(this.axios, '/company/companies/${id}', this)
-  }
-
-  existsByRegistrationOrDunsNo () {
-    return exists(this.axios,
-      '/company/companies/${registrationNumber}?registrationNumber=true',
-      this)
+  async update () {
+    await api.put(`/quotation/quotations/${this.id}`, this)
   }
 
   async validate (state) {
@@ -59,27 +51,13 @@ export class CompanyModel extends FetchableModel {
           if (state !== 'create') {
             return
           }
-          let result = await this.exists()
+          let result = await QuotationModel.exists(value)
           return result
         }
       },
       name: {
         presence: true,
         length: {minimum: 2, maximum: 50}
-      },
-      registrationNumber: {
-        length: {minimum: 9, maximum: 20},
-        exists: async (value) => {
-          if (!value) {
-            return
-          }
-          let result = await this.existsByRegistrationOrDunsNo()
-          if (result && result.id !== this.id) {
-            return
-          } else {
-            return !!result
-          }
-        }
       },
       representative: {
         length: {minimum: 1, maximum: 20}
@@ -101,32 +79,29 @@ export class CompanyModel extends FetchableModel {
     return await this.$validate(constraints)
   }
 
-  async validateForCreate () {
+  async validateCreate () {
     return await
       this.validate('create')
   }
 
-  async validateForUpdate () {
+  async validateUpdate () {
     return await
       this.validate('update')
   }
 }
 
-export class CompanyPaginationArray extends SpringPaginationArray {
-  url = '/company/companies'
+export class QuotationPaginationArray extends SpringPaginationArray {
+  url = '/quotation/quotations?${$QS}'
   axios = api
-  model = CompanyModel
+  model = QuotationModel
 }
 
-export class CompanyLabelArray extends FetchableArray {
-  url = '/company/company-query-labels'
+export class QuotationSatusArray extends FetchableArray {
+  url = '/quotation/status-labels'
   axios = api
-
-  query = async (keyword) => {
-    return await this.fetch({
-      query: keyword
-    })
-  }
 }
 
-
+export class QuotationExpiryPolicyArray extends FetchableArray {
+  url = '/quotation/expiry-policy-labels'
+  axios = api
+}

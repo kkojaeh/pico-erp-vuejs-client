@@ -1,5 +1,4 @@
 import * as _ from 'lodash'
-import qs from 'qs'
 import Vue from 'vue'
 import validate from 'validate.js'
 import { date } from 'quasar'
@@ -23,8 +22,8 @@ export class Model {
 
   async $validate (constraints) {
     try {
-      await validate.async(this, constraints, {fullMessages: false})
       this.$errors = this.defaultErrors
+      await validate.async(this, constraints, validate.globalOptions)
       return true
     } catch (e) {
       if (!_.isError(e)) {
@@ -32,41 +31,13 @@ export class Model {
         _.keys(e).forEach((key) => {
           _.set(errors, key, e[key].join('\n'))
         })
+        console.log(errors)
         _.keys(errors).forEach((key) => {
           Vue.set(this.$errors, key, errors[key])
         })
         return false
       }
     }
-  }
-}
-
-export class FetchableModel extends Model {
-  get axios () {
-  }
-
-  get url () {
-  }
-
-  async fetch (data) {
-    const o = _.assign({}, this)
-    if (data) {
-      _.assign(o, data)
-    }
-    let result = await this.axios.get(this.resolveUrl(this.url, o), {data: o})
-    const parsed = this.parse(result)
-    _.keys(parsed).forEach((key) => {
-      Vue.set(this, key, parsed[key])
-    })
-    return this
-  }
-
-  resolveUrl (url, data) {
-    return url + (_.includes(url, '?') ? '&' : '?') + qs.stringify(data)
-  }
-
-  parse (response) {
-    return response.data
   }
 
   snapshot () {
@@ -87,15 +58,19 @@ export class FetchableModel extends Model {
   equals (a, b) {
     return _.isEqual(a, b)
   }
+
+  assign (data) {
+    _.assign(this, data)
+  }
 }
 
 export async function exists (axios, url, data) {
   try {
-    let result = await axios.get(url, {
+    let response = await axios.get(url, {
       data: data,
       preventDefault: true
     })
-    return result
+    return !!response.data
   } catch (e) {
     if (e.response.status == 404) {
       return false

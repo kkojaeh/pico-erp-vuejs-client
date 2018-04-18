@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,14 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="name" header-name="이름" :width="200"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/project/show/${id}', query:$route.query}"/>
 
         <ag-grid-column field="customerName" header-name="고객사명" :width="150"/>
@@ -49,7 +49,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="고객사를 선택하세요"
+      <q-field slot="filter" icon="fa-building" helper="고객사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
@@ -103,15 +103,15 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { CompanyLabelArray } from 'src/pages/company/company-model'
-  import { UserLabelArray } from 'src/pages/user/user-model'
-  import { ProjectPaginationArray } from './project-model'
+  import { CompanyLabelArray } from 'src/model/company'
+  import { UserLabelArray } from 'src/model/user'
+  import { ProjectPaginationArray } from 'src/model/project'
   import * as _ from 'lodash'
 
   export default {
@@ -143,6 +143,8 @@
       }
     },
     mounted () {
+      this.companyLabels.query()
+      this.userLabels.query()
       this.dataAdjuster = new DataAdjuster(this.filters, {
         startCreatedDate: {
           type: Date,

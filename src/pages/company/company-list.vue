@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,14 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/company/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="registrationNumber" header-name="등록번호" :width="170"
@@ -50,7 +50,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fa-building" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-5 col-xl-4">
         <div class="row justify-between">
           <q-checkbox class="col" label="공급사" v-model="filters.supplier"/>
@@ -80,13 +80,13 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { CompanyPaginationArray } from './company-model'
+  import { CompanyPaginationArray } from 'src/model/company'
 
   export default {
     data () {

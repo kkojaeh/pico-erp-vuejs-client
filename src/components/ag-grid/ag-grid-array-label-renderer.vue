@@ -9,7 +9,7 @@
       value () {
         const params = this.params
         const found = params.array.find(e => e[params.valueField] == params.value)
-        return found ? found[params.labelField] : ''
+        return found ? found[params.labelField] : params.notFoundLabel || ''
       }
     },
     mounted () {

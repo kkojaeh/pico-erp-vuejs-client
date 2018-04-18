@@ -5,12 +5,12 @@
       </q-item-side>
       <q-item-main>
         <q-item-tile>
-          <div class="comment-viewer" data-tribute="true" v-html="item.comment"></div>
+          <q-input type="textarea" :value="item.comment" readonly hide-underline></q-input>
         </q-item-tile>
       </q-item-main>
       <q-item-side right>
         <q-item-tile stamp>
-          <strong>{{printAgo(item.createdDate)}}</strong><br><sub>({{printDate(
+          <strong>{{$date.ago(item.createdDate)}}</strong><br><sub>({{$date.format(
           item.createdDate)}})</sub>
         </q-item-tile>
       </q-item-side>
@@ -19,8 +19,8 @@
     <div class="row justify-center">
       <q-pagination v-if="max > 1" v-model="page" :max="max" @input="setPage"></q-pagination>
     </div>
-    <q-item-separator/>
-    <q-item :disabled="!subject">
+    <q-item-separator v-if="array.length"/>
+    <q-item :disabled="!subject" v-show="!readonly">
       <q-item-main>
         <q-field icon="fa-reply" class="col-12" helper="남기실 글을 입력하세요"
                  :error="!!model.$errors.comment"
@@ -41,20 +41,14 @@
 <script>
   import { mapGetters } from 'vuex'
   import { date } from 'quasar'
-  import { api } from 'src/plugins/axios'
-  import { CommentModel, CommentArray } from './comment-model'
-  import { UserLabelArray } from 'src/pages/user/user-model'
-  import moment from 'moment'
+  import { CommentArray, CommentModel } from 'src/model/comment'
+  import { UserLabelArray } from 'src/model/user'
   import Tribute from 'tributejs'
   import 'tributejs/dist/tribute.css'
 
   export default {
     name: 'comment-list',
     props: {
-      dateFormat: {
-        type: String,
-        default: 'YYYY-MM-DD HH:mm:ss'
-      },
       subjectType: {
         type: String,
         required: true
@@ -65,6 +59,10 @@
       pageSize: {
         type: Number,
         default: 10
+      },
+      readonly: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -84,7 +82,6 @@
         })
         const prefix = '#comment-'
         const hash = this.$route.hash || ''
-        debugger
         if (hash.startsWith(prefix)) {
           const commentId = hash.substring(prefix.length)
           setTimeout(() => {
@@ -102,7 +99,7 @@
         this.registering = true
         this.model.subjectId = this.subject
         this.model.subjectTypeId = this.subjectType
-        const valid = await this.model.validateForCreate()
+        const valid = await this.model.validateCreate()
         if (valid) {
           await this.model.create()
           await this.load()
@@ -116,22 +113,6 @@
         this.page = value
         this.array.page = value
         this.load()
-      },
-      printAgo (d) {
-        if (typeof d == 'string') {
-          d = new Date(Date.parse(d))
-        }
-        if (!isNaN(d)) {
-          return moment(d).fromNow()
-        }
-      },
-      printDate (d) {
-        if (typeof d == 'string') {
-          d = new Date(Date.parse(d))
-        }
-        if (!isNaN(d)) {
-          return date.formatDate(d, this.dateFormat)
-        }
       }
     },
     computed: {

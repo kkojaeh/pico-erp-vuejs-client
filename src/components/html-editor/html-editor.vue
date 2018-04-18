@@ -79,24 +79,24 @@
       async _createEditor () {
         return ClassicEditor.create(this.$refs.textarea, {
           image: {
-            toolbar: ['imageTextAlternative', '|', 'imageStyleAlignLeft', 'imageStyleFull',
-              'imageStyleAlignRight'],
-            styles: ['imageStyleFull', 'imageStyleAlignLeft', 'imageStyleAlignRight']
+            toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full',
+              'imageStyle:alignRight'],
+            styles: ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight']
           },
           toolbar: [
-            'headings', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList',
-            '|', 'undo', 'redo'
+            'heading', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', '|',
+            'imageUpload', '|', 'blockQuote', '|', 'undo', 'redo'
           ]
         })
       },
       async _initEditor () {
         const editor = await this._createEditor()
-        editor.plugins.get('FileRepository').createAdapter = function (loader) {
+        editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
           return new Adapter(loader)
         }
         editor.isReadOnly = this.readonly
         editor.setData(this.model || '')
-        editor.document.on('change', () => {
+        editor.model.document.on('change', () => {
           this.model = editor.getData()
           this.$emit('input', this.model)
         })
@@ -108,7 +108,7 @@
 
 </script>
 <style>
-  .ck-editor .ck-editor__editable {
+  .ck-editor .ck-content.ck-editor__editable {
     min-height: 300px;
   }
 

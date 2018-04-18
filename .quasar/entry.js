@@ -60,6 +60,15 @@ plugins.push(pluginComponents)
 import pluginValidate from 'src/plugins/validate'
 plugins.push(pluginValidate)
 
+import pluginNumber from 'src/plugins/number'
+plugins.push(pluginNumber)
+
+import pluginDate from 'src/plugins/date'
+plugins.push(pluginDate)
+
+import pluginCloseoverlay from 'src/plugins/close-overlay'
+plugins.push(pluginCloseoverlay)
+
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 
 

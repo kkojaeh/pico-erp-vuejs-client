@@ -1,5 +1,6 @@
 <template>
   <uppy ref="uppy" :plugins="uppyPlugins" :auto-proceed="false"
+        :readonly="readonly"
         :restrictions="restrictions"
         @before-file-added="_onUppyBeforeFileAdded"
         @file-added="_onUppyFileAdded"
@@ -45,6 +46,10 @@
       },
       allowedContentTypes: {
         type: Array
+      },
+      readonly: {
+        type: Boolean,
+        default: false
       }
     },
     components: {
@@ -149,6 +154,9 @@
         }
       },
       async _onUppyUploadSuccess ({response, fileId}) {
+        if (!_.isString(fileId)) {
+          fileId = fileId.id
+        }
         const uppy = this.$refs.uppy
         const model = this.model
         const fileModel = await this.model.addFile(
@@ -165,7 +173,7 @@
         uppyFile.uploadURL = fileModel.download
         uppyFile.isRemote = true
         uppyFile.remote = fileModel.download
-        uppy.setFileState(id, uppyFile)
+        uppy.setFileState(uppyFile.id, uppyFile)
       },
 
       _onUppyUploadComplete ({result}) {

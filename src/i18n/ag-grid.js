@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { language, languageAliases } from './index'
+
 const exports = {}
 
 exports.ko = {

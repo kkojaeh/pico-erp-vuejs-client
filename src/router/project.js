@@ -2,7 +2,7 @@ import { wrapModal } from './default'
 
 let meta = {
   title: '프로젝트 관리',
-  authorize: "hasRole('PROJECT_MANAGER')"
+  authorize: 'hasRole(\'PROJECT_MANAGER\')'
 }
 
 export default [{

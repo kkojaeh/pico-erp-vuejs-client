@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { Notify } from 'quasar'
+import { authenticate } from 'src/plugins/auth'
 
 import store from '../store'
 
@@ -11,6 +12,7 @@ import projectRoutes from './project'
 import quotationRoutes from './quotation'
 import processRoutes from './process'
 import itemRoutes from './item'
+import bomRoutes from './bom'
 
 Vue.use(VueRouter)
 
@@ -52,6 +54,7 @@ const Router = new VueRouter({
         ...projectRoutes,
         ...processRoutes,
         ...itemRoutes,
+        ...bomRoutes,
         ...exampleRoutes
       ]
     },
@@ -78,8 +81,7 @@ Router.beforeEach(async (to, from, next) => {
   }
 
   if (store.getters['global/initialized']) {
-    const authorized = await store.dispatch('auth/authenticate',
-      to.meta.authorize)
+    const authorized = authenticate(to.meta.authorize)
     if (authorized) {
       next()
     } else {

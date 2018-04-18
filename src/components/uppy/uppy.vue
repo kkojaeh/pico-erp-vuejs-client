@@ -1,11 +1,12 @@
 <template>
-  <div ref="container"></div>
+  <div ref="container" :class="[readonly ? 'uppy-readonly': '']">
+    <q-resize-observable @resize="_onResize"/>
+  </div>
 </template>
 
 <script>
   import 'uppy/dist/uppy.css'
   import * as _ from 'lodash'
-  import qs from 'qs'
   import Uppy from 'uppy/lib/core'
   import Dashboard from 'uppy/lib/plugins/Dashboard'
   import XHRUpload from 'uppy/lib/plugins/XHRUpload'
@@ -84,6 +85,10 @@
             allowedFileTypes: false
           }
         }
+      },
+      readonly: {
+        type: Boolean,
+        default: false
       }
     },
 
@@ -144,6 +149,14 @@
         })
         uppy.run()
       },
+      _onResize () {
+        // FIX: Dashboard 의 isWide 속성을 변경(사이즈 문제)
+        const uppy = this.uppy
+        const dashboard = uppy.getPlugin('Dashboard')
+        if (dashboard && dashboard.updateDashboardElWidth) {
+          dashboard.updateDashboardElWidth()
+        }
+      },
       _destroyUppy () {
         this.uppy.close()
         this.uppy = null
@@ -163,7 +176,6 @@
         _.keys(this.uppy.getState().files).forEach((id) => {
           this.uppy.removeFile(id)
         })
-
       }
     }
 
@@ -171,11 +183,21 @@
 
 </script>
 
-<style>
+<style lang="stylus">
 
-  .uppy-DashboardItem-preview img {
-    object-fit: contain;
-  }
+  .uppy-DashboardItem-preview
+    img
+      object-fit: contain;
+
+  .uppy-readonly
+    .uppy-DashboardTabs
+      display: none
+    .uppy-Dashboard-files--noFiles
+      display: none
+    .uppy-DashboardItem-remove
+      display: none
+    .uppy-DashboardItem-edit
+      display: none
 
 
 </style>

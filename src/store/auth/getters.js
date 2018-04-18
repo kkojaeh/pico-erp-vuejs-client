@@ -7,7 +7,7 @@ export const menus = (state) => {
   return state.menus
 }
 export const authentication = (state) => {
-  return state.user ? new Authentication(state.user, state.user.roles)
+  return state.user ? new Authentication(state.user, state.user.wholeRoles)
     : new Authentication(null, [])
 }
 

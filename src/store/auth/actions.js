@@ -1,5 +1,5 @@
 import { FetchableArray } from 'src/model/array'
-import { FetchableModel } from 'src/model/model'
+import { Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
 class UserMenuArray extends FetchableArray {
@@ -7,21 +7,19 @@ class UserMenuArray extends FetchableArray {
   axios = api
 }
 
-class UserModel extends FetchableModel {
-  get axios () {
-    return api
-  }
+class UserModel extends Model {
 
-  get url () {
-    return '/user/me'
-  };
+  static async get () {
+    const response = await api.get('/user/me')
+    return new UserModel(response.data)
+  }
 }
 
 export const signIn = async (context, user) => {
   if (user) {
-    let model = new UserModel()
+    let model = await UserModel.get()
     let array = new UserMenuArray()
-    await Promise.all([model.fetch(), array.fetch()])
+    await array.fetch()
     context.commit('user', model)
     context.commit('menus', array)
   } else {
@@ -34,15 +32,4 @@ export const signOut = async (context) => {
   context.commit('user', null)
   context.commit('menus', [])
   // context.commit('router/lastAccessed', {path: '/'});
-}
-
-const authenticator = new Function('authentication', 'authorize',
-  `with(authentication){return eval(authorize)}`)
-
-export const authenticate = async (context, authorize) => {
-  if (!authorize) {
-    return true
-  }
-  const authentication = context.getters['authentication']
-  return authenticator(authentication, authorize);
 }

@@ -16,47 +16,47 @@ async function confirm (message, detail) {
 }
 
 function positive (message, detail) {
-  let alert = Notify.create({
+  Notify.create({
     icon: 'done',
     position: 'bottom-right',
     color: 'positive',
+    timeout: 3000,
     message,
     detail
   })
-  setTimeout(alert.dismiss, 4000)
 }
 
 function negative (message, detail) {
-  let alert = Notify.create({
+  Notify.create({
     icon: 'error',
     position: 'bottom-right',
     color: 'negative',
+    timeout: 3000,
     message,
     detail
   })
-  setTimeout(alert.dismiss, 4000)
 }
 
 function warning (message, detail) {
-  let alert = Notify.create({
+  Notify.create({
     icon: 'warning',
     position: 'bottom-right',
     color: 'warning',
+    timeout: 3000,
     message,
     detail
   })
-  setTimeout(alert.dismiss, 4000)
 }
 
 function info (message, detail) {
-  let alert = Notify.create({
+  Notify.create({
     icon: 'info',
     position: 'bottom-right',
     color: 'info',
+    timeout: 3000,
     message,
     detail
   })
-  setTimeout(alert.dismiss, 4000)
 }
 
 // leave the export, even if you don't use it

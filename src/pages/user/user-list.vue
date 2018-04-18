@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,14 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/user/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="150"/>
         <ag-grid-column field="email" header-name="이메일" :width="200"/>
@@ -80,14 +80,13 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { UserPaginationArray } from './user-model'
-  import { DepartmentLabelArray } from './department-model'
+  import { UserPaginationArray, DepartmentLabelArray } from 'src/model/user'
 
   export default {
     data () {
@@ -107,6 +106,7 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {
         enabled: Boolean
       })
+      this.departmentLabels.query()
     },
     methods: {
       retrieve () {

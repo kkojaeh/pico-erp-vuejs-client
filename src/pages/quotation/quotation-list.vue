@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,14 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/company/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="registrationNumber" header-name="사업자(DUNS)번호" :width="170"
@@ -50,7 +50,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fa-building" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select ref="statuses" float-label="상태" v-model="filters.statuses"
                   :options="statusLabels" multiple></q-select>
@@ -72,7 +72,7 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
@@ -81,9 +81,9 @@
     QuotationPaginationArray,
     QuotationSatusArray,
     QuotationExpiryPolicyArray
-  } from './quotation-model'
+  } from 'src/model/quotation'
 
-  import { CompanyLabelArray } from 'src/pages/company/company-model'
+  import { CompanyLabelArray } from 'src/model/company'
 
   export default {
     data () {
@@ -91,7 +91,7 @@
         array: new QuotationPaginationArray(),
         statusLabels: new QuotationSatusArray(),
         expiryPolicyLabels: new QuotationExpiryPolicyArray(),
-        companies: new CompanyLabelArray(),
+        companyLabels: new CompanyLabelArray(),
         filters: new {
           name: null,
           statuses: []
@@ -103,6 +103,7 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       this.statusLabels.fetch()
       this.expiryPolicyLabels.fetch()
+      this.companyLabels.query()
     },
     methods: {
       retrieve () {

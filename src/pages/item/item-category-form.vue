@@ -1,11 +1,10 @@
 <template>
-  <!-- style="min-width: 70vw; max-width:95vw" -->
-  <q-layout class="row items-baseline layout-padding" view="hHh Lpr fFf">
+  <q-page class="row items-baseline layout-padding">
 
     <q-card class="col-12" flat>
 
       <q-card-title>
-        기본 정보
+        품목 분류 정보
       </q-card-title>
 
       <q-card-separator/>
@@ -19,7 +18,7 @@
         </q-field>
 
         <q-field icon="perm_identity"
-                 class="col-xs-12 col-md-6 col-xl-6" dark>
+                 class="col-xs-12 col-md-6 col-xl-6">
           <q-input :value="model.code" float-label="코드" readonly hide-underline/>
         </q-field>
 
@@ -30,8 +29,8 @@
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
-        <q-field icon="fa-clipboard-list" helper="품목 분류의 설명을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-6"
+        <q-field icon="description" helper="품목 분류의 설명을 입력하세요"
+                 class="col-xs-12 col-md-12 col-xl-12"
                  :error="!!model.$errors.description"
                  :error-label="model.$errors.description"
                  :count="200">
@@ -44,9 +43,9 @@
 
     </q-card>
 
-    <q-layout-footer>
+    <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
@@ -55,20 +54,20 @@
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
                v-show="!creating">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" url="/audit/item-category/${id}"
-                          :data="model"></audit-viewer>
+            <audit-viewer ref="auditViewer"
+                          :url="`/audit/item-category/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
-    </q-layout-footer>
+    </q-page-sticky>
 
 
-  </q-layout>
+  </q-page>
 
 </template>
 <script>
-  import { ItemCategoryModel } from './item-category-model'
+  import { ItemCategoryModel } from 'src/model/item'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import { language, languageAliases } from 'src/i18n'
 
@@ -96,29 +95,35 @@
       }
     },
     mounted () {
-      this.$nextTick(() => this[this.action]())
+      if (this.action) {
+        this.$nextTick(() => this[this.action]())
+      }
     },
     methods: {
       async create () {
         this.creating = true
+        this.model = new ItemCategoryModel()
         if (this.parentId) {
-          this.parentModel.id = this.parentId
+          this.parentModel = await ItemCategoryModel.get(this.parentId)
           this.model.parentId = this.parentId
-          await this.parentModel.fetch()
         }
       },
       async show () {
         this.creating = false
-        this.model.id = this.id
-        await this.model.fetch()
+        this.model = await ItemCategoryModel.get(this.id)
       },
       async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateForCreate()
-          : await this.model.validateForUpdate()
+        let valid = this.creating ? await this.model.validateCreate()
+          : await this.model.validateUpdate()
         if (valid) {
-          await this.save()
-          this.$alert.positive('저장 되었습니다')
-          this.$emit('close')
+          const ok = await this.$alert.confirm('저장 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            this.$alert.positive('저장 되었습니다')
+            if (this.closable) {
+              this.$closeOverlay()
+            }
+          }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }
@@ -132,11 +137,6 @@
       }
     },
     computed: {
-      parentPath () {
-        return this.parentModel.path ? this.parentModel.path : languageAliases({
-          ko: '없음(N/A)'
-        })[language]
-      },
       path () {
         if (this.model.path) {
           return this.model.path

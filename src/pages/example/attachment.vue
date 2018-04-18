@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <q-page>
     <button class="primary save" @click="save()">
       <i class="on-left">save</i>
       저장
@@ -10,7 +10,7 @@
     </button>
     <c-attachment ref="attachment" v-model="attachmentId" category="quotation"
                   multiple></c-attachment>
-  </div>
+  </q-page>
 
 </template>
 

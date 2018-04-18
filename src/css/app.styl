@@ -1,12 +1,18 @@
 // app global css
 
+a
+  text-decoration: none
+  color: inherit
+
+a:hover
+  text-decoration: wavy
+
 .q-field-helper
   font-size: 9px
   text-align: right
 
 .q-if-label
   font-weight: bold
-
 
 a[disabled] > *
   opacity: 0.5
@@ -48,6 +54,8 @@ a[disabled] > *
       margin: 0px
       padding: 0px
       height: 19px
+    input:focus
+      padding: 0px 0px
 
 .v-select
   .open-indicator
@@ -58,3 +66,24 @@ a[disabled] > *
   .dropdown-toggle
     .clear
       bottom: 6px !important
+
+.modal
+  .modal-content
+    main
+      min-height: inherit !important
+      min-width: 70vw
+      @media (min-width: 1200px)
+        max-width: 80vw
+      @media (min-width: 768px)
+        max-width: 80vw
+    .fixed-bottom.q-page-sticky-expand
+      left: 0px !important
+
+.modal.maximized
+  .modal-content
+    main
+      min-width: 70vw
+      @media (min-width: 1200px)
+        max-width: inherit
+      @media (min-width: 768px)
+        max-width: inherit

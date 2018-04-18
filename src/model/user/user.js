@@ -1,8 +1,8 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, FetchableModel } from 'src/model/model'
+import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
-export class UserModel extends FetchableModel {
+export class UserModel extends Model {
 
   get defaults () {
     return {
@@ -10,24 +10,22 @@ export class UserModel extends FetchableModel {
     }
   }
 
-  get axios () {
-    return api
+  static async get (id) {
+    const response = await api.get(`/user/users/${id}`)
+    return new UserModel(response.data)
   }
 
-  get url () {
-    return '/user/users/${id}'
-  };
-
-  create () {
-    return this.axios.post('/user/users', this)
+  static async exists (id) {
+    return await exists(api, `/user/users/${id}`)
   }
 
-  update () {
-    return this.axios.put('/user/users/${id}', this)
+  async create () {
+    const response = api.post('/user/users', this)
+    this.assign(response.data)
   }
 
-  exists () {
-    return exists(this.axios, '/user/users/${id}', this)
+  async update () {
+    await api.put(`/user/users/${this.id}`, this)
   }
 
   async validate (state) {
@@ -39,10 +37,10 @@ export class UserModel extends FetchableModel {
           if (!value) {
             return
           }
-          if (!state !== 'create') {
+          if (state !== 'create') {
             return
           }
-          let result = await this.exists()
+          let result = await UserModel.exists(value)
           return result
         }
       },
@@ -64,38 +62,38 @@ export class UserModel extends FetchableModel {
     return await this.$validate(constraints)
   }
 
-  async validateForCreate () {
+  async validateCreate () {
     return await this.validate('create')
   }
 
-  async validateForUpdate () {
+  async validateUpdate () {
     return await this.validate('update')
   }
 
 }
 
-export class UserRoleModel extends FetchableModel {
+export class UserRoleModel extends Model {
   get axios () {
     return api
   }
 
   get url () {
-    return '/user/users/${userId}/role'
+    return `/user/users/${this.userId}/role`
   };
 
-  grant () {
-    return this.axios.post('/user/users/${userId}/role', this)
+  async grant () {
+    await api.post(`/user/users/${this.userId}/role`, this)
   }
 
-  revoke () {
-    return this.axios.delete('/user/users/${userId}/role', {
+  async revoke () {
+    await api.delete(`/user/users/${this.userId}/role`, {
       data: this
     })
   }
 }
 
 export class UserPaginationArray extends SpringPaginationArray {
-  url = '/user/users'
+  url = '/user/users?${$QS}'
   axios = api
   model = UserModel
 }
@@ -107,12 +105,12 @@ export class UserRoleArray extends FetchableArray {
 }
 
 export class UserLabelArray extends FetchableArray {
-  url = '/user/user-query-labels'
+  url = '/user/user-query-labels?${$QS}'
   axios = api
 
   query = (keyword) => {
     return this.fetch({
-      query: keyword
+      query: keyword || ''
     })
   }
 

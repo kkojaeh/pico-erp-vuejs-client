@@ -1,7 +1,8 @@
-import Quasar from 'quasar'
+import Quasar, { Notify } from 'quasar'
 import { language, languageAliases } from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
+import 'ag-grid/dist/styles/ag-theme-balham.css'
 
 import AgGrid from 'src/components/ag-grid/ag-grid.vue'
 import AgGridColumn from 'src/components/ag-grid/ag-grid-column.vue'
@@ -19,7 +20,7 @@ import AgGridCheckboxRenderer from 'src/components/ag-grid/ag-grid-checkbox-rend
 import AgGridCheckboxEditor from 'src/components/ag-grid/ag-grid-checkbox-editor.vue'
 import AgGridDateRenderer from 'src/components/ag-grid/ag-grid-date-renderer.vue'
 import AgGridDatetimeRenderer from 'src/components/ag-grid/ag-grid-datetime-renderer.vue'
-import AgGridLinkRenderer from 'src/components/ag-grid/ag-grid-link-renderer.vue'
+import AgGridRouterLinkRenderer from 'src/components/ag-grid/ag-grid-router-link-renderer.vue'
 import AgGridIconRenderer from 'src/components/ag-grid/ag-grid-icon-renderer.vue'
 import AgGridCleaveRenderer from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
 import AgGridPhoneNumberRenderer from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
@@ -31,6 +32,8 @@ import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
 
+import VueClipboard from 'vue-clipboard2'
+
 const lang = language
 
 import(`quasar-framework/i18n/${lang}`).then(data => {
@@ -40,8 +43,47 @@ moment.locale(languageAliases({
   'ko': 'ko'
 })[language])
 
+const clipboardSuccess = (event) => {
+  Notify.create({
+    icon: 'info',
+    position: 'top-right',
+    color: 'info',
+    timeout: 3000,
+    message: '클립보드에 값이 복사 되었습니다'
+  })
+}
+
+const clipboardError = (event) => {
+  Notify.create({
+    icon: 'error',
+    position: 'top-right',
+    color: 'error',
+    timeout: 3000,
+    message: '클립보드 값 복사에 실패 했습니다'
+  })
+}
+
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
+  Vue.use(VueClipboard)
+
+  Vue.directive('clipboard-notify', {
+    bind: function (el, binding, vnode) {
+      setTimeout(() => {
+        if (!el._v_clipboard_success) {
+          el._v_clipboard_success = clipboardSuccess
+        }
+        if (!el._v_clipboard_error) {
+          el._v_clipboard_error = clipboardError
+        }
+      }, 500)
+    },
+    unbind: function (el, binding) {
+      delete el._v_clipboard_success
+      delete el._v_clipboard_error
+    }
+  })
+
   Vue.component('c-autocomplete-select', AutocompleteSelect)
 
   Vue.component('c-list-filter-label', ListFilterLabel)
@@ -58,7 +100,7 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-date-renderer', AgGridDateRenderer)
   Vue.component('ag-grid-datetime-renderer', AgGridDatetimeRenderer)
   Vue.component('ag-grid-checkbox-editor', AgGridCheckboxEditor)
-  Vue.component('ag-grid-link-renderer', AgGridLinkRenderer)
+  Vue.component('ag-grid-router-link-renderer', AgGridRouterLinkRenderer)
   Vue.component('ag-grid-cleave-renderer', AgGridCleaveRenderer)
   Vue.component('ag-grid-phone-number-renderer', AgGridPhoneNumberRenderer)
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)

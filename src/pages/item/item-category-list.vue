@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
@@ -7,7 +7,7 @@
     <!-- child -->
 
     <c-list-view ref="listView" :array="array" :filters="filters" filter-always prevent-fetch
-                 @fetched="onFetched">
+                 @fetched="onFetched" class="col-grow">
 
       <!-- action -->
 
@@ -36,19 +36,19 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
-               enable-server-side-sorting
                enable-col-resize
                enable-sorting
                enable-filter
                :get-node-child-details="getNodeChildDetails"
                :row-data="array"
-               @selection-changed="onGridSelectionChanged">
+               @selection-changed="onGridSelectionChanged"
+               @row-clicked="onGridRowClicked">
         <ag-grid-column field="name" header-name="이름" cellRenderer="agGroupCellRenderer"
                         :width="400" :checkbox-selection="true"
                         :cell-renderer-params="{
-                          innerRendererFramework: 'ag-grid-link-renderer',
+                          innerRendererFramework: 'ag-grid-router-link-renderer',
                           suppressCount: true,
                           path:'/item-category/show/${id}',
                           query:$route.query
@@ -78,14 +78,14 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { UserLabelArray } from 'src/pages/user/user-model'
-  import { ItemCategoryHierarchyArray } from './item-category-model'
+  import { UserLabelArray } from 'src/model/user'
+  import { ItemCategoryHierarchyArray } from 'src/model/item'
   import * as _ from 'lodash'
 
   export default {
@@ -111,6 +111,7 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
+      this.userLabels.query()
     },
     methods: {
       retrieve () {
@@ -147,7 +148,10 @@
       },
       onGridSelectionChanged (event) {
         this.selected = event.api.getSelectedRows()[0]
-      }
+      },
+      onGridRowClicked (event) {
+        event.node.setSelected(true)
+      },
     },
     computed: {
       selectedParentId () {

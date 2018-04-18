@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,16 +19,17 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
                row-selection="single"
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/process-type/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
-        <ag-grid-column field="processInfoTypeName" header-name="분류" :width="150"/>
+        <ag-grid-column field="infoTypeName" header-name="분류" :width="150"/>
+        <ag-grid-column field="baseUnitCost" header-name="기준단가" :width="150"/>
 
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
         <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
@@ -70,14 +71,13 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
-  import { UserLabelArray } from 'src/pages/user/user-model'
-  import { ProcessTypePaginationArray } from './process-type-model'
-  import { ProcessInfoTypeLabelArray } from './process-info-type-model'
+  import { UserLabelArray } from 'src/model/user'
+  import { ProcessTypePaginationArray, ProcessInfoTypeLabelArray } from 'src/model/process'
   import * as _ from 'lodash'
 
   export default {
@@ -103,6 +103,7 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
+      this.infoTypeLabels.query()
     },
     methods: {
       retrieve () {
