@@ -16,8 +16,12 @@ export class ItemCategoryModel extends Model {
     return {}
   }
 
-  static async get (id) {
-    const response = await api.get(`/item/categories/${id}`)
+  static async get (id, cacheable) {
+    if (!id) {
+      return new ItemCategoryModel()
+    }
+    const response = await api.get(
+      `/item/categories/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemCategoryModel(response.data)
   }
 

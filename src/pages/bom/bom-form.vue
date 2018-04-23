@@ -16,7 +16,7 @@
                  :embed-full-width-rows="true"
                  auto-size-columns-to-fit
                  :row-data="array">
-          <ag-grid-column field="item.name" header-name="이름" cellRenderer="agGroupCellRenderer"
+          <ag-grid-column field="id" header-name="이름" cellRenderer="agGroupCellRenderer"
                           :checkbox-selection="true" :min-width="500"
                           :cell-renderer-params="{
                             innerRenderer: cellRenderer,
@@ -59,12 +59,12 @@
 
         <q-field icon="shopping_cart" helper="BOM 대상 품목입니다"
                  class="col-12">
-          <q-input v-model="selected.item.code" float-label="품목 코드" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="selected.itemCode" v-clipboard-notify
+          <q-input v-model="itemModel.code" float-label="품목 코드" readonly hide-underline>
+            <q-btn icon="content_copy" v-clipboard:copy="itemModel.code" v-clipboard-notify
                    flat></q-btn>
           </q-input>
-          <q-input v-model="selected.item.name" float-label="품목 이름" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="selected.itemName" v-clipboard-notify
+          <q-input v-model="itemModel.name" float-label="품목 이름" readonly hide-underline>
+            <q-btn icon="content_copy" v-clipboard:copy="itemModel.name" v-clipboard-notify
                    flat></q-btn>
           </q-input>
         </q-field>
@@ -73,10 +73,11 @@
                  class="col-12"
                  :error="!!selected.$errors.processId"
                  :error-label="selected.$errors.processId">
-          <q-input v-model="processName" float-label="공정" readonly hide-underline>
+          <q-input :value="processName" float-label="공정" readonly hide-underline>
             <q-btn icon="add_circle" flat v-if="isProcessAddable" @click="editProcess"></q-btn>
             <q-btn icon="settings" flat v-if="isProcessModifiable" @click="editProcess"></q-btn>
-            <q-btn icon="remove_circle" flat v-if="isProcessRemovable" @click="removeProcess"></q-btn>
+            <q-btn icon="remove_circle" flat v-if="isProcessRemovable"
+                   @click="removeProcess"></q-btn>
           </q-input>
         </q-field>
 
@@ -134,7 +135,8 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <q-btn flat icon="check" @click="_onDetermineClick" v-if="isDeterminable">확정</q-btn>
-        <q-btn flat icon="autorenew" @click="_onNextRevisionClick" v-if="isNextDraftable">새버전</q-btn>
+        <q-btn flat icon="autorenew" @click="_onNextRevisionClick" v-if="isNextDraftable">새버전
+        </q-btn>
 
         <q-card-actions align="end" :disabled="!isSelected">
           <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"></q-btn>
@@ -161,7 +163,8 @@
     </q-modal>
 
     <q-modal ref="processFormModal">
-      <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId" closable></process-form>
+      <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId"
+                    closable></process-form>
     </q-modal>
 
     <q-modal ref="itemSelectorModal" content-classes="column">
@@ -169,7 +172,8 @@
     </q-modal>
 
     <q-modal ref="itemSpecEditorModal" content-classes="column">
-      <item-spec-editor ref="itemSpecEditor" :item-id="selected.itemId" :id="selected.itemSpecId"></item-spec-editor>
+      <item-spec-editor ref="itemSpecEditor" :item-id="selected.itemId"
+                        :id="selected.itemSpecId"></item-spec-editor>
     </q-modal>
 
 
@@ -178,13 +182,15 @@
 </template>
 <script>
   import { BomModel, BomStatusArray } from 'src/model/bom'
+  import { ItemModel } from 'src/model/item'
   import { ProcessModel } from 'src/model/process'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import * as _ from 'lodash'
   import ItemForm from 'src/pages/item/item-form.vue'
   import ItemSelector from 'src/pages/item/item-selector.vue'
   import ProcessForm from 'src/pages/process/process-form.vue'
   import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
+
+  const itemSymbol = Symbol('item')
 
   export default {
     props: {
@@ -206,6 +212,8 @@
       return {
         array: [],
         model: new BomModel(),
+        itemModel: new ItemModel(),
+        processModel: new ProcessModel(),
         selected: new BomModel({isNull: true}),
         statusLabels: new BomStatusArray(),
       }
@@ -217,10 +225,11 @@
     methods: {
       cellRenderer (params) {
         const status = this.statusLabel(params.data.status)
+        const item = params.data[itemSymbol]
         const quantity = params.data.quantity
-        const prefix = `<small>[${params.data.item.code}]</small> `
+        const prefix = `<small>[${item.code}]</small> `
         const postfix = `<small class="bom-row-tip">(${quantity}) [${status}]</small>`
-        return `${prefix}${params.value}${postfix}`
+        return `${prefix}${item.name}${postfix}`
       },
       statusLabel (value) {
         const label = this.statusLabels.find(data => data.value == value)
@@ -240,8 +249,10 @@
         }
         return null
       },
-      onGridSelectionChanged (event) {
+      async onGridSelectionChanged (event) {
         this.selected = event.api.getSelectedRows()[0] || new BomModel({isNull: true})
+        this.itemModel = this.selected[itemSymbol]
+        this.processModel = await ProcessModel.get(this.selected.processId, true)
       },
       onGridRowClicked (event) {
         if (!event.node.isSelected()) {
@@ -264,6 +275,9 @@
           this.model = await BomModel.getByItemId(this.itemId, this.revision)
         }
         await this.model.fetchChildren(true)
+        await this.model.visit(async (node) => {
+          node[itemSymbol] = await ItemModel.get(node.itemId, true)
+        })
         this.array = [this.model]
         // 첫행 선택
         this.$nextTick(() => {
@@ -341,7 +355,7 @@
             let material
             if (exists) {
               material = await BomModel.getByItemId(itemId)
-            }else {
+            } else {
               material = await BomModel.createByItemId(itemModel.id)
             }
             await selected.addMaterial(material)
@@ -356,9 +370,9 @@
         const selected = this.selected
         const creating = !selected.processId
         modal.show()
-        if(creating) {
+        if (creating) {
           form.create()
-        }else {
+        } else {
           form.show()
         }
         modal.$once('hide', () => {
@@ -367,17 +381,16 @@
         form.$once('saved', async (processModel) => {
           modal.hide()
           selected.processId = processModel.id
-          selected.processName = processModel.name
-          if(creating){
+          if (creating) {
             await selected.update()
           }
           await this.load()
         })
       },
 
-      async removeProcess() {
+      async removeProcess () {
         const selected = this.selected
-        if(!selected.processId){
+        if (!selected.processId) {
           this.$alert.warning('삭제할 공정이 없습니다')
         }
         const ok = await this.$alert.confirm('공정을 삭제 하시겠습니까?')
@@ -388,14 +401,14 @@
         }
       },
 
-      editItemSpec() {
+      editItemSpec () {
         const modal = this.$refs.itemSpecEditorModal
         const form = this.$refs.itemSpecEditor
         const selected = this.selected
         modal.show()
-        if(selected.itemSpecId){
+        if (selected.itemSpecId) {
           form.show()
-        }else {
+        } else {
           form.create()
         }
         modal.$once('hide', () => {
@@ -450,7 +463,7 @@
        * 공정 이름 (없을 때 없음으로 표시)
        */
       processName () {
-        return this.selected.processId ? this.selected.processName : 'N/A'
+        return this.selected.processId ? this.processModel.name : 'N/A'
       },
       /**
        * 공정 추가 가능 여부

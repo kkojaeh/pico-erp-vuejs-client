@@ -9,8 +9,11 @@ export class ProcessModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/process/processes/${id}`)
+  static async get (id, cacheable) {
+    if(!id){
+      return new ProcessModel()
+    }
+    const response = await api.get(`/process/processes/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ProcessModel(response.data)
   }
 

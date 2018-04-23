@@ -1,5 +1,5 @@
 import { FetchableArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
+import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { LabelModel } from 'src/model/shared'
 import { language, languageAliases } from 'src/i18n'
@@ -13,39 +13,27 @@ export class BomModel extends Model {
   get defaults () {
     return {
       estimatedUnitCost: {},
-      quantity: 1,
-      item: {}
-    }
-  }
-
-  get defaultErrors () {
-    return {
-      id: {}
+      quantity: 1
     }
   }
 
   static async get (id) {
     const response = await api.get(`/bom/boms/${id}`)
-    const bom = new BomModel(response.data)
-    await bom.getItem()
-    return bom
+    return new BomModel(response.data)
   }
 
   static async getByItemId (itemId, revision) {
     revision = revision || 0
     const response = await api.get(`/bom/items/${itemId}/${revision}`)
-    const bom = new BomModel(response.data)
-    await bom.getItem()
-    return bom
+    return new BomModel(response.data)
   }
 
   static async createByItemId (itemId) {
     const response = await api.post('/bom/boms', {
+      id: uuid(),
       itemId: itemId
     })
-    const bom = new BomModel(response.data)
-    await bom.getItem()
-    return bom
+    return new BomModel(response.data)
   }
 
   static async existsByItemId (itemId) {
@@ -54,13 +42,14 @@ export class BomModel extends Model {
 
   async nextRevision () {
     const response = await api.post('/bom/boms', {
+      id: uuid(),
       itemId: this.itemId
     })
     this.assign(response.data)
   }
 
   async getItem () {
-    this.item = await ItemModel.get(this.itemId)
+    this.item = await ItemModel.get(this.itemId, true)
   }
 
   async update () {
@@ -116,20 +105,22 @@ export class BomModel extends Model {
   }
 
   async fetchChildren (cascade) {
-
     const children = this[childrenSymbol] = new BomChildArray()
 
     await children.fetch(this)
-    await Promise.all(
-      children.map(child => {
-        child.getItem()
-      })
-    )
     children.forEach(child => child[parentSymbol] = this)
     if (cascade) {
       await Promise.all(
-        children.map(child => child.fetchChildren(true))
+        children.map(async (child) => await child.fetchChildren(true))
       )
+    }
+  }
+
+  async visit (visitor) {
+    await visitor(this)
+    const children = this.getChildren()
+    if (children) {
+      await Promise.all(children.map(async (child) => await child.visit(visitor)))
     }
   }
 

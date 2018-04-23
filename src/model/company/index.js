@@ -2,6 +2,7 @@ import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
+import { ProcessTypeModel } from '../process/process-type'
 
 export class CompanyModel extends Model {
 
@@ -15,8 +16,11 @@ export class CompanyModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/company/companies/${id}`)
+  static async get (id, cacheable) {
+    if (!id) {
+      return new CompanyModel()
+    }
+    const response = await api.get(`/company/companies/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new CompanyModel(response.data)
   }
 

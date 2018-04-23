@@ -63,7 +63,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-user-o" helper="담당자를 선택하세요"
+      <q-field slot="filter" icon="fa-user" helper="담당자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="담당자" v-model="filters.managerId"
@@ -77,14 +77,14 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar-o" helper="생성일 범위(부터)를 입력하세요"
+      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(부터)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime suffix="~" float-label="생성일 ~부터" v-model="filters.startCreatedDate"
                     type="date"/>
         <!--filters.startCreatedDate-->
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar-o" helper="생성일 범위(까지)를 입력하세요"
+      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(까지)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime prefix="~" float-label="생성일 ~까지" v-model="filters.endCreatedDate"
                     type="date"/>

@@ -54,7 +54,7 @@
                  :error="!!model.$errors.typeId"
                  :error-label="model.$errors.typeId">
           <c-autocomplete-select float-label="공정 유형" v-model="model.typeId"
-                                 :label.sync="model.typeName" :options="processTypeLabels"
+                                 :label="typeModel.name" :options="processTypeLabels"
                                  label-field="label" value-field="value"
                                  @search="onProcessTypeSearch">
             <template slot="option" slot-scope="option">
@@ -132,7 +132,12 @@
 
 </template>
 <script>
-  import { ProcessDifficultyArray, ProcessModel, ProcessTypeLabelArray } from 'src/model/process'
+  import {
+    ProcessDifficultyArray,
+    ProcessModel,
+    ProcessTypeLabelArray,
+    ProcessTypeModel
+  } from 'src/model/process'
   import { ItemModel } from 'src/model/item'
   import { UserLabelArray } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
@@ -158,6 +163,7 @@
       return {
         model: new ProcessModel(),
         itemModel: new ItemModel(),
+        typeModel: new ProcessTypeModel(),
         processTypeLabels: new ProcessTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
         userLabels: new UserLabelArray(),
@@ -186,11 +192,13 @@
         this.itemModel = await ItemModel.get(this.itemId)
         this.model = new ProcessModel()
         this.model.itemId = this.itemModel.id
+        this.typeModel = new ProcessTypeModel()
       },
       async show () {
         this.creating = false
         this.model = await ProcessModel.get(this.id)
-        this.itemModel = await ItemModel.get(this.model.id)
+        this.itemModel = await ItemModel.get(this.model.itemId)
+        this.typeModel = await ProcessTypeModel.get(this.model.typeId)
       },
       async _onSaveClick () {
         const attachment = this.$refs.attachment
@@ -222,6 +230,11 @@
     computed: {
       isModifiable () {
         return !this.model.deleted
+      }
+    },
+    watch: {
+      'model.typeId': async function (to){
+        this.typeModel = await ProcessTypeModel.get(to, true)
       }
     },
     components: {

@@ -47,7 +47,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-user-o" helper="분류를 선택하세요"
+      <q-field slot="filter" icon="fa-user" helper="분류를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.processInfoTypeId"

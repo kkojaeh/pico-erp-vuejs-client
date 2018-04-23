@@ -21,8 +21,11 @@ export class ItemModel extends Model {
     return ['ACTIVATED'].includes(this.status)
   }
 
-  static async get (id) {
-    const response = await api.get(`/item/items/${id}`)
+  static async get (id, cacheable) {
+    if(!id){
+      return new ItemModel()
+    }
+    const response = await api.get(`/item/items/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemModel(response.data)
   }
 

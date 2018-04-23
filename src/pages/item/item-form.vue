@@ -51,7 +51,7 @@
                  :error-label="model.$errors.categoryId">
 
           <c-autocomplete-select float-label="분류" v-model="model.categoryId"
-                                 :label.sync="model.categoryName" :options="categoryLabels"
+                                 :label.sync="categoryModel.name" :options="categoryLabels"
                                  label-field="label" value-field="value"
                                  @search="onCategorySearch">
             <template slot="option" slot-scope="option">
@@ -123,7 +123,7 @@
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
-                                 :label.sync="model.customerName" :options="companyLabels"
+                                 :label="customerModel.name" :options="companyLabels"
                                  label-field="label" value-field="value"
                                  @search="onCustomerSearch">
             <template slot="option" slot-scope="option">
@@ -164,7 +164,7 @@
                  :error-label="model.$errors.specTypeId">
 
           <c-autocomplete-select float-label="스펙 유형" v-model="model.specTypeId"
-                                 :label.sync="model.specTypeName" :options="specTypeLabels"
+                                 :label.sync="specTypeModel.name" :options="specTypeLabels"
                                  label-field="label" value-field="value"
                                  @search="onSpecTypeSearch">
             <template slot="option" slot-scope="option">
@@ -212,16 +212,17 @@
 </template>
 <script>
   import {
+    ItemCategoryLabelArray,
+    ItemCategoryModel,
     ItemModel,
     ItemSpecTypeLabelArray,
+    ItemSpecTypeModel,
     ItemStatusArray,
-    ItemTypeArray,
-    ItemCategoryLabelArray
+    ItemTypeArray
   } from 'src/model/item'
-  import { CompanyLabelArray } from 'src/model/company'
+  import { CompanyLabelArray, CompanyModel } from 'src/model/company'
   import { UnitLabelArray } from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import { language, languageAliases } from 'src/i18n'
 
   export default {
     props: {
@@ -249,6 +250,9 @@
         categoryLabels: new ItemCategoryLabelArray(),
         specTypeLabels: new ItemSpecTypeLabelArray(),
         unitLabels: new UnitLabelArray(),
+        categoryModel: new ItemCategoryModel(),
+        customerModel: new CompanyModel(),
+        specTypeModel: new ItemSpecTypeModel(),
         creating: false
       }
     },
@@ -326,6 +330,18 @@
       }
     },
     computed: {},
+    watch: {
+      'model.categoryId': async function (to) {
+        this.categoryModel = await ItemCategoryModel.get(to, true)
+      },
+      'model.customerId': async function (to) {
+        this.customerModel = await CompanyModel.get(to, true)
+      },
+      'model.specTypeId': async function (to) {
+        this.specTypeModel = await
+          ItemSpecTypeModel.get(to, true)
+      }
+    },
     components: {
       AuditViewer
     }

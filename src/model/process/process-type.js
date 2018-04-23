@@ -22,9 +22,13 @@ export class ProcessTypeModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/process/process-types/${id}`)
-    return new ProcessModel(response.data)
+  static async get (id, cacheable) {
+    if (!id) {
+      return new ProcessTypeModel()
+    }
+    const response = await api.get(
+      `/process/process-types/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    return new ProcessTypeModel(response.data)
   }
 
   static async exists (id) {

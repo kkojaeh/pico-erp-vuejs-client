@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
 import { date } from 'quasar'
+import Vue from 'vue'
 
 const iso8601RegExp = /^(\d{4})-(\d\d)-(\d\d)([T ](\d\d):(\d\d):(\d\d)(\.\d+)?(Z|([+-])(\d\d)(:(\d\d))?)?)?$/
 const booleanRegExp = /^(true|false)$/
@@ -54,6 +55,9 @@ const adjusters = [
       return value
     },
     equals (oldValue, newValue) {
+      if(typeof oldValue !== typeof newValue){
+        return false
+      }
       return date.isSameDate(oldValue, newValue)
     }
   },

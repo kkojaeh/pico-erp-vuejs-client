@@ -96,7 +96,7 @@ export class QuotationPaginationArray extends SpringPaginationArray {
   model = QuotationModel
 }
 
-export class QuotationSatusArray extends FetchableArray {
+export class QuotationStatusArray extends FetchableArray {
   url = '/quotation/status-labels'
   axios = api
 }

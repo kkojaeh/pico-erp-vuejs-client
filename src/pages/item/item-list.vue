@@ -132,7 +132,6 @@
     ItemCategoryLabelArray
   } from 'src/model/item'
   import { CompanyLabelArray } from 'src/model/company'
-  import * as _ from 'lodash'
 
   export default {
     data () {
