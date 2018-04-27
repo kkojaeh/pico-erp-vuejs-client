@@ -1,5 +1,7 @@
 <template>
-  <q-checkbox v-model="params.value" :disable="!editable" @input="_onInput"></q-checkbox>
+  <div class="justify-center row fit">
+    <q-checkbox v-model="params.value" :disable="!editable" @input="_onInput"></q-checkbox>
+  </div>
 </template>
 
 <script>

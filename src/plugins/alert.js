@@ -18,7 +18,7 @@ async function confirm (message, detail) {
 function positive (message, detail) {
   Notify.create({
     icon: 'done',
-    position: 'bottom-right',
+    position: 'top-right',
     color: 'positive',
     timeout: 3000,
     message,
@@ -29,7 +29,7 @@ function positive (message, detail) {
 function negative (message, detail) {
   Notify.create({
     icon: 'error',
-    position: 'bottom-right',
+    position: 'top-right',
     color: 'negative',
     timeout: 3000,
     message,
@@ -40,7 +40,7 @@ function negative (message, detail) {
 function warning (message, detail) {
   Notify.create({
     icon: 'warning',
-    position: 'bottom-right',
+    position: 'top-right',
     color: 'warning',
     timeout: 3000,
     message,
@@ -51,7 +51,7 @@ function warning (message, detail) {
 function info (message, detail) {
   Notify.create({
     icon: 'info',
-    position: 'bottom-right',
+    position: 'top-right',
     color: 'info',
     timeout: 3000,
     message,

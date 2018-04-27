@@ -18,7 +18,7 @@
       </div>
     </transition>
 
-    <div class="list-view-content col-grow">
+    <div ref="gridContainer" class="list-view-content col-grow row">
       <slot name="default"></slot>
     </div>
 
@@ -37,7 +37,6 @@
 
 <script>
   import Vue from 'vue'
-  import qs from 'qs'
   import * as _ from 'lodash'
   import Sort from 'src/model/sort'
   import { Base64 } from 'js-base64'
@@ -86,6 +85,10 @@
         type: String,
         default: 'p'
       },
+      filterOpened: {
+        type: Boolean,
+        default: false
+      },
       filterAlways: {
         type: Boolean,
         default: false
@@ -99,6 +102,10 @@
         default: false
       },
       preventRoute: {
+        type: Boolean,
+        default: false
+      },
+      preventQueryString: {
         type: Boolean,
         default: false
       }
@@ -119,7 +126,7 @@
         entries: 0,
         page: 1,
         rowsPerPage: this.pageSize,
-        filtersVisible: false,
+        filtersVisible: this.filterOpened,
         pageSizeOptions: pageSizeOptions,
         initialCondition: null
       }
@@ -166,12 +173,19 @@
           this.page = 1
         }
         this.filtersVisible = false
-        this.filtersQueryString = this._toQs(this.filters)
-        if (force) {
+        if (this.preventQueryString) {
           this._fetch()
+        } else {
+          this.filtersQueryString = this._toQs(this.filters)
+          if (force) {
+            this._fetch()
+          }
         }
       },
       _assignQuery (query) {
+        if (this.preventQueryString) {
+          return
+        }
         if (query) {
           let c = query[this.filtersName]
           _.keys(this.filters).forEach((key) => {
@@ -312,17 +326,14 @@
         chip.componentInstance.$on('remove', this._onFilterChipRemove)
       })
     },
+    updated () {
+    },
     destroyed () {
     }
   }
 </script>
 
 <style>
-
-  .list-view-content > * {
-    height: 100%;
-    width: 100%;
-  }
 
   .list-view-filter {
     padding-right: 10px;

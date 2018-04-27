@@ -70,7 +70,7 @@ a[disabled] > *
 .modal
   .modal-content
     main
-      min-height: inherit !important
+      min-height: calc(80vh) !important
       min-width: 70vw
       @media (min-width: 1200px)
         max-width: 80vw
@@ -87,3 +87,7 @@ a[disabled] > *
         max-width: inherit
       @media (min-width: 768px)
         max-width: inherit
+
+.q-layout-page-container
+  .q-layout-page
+    min-height: initial !important

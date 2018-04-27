@@ -2,6 +2,7 @@
 
 import numberToText from 'number-to-text'
 import { language, languageAliases } from 'src/i18n'
+import SSF from 'ssf'
 
 const baseNames = ['천', '백', '십', '']
 const levelNames = ['', '만', '억', '조',

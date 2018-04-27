@@ -35,6 +35,7 @@
 <script>
   import { ItemModel, ItemSpecModel } from 'src/model/item'
   import 'json-editor'
+  import * as _ from 'lodash'
 
   export default {
     props: {
@@ -118,6 +119,8 @@
         }
       },
       async save () {
+        this.model.variables = _.defaultsDeep(this.editor.getValue(), this.model.variables)
+        console.log(this.model.variables)
         await this.model.update()
         this.$emit('saved', this.model)
       }

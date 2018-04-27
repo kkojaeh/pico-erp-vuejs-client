@@ -1,17 +1,115 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
+import { exists, Model, uuid } from 'src/model/model'
+import { BomModel } from 'src/model/bom'
+import { ItemModel } from 'src/model/item'
 import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
 
-export class QuotationModel extends Model {
+const bomSymbol = Symbol('bom')
+
+const quotationSymbol = Symbol('quotation')
+
+class QuotationBomItemModel extends Model {
+
+  static create (bom) {
+    return new QuotationBomItemModel({
+      id: uuid(),
+      bomId: bom.id
+    })
+  }
 
   get defaults () {
     return {
-      address: {},
-      enabled: true,
-      supplier: false,
-      customer: false,
-      outsourcing: false
+      '@type': 'bom',
+      unitPrice: {
+        original: 0,
+        directLabor: 0,
+        indirectLabor: 0,
+        indirectMaterial: 0,
+        directMaterial: 0,
+        indirectExpenses: 0,
+        discountRate: 0
+      }
+    }
+  }
+
+  get bom () {
+    return this[bomSymbol]
+  }
+
+  get quotation () {
+    return this[quotationSymbol]
+  }
+
+  async fetch () {
+    const bom = await BomModel.get(this.bomId)
+    this[bomSymbol] = bom
+    await bom.fetchChildren(true)
+    await bom.visit(async (node) => {
+      node.item = await ItemModel.get(node.itemId, true)
+    })
+  }
+
+  async update () {
+    await api.put(`/quotation/quotations/${this.quotation.id}/items/${this.id}`,
+      {
+        item: this
+      })
+  }
+
+}
+
+class QuotationUnitPriceRateItemAdditionModel extends Model {
+  static create () {
+    return new QuotationUnitPriceRateItemAdditionModel({
+      id: uuid()
+    })
+  }
+
+  get defaults () {
+    return {
+      '@type': 'unit-price-rate',
+      unitPriceRate: 0
+    }
+  }
+}
+
+export class QuotationModel extends Model {
+
+  constructor (data) {
+    super(data)
+    if (this.items) {
+      this.items = this.items.map(QuotationModel.itemConverter)
+      this.items.forEach(item => item[quotationSymbol] = this)
+    }
+  }
+
+  static itemConverter (data) {
+    const type = data['@type']
+    if (type == 'bom') {
+      return new QuotationBomItemModel(data)
+    }
+  }
+
+  async fetchAll () {
+    await Promise.all(this.items.map(async (item) => await item.fetch()))
+  }
+
+  get defaults () {
+    return {
+      status: 'DRAFT',
+      customerManagerContact: {
+        name: null,
+        email: null,
+        mobilePhoneNumber: null,
+        telephoneNumber: null,
+        faxNumber: null
+      }
+    }
+  }
+
+  get defaultErrors () {
+    return {
+      customerManagerContact: {}
     }
   }
 
@@ -25,6 +123,7 @@ export class QuotationModel extends Model {
   }
 
   async create () {
+    this.id = uuid()
     const response = await api.post('/quotation/quotations', this)
     this.assign(response.data)
   }
@@ -33,46 +132,57 @@ export class QuotationModel extends Model {
     await api.put(`/quotation/quotations/${this.id}`, this)
   }
 
+  async addBomItem (bom) {
+    await api.post(`/quotation/quotations/${this.id}/items`, {
+      item: QuotationBomItemModel.create(bom)
+    })
+  }
+
+  async addUnitPriceRateItemAddition () {
+    await api.post(`/quotation/quotations/${this.id}/item-additions`, {
+      itemAddition: QuotationUnitPriceRateItemAdditionModel.create()
+    })
+
+  }
+
   async validate (state) {
     let constraints = {
-      id: {
-        presence: true,
-        length: {minimum: 3, maximum: 5},
-        format: {
-          pattern: '[A-Z0-9]{3,5}',
-          message: languageAliases({
-            ko: '형식이 틀립니다(영문 대문자/숫자 조합 3~5 글자입니다)'
-          })[language]
-        },
-        exists: async (value) => {
-          if (!value) {
-            return
-          }
-          if (state !== 'create') {
-            return
-          }
-          let result = await QuotationModel.exists(value)
-          return result
-        }
-      },
       name: {
         presence: true,
         length: {minimum: 2, maximum: 50}
       },
-      representative: {
-        length: {minimum: 1, maximum: 20}
+      projectId: {
+        presence: true
       },
-      mobilePhoneNumber: {
-        phoneNumber: true,
+      customerId: {
+        presence: true
+      },
+      managerId: {
+        presence: true
+      },
+      'customerManagerContact.name': {
+        presence: true,
         length: {minimum: 2, maximum: 20}
       },
-      faxNumber: {
-        phoneNumber: true,
-        length: {minimum: 2, maximum: 20}
+      'customerManagerContact.email': {
+        presence: false,
+        email: true,
+        length: {minimum: 0, maximum: 30}
       },
-      telephoneNumber: {
+      'customerManagerContact.mobilePhoneNumber': {
+        presence: false,
         phoneNumber: true,
-        length: {minimum: 2, maximum: 20}
+        length: {minimum: 0, maximum: 20}
+      },
+      'customerManagerContact.faxNumber': {
+        presence: false,
+        phoneNumber: true,
+        length: {minimum: 0, maximum: 20}
+      },
+      'customerManagerContact.telephoneNumber': {
+        presence: false,
+        phoneNumber: true,
+        length: {minimum: 0, maximum: 20}
       }
     }
 

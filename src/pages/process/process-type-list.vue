@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column">
+  <q-page class="column fit">
     <!-- child -->
 
     <router-view></router-view>
@@ -20,6 +20,7 @@
 
       <!-- main -->
       <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-col-resize
                enable-sorting
@@ -47,7 +48,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-user" helper="분류를 선택하세요"
+      <q-field slot="filter" icon="account_box" helper="분류를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.processInfoTypeId"

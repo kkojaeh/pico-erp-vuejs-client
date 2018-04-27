@@ -44,13 +44,13 @@ let statusHandlers = {
     let message = error.response.data.message.toLowerCase()
     if (message.indexOf('verify') > -1 && message.indexOf('token') > -1) {
       init().then(() => {
-        let alert = Notify.create({
+        Notify.create({
           icon: 'warning',
-          position: 'bottom-right',
+          position: 'top-right',
           message: '인증을 갱신하였습니다',
+          timeout: 3000,
           detail: '다시 시도 하세요'
         })
-        setTimeout(alert.dismiss, 3000)
       })
       return true
     }
@@ -63,7 +63,7 @@ let statusHandlers = {
 
 let errorHandler = (error) => {
   completeFunction()
-  let message = error.message
+  let messages = [error.message]
   let preventDefault
   if (error.response) {
     let statusHandler = statusHandlers[error.response.status]
@@ -71,20 +71,22 @@ let errorHandler = (error) => {
       preventDefault = !!statusHandler(error)
     }
     if (!preventDefault) {
-      message = error.response.data.message
+      messages = [error.response.data.message]
       if (_.isArray(error.response.data.errors)) {
-        message = error.response.data.errors.map(
-          (e) => `${e.field} : ${e.defaultMessage}`).join('<br>')
+        messages = error.response.data.errors.map(
+          (e) => `${e.field} : ${e.defaultMessage}`)
       }
     }
   }
   if (!preventDefault) {
-    let alert = Notify.create({
-      icon: 'warning',
-      position: 'bottom-right',
-      message: `${message}`
+    messages.forEach(message => {
+      Notify.create({
+        icon: 'warning',
+        position: 'top-right',
+        timeout: 3000,
+        message: `${message}`
+      })
     })
-    setTimeout(alert.dismiss, 3000)
   }
 }
 

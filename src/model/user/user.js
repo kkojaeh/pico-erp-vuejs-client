@@ -1,6 +1,7 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import { ItemModel } from '../item/item'
 
 export class UserModel extends Model {
 
@@ -10,8 +11,11 @@ export class UserModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/user/users/${id}`)
+  static async get (id, cacheable) {
+    if(!id){
+      return new UserModel()
+    }
+    const response = await api.get(`/user/users/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new UserModel(response.data)
   }
 

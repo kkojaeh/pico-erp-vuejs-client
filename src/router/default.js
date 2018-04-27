@@ -9,7 +9,8 @@ export const wrapModal = async (loader, data = {}) => {
     extends: Vue.component('modal-router-view'),
     props: component.props,
     data () {
-      return _.assign(data, {
+      return _.defaults(data, {
+        maximized: false,
         component: Vue.extend(component)
       })
     }

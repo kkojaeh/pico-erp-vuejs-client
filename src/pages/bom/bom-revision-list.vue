@@ -1,18 +1,29 @@
 <template>
-  <q-page class="column">
-    <c-list-view ref="listView" :array="array" :filters="filters" hide-trigger prevent-fetch
+  <q-page class="column fit">
+
+    <!-- child -->
+
+    <router-view></router-view>
+
+    <!-- child -->
+
+    <c-list-view ref="listView" :array="array" :filters="filters" hide-trigger prevent-fetch prevent-route
                  filter-always class="col-grow">
 
       <!-- action -->
 
       <div slot="action">
         <q-btn flat icon="add" @click="_onDraftClick">생성</q-btn>
+        <router-link :to="`/item/show/${itemId}`">
+          <q-btn flat icon="open_in_new">품목</q-btn>
+        </router-link>
       </div>
 
       <!-- action -->
 
       <!-- main -->
       <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
@@ -20,7 +31,7 @@
                :row-data="array">
         <ag-grid-column field="revision" header-name="버전" :width="150"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/bom/show/${id}'}"/>
+                        :cell-renderer-params="{path:`/bom/${itemId}/\${id}`}"/>
         <ag-grid-column field="processName" header-name="공정" :width="150"
                         :cell-renderer="processNameRenderer"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
@@ -78,7 +89,11 @@
         itemModel: new ItemModel()
       }
     },
-    watch: {},
+    watch: {
+      '$route' (to, from) {
+        this.array.query(this.itemId)
+      }
+    },
     async mounted () {
       this.statusLabels.fetch()
       this.itemModel = await ItemModel.get(this.itemId)
@@ -89,8 +104,9 @@
         return params.value ? params.value : 'N/A'
       },
       async _onDraftClick () {
-        const bom = await BomModel.createByItemId(this.itemId)
-        this.$router.push(`/bom/show/${bom.id}`)
+        await BomModel.createByItemId(this.itemId)
+        const bom = await BomModel.getByItemId(this.itemId)
+        this.$router.push(`/bom/${this.itemId}/${bom.id}`)
       }
     },
     computed: {}

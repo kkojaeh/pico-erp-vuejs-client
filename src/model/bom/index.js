@@ -12,7 +12,8 @@ export class BomModel extends Model {
 
   get defaults () {
     return {
-      estimatedUnitCost: {},
+      estimatedAccumulatedUnitCost: {},
+      estimatedIsolatedUnitCost: {},
       quantity: 1
     }
   }
@@ -46,10 +47,6 @@ export class BomModel extends Model {
       itemId: this.itemId
     })
     this.assign(response.data)
-  }
-
-  async getItem () {
-    this.item = await ItemModel.get(this.itemId, true)
   }
 
   async update () {
@@ -88,17 +85,24 @@ export class BomModel extends Model {
       {})
   }
 
-  getParent () {
+  get parent () {
     return this[parentSymbol]
   }
 
-  getChildren () {
+  get children () {
     return this[childrenSymbol]
+  }
+
+  get count () {
+    const children = this.children
+    return children.reduce((acc, child) => {
+      return acc + child.count
+    }, 1)
   }
 
   isStable () {
     if (this.status == 'DETERMINED') {
-      const children = this.getChildren()
+      const children = this.children
       return children.filter(child => !child.isStable()).length == 0
     }
     return false
@@ -118,7 +122,7 @@ export class BomModel extends Model {
 
   async visit (visitor) {
     await visitor(this)
-    const children = this.getChildren()
+    const children = this.children
     if (children) {
       await Promise.all(children.map(async (child) => await child.visit(visitor)))
     }
@@ -135,7 +139,7 @@ export class BomModel extends Model {
             })[language]
             errors.push(error)
           }
-          const children = this.getChildren()
+          const children = this.children
           let unstable = children.filter(
             child => !child.isStable()).length > 0
           if (unstable) {

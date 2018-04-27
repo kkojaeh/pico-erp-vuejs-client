@@ -19,14 +19,14 @@
       },
       isPopup () {
         return false
+      },
+      afterGuiAttached() {
+        this.$nextTick(() => {
+          this.$refs.checkbox.focus()
+        })
       }
     },
-    computed: {},
-    mounted () {
-      this.$nextTick(() => {
-        this.$refs.checkbox.$el.focus()
-      })
-    }
+    computed: {}
   }
 </script>
 

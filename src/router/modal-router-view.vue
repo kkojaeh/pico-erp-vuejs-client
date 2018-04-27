@@ -1,12 +1,10 @@
 <template>
-  <q-modal ref="modal" @hide="_onModalHide" class="modal-router-view" no-route-dismiss>
+  <q-modal ref="modal" @hide="_onModalHide" class="modal-router-view" no-route-dismiss
+           :maximized="maximized">
     <component ref="component" :is="component" v-bind="$props"></component>
   </q-modal>
 </template>
 <script>
-  import router from 'src/router'
-  import store from 'src/store'
-  import { api } from 'src/plugins/axios'
 
   export default {
     name: 'modal-router-view',

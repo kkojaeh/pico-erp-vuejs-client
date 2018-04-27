@@ -8,11 +8,34 @@
   import { ColDefUtil } from 'ag-grid'
   import * as _ from 'lodash'
 
+  let count = 0
+
+  const predefined = {
+    cellClass: {
+      type: [String, Function],
+      default: () => (params) => {
+        const editable = params.colDef.editable
+        if(editable == true || (_.isFunction(editable) && editable(params))){
+          return 'ag-cell-editable'
+        }
+      }
+    },
+    editable: {
+      type: [Boolean, Function]
+    },
+    colId: {
+      type: String,
+      default: () => {
+        return 'col' + (++count)
+      }
+    },
+
+  }
   const watchedProperties = {}
-  const props = ['cellRenderer']
+  const props = {}
 
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
-    props.push(propertyName)
+    props[propertyName] = predefined[propertyName] || {}
 
     watchedProperties[propertyName] = function (val, oldVal) {
       this.processChanges(propertyName, val, oldVal)

@@ -1,18 +1,29 @@
 <template>
-  <div>{{value()}}</div>
+  <div>{{value}} <sub>{{ago}}</sub></div>
 </template>
 
 <script>
-  import { date } from 'quasar'
+  import { dateFormat } from 'src/plugins/date'
 
   export default {
     name: 'ag-grid-date-renderer',
-    methods: {
+    computed: {
       value () {
-        return date.formatDate(this.params.value, 'YYYY-MM-DD')
+        const value = this.params.value
+        if(!value){
+          return
+        }
+        return this.$date.format(value, this.params.format || dateFormat)
+      },
+      ago () {
+        const value = this.params.value
+        if(!value){
+          return
+        }
+        if(this.params.ago){
+          return `(${this.$date.ago(value)})`
+        }
       }
-    },
-    mounted () {
     }
   }
 </script>

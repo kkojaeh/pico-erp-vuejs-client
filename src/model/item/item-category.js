@@ -5,13 +5,6 @@ import { language, languageAliases } from 'src/i18n'
 
 export class ItemCategoryModel extends Model {
 
-  constructor (data) {
-    super(data)
-    if (data && data.children) {
-      data.children = data.children.map(child => new ItemCategoryModel(child))
-    }
-  }
-
   get defaults () {
     return {}
   }

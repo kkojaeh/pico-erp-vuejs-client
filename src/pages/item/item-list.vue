@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column">
+  <q-page class="column fit">
     <!-- child -->
     <router-view></router-view>
 
@@ -18,6 +18,7 @@
 
       <!-- main -->
       <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize

@@ -89,7 +89,7 @@ Router.beforeEach(async (to, from, next) => {
       if (authentication.isAuthenticated()) {
         Notify.create({
           icon: 'warning',
-          position: 'bottom-right',
+          position: 'top-right',
           message: '권한이 없습니다'
         })
         if (from) {

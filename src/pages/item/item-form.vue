@@ -198,7 +198,7 @@
         <q-btn flat icon="pause" v-show="!creating" v-if="model.isDeactivatable"
                @click="_onDeactivateClick">비활성화
         </q-btn>
-        <router-link :to="`/bom/revision/${model.id}`" v-show="!creating"
+        <router-link :to="`/bom/${model.id}`" v-show="!creating"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
         </router-link>

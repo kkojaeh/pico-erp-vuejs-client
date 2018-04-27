@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import * as _ from 'lodash'
 
 export class VueComponentFactory {
   constructor ($el, parent) {
@@ -8,13 +9,19 @@ export class VueComponentFactory {
 
   static getComponentType (parent, component) {
     if (typeof component === 'string') {
-      let componentInstance = parent.$parent.$options.components[component]
-      if (!componentInstance) {
-        console.error(
-          `Could not find component with name of ${component}. Is it in Vue.components?`)
-        return null
+      const another = _.upperFirst(_.camelCase(component))
+      while (parent) {
+        const components = parent.$options.components
+        const componentInstance = components[component] || components[another]
+        if (componentInstance) {
+          return Vue.extend(componentInstance)
+        } else {
+          parent = parent.$parent
+        }
       }
-      return Vue.extend(componentInstance)
+      console.error(
+        `Could not find component with name of ${component}. Is it in Vue.components?`)
+      return null
     } else {
       // assume a type
       return component

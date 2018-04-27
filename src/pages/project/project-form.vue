@@ -19,7 +19,7 @@
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
-        <q-field ref="registrationNumber" icon="fa-user" helper="담당자를 선택하세요"
+        <q-field ref="registrationNumber" icon="account_box" helper="담당자를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">

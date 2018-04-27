@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column">
+  <q-page class="column fit">
     <!-- child -->
 
     <router-view></router-view>
@@ -37,6 +37,7 @@
 
       <!-- main -->
       <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-col-resize
                enable-sorting
@@ -49,6 +50,7 @@
                         :width="400" :checkbox-selection="true"
                         :cell-renderer-params="{
                           innerRendererFramework: 'ag-grid-router-link-renderer',
+                          padding: 20,
                           suppressCount: true,
                           path:'/item-category/show/${id}',
                           query:$route.query

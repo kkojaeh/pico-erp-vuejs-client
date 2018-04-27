@@ -33,7 +33,7 @@
 
     <q-tabs class="col-12" inverted>
       <!-- Tabs - notice slot="title" -->
-      <q-tab default :disable="creating" slot="title" name="tab-1" icon="fa-users">권한</q-tab>
+      <q-tab default :disable="creating" slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
       <q-tab :disable="creating" slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
       <!-- Targets -->
       <q-tab-pane :disabled="creating" name="tab-1" class="column no-border" style="height:400px;">

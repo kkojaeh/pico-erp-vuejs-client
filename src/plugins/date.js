@@ -1,6 +1,7 @@
 import { date } from 'quasar'
 import moment from 'moment'
 
+export const dateFormat = 'YYYY-MM-DD'
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 function formatDate (value, dateFormat) {

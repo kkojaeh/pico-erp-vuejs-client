@@ -49,7 +49,7 @@
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
-        <q-field icon="fa-user" helper="공정 유형을 선택하세요"
+        <q-field icon="account_box" helper="공정 유형을 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.typeId"
                  :error-label="model.$errors.typeId">
@@ -70,7 +70,7 @@
                     :options="difficultyLabels"></q-select>
         </q-field>
 
-        <q-field icon="fa-user" helper="공정의 관리자를 선택하세요"
+        <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">

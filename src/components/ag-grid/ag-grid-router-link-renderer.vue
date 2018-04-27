@@ -1,6 +1,5 @@
 <template>
-  <router-link :to="to">
-    {{value}}
+  <router-link :to="to" v-html="value">
   </router-link>
 </template>
 
@@ -28,6 +27,9 @@
         return location
       },
       value () {
+        if(this.params.innerRenderer){
+          return this.params.innerRenderer(this.params)
+        }
         return this.params.value
       }
     }
@@ -37,7 +39,6 @@
 <style scoped>
   a {
     text-decoration: underline;
-    display: inline-block;
-    width: 100%;
+    padding: 10px 20px 10px 0px;
   }
 </style>

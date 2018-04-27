@@ -5,12 +5,7 @@ import { api } from 'src/plugins/axios'
 export class UnitLabelArray extends FetchableArray {
   url = '/shared/unit-labels'
   axios = api
-
-  query = (keyword) => {
-    return this.fetch({
-      query: keyword || ''
-    })
-  }
+  model = LabelModel
 }
 
 export class LabelModel extends Model {

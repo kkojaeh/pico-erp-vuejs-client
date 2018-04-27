@@ -1,28 +1,23 @@
 <template>
   <q-page class="column">
-    <!-- child -->
-
-    <router-view></router-view>
-
-    <!-- child -->
-
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow" prevent-route filter-always>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow" prevent-route filter-opened prevent-query-string>
 
       <!-- action -->
 
       <div slot="action">
-        <q-btn flat icon="arrow_back" v-close-overlay>이전</q-btn>
-        <q-btn flat icon="check" @click="_onSelectedClick">선택</q-btn>
+        <q-item-tile label>품목 검색</q-item-tile>
       </div>
 
       <!-- action -->
 
       <!-- main -->
       <ag-grid ref="grid"
+               class="col-grow"
                :row-selection="rowSelection"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
+               @selection-changed="onGridSelectionChanged"
                :row-data="array">
         <ag-grid-column :checkbox-selection="true" field="code" header-name="코드" :width="170"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
@@ -117,6 +112,13 @@
       <!-- filter -->
 
     </c-list-view>
+
+    <q-toolbar>
+      <q-btn flat icon="arrow_back" v-close-overlay>이전</q-btn>
+      <q-toolbar-title>
+      </q-toolbar-title>
+      <q-btn flat icon="check" @click="_onSelectedClick" :disabled="!selectable">선택</q-btn>
+    </q-toolbar>
   </q-page>
 
 </template>
@@ -156,6 +158,7 @@
           statuses: [],
           types: []
         },
+        selectable: false,
         dataAdjuster: null
       }
     },
@@ -185,6 +188,10 @@
       async onCategorySearch (keyword, done) {
         await this.categoryLabels.query(keyword)
         done()
+      },
+      async onGridSelectionChanged (event) {
+        const selected = event.api.getSelectedRows()
+        this.selectable = selected.length > 0
       },
       _onSelectedClick () {
         const selected = this.$refs.grid.api.getSelectedRows()

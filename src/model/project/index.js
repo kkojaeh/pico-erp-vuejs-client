@@ -1,12 +1,19 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import { ItemModel } from '../item/item'
 
 export class ProjectModel extends Model {
 
   get defaults () {
     return {
-      customerManagerContact: {}
+      customerManagerContact: {
+        name: null,
+        email: null,
+        mobilePhoneNumber: null,
+        telephoneNumber: null,
+        faxNumber: null
+      }
     }
   }
 
@@ -16,9 +23,12 @@ export class ProjectModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/project/projects/${id}`)
-    return new ProcessModel(response.data)
+  static async get (id, cacheable) {
+    if(!id){
+      return new ProjectModel()
+    }
+    const response = await api.get(`/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    return new ProjectModel(response.data)
   }
 
   static async exists (id) {

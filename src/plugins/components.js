@@ -25,12 +25,14 @@ import AgGridIconRenderer from 'src/components/ag-grid/ag-grid-icon-renderer.vue
 import AgGridCleaveRenderer from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
 import AgGridPhoneNumberRenderer from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
 import AgGridArrayLabelRenderer from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
+import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
 import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
+
 
 import VueClipboard from 'vue-clipboard2'
 
@@ -105,5 +107,7 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-phone-number-renderer', AgGridPhoneNumberRenderer)
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
+  Vue.component('ag-grid-input-editor', AgGridInputEditor)
+
 
 }

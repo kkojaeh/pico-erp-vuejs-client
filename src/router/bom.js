@@ -1,38 +1,36 @@
+import { wrapModal } from './default'
+
 let meta = {
   title: 'BOM 관리',
   authorize: 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')'
 }
 
 export default [{
-  path: '/bom/revision/:itemId',
+  path: '/bom/:itemId',
   component: () => import('pages/bom/bom-revision-list'),
   meta,
   props: (route) => {
     return {
       itemId: route.params.itemId
     }
-  }
-}, {
-  path: '/bom/show/:itemId/:revision',
-  component: () => import('pages/bom/bom-form'),
-  meta,
-  props: (route) => {
-    return {
-      itemId: route.params.itemId,
-      revision: Number(route.params.revision),
-      action: 'show'
+  },
+  children: [{
+    path: ':id',
+    component: () => wrapModal(import('pages/bom/bom-form'), {
+      maximized: true,
+      onModalHide () {
+        const itemId = this.$route.params.itemId
+        this.$router.push(`/bom/${itemId}`)
+      }
+    }),
+    meta,
+    props: (route) => {
+      return {
+        id: route.params.id,
+        closable: true
+      }
     }
-  }
-}, {
-  path: '/bom/show/:id',
-  component: () => import('pages/bom/bom-form'),
-  meta,
-  props: (route) => {
-    return {
-      id: route.params.id,
-      action: 'show'
-    }
-  }
+  }]
 }]
 
 /*
