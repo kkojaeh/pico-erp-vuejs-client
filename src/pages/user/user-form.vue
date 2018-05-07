@@ -119,7 +119,7 @@
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { UserModel, UserRoleArray, DepartmentLabelArray } from 'src/model/user'
+  import { DepartmentLabelArray, UserModel, UserRoleArray } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {

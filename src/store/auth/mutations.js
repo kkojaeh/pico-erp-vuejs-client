@@ -6,3 +6,8 @@ export const menus = (state, payload) => {
   localStorage.setItem('AUTH/MENUS', JSON.stringify(payload))
   state.menus = payload
 }
+
+export const token = (state, payload) => {
+  localStorage.setItem('AUTH/TOKEN', payload)
+  state.token = payload
+}

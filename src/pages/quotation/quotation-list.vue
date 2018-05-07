@@ -169,9 +169,9 @@
 <script>
   import { DataAdjuster } from 'src/model/data'
   import {
+    QuotationExpiryPolicyArray,
     QuotationPaginationArray,
-    QuotationStatusArray,
-    QuotationExpiryPolicyArray
+    QuotationStatusArray
   } from 'src/model/quotation'
 
   import { CompanyLabelArray } from 'src/model/company'
@@ -197,7 +197,7 @@
           managerName: null,
           startCreatedDate: null,
           endCreatedDate: null,
-          statuses: [ 'DRAFT', 'COMMIT', 'IN_NEGOTIATION' ]
+          statuses: ['DRAFT', 'COMMITTED', 'IN_NEGOTIATION']
         },
         dataAdjuster: null
       }

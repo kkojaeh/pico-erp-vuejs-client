@@ -3,7 +3,6 @@ import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { LabelModel } from 'src/model/shared'
 import { language, languageAliases } from 'src/i18n'
-import { ItemModel } from 'src/model/item'
 
 const parentSymbol = Symbol('parent')
 const childrenSymbol = Symbol('children')
@@ -15,6 +14,29 @@ export class BomModel extends Model {
       estimatedAccumulatedUnitCost: {},
       estimatedIsolatedUnitCost: {},
       quantity: 1
+    }
+  }
+
+  get parent () {
+    return this[parentSymbol]
+  }
+
+  get children () {
+    return this[childrenSymbol]
+  }
+
+  get count () {
+    const children = this.children
+    return children.reduce((acc, child) => {
+      return acc + child.count
+    }, 1)
+  }
+
+  get quantityPerRoot () {
+    if (this.parent) {
+      return this.quantity * this.parent.quantityPerRoot
+    } else {
+      return this.quantity
     }
   }
 
@@ -85,21 +107,6 @@ export class BomModel extends Model {
       {})
   }
 
-  get parent () {
-    return this[parentSymbol]
-  }
-
-  get children () {
-    return this[childrenSymbol]
-  }
-
-  get count () {
-    const children = this.children
-    return children.reduce((acc, child) => {
-      return acc + child.count
-    }, 1)
-  }
-
   isStable () {
     if (this.status == 'DETERMINED') {
       const children = this.children
@@ -124,7 +131,8 @@ export class BomModel extends Model {
     await visitor(this)
     const children = this.children
     if (children) {
-      await Promise.all(children.map(async (child) => await child.visit(visitor)))
+      await Promise.all(
+        children.map(async (child) => await child.visit(visitor)))
     }
   }
 

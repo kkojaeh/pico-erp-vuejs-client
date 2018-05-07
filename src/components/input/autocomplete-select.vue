@@ -161,12 +161,11 @@
       model (to) {
         if (to) {
           this.$emit('input', to[this.valueField])
-          //this.$emit('update:label', to[this.labelField])
+          this.$emit('update:label', to[this.labelField])
         } else {
           this.$emit('input', null)
-          //this.$emit('update:label', null)
+          this.$emit('update:label', null)
         }
-
       },
       value (to) {
         if (to) {

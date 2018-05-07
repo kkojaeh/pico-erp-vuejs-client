@@ -7,7 +7,8 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" hide-trigger prevent-fetch prevent-route
+    <c-list-view ref="listView" :array="array" :filters="filters" hide-trigger prevent-fetch
+                 prevent-route
                  filter-always class="col-grow">
 
       <!-- action -->
@@ -70,8 +71,7 @@
 
 </template>
 <script>
-  import { BomRevisionArray, BomStatusArray, BomModel } from 'src/model/bom'
-  import {} from 'src/model/process'
+  import { BomModel, BomRevisionArray, BomStatusArray } from 'src/model/bom'
   import { ItemModel } from 'src/model/item'
 
   export default {

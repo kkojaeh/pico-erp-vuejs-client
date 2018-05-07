@@ -77,8 +77,7 @@
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { UserLabelArray, DepartmentPaginationArray } from 'src/model/user'
-  import * as _ from 'lodash'
+  import { DepartmentPaginationArray, UserLabelArray } from 'src/model/user'
 
   export default {
     data () {

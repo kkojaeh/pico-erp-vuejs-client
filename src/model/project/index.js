@@ -1,7 +1,6 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
-import { ItemModel } from '../item/item'
 
 export class ProjectModel extends Model {
 
@@ -24,10 +23,11 @@ export class ProjectModel extends Model {
   }
 
   static async get (id, cacheable) {
-    if(!id){
+    if (!id) {
       return new ProjectModel()
     }
-    const response = await api.get(`/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ProjectModel(response.data)
   }
 

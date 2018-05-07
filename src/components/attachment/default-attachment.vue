@@ -9,12 +9,10 @@
 
 <script>
   import UppyAttachment from './uppy-attachment.vue'
-  import {
-    AttachmentModel,
-    AttachmentFileModel
-  } from './attachment-model'
+  import { AttachmentFileModel, AttachmentModel } from './attachment-model'
   import { api } from 'src/plugins/axios'
   import * as _ from 'lodash'
+  import store from 'src/store'
 
   class DefaultAttachmentModel extends AttachmentModel {
 
@@ -39,9 +37,9 @@
     }
 
     get headers () {
-      return {
-        'X-Firebase-Auth': localStorage.getItem('API_FIREBASE_TOKEN')
-      }
+      const headers = {}
+      headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
+      return headers
     }
 
     get files () {
@@ -49,14 +47,15 @@
     }
 
     mapFile (item) {
+      const authQs = store.getters['auth/tokenParameterName'] + '=' + store.getters['auth/token']
       const id = this.id
       const host = api.defaults.baseURL
       return new AttachmentFileModel.Builder(this)
       .id(item.id)
       .name(item.name)
       .size(item.contentLength)
-      .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}`)
-      .download(`${host}/attachment/attachments/${id}/items/${item.id}`)
+      .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}?${authQs}`)
+      .download(`${host}/attachment/attachments/${id}/items/${item.id}?${authQs}`)
       .type(item.contentType)
       .build()
     }

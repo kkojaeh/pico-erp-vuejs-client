@@ -2,6 +2,7 @@ import axios from 'axios'
 import * as _ from 'lodash'
 import { Loading, Notify } from 'quasar'
 import { init } from './auth'
+import store from 'src/store'
 
 let apiVersion = 'v1'
 let apiRequests = 0
@@ -12,8 +13,8 @@ let loadFunction = (config) => {
   config.data = config.data || {}
   config.url = _.template(config.url)(config.data)
   config.headers['Cache-Control'] = 'max-age=0'
-  config.headers['X-Firebase-Auth'] = localStorage.getItem(
-    'API_FIREBASE_TOKEN')
+
+  config.headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
 
   config.headers['Accept'] = `application/vnd.acepk.${apiVersion}+json`
   config.headers['Content-Type'] = `application/vnd.acepk.${apiVersion}+json`

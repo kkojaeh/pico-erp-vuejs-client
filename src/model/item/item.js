@@ -22,10 +22,11 @@ export class ItemModel extends Model {
   }
 
   static async get (id, cacheable) {
-    if(!id){
+    if (!id) {
       return new ItemModel()
     }
-    const response = await api.get(`/item/items/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/item/items/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemModel(response.data)
   }
 
@@ -39,7 +40,7 @@ export class ItemModel extends Model {
     const data = response.data
     _.forIn(data.properties, (value, key) => {
       if (numbers.includes(value.type)) {
-        if(_.isArray(value.enum)){
+        if (_.isArray(value.enum)) {
           value.enum = value.enum.map(Number)
         }
       }

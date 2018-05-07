@@ -27,7 +27,7 @@
         return location
       },
       value () {
-        if(this.params.innerRenderer){
+        if (this.params.innerRenderer) {
           return this.params.innerRenderer(this.params)
         }
         return this.params.value

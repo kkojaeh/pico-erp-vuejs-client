@@ -2,7 +2,6 @@ import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
-import { ProcessTypeModel } from '../process/process-type'
 
 export class CompanyModel extends Model {
 
@@ -20,7 +19,8 @@ export class CompanyModel extends Model {
     if (!id) {
       return new CompanyModel()
     }
-    const response = await api.get(`/company/companies/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/company/companies/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new CompanyModel(response.data)
   }
 
@@ -29,8 +29,7 @@ export class CompanyModel extends Model {
   }
 
   static async existsByRegistrationNumber (registrationNumber) {
-    return exists(api,
-      `/company/companies/${registrationNumber}?registrationNumber=true`)
+    return exists(api, `/company/registration-numbers/${registrationNumber}`)
   }
 
   async create () {

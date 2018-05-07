@@ -113,7 +113,6 @@
   import { CompanyLabelArray } from 'src/model/company'
   import { UserLabelArray } from 'src/model/user'
   import { ProjectPaginationArray } from 'src/model/project'
-  import * as _ from 'lodash'
 
   export default {
     data () {

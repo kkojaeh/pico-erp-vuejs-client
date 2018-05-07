@@ -16,15 +16,24 @@ import AutocompleteSelect from 'src/components/input/autocomplete-select.vue'
 import DefaultAttachment from 'src/components/attachment/default-attachment.vue'
 import HtmlEditor from 'src/components/html-editor/html-editor.vue'
 
-import AgGridCheckboxRenderer from 'src/components/ag-grid/ag-grid-checkbox-renderer.vue'
-import AgGridCheckboxEditor from 'src/components/ag-grid/ag-grid-checkbox-editor.vue'
-import AgGridDateRenderer from 'src/components/ag-grid/ag-grid-date-renderer.vue'
-import AgGridDatetimeRenderer from 'src/components/ag-grid/ag-grid-datetime-renderer.vue'
-import AgGridRouterLinkRenderer from 'src/components/ag-grid/ag-grid-router-link-renderer.vue'
-import AgGridIconRenderer from 'src/components/ag-grid/ag-grid-icon-renderer.vue'
-import AgGridCleaveRenderer from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
-import AgGridPhoneNumberRenderer from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
-import AgGridArrayLabelRenderer from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
+import AgGridCheckboxRenderer
+  from 'src/components/ag-grid/ag-grid-checkbox-renderer.vue'
+import AgGridCheckboxEditor
+  from 'src/components/ag-grid/ag-grid-checkbox-editor.vue'
+import AgGridDateRenderer
+  from 'src/components/ag-grid/ag-grid-date-renderer.vue'
+import AgGridDatetimeRenderer
+  from 'src/components/ag-grid/ag-grid-datetime-renderer.vue'
+import AgGridRouterLinkRenderer
+  from 'src/components/ag-grid/ag-grid-router-link-renderer.vue'
+import AgGridIconRenderer
+  from 'src/components/ag-grid/ag-grid-icon-renderer.vue'
+import AgGridCleaveRenderer
+  from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
+import AgGridPhoneNumberRenderer
+  from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
+import AgGridArrayLabelRenderer
+  from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
@@ -32,7 +41,6 @@ import moment from 'moment'
 import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
-
 
 import VueClipboard from 'vue-clipboard2'
 
@@ -108,6 +116,5 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
-
 
 }

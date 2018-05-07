@@ -1,6 +1,7 @@
 <template>
   <q-page class="column">
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow" prevent-route filter-opened prevent-query-string>
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
+                 prevent-route filter-opened prevent-query-string>
 
       <!-- action -->
 
@@ -126,13 +127,12 @@
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
   import {
+    ItemCategoryLabelArray,
     ItemPaginationArray,
     ItemStatusArray,
-    ItemTypeArray,
-    ItemCategoryLabelArray
+    ItemTypeArray
   } from 'src/model/item'
   import { CompanyLabelArray } from 'src/model/company'
-  import * as _ from 'lodash'
 
   export default {
     props: {

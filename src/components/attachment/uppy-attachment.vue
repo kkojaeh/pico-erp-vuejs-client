@@ -13,9 +13,7 @@
 <script>
   import * as _ from 'lodash'
   import Uppy from 'src/components/uppy/uppy.vue'
-  import {
-    AttachmentFileModel
-  } from './attachment-model'
+  import { AttachmentFileModel } from './attachment-model'
 
   export default {
     props: {

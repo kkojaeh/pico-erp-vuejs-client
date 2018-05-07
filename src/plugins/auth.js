@@ -35,7 +35,7 @@ export function signIn (email, password) {
 
 export async function signOut () {
   await firebase.auth().signOut()
-  localStorage.removeItem('API_FIREBASE_TOKEN')
+  store.commit('auth/token', null)
   await store.dispatch('auth/signOut')
 }
 
@@ -48,7 +48,7 @@ export function init () {
       if (user) {
         user.getIdToken(true).then(
           (token) => {
-            localStorage.setItem('API_FIREBASE_TOKEN', token)
+            store.commit('auth/token', token)
             store.commit('global/initialized', true)
             store.dispatch('auth/signIn', firebase.auth().currentUser)
             resolve()

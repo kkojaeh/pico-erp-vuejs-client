@@ -35,7 +35,7 @@
         </q-field>
 
         <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
-                 class="col-xs-11 col-md-11 col-xl-11">
+                 class="col-xs-12 col-md-12 col-xl-12">
           <c-html-editor v-model="model.description"></c-html-editor>
         </q-field>
 

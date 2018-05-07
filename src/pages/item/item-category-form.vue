@@ -69,7 +69,6 @@
 <script>
   import { ItemCategoryModel } from 'src/model/item'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import { language, languageAliases } from 'src/i18n'
 
   export default {
     props: {

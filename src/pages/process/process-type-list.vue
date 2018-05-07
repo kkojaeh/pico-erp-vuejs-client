@@ -77,9 +77,7 @@
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
-  import { UserLabelArray } from 'src/model/user'
-  import { ProcessTypePaginationArray, ProcessInfoTypeLabelArray } from 'src/model/process'
-  import * as _ from 'lodash'
+  import { ProcessInfoTypeLabelArray, ProcessTypePaginationArray } from 'src/model/process'
 
   export default {
     data () {

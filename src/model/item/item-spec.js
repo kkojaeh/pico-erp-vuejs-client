@@ -1,6 +1,4 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
-import { LabelModel } from 'src/model/shared'
+import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 
 export class ItemSpecModel extends Model {

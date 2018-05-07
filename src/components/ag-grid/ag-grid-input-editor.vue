@@ -1,5 +1,5 @@
 <template>
-  <q-input :type="type" ref="input" v-model="model" @keyup.enter="_onEnter"
+  <q-input :type="type" ref="input" v-model="model"
            :maxlength="maxlength" :align="align"
            :decimals="decimals" :prefix="prefix" :suffix="suffix"></q-input>
 </template>
@@ -10,22 +10,24 @@
   export default {
     name: 'ag-grid-input-editor',
     methods: {
-      _onEnter (e) {
-        this.params.api.stopEditing()
-      },
       refresh () {
       },
       getValue () {
-        return this.params.value
+        const setValue = this.params.setValue
+        if (setValue) {
+          return setValue(this.model)
+        } else {
+          return this.model
+        }
       },
       isPopup () {
         return false
       },
       afterGuiAttached () {
-        const toValue = this.params.toValue
-        if (toValue) {
-          this.model = toValue(this.params.value)
-        }else {
+        const getValue = this.params.getValue
+        if (getValue) {
+          this.model = getValue(this.params.value)
+        } else {
           this.model = this.params.value
         }
         this.$nextTick(() => {
@@ -36,7 +38,7 @@
     },
     data () {
       return {
-        model: null
+        model: ''
       }
     },
     computed: {
@@ -59,15 +61,10 @@
         return this.params.align
       }
     },
-    watch: {
-      model (to) {
-        const fromValue = this.params.fromValue
-        if (fromValue) {
-          this.params.value = fromValue(to)
-        } else {
-          this.params.value = to
-        }
-      }
+    mounted () {
+      this.$el.querySelector('input').addEventListener('input', (event) => {
+        this.model = event.target.value
+      })
     }
   }
 </script>

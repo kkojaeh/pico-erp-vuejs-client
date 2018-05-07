@@ -211,9 +211,9 @@
 </template>
 <script>
   import {
-    ProcessTypeModel,
+    ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
-    ProcessDifficultyArray
+    ProcessTypeModel
   } from 'src/model/process'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import * as _ from 'lodash'

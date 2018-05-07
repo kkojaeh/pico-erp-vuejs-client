@@ -127,10 +127,10 @@
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
   import {
+    ItemCategoryLabelArray,
     ItemPaginationArray,
     ItemStatusArray,
-    ItemTypeArray,
-    ItemCategoryLabelArray
+    ItemTypeArray
   } from 'src/model/item'
   import { CompanyLabelArray } from 'src/model/company'
 

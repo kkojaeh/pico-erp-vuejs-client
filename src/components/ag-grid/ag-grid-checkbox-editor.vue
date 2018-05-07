@@ -20,7 +20,7 @@
       isPopup () {
         return false
       },
-      afterGuiAttached() {
+      afterGuiAttached () {
         this.$nextTick(() => {
           this.$refs.checkbox.focus()
         })

@@ -199,5 +199,8 @@
     .uppy-DashboardItem-edit
       display: none
 
+  @media only screen and (min-width: 768px)
+    .uppy-Dashboard-inner
+      width: initial
 
 </style>

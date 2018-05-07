@@ -10,17 +10,17 @@
     computed: {
       value () {
         const value = this.params.value
-        if(!value){
+        if (!value) {
           return
         }
         return this.$date.format(value, this.params.format || dateTimeFormat)
       },
       ago () {
         const value = this.params.value
-        if(!value){
+        if (!value) {
           return
         }
-        if(this.params.ago){
+        if (this.params.ago) {
           return `(${this.$date.ago(value)})`
         }
       }

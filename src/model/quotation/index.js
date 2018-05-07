@@ -1,21 +1,29 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model, uuid } from 'src/model/model'
 import { BomModel } from 'src/model/bom'
+import { ProcessModel } from 'src/model/process'
 import { ItemModel } from 'src/model/item'
 import { api } from 'src/plugins/axios'
+import store from 'src/store'
+import qs from 'qs'
 
 const bomSymbol = Symbol('bom')
 
 const quotationSymbol = Symbol('quotation')
 
-class QuotationBomItemModel extends Model {
+const itemSymbol = Symbol('item')
 
-  static create (bom) {
-    return new QuotationBomItemModel({
-      id: uuid(),
-      bomId: bom.id
-    })
-  }
+const processSymbol = Symbol('process')
+
+export class QuotationExportOptions {
+
+  detailedUnitPrice = true
+
+  includedBom = true
+
+}
+
+class QuotationBomItemModel extends Model {
 
   get defaults () {
     return {
@@ -40,12 +48,28 @@ class QuotationBomItemModel extends Model {
     return this[quotationSymbol]
   }
 
+  static create (bom) {
+    return new QuotationBomItemModel({
+      id: uuid(),
+      bomId: bom.id
+    })
+  }
+
   async fetch () {
     const bom = await BomModel.get(this.bomId)
     this[bomSymbol] = bom
     await bom.fetchChildren(true)
     await bom.visit(async (node) => {
-      node.item = await ItemModel.get(node.itemId, true)
+      node[itemSymbol] = await ItemModel.get(node.itemId, true)
+      node[processSymbol] = await ProcessModel.get(node.processId, true)
+      Object.defineProperties(node, {
+        'item': {
+          get: function () { return this[itemSymbol] }
+        },
+        'process': {
+          get: function () { return this[processSymbol] }
+        }
+      })
     })
   }
 
@@ -56,21 +80,86 @@ class QuotationBomItemModel extends Model {
       })
   }
 
+  async remove () {
+    await api.delete(
+      `/quotation/quotations/${this.quotation.id}/items/${this.id}`, {})
+  }
+
 }
 
 class QuotationUnitPriceRateItemAdditionModel extends Model {
+  get defaults () {
+    return {
+      '@type': 'unit-price-rate',
+      name: '',
+      unitPriceRate: 0
+    }
+  }
+
+  get quotation () {
+    return this[quotationSymbol]
+  }
+
+  get value () {
+    return this.unitPriceRate
+  }
+
+  set value (value) {
+    this.unitPriceRate = value
+  }
+
   static create () {
     return new QuotationUnitPriceRateItemAdditionModel({
       id: uuid()
     })
   }
 
+  async update () {
+    await api.put(
+      `/quotation/quotations/${this.quotation.id}/item-additions/${this.id}`, {
+        itemAddition: this
+      })
+  }
+
+  async remove () {
+    await api.delete(
+      `/quotation/quotations/${this.quotation.id}/item-additions/${this.id}`,
+      {})
+  }
+
+}
+
+class QuotationAdditionModel extends Model {
   get defaults () {
     return {
-      '@type': 'unit-price-rate',
-      unitPriceRate: 0
+      name: '',
+      unitPrice: 0,
+      quantity: 1
     }
   }
+
+  get quotation () {
+    return this[quotationSymbol]
+  }
+
+  static create () {
+    return new QuotationAdditionModel({
+      id: uuid()
+    })
+  }
+
+  async update () {
+    await api.put(
+      `/quotation/quotations/${this.quotation.id}/additions/${this.id}`, {
+        addition: this
+      })
+  }
+
+  async remove () {
+    await api.delete(
+      `/quotation/quotations/${this.quotation.id}/additions/${this.id}`, {})
+  }
+
 }
 
 export class QuotationModel extends Model {
@@ -81,17 +170,18 @@ export class QuotationModel extends Model {
       this.items = this.items.map(QuotationModel.itemConverter)
       this.items.forEach(item => item[quotationSymbol] = this)
     }
-  }
-
-  static itemConverter (data) {
-    const type = data['@type']
-    if (type == 'bom') {
-      return new QuotationBomItemModel(data)
+    if (this.itemAdditions) {
+      this.itemAdditions = this.itemAdditions.map(
+        QuotationModel.itemAdditionConverter)
+      this.itemAdditions.forEach(
+        itemAddition => itemAddition[quotationSymbol] = this)
     }
-  }
+    if (this.additions) {
+      this.additions = this.additions.map(
+        QuotationModel.additionConverter)
+      this.additions.forEach(addition => addition[quotationSymbol] = this)
+    }
 
-  async fetchAll () {
-    await Promise.all(this.items.map(async (item) => await item.fetch()))
   }
 
   get defaults () {
@@ -113,6 +203,24 @@ export class QuotationModel extends Model {
     }
   }
 
+  static itemConverter (data) {
+    const type = data['@type']
+    if (type == 'bom') {
+      return new QuotationBomItemModel(data)
+    }
+  }
+
+  static itemAdditionConverter (data) {
+    const type = data['@type']
+    if (type == 'unit-price-rate') {
+      return new QuotationUnitPriceRateItemAdditionModel(data)
+    }
+  }
+
+  static additionConverter (data) {
+    return new QuotationAdditionModel(data)
+  }
+
   static async get (id) {
     const response = await api.get(`/quotation/quotations/${id}`)
     return new QuotationModel(response.data)
@@ -120,6 +228,10 @@ export class QuotationModel extends Model {
 
   static async exists (id) {
     return await exists(api, `/quotation/quotations/${id}`)
+  }
+
+  async fetchAll () {
+    await Promise.all(this.items.map(async (item) => await item.fetch()))
   }
 
   async create () {
@@ -142,7 +254,12 @@ export class QuotationModel extends Model {
     await api.post(`/quotation/quotations/${this.id}/item-additions`, {
       itemAddition: QuotationUnitPriceRateItemAdditionModel.create()
     })
+  }
 
+  async addAddition () {
+    await api.post(`/quotation/quotations/${this.id}/additions`, {
+      addition: QuotationAdditionModel.create()
+    })
   }
 
   async validate (state) {
@@ -160,29 +277,11 @@ export class QuotationModel extends Model {
       managerId: {
         presence: true
       },
-      'customerManagerContact.name': {
-        presence: true,
-        length: {minimum: 2, maximum: 20}
+      protectedDescription: {
+        length: {maximum: 200}
       },
-      'customerManagerContact.email': {
-        presence: false,
-        email: true,
-        length: {minimum: 0, maximum: 30}
-      },
-      'customerManagerContact.mobilePhoneNumber': {
-        presence: false,
-        phoneNumber: true,
-        length: {minimum: 0, maximum: 20}
-      },
-      'customerManagerContact.faxNumber': {
-        presence: false,
-        phoneNumber: true,
-        length: {minimum: 0, maximum: 20}
-      },
-      'customerManagerContact.telephoneNumber': {
-        presence: false,
-        phoneNumber: true,
-        length: {minimum: 0, maximum: 20}
+      publicDescription: {
+        length: {maximum: 200}
       }
     }
 
@@ -197,6 +296,38 @@ export class QuotationModel extends Model {
   async validateUpdate () {
     return await
       this.validate('update')
+  }
+
+  async validateCommit () {
+    return await
+      this.validate('update')
+  }
+
+  async export (options) {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+    const link = document.createElement('a')
+    link.href = `${host}/quotation/quotations/${this.id}/export?${qs.stringify(
+      options)}&${authQs}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  async commit () {
+    await api.put(`/quotation/quotations/${this.id}/commit`, {})
+  }
+
+  async cancel () {
+    await api.put(`/quotation/quotations/${this.id}/cancel`, {})
+  }
+
+  async nextDraft () {
+    const response = await api.post(`/quotation/quotations/${this.id}/next`, {
+      nextId: uuid()
+    })
+    this.assign(response.data)
   }
 }
 

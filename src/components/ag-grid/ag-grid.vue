@@ -108,26 +108,26 @@
           this.invalidateColumnDefinitions()
         }
       },
-      onWindowCopy(e){
+      onWindowCopy (e) {
         const cell = this._keyActingCell
-        e.clipboardData.setData('text/plain', cell.innerText);
-        e.preventDefault();
+        e.clipboardData.setData('text/plain', cell.innerText)
+        e.preventDefault()
       },
-      onWindowKeydowned(event) {
-        if(this._keyActingCell){
+      onWindowKeydowned (event) {
+        if (this._keyActingCell) {
           return
         }
         const target = event.target
         const el = this.$el
         const containsCell = target.className.indexOf(' ag-cell ') && el.contains(target)
-        if(!containsCell){
+        if (!containsCell) {
           return
         }
         this._keyActingCell = target
         window.addEventListener('copy', this.onWindowCopy)
       },
-      onWindowKeyuped(event) {
-        if(!this._keyActingCell){
+      onWindowKeyuped (event) {
+        if (!this._keyActingCell) {
           return
         }
         this._keyActingCell = null

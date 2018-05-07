@@ -55,7 +55,6 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import Toast from 'quasar'
   import QLayoutFooter from 'quasar-framework/src/components/layout/QLayoutFooter'
   import QToolbar from 'quasar-framework/src/components/toolbar/QToolbar'
   import Router from 'src/router'

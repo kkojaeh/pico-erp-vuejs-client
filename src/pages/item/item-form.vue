@@ -198,6 +198,10 @@
         <q-btn flat icon="pause" v-show="!creating" v-if="model.isDeactivatable"
                @click="_onDeactivateClick">비활성화
         </q-btn>
+        <router-link :to="`/process/show/${processModel.id}`" v-show="!!processModel.id"
+                     v-if="$authorized.processManager">
+          <q-btn flat icon="settings_applications">공정</q-btn>
+        </router-link>
         <router-link :to="`/bom/${model.id}`" v-show="!creating"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
@@ -220,6 +224,7 @@
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
+  import { ProcessModel } from 'src/model/process'
   import { CompanyLabelArray, CompanyModel } from 'src/model/company'
   import { UnitLabelArray } from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
@@ -239,6 +244,7 @@
     },
     authorized: {
       'itemManager': 'hasRole(\'ITEM_MANAGER\')',
+      'processManager': 'hasRole(\'PROCESS_MANAGER\')',
       'bomAccessor': 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')'
     },
     data () {
@@ -253,6 +259,7 @@
         categoryModel: new ItemCategoryModel(),
         customerModel: new CompanyModel(),
         specTypeModel: new ItemSpecTypeModel(),
+        processModel: new ProcessModel(),
         creating: false
       }
     },
@@ -287,6 +294,9 @@
       async show () {
         this.creating = false
         this.model = await ItemModel.get(this.id)
+        const processExists = await ProcessModel.existsByItemId(this.id)
+        this.processModel = processExists ? await ProcessModel.getByItemId(this.id, true)
+          : new ProcessModel()
       },
       async _onSaveClick () {
         let valid = this.creating ? await this.model.validateCreate()

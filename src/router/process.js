@@ -11,6 +11,26 @@ let typeMeta = {
 }
 
 export default [{
+  path: '/process',
+  component: () => import('pages/process/process-list'),
+  meta: meta,
+  children: [{
+    path: 'show/:id',
+    component: () => wrapModal(import('pages/process/process-form'), {
+      onModalHide () {
+        this.$router.push({path: '/process', query: this.$route.query})
+      }
+    }),
+    meta: meta,
+    props: (route) => {
+      return {
+        id: route.params.id,
+        action: 'show',
+        closable: true
+      }
+    }
+  }]
+}, {
   path: '/process-type',
   component: () => import('pages/process/process-type-list'),
   meta: typeMeta,

@@ -1,5 +1,5 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
+import { FetchableArray } from 'src/model/array'
+import { exists, Model } from 'src/model/model'
 import { LabelModel } from 'src/model/shared'
 import { api } from 'src/plugins/axios'
 
@@ -9,7 +9,8 @@ export class ItemSpecTypeModel extends Model {
     if (!id) {
       return new ItemSpecTypeModel()
     }
-    const response = await api.get(`/item/spec-types/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/item/spec-types/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemSpecTypeModel(response.data)
   }
 

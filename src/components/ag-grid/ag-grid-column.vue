@@ -15,7 +15,7 @@
       type: [String, Function],
       default: () => (params) => {
         const editable = params.colDef.editable
-        if(editable == true || (_.isFunction(editable) && editable(params))){
+        if (editable == true || (_.isFunction(editable) && editable(params))) {
           return 'ag-cell-editable'
         }
       }

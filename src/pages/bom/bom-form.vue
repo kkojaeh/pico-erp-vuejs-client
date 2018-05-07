@@ -57,7 +57,7 @@
       <ag-grid-column field="quantity" header-name="수량" :width="80"
                       :editable="isQuantityEditable"
                       cell-editor-framework="ag-grid-input-editor"
-                      :cell-renderer="quantityCellRenderer" :tooltip="tooltipNumberToWords"
+                      :cell-renderer="quantityCellRenderer" :tooltip="tooltipReversedQuantity"
                       :cell-editor-params="{ type: 'number', decimals: 5, align: 'right' }"
                       :cell-style="{textAlign: 'right'}"/>
       <ag-grid-column field="status" header-name="상태" :width="80"
@@ -170,7 +170,7 @@
     methods: {
       quantityCellRenderer (params) {
         const value = params.value
-        return `${value}<sub>(${(1 / value).toFixed(5)})</sub>`
+        return `${value} <sub>(${params.data.quantityPerRoot})</sub>`
       },
       async onCellValueChanged (e) {
         if (e.newValue == e.oldValue) {
@@ -191,6 +191,10 @@
       },
       tooltipNumberToWords (params) {
         return this.$number.words(params.value)
+      },
+      tooltipReversedQuantity (params) {
+        return `역수량 : ${(1 / params.value).toFixed(5)} (${(1 / params.data.quantityPerRoot).toFixed(
+          5)})`
       },
       createCellRenderer (additionalField) {
         return function (params) {

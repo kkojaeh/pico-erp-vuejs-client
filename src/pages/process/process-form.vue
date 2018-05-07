@@ -46,7 +46,8 @@
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active" readonly
+                   hide-underline/>
         </q-field>
 
         <q-field icon="account_box" helper="공정 유형을 선택하세요"
@@ -75,7 +76,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label.sync="model.managerName" :options="userLabels"
+                                 :label.sync="managerModel.name" :options="userLabels"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -86,12 +87,12 @@
         </q-field>
 
         <q-field icon="fa-comment" helper="공정 설명을 입력하세요"
-                 class="col-xs-11 col-md-11 col-xl-11">
+                 class="col-xs-12 col-md-12 col-xl-12">
           <c-html-editor v-model="model.description" :readonly="!isModifiable"></c-html-editor>
         </q-field>
 
         <q-field icon="attachment" helper="공정 관련 첨부파일 입니다"
-                 class="col-xs-11 col-md-11 col-xl-11">
+                 class="col-xs-12 col-md-12 col-xl-12">
 
           <c-attachment ref="attachment" v-model="model.attachmentId" category="process"
                         multiple :readonly="!isModifiable"></c-attachment>
@@ -139,7 +140,7 @@
     ProcessTypeModel
   } from 'src/model/process'
   import { ItemModel } from 'src/model/item'
-  import { UserLabelArray } from 'src/model/user'
+  import { UserLabelArray, UserModel } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
 
@@ -164,6 +165,7 @@
         model: new ProcessModel(),
         itemModel: new ItemModel(),
         typeModel: new ProcessTypeModel(),
+        managerModel: new UserModel(),
         processTypeLabels: new ProcessTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
         userLabels: new UserLabelArray(),
@@ -199,15 +201,14 @@
         this.model = await ProcessModel.get(this.id)
         this.itemModel = await ItemModel.get(this.model.itemId)
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
+        this.managerModel = await UserModel.get(this.model.managerId)
       },
       async _onSaveClick () {
-        const attachment = this.$refs.attachment
         let valid = this.creating ? await this.model.validateCreate()
           : await this.model.validateUpdate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
-            await attachment.save()
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
@@ -219,12 +220,20 @@
         }
       },
       async save () {
+        const attachment = this.$refs.attachment
+        await attachment.save()
         if (this.creating) {
           await this.model.create()
         } else {
           await this.model.update()
         }
         this.$emit('saved', this.model)
+      },
+
+      rename () {
+        const typeName = this.typeModel.name || 'N/A'
+        const itemName = this.itemModel.name
+        this.model.name = `[${typeName}] ${itemName}`
       }
     },
     computed: {
@@ -233,9 +242,19 @@
       }
     },
     watch: {
-      'model.typeId': async function (to){
+      'model.typeId': async function (to) {
         this.typeModel = await ProcessTypeModel.get(to, true)
+      },
+      'model.managerId': async function (to) {
+        this.managerModel = await UserModel.get(to, true)
+      },
+      'itemModel' () {
+        this.rename()
+      },
+      'typeModel' () {
+        this.rename()
       }
+
     },
     components: {
       AuditViewer,

@@ -88,7 +88,6 @@
   import { mapGetters } from 'vuex'
   import { UserLabelArray } from 'src/model/user'
   import { ItemCategoryHierarchyArray } from 'src/model/item'
-  import * as _ from 'lodash'
 
   export default {
     data () {

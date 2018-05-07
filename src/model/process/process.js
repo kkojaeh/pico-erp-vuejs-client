@@ -1,5 +1,6 @@
 import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import { SpringPaginationArray } from '../array'
 
 export class ProcessModel extends Model {
 
@@ -10,15 +11,29 @@ export class ProcessModel extends Model {
   }
 
   static async get (id, cacheable) {
-    if(!id){
+    if (!id) {
       return new ProcessModel()
     }
-    const response = await api.get(`/process/processes/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/process/processes/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ProcessModel(response.data)
   }
 
   static async exists (id) {
     return await exists(api, `/process/processes/${id}`)
+  }
+
+  static async getByItemId (itemId, cacheable) {
+    if (!itemId) {
+      return new ProcessModel()
+    }
+    const response = await api.get(
+      `/process/items/${itemId}${cacheable ? '' : '?cb=' + Date.now()}`)
+    return new ProcessModel(response.data)
+  }
+
+  static async existsByItemId (itemId) {
+    return await exists(api, `/process/items/${itemId}`)
   }
 
   async create () {
@@ -39,7 +54,7 @@ export class ProcessModel extends Model {
     let constraints = {
       name: {
         presence: true,
-        length: {minimum: 3, maximum: 50}
+        length: {minimum: 3, maximum: 100}
       },
       difficulty: {
         presence: true
@@ -61,3 +76,8 @@ export class ProcessModel extends Model {
   }
 }
 
+export class ProcessPaginationArray extends SpringPaginationArray {
+  url = '/process/processes'
+  axios = api
+  model = ProcessModel
+}
