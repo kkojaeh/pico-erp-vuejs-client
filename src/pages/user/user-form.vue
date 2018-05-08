@@ -1,11 +1,11 @@
 <template>
 
-  <q-layout class="row items-baseline layout-padding" view="hHh Lpr fFf">
+  <q-page class="row layout-padding">
 
     <q-card class="col-12" flat>
 
       <q-card-title>
-        기본 정보
+        사용자 정보
       </q-card-title>
 
       <q-card-separator/>
@@ -16,7 +16,8 @@
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
+                   :hide-underline="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
@@ -75,7 +76,7 @@
       <q-card-main class="column gutter-md" style="height:100%;min-height:300px;"
                    :disabled="creating">
 
-        <ag-grid ref="grid" class="ag-theme-material col"
+        <ag-grid ref="grid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
@@ -86,7 +87,8 @@
                           cell-editor-framework="ag-grid-checkbox-editor"
                           :editable="true"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
-          <ag-grid-column field="roleDescription" header-name="설명" :width="250"/>
+          <ag-grid-column field="roleName" header-name="이름" :width="200"/>
+          <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
 
       </q-card-main>
@@ -94,9 +96,9 @@
 
     </q-card>
 
-    <q-layout-footer>
+    <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
@@ -105,20 +107,19 @@
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
                v-show="!creating">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" url="/audit/user/${id}" :data="model"></audit-viewer>
+            <audit-viewer ref="auditViewer" :url="`/audit/user/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
-    </q-layout-footer>
+    </q-page-sticky>
 
-  </q-layout>
+  </q-page>
 
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { UserModel, UserRoleArray } from './user-model'
-  import { DepartmentLabelArray } from './department-model'
+  import { DepartmentLabelArray, UserModel, UserRoleArray } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -143,17 +144,20 @@
       }
     },
     mounted () {
-      this.$nextTick(() => this[this.action]())
+      if (this.action) {
+        this.$nextTick(() => this[this.action]())
+      }
+      this.departmentLabels.query()
     },
     methods: {
       async create () {
         this.creating = true
+        this.model = new UserModel()
         await this.clearRoles()
       },
       async show () {
         this.creating = false
-        this.model.id = this.id
-        await this.model.fetch()
+        this.model = await UserModel.get(this.id)
         await this.fetchRoles()
       },
       async _onDepartmentSearch (keyword, done) {
@@ -161,15 +165,16 @@
         done()
       },
       async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateForCreate()
-          : await this.model.validateForUpdate()
+        let valid = this.creating ? await this.model.validateCreate()
+          : await this.model.validateUpdate()
         if (valid) {
-          let ok = await this.$alert.confirm('저장 하시겠습니까?')
+          const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            this.id = this.model.id
-            this.show()
+            if (this.closable) {
+              this.$closeOverlay()
+            }
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')

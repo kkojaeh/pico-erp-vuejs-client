@@ -2,7 +2,7 @@ import { wrapModal } from './default'
 
 let meta = {
   title: '견적 관리',
-  authorize: "hasRole('QUOTATION_MANAGER')"
+  authorize: 'hasRole(\'QUOTATION_MANAGER\')'
 }
 
 export default [{
@@ -12,6 +12,7 @@ export default [{
   children: [{
     path: 'create',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
+      maximized: true,
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }
@@ -24,6 +25,7 @@ export default [{
   }, {
     path: 'show/:id',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
+      maximized: true,
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }

@@ -1,4 +1,4 @@
-import {Authentication} from 'src/plugins/auth'
+import { Authentication } from 'src/plugins/auth'
 
 export const user = (state) => {
   return state.user
@@ -6,7 +6,19 @@ export const user = (state) => {
 export const menus = (state) => {
   return state.menus
 }
+export const token = (state) => {
+  return state.token
+}
+export const tokenHeaderName = (state) => {
+  return 'X-Firebase-Auth'
+}
+
+export const tokenParameterName = (state) => {
+  return '_firebase_auth'
+}
+
 export const authentication = (state) => {
-  return state.user ? new Authentication(state.user, state.user.roles) : new Authentication(null, [])
+  return state.user ? new Authentication(state.user, state.user.wholeRoles)
+    : new Authentication(null, [])
 }
 

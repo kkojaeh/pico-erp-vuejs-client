@@ -1,80 +1,80 @@
-import {BaseFrameworkFactory} from 'ag-grid/main';
-import {VueComponentFactory} from './vue-component-factory';
+import { BaseFrameworkFactory } from 'ag-grid/main'
+import { VueComponentFactory } from './vue-component-factory'
 
 export class VueFrameworkFactory {
-  constructor($el, parent) {
-    this._baseFrameworkFactory = new BaseFrameworkFactory();
-    this._componentFactory = new VueComponentFactory($el, parent);
+  constructor ($el, parent) {
+    this._baseFrameworkFactory = new BaseFrameworkFactory()
+    this._componentFactory = new VueComponentFactory($el, parent)
   }
 
-  colDefFloatingCellRenderer(colDef) {
+  colDefFloatingCellRenderer (colDef) {
     if (colDef.floatingCellRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
-          colDef.floatingCellRendererFramework);
+        colDef.floatingCellRendererFramework)
     } else {
-      return this._baseFrameworkFactory.colDefFloatingCellRenderer(colDef);
+      return this._baseFrameworkFactory.colDefFloatingCellRenderer(colDef)
     }
   }
 
-  colDefCellRenderer(colDef) {
-    debugger;
+  colDefCellRenderer (colDef) {
+    debugger
     if (colDef.cellRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
-          colDef.cellRendererFramework);
+        colDef.cellRendererFramework)
     } else {
-      return this._baseFrameworkFactory.colDefCellRenderer(colDef);
+      return this._baseFrameworkFactory.colDefCellRenderer(colDef)
     }
   }
 
-  colDefCellEditor(colDef) {
+  colDefCellEditor (colDef) {
     if (colDef.cellEditorFramework) {
       return this._componentFactory.createEditorFromComponent(
-          colDef.cellEditorFramework);
+        colDef.cellEditorFramework)
     } else {
-      return this._baseFrameworkFactory.colDefCellEditor(colDef);
+      return this._baseFrameworkFactory.colDefCellEditor(colDef)
     }
   }
 
-  gridOptionsFullWidthCellRenderer(gridOptions) {
+  gridOptionsFullWidthCellRenderer (gridOptions) {
     if (gridOptions.fullWidthCellRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
-          gridOptions.fullWidthCellRendererFramework);
+        gridOptions.fullWidthCellRendererFramework)
     } else {
       return this._baseFrameworkFactory.gridOptionsFullWidthCellRenderer(
-          gridOptions);
+        gridOptions)
     }
   }
 
-  gridOptionsGroupRowRenderer(gridOptions) {
+  gridOptionsGroupRowRenderer (gridOptions) {
     if (gridOptions.groupRowRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
-          gridOptions.groupRowRendererFramework);
+        gridOptions.groupRowRendererFramework)
     } else {
       return this._baseFrameworkFactory.gridOptionsGroupRowRenderer(
-          gridOptions);
+        gridOptions)
     }
   }
 
-  gridOptionsGroupRowInnerRenderer(gridOptions) {
+  gridOptionsGroupRowInnerRenderer (gridOptions) {
     if (gridOptions.groupRowInnerRendererFramework) {
       return this._componentFactory.createRendererFromComponent(
-          gridOptions.groupRowInnerRendererFramework);
+        gridOptions.groupRowInnerRendererFramework)
     } else {
       return this._baseFrameworkFactory.gridOptionsGroupRowInnerRenderer(
-          gridOptions);
+        gridOptions)
     }
   }
 
-  colDefFilter(colDef) {
+  colDefFilter (colDef) {
     if (colDef.filterFramework) {
       return this._componentFactory.createFilterFromComponent(
-          colDef.filterFramework);
+        colDef.filterFramework)
     } else {
-      return this._baseFrameworkFactory.colDefFilter(colDef);
+      return this._baseFrameworkFactory.colDefFilter(colDef)
     }
   }
 
-  setTimeout(action, timeout) {
-    this._baseFrameworkFactory.setTimeout(action, timeout);
+  setTimeout (action, timeout) {
+    this._baseFrameworkFactory.setTimeout(action, timeout)
   }
 }

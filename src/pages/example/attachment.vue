@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <q-page>
     <button class="primary save" @click="save()">
       <i class="on-left">save</i>
       저장
@@ -8,8 +8,9 @@
       <i class="on-left">search</i>
       set value
     </button>
-    <c-attachment ref="attachment" v-model="attachmentId" category="quotation" multiple></c-attachment>
-  </div>
+    <c-attachment ref="attachment" v-model="attachmentId" category="quotation"
+                  multiple></c-attachment>
+  </q-page>
 
 </template>
 
@@ -17,24 +18,23 @@
 
   export default {
 
-    components: {
-    },
+    components: {},
 
     methods: {
-      save() {
+      save () {
         var att = this.$refs.attachment
         att.save().then((result) => {
           console.log(result)
         })
       }
     },
-    beforeDestroy() {
+    beforeDestroy () {
 
     },
-    created() {
+    created () {
 
     },
-    data() {
+    data () {
       return {
         attachmentId: null
       }

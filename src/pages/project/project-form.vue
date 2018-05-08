@@ -1,11 +1,10 @@
 <template>
-  <!-- style="min-width: 70vw; max-width:95vw" -->
-  <q-layout class="row items-baseline layout-padding" view="hHh Lpr fFf">
+  <q-page class="row layout-padding">
 
     <q-card class="col-12" flat>
 
       <q-card-title>
-        기본 정보
+        프로젝트 정보
       </q-card-title>
 
       <q-card-separator/>
@@ -20,7 +19,7 @@
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
-        <q-field ref="registrationNumber" icon="fa-user" helper="담당자를 선택하세요"
+        <q-field ref="registrationNumber" icon="account_box" helper="담당자를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
@@ -36,7 +35,7 @@
         </q-field>
 
         <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
-                 class="col-xs-11 col-md-11 col-xl-11">
+                 class="col-xs-12 col-md-12 col-xl-12">
           <c-html-editor v-model="model.description"></c-html-editor>
         </q-field>
 
@@ -55,7 +54,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-building-o" helper="고객사를 선택하세요"
+        <q-field icon="fa-building" helper="고객사를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
@@ -129,16 +128,16 @@
       <q-card-main class="row gutter-md">
 
         <comment-list class="col-xs-12 col-md-11 col-xl-11 no-border"
-            subjectType="project" :subject="model.commentSubjectId"></comment-list>
+                      subjectType="project" :subject="model.commentSubjectId"></comment-list>
 
       </q-card-main>
 
     </q-card>
 
 
-    <q-layout-footer>
+    <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
@@ -147,22 +146,22 @@
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
                v-show="!creating">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" url="/audit/project/${id}" :data="model"></audit-viewer>
+            <audit-viewer ref="auditViewer" :url="`/audit/project/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
-    </q-layout-footer>
+    </q-page-sticky>
 
 
-  </q-layout>
+  </q-page>
 
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { ProjectModel } from './project-model'
-  import { CompanyLabelArray } from 'src/pages/company/company-model'
-  import { UserLabelArray } from 'src/pages/user/user-model'
+  import { ProjectModel } from 'src/model/project'
+  import { CompanyLabelArray } from 'src/model/company'
+  import { UserLabelArray } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
 
@@ -189,7 +188,11 @@
       }
     },
     mounted () {
-      this.$nextTick(() => this[this.action]())
+      if (this.action) {
+        this.$nextTick(() => this[this.action]())
+      }
+      this.companyLabels.query()
+      this.userLabels.query()
     },
     methods: {
       async onCustomerSearch (keyword, done) {
@@ -202,19 +205,24 @@
       },
       async create () {
         this.creating = true
+        this.model = new ProjectModel()
       },
       async show () {
         this.creating = false
-        this.model.id = this.id
-        await this.model.fetch()
+        this.model = await ProjectModel.get(this.id)
       },
       async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateForCreate()
-          : await this.model.validateForUpdate()
+        let valid = this.creating ? await this.model.validateCreate()
+          : await this.model.validateUpdate()
         if (valid) {
-          await this.save()
-          this.$alert.positive('저장 되었습니다')
-          this.$emit('close')
+          const ok = await this.$alert.confirm('저장 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            this.$alert.positive('저장 되었습니다')
+            if (this.closable) {
+              this.$closeOverlay()
+            }
+          }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }

@@ -7,7 +7,10 @@ module.exports = function (ctx) {
       'alert',
       'auth',
       'components',
-      'validate'
+      'validate',
+      'number',
+      'date',
+      'close-overlay'
     ],
     css: [
       'app.styl'
@@ -94,10 +97,18 @@ module.exports = function (ctx) {
         'QTabs',
         'QTab',
         'QTabPane',
-        'QAutocomplete'
+        'QAutocomplete',
+        'QSlider',
+        'QBtnDropdown',
+        'QPageSticky',
+        'QResizeObservable',
+        'QTooltip',
+        'QPopover',
+        'QSpinner'
       ],
       directives: [
-        'Ripple'
+        'Ripple',
+        'CloseOverlay'
       ],
       plugins: [
         'Dialog',

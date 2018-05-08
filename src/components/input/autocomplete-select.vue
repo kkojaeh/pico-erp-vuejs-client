@@ -147,8 +147,8 @@
 
       _onSelectSearch (keyword, loading) {
         keyword = this.$el.querySelector('input').value
-        if(this.lastQueried === keyword){
-          return;
+        if (this.lastQueried === keyword) {
+          return
         }
         this.lastQueried = keyword
         loading(true)
@@ -166,7 +166,6 @@
           this.$emit('input', null)
           this.$emit('update:label', null)
         }
-
       },
       value (to) {
         if (to) {
@@ -177,10 +176,24 @@
         } else {
           this.model = null
         }
+      },
+      label (to) {
+        const value = this.value
+        if (value) {
+          this.model = {
+            [this.valueField]: value,
+            [this.labelField]: to
+          }
+        }
       }
     },
     mounted () {
-      this._onSelectSearch = _.debounce(this._onSelectSearch, 500)
+      this._onSelectSearch = _.debounce(this._onSelectSearch, 300)
+      // https://github.com/kkojaeh/pico-erp-vuejs-client/issues/6
+      // 유니코드 형태의 문자는 바인딩이 글자가 완성시 되는 현상으로 입력에 따른 반응이 느려 추가함
+      this.$el.querySelector('input').addEventListener('input', (event) => {
+        this.$refs.input.search = event.target.value
+      })
     },
     destroyed () {
       this.input = null

@@ -15,18 +15,23 @@ export class FetchableArray extends Array {
     let result = await this.axios.get(this.resolveUrl(this.url, data),
       {data: data})
     let parsed = this.parse(result)
-    if (this.model) {
-      parsed = parsed.map((o) => new this.model(o))
+    if (parsed) {
+      if (this.model) {
+        parsed = parsed.map((o) => new this.model(o))
+      }
+      this.splice.apply(this, [0, this.length].concat(parsed))
     }
-    this.splice.apply(this, [0, this.length].concat(parsed))
     this.fetching = false
     this.fetched = true
     return parsed
   }
 
   resolveUrl = (url, data) => {
-    return _.template(url)(data) + (_.includes(url, '?') ? '&' : '?')
-      + qs.stringify(data)
+    if (data) {
+      data = _.assign({}, data)
+      data.$QS = qs.stringify(data)
+    }
+    return _.template(url)(data)
   }
 
   parse = (response) => {
@@ -53,7 +58,7 @@ export class SpringPaginationArray extends PaginationArray {
     }
     _.keys(data).forEach((key) => {
       let value = data[key]
-      if (value !== undefined && value !== null && value !== '' && !_.isObject(value)) {
+      if (value !== undefined && value !== null && value !== '') {
         query[key] = value
       }
     })
@@ -61,9 +66,12 @@ export class SpringPaginationArray extends PaginationArray {
       query.sort = this.sorters.map(
         (s) => s.getField() + ',' + s.getDir().toLowerCase())
     }
+    if (query) {
+      query.$QS = qs.stringify(query, {arrayFormat: 'repeat'})
+    }
+
     // array 를 query string 으로 생성시 옵션을 반복으로 사용
-    return url + (_.includes(url, '?') ? '&' : '?') + qs.stringify(
-      query, {arrayFormat: 'repeat'})
+    return _.template(url)(query)
   }
 
   parse = (response) => {

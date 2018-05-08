@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column fit">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,15 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/department/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="managerName" header-name="관리자명" :width="150"/>
@@ -46,7 +47,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-user-o" helper="관리자를 선택하세요"
+      <q-field slot="filter" icon="account_box" helper="관리자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="관리자" v-model="filters.managerId"
@@ -70,15 +71,13 @@
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { UserLabelArray } from 'src/pages/user/user-model'
-  import { DepartmentPaginationArray } from './department-model'
-  import * as _ from 'lodash'
+  import { DepartmentPaginationArray, UserLabelArray } from 'src/model/user'
 
   export default {
     data () {
@@ -88,10 +87,7 @@
         filters: {
           name: null,
           managerId: null,
-          managerName: null,
-          customerManagerName: null,
-          startCreatedDate: null,
-          endCreatedDate: null
+          managerName: null
         },
         dataAdjuster: null
       }
@@ -105,8 +101,8 @@
       }
     },
     mounted () {
-      this.dataAdjuster = new DataAdjuster(this.filters, {
-      })
+      this.dataAdjuster = new DataAdjuster(this.filters, {})
+      this.userLabels.query()
     },
     methods: {
       retrieve () {
@@ -117,7 +113,6 @@
         done()
       }
     },
-    computed: {
-    }
+    computed: {}
   }
 </script>

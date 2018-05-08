@@ -26,7 +26,7 @@
       </q-item-main>
       <q-item-side right>
         <q-item-tile stamp>
-          <strong>{{printAgo(item.commitDate)}}</strong><br><sub>({{printDate(
+          <strong>{{$date.ago(item.commitDate)}}</strong><br><sub>({{$date.format(
           item.commitDate)}})</sub>
         </q-item-tile>
       </q-item-side>
@@ -39,8 +39,6 @@
   import { date } from 'quasar'
   import { FetchableArray } from 'src/model/array'
   import { api } from 'src/plugins/axios'
-  import moment from 'moment'
-  import QItemTile from 'quasar-framework/src/components/list/QItemTile'
 
   class AuditArray extends FetchableArray {
     axios = api
@@ -49,16 +47,9 @@
   export default {
     name: 'audit-viewer',
     props: {
-      dateFormat: {
-        type: String,
-        default: 'YYYY-MM-DD HH:mm:ss'
-      },
       url: {
         type: String,
         required: true
-      },
-      data: {
-        type: Object
       }
     },
     data () {
@@ -69,7 +60,7 @@
     methods: {
       load () {
         this.array.url = this.url
-        this.array.fetch(this.data)
+        this.array.fetch({})
       },
       printCommit (item) {
         if (item.initial) {
@@ -89,28 +80,12 @@
       },
       isRemovedOnly (change) {
         return change.removed && change.removed.length
-      },
-      printAgo (d) {
-        if (typeof d == 'string') {
-          d = new Date(Date.parse(d))
-        }
-        if (!isNaN(d)) {
-          return moment(d).fromNow()
-        }
-      },
-      printDate (d) {
-        if (typeof d == 'string') {
-          d = new Date(Date.parse(d))
-        }
-        if (!isNaN(d)) {
-          return date.formatDate(d, this.dateFormat)
-        }
       }
     },
     computed: {
       ...mapGetters([])
     },
-    components: {QItemTile},
+    components: {},
     mounted () {
     }
   }

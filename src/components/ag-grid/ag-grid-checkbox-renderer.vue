@@ -1,23 +1,25 @@
 <template>
-  <q-checkbox v-model="params.value" :disable="!editable" @change="_onChange"></q-checkbox>
+  <div class="justify-center row fit">
+    <q-checkbox v-model="params.value" :disable="!editable" @input="_onInput"></q-checkbox>
+  </div>
 </template>
 
 <script>
   export default {
     name: 'ag-grid-checkbox-renderer',
     methods: {
-      _onChange(value) {
-        this.params.setValue(value);
+      _onInput (value) {
+        this.params.setValue(value)
       },
-      refresh() {
+      refresh () {
       }
     },
     computed: {
-      editable() {
-        return this.params.column.isCellEditable(this.params.node);
+      editable () {
+        return this.params.column.isCellEditable(this.params.node)
       }
     }
-  };
+  }
 </script>
 
 <style>

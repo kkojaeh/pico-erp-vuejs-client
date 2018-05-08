@@ -1,30 +1,30 @@
 d<?xml version='1.0' encoding='utf-8'?>
 <widget id="picoerp.client.vuejs" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
-    <name>Pico ERP</name>
-    <description>
-        Pico ERP client
-    </description>
-    <author email="system@kd-ace.co.kr" href="http://acepk.co.kr/">
-      에이스팩 개발자 팀
-    </author>
-    <content src="index.html" />
-    <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
-    <platform name="android">
-        <allow-intent href="market:*" />
-    </platform>
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-    </platform>
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
-    <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0" />
-    <engine name="android" spec="~6.4.0" />
-    <engine name="ios" spec="~4.5.4" />
-    <plugin name="cordova-plugin-firebase" spec="^0.1.24" />
+  <name>Pico ERP</name>
+  <description>
+    Pico ERP client
+  </description>
+  <author email="system@kd-ace.co.kr" href="http://acepk.co.kr/">
+    에이스팩 개발자 팀
+  </author>
+  <content src="index.html"/>
+  <access origin="*"/>
+  <allow-intent href="http://*/*"/>
+  <allow-intent href="https://*/*"/>
+  <allow-intent href="tel:*"/>
+  <allow-intent href="sms:*"/>
+  <allow-intent href="mailto:*"/>
+  <allow-intent href="geo:*"/>
+  <platform name="android">
+    <allow-intent href="market:*"/>
+  </platform>
+  <platform name="ios">
+    <allow-intent href="itms:*"/>
+    <allow-intent href="itms-apps:*"/>
+  </platform>
+  <plugin name="cordova-plugin-whitelist" spec="^1.3.2"/>
+  <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0"/>
+  <engine name="android" spec="~6.4.0"/>
+  <engine name="ios" spec="~4.5.4"/>
+  <plugin name="cordova-plugin-firebase" spec="^0.1.24"/>
 </widget>

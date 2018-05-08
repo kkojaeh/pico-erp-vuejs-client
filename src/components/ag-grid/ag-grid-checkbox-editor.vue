@@ -1,6 +1,6 @@
 <template>
   <q-checkbox ref="checkbox" v-model="params.value"
-              @change="_onChange"></q-checkbox>
+              @input="_onInput"></q-checkbox>
 </template>
 
 <script>
@@ -9,25 +9,25 @@
   export default {
     name: 'ag-grid-checkbox-editor',
     methods: {
-      _onChange(value) {
-        this.params.api.stopEditing();
+      _onInput (value) {
+        this.params.api.stopEditing()
       },
-      refresh() {
+      refresh () {
       },
-      getValue() {
-        return this.params.value;
+      getValue () {
+        return this.params.value
       },
-      isPopup() {
-        return false;
+      isPopup () {
+        return false
+      },
+      afterGuiAttached () {
+        this.$nextTick(() => {
+          this.$refs.checkbox.focus()
+        })
       }
     },
-    computed: {},
-    mounted() {
-      this.$nextTick(() => {
-        this.$refs.checkbox.$el.focus();
-      });
-    }
-  };
+    computed: {}
+  }
 </script>
 
 <style>

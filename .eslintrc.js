@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parserOptions: {
-    parser: "babel-eslint",
+    parser: 'babel-eslint',
     sourceType: 'module'
   },
   env: {
@@ -27,27 +27,27 @@ module.exports = {
   },
   // add your custom rules here
   'rules': {
-    "max-len": [
+    'max-len': [
       2,
       120
     ],
-    "comma-dangle": [
+    'comma-dangle': [
       2,
-      "never"
+      'never'
     ],
     // "space-before-function-paren": ["error", {
     //   "anonymous": "always",
     //   "named": "never",
     //   "asyncArrow": "always"
     // }],
-    "valid-jsdoc": 2,
-    "require-jsdoc": ["error", {
-      "require": {
-        "FunctionDeclaration": false,
-        "MethodDefinition": false,
-        "ClassDeclaration": false,
-        "ArrowFunctionExpression": false,
-        "FunctionExpression": false
+    'valid-jsdoc': 2,
+    'require-jsdoc': ['error', {
+      'require': {
+        'FunctionDeclaration': false,
+        'MethodDefinition': false,
+        'ClassDeclaration': false,
+        'ArrowFunctionExpression': false,
+        'FunctionExpression': false
       }
     }]
     // allow paren-less arrow functions

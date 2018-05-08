@@ -1,5 +1,5 @@
 <template>
-  <q-layout ref="layout" view="lHh Lpr lff">
+  <q-layout ref="layout" view="lHh Lpr fFf">
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat @click="_toggle()" v-if="!!user">
@@ -46,33 +46,31 @@
 
       </q-list>
     </q-layout-drawer>
-    <q-page-container>
+    <q-page-container :style="pageContainerComputedStyle">
       <router-view/>
     </q-page-container>
+    <q-resize-observable @resize="_onResize"/>
   </q-layout>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
-  import Toast from 'quasar'
+  import QLayoutFooter from 'quasar-framework/src/components/layout/QLayoutFooter'
+  import QToolbar from 'quasar-framework/src/components/toolbar/QToolbar'
+  import Router from 'src/router'
 
   /*
    * Root component
    */
   export default {
-    created () {
+    components: {
+      QToolbar,
+      QLayoutFooter
     },
-    computed: {
-      ...mapGetters({
-        title: 'global/title',
-        user: 'auth/user',
-        menus: 'auth/menus'
-      })
-    },
-    components: {},
     data () {
       return {
-        drawerOpend: this.$q.platform.desktop
+        drawerOpend: this.$q.platform.desktop,
+        paddingBottom: 0
       }
     },
     methods: {
@@ -89,6 +87,29 @@
             })
           }
         })
+      },
+      _onResize (size) {
+        const el = this.$el
+        let bottom = 0
+        el.querySelectorAll('.fixed-bottom').forEach(e => {
+          bottom += e.offsetHeight
+        })
+        this.paddingBottom = bottom
+      }
+    },
+    created () {
+      Router.afterEach(this._onResize)
+    },
+    computed: {
+      ...mapGetters({
+        title: 'global/title',
+        user: 'auth/user',
+        menus: 'auth/menus'
+      }),
+      pageContainerComputedStyle () {
+        return {
+          'padding-bottom': `${this.paddingBottom}px`
+        }
       }
     }
   }
@@ -99,24 +120,18 @@
     margin: 8px;
   }
 
-  .q-layout-page-container{
+  .q-layout-page-container {
     position: absolute;
     top: 0px;
     bottom: 0px;
     left: 0px;
     right: 0px;
+    overflow: auto;
   }
 
-  .q-layout-page-container > * {
-    height: 100%;
-  }
+  /*
 
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
 
-  a:hover {
-    text-decoration: wavy;
-  }
+
+  */
 </style>

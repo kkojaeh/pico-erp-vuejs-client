@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <q-page class="column fit">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
@@ -19,14 +19,15 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
         <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/company/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="registrationNumber" header-name="등록번호" :width="170"
@@ -50,7 +51,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fa-building" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-5 col-xl-4">
         <div class="row justify-between">
           <q-checkbox class="col" label="공급사" v-model="filters.supplier"/>
@@ -70,26 +71,26 @@
 
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
       <c-list-filter-label slot="filter-label" v-model="filters.enabled" label="활성화"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.supplier" label="공급사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.customer" label="고객사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <c-list-filter-label slot="filter-label" v-model="filters.outsourcing" label="외주사"
-                     true-label="포함" false-label="제외" immutable/>
+                           true-label="포함" false-label="제외" immutable/>
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
-  import {mapGetters} from 'vuex';
-  import {CompanyPaginationArray} from './company-model';
+  import { mapGetters } from 'vuex'
+  import { CompanyPaginationArray } from 'src/model/company'
 
   export default {
-    data() {
+    data () {
       return {
         array: new CompanyPaginationArray(),
         filters: {
@@ -99,9 +100,9 @@
           outsourcing: true
         },
         dataAdjuster: null
-      };
+      }
     },
-    mounted() {
+    mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {
         enabled: Boolean,
         supplier: Boolean,
@@ -110,8 +111,8 @@
       })
     },
     methods: {
-      retrieve() {
-        this.$refs.listView.retrieve();
+      retrieve () {
+        this.$refs.listView.retrieve()
       }
     },
     computed: {
@@ -128,5 +129,5 @@
     },
 
     components: {}
-  };
+  }
 </script>

@@ -1,8 +1,9 @@
 /* eslint-disable */
+import { language, languageAliases } from './index'
 
-var exports = {};
+const exports = {}
 
-exports['ko-KR'] = exports.ko = {
+exports.ko = {
   // for filter panel
   page: '페이지',
   more: '더',
@@ -85,6 +86,5 @@ exports['ko-KR'] = exports.ko = {
   ctrlC: 'ctrl + C',
   paste: '붙임',
   ctrlV: 'ctrl + v'
-};
-
-export default exports[navigator.language];
+}
+export default languageAliases(exports)[language]

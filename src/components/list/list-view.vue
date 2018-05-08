@@ -1,26 +1,29 @@
 <template>
-  <div class="fit column">
-    <q-toolbar>
+  <div class="column fit">
+    <q-toolbar ref="top">
       <slot name="action"></slot>
       <q-toolbar-title>
       </q-toolbar-title>
       <transition name="fade">
-        <div ref="filterBox">
+        <div ref="labels">
           <slot name="filter-label"></slot>
         </div>
       </transition>
-      <q-btn flat icon="search" @click="_onSearch()">검색</q-btn>
+      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger">검색</q-btn>
     </q-toolbar>
     <transition name="fade">
-      <div class="list-view-filter row gutter-sm no-margin" v-show="filtersVisible">
+      <div ref="filters" class="list-view-filter row gutter-sm no-margin"
+           v-show="filterAlways || filtersVisible">
         <slot name="filter"></slot>
       </div>
     </transition>
 
-    <div class="list-view-content">
+    <div ref="gridContainer" class="list-view-content col-grow row">
       <slot name="default"></slot>
     </div>
-    <q-toolbar v-if="pagination" inverted flat class="justify-between list-view-pagination-bar">
+
+    <q-toolbar v-if="pagination" inverted flat class="justify-between list-view-pagination-bar"
+               ref="bottom">
       <q-field>
         <q-select v-model="rowsPerPage" :options="pageSizeOptions"></q-select>
       </q-field>
@@ -34,7 +37,6 @@
 
 <script>
   import Vue from 'vue'
-  import qs from 'qs'
   import * as _ from 'lodash'
   import Sort from 'src/model/sort'
   import { Base64 } from 'js-base64'
@@ -45,7 +47,7 @@
     props: {
       pagination: {
         type: Boolean,
-        default: true
+        default: false
       },
       pageSize: {
         type: Number,
@@ -82,6 +84,30 @@
       pageName: {
         type: String,
         default: 'p'
+      },
+      filterOpened: {
+        type: Boolean,
+        default: false
+      },
+      filterAlways: {
+        type: Boolean,
+        default: false
+      },
+      preventFetch: {
+        type: Boolean,
+        default: false
+      },
+      hideTrigger: {
+        type: Boolean,
+        default: false
+      },
+      preventRoute: {
+        type: Boolean,
+        default: false
+      },
+      preventQueryString: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -100,7 +126,7 @@
         entries: 0,
         page: 1,
         rowsPerPage: this.pageSize,
-        filtersVisible: false,
+        filtersVisible: this.filterOpened,
         pageSizeOptions: pageSizeOptions,
         initialCondition: null
       }
@@ -147,12 +173,19 @@
           this.page = 1
         }
         this.filtersVisible = false
-        this.filtersQueryString = this._toQs(this.filters)
-        if (force) {
+        if (this.preventQueryString) {
           this._fetch()
+        } else {
+          this.filtersQueryString = this._toQs(this.filters)
+          if (force) {
+            this._fetch()
+          }
         }
       },
       _assignQuery (query) {
+        if (this.preventQueryString) {
+          return
+        }
         if (query) {
           let c = query[this.filtersName]
           _.keys(this.filters).forEach((key) => {
@@ -196,12 +229,15 @@
           array.page = this.page
           array.size = this.rowsPerPage
         }
-        await this.array.fetch(this.filters)
+        if (!this.preventFetch) {
+          await this.array.fetch(this.filters)
+        }
         if (this.pagination) {
           this.entries = array.total
           this.page = array.page
           this.size = array.size
         }
+        this.$emit('fetched', this.array)
         return this.array
       },
 
@@ -241,10 +277,14 @@
         query[this.sortName] = this.sortQueryString
         query[this.filtersName] = this.filtersQueryString
         query[this.pageName] = this.page
-        if (_.isEmpty(this.$route.query)) {
-          this.$router.replace({path: this.$route.path, query: query})
+        if (this.preventRoute) {
+          this._assignQuery(query)
         } else {
-          this.$router.push({path: this.$route.path, query: query})
+          if (_.isEmpty(this.$route.query)) {
+            this.$router.replace({path: this.$route.path, query: query})
+          } else {
+            this.$router.push({path: this.$route.path, query: query})
+          }
         }
       },
 
@@ -286,6 +326,8 @@
         chip.componentInstance.$on('remove', this._onFilterChipRemove)
       })
     },
+    updated () {
+    },
     destroyed () {
     }
   }
@@ -293,18 +335,9 @@
 
 <style>
 
-  .list-view-content {
-    height: auto;
-    flex: 1;
-  }
-
-  .list-view-content > * {
-    height: 100%;
-    width: 100%;
-  }
-
   .list-view-filter {
     padding-right: 10px;
+    width: 100%;
   }
 
   .list-view-pagination-bar {

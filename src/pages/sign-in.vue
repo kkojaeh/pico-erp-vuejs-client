@@ -78,9 +78,9 @@
             await this.$auth.signIn(this.form.email, this.form.password)
             await this.$auth.init()
             const lastAccessed = this.lastAccessed
-            if(this.$route.path !== lastAccessed.path){
+            if (this.$route.path !== lastAccessed.path) {
               this.$router.push(lastAccessed)
-            }else{
+            } else {
               this.$router.push('/')
             }
           } catch (e) {

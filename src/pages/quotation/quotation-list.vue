@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <q-page class="column fit">
     <!-- child -->
 
     <router-view></router-view>
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
 
       <!-- action -->
 
       <div slot="action">
-        <router-link :to="{ path: '/company/create', query: $route.query}">
+        <router-link :to="{ path: '/quotation/create', query: $route.query}">
           <q-btn flat icon="add">생성</q-btn>
         </router-link>
       </div>
@@ -19,26 +19,60 @@
       <!-- action -->
 
       <!-- main -->
-      <ag-grid ref="grid" class="ag-theme-material"
+      <ag-grid ref="grid"
+               class="col-grow"
                row-selection="single"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
-        <ag-grid-column field="id" header-name="아이디" :width="150"
-                        cell-renderer-framework="ag-grid-link-renderer"
-                        :cell-renderer-params="{path:'/company/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="name" header-name="이름" :width="200"/>
-        <ag-grid-column field="registrationNumber" header-name="사업자(DUNS)번호" :width="170"
-                        cell-renderer-framework="ag-grid-cleave-renderer"
-                        :cell-renderer-params="{cleaveOptions:{ delimiter: '-', blocks: [3, 2, 5]}}"/>
-        <ag-grid-column field="representative" header-name="대표자" :width="100"/>
-        <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="130"
-                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
-        <ag-grid-column field="mobilePhoneNumber" header-name="핸드폰번호" :width="130"
-                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
+        <ag-grid-column field="name" header-name="이름" :width="230"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
+                        :cell-renderer-params="{path:'/quotation/show/${id}', query:$route.query}"/>
+        <ag-grid-column field="revision" header-name="버전" :width="90"/>
+        <ag-grid-column field="status" header-name="상태" :width="130"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+        <ag-grid-column field="projectName" header-name="프로젝트" :width="170"/>
+        <ag-grid-column field="customerName" header-name="고객사" :width="170"/>
+        <ag-grid-column field="managerName" header-name="담당자" :width="170"/>
+        <ag-grid-column field="committedDate" header-name="제출시간" :width="200"
+                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
+                        cell-renderer-framework="ag-grid-datetime-renderer"/>
 
       </ag-grid>
+
+      <!--
+       int revision;
+
+  String name;
+
+  ProjectId projectId;
+
+  String projectName;
+
+  CompanyId customerId;
+
+  String customerName;
+
+  UserId managerId;
+
+  String managerName;
+
+  OffsetDateTime committedDate;
+
+  QuotationStatusKind status;
+
+  Auditor createdBy;
+
+  OffsetDateTime createdDate;
+
+  Auditor lastModifiedBy;
+
+  OffsetDateTime lastModifiedDate;
+      -->
 
       <!-- main -->
 
@@ -50,15 +84,64 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building-o" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="account_box" helper="담당자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-select ref="statuses" float-label="상태" v-model="filters.statuses"
-                  :options="statuses" multiple></q-select>
+
+        <c-autocomplete-select float-label="담당자" v-model="filters.managerId"
+                               :label.sync="filters.managerName" :options="userLabels"
+                               label-field="label" value-field="value" clearable
+                               @search="onManagerSearch">
+          <template slot="option" slot-scope="option">
+            {{option.label}}<br>
+            {{option.stamp}} - {{option.subLabel}}
+          </template>
+        </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="check_circle" helper="활성화된 회사만 포함 합니다"
+      <q-field slot="filter" icon="fa-building" helper="프로젝트를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-toggle label="활성화 여부" clearable v-model="filters.enabled"/>
+
+        <c-autocomplete-select float-label="프로젝트" v-model="filters.projectId"
+                               :label.sync="filters.projectName" :options="projectLabels"
+                               label-field="label" value-field="value" clearable
+                               @search="onProjectSearch">
+          <template slot="option" slot-scope="option">
+            {{option.label}}<br>
+            {{option.stamp}} - {{option.subLabel}}
+          </template>
+        </c-autocomplete-select>
+      </q-field>
+
+      <q-field slot="filter" icon="fa-building" helper="고객사를 선택하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+
+        <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
+                               :label.sync="filters.customerName" :options="companyLabels"
+                               label-field="label" value-field="value" clearable
+                               @search="onCustomerSearch">
+          <template slot="option" slot-scope="option">
+            {{option.label}}<br>
+            {{option.stamp}} - {{option.subLabel}}
+          </template>
+        </c-autocomplete-select>
+      </q-field>
+
+      <q-field slot="filter" icon="fa-building" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-select float-label="상태" v-model="filters.statuses"
+                  :options="statusLabels" multiple></q-select>
+      </q-field>
+
+      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(부터)를 입력하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-datetime suffix="~" float-label="생성일 ~부터" v-model="filters.startCreatedDate"
+                    type="date"/>
+      </q-field>
+
+      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(까지)를 입력하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-datetime prefix="~" float-label="생성일 ~까지" v-model="filters.endCreatedDate"
+                    type="date"/>
       </q-field>
 
       <!-- filters -->
@@ -66,57 +149,100 @@
       <!-- filter -->
 
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.statuses" :print-value="statusesLabel"
-                    label="상태"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.projectId"
+                           :print-value="filters.projectName" label="프로젝트"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.customerId"
+                           :print-value="filters.customerName" label="고객사"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.statuses"
+                           :print-value="statusesLabel" :clear-value="[]"
+                           label="상태"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.startCreatedDate"
+                           suffix="~" label="생성일"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.endCreatedDate"
+                           prefix="~" label="생성일"/>
       <!-- filter -->
 
     </c-list-view>
-  </div>
+  </q-page>
 
 </template>
 <script>
   import { DataAdjuster } from 'src/model/data'
   import {
+    QuotationExpiryPolicyArray,
     QuotationPaginationArray,
-    QuotationSatausArray,
-    QuotationExpiryPolicyArray
-  } from './quotation-model'
+    QuotationStatusArray
+  } from 'src/model/quotation'
 
-  import { CompanyLabelArray } from 'src/pages/company/company-model'
+  import { CompanyLabelArray } from 'src/model/company'
+  import { ProjectLabelArray } from 'src/model/project'
+  import { UserLabelArray } from 'src/model/user'
 
   export default {
     data () {
       return {
         array: new QuotationPaginationArray(),
-        statuses: new QuotationSatausArray(),
-        expiryPolicies: new QuotationExpiryPolicyArray(),
-        companies: new CompanyLabelArray(),
-        filters: new {
+        statusLabels: new QuotationStatusArray(),
+        expiryPolicyLabels: new QuotationExpiryPolicyArray(),
+        companyLabels: new CompanyLabelArray(),
+        projectLabels: new ProjectLabelArray(),
+        userLabels: new UserLabelArray(),
+        filters: {
           name: null,
-          statuses: []
+          projectId: null,
+          projectName: null,
+          customerId: null,
+          customerName: null,
+          managerId: null,
+          managerName: null,
+          startCreatedDate: null,
+          endCreatedDate: null,
+          statuses: ['DRAFT', 'COMMITTED', 'IN_NEGOTIATION']
         },
         dataAdjuster: null
       }
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {
+        startCreatedDate: {
+          type: Date,
+          firstTime: true
+        },
+        endCreatedDate: {
+          type: Date,
+          lastTime: true
+        }
       })
-      this.statuses.fetch()
-      this.expiryPolicies.fetch()
+      this.statusLabels.fetch()
+      this.expiryPolicyLabels.fetch()
+      this.companyLabels.query()
+      this.projectLabels.query()
+      this.userLabels.query()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
+      },
+      async onCustomerSearch (keyword, done) {
+        await this.companyLabels.query(keyword)
+        done()
+      },
+      async onProjectSearch (keyword, done) {
+        await this.projectLabels.query(keyword)
+        done()
+      },
+      async onManagerSearch (keyword, done) {
+        await this.userLabels.query(keyword)
+        done()
       }
     },
     computed: {
       statusesLabel () {
-        if (this.statuses.fetched) {
-          return this.filters.statuses.map(
-            value => this.statuses.find(status => status.value == value).label).join(', ')
-        } else {
-          return
-        }
+        return this.filters.statuses.map(
+          value => this.statusLabels.find(status => status.value == value))
+        .filter(data => data)
+        .map(data => data.label)
+        .join(', ')
       }
     },
 

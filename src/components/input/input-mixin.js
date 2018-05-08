@@ -1,15 +1,15 @@
-import {QIcon} from 'quasar';
+import { QIcon } from 'quasar'
 
 const marginal = {
   type: Array,
   validator: (v) => v.every((i) => 'icon' in i)
-};
+}
 
 const align = {
   left: 'start',
   center: 'center',
   right: 'end'
-};
+}
 
 export default {
   components: {
@@ -46,29 +46,30 @@ export default {
     }
   },
   computed: {
-    labelIsAbove() {
-      console.log('labelIsAbove', this.focused || this.length || this.additionalLength
+    labelIsAbove () {
+      console.log('labelIsAbove', this.focused || this.length
+        || this.additionalLength
         || this.stackLabel)
       return this.focused || this.length || this.additionalLength
-          || this.stackLabel;
+        || this.stackLabel
     },
-    alignClass() {
-      return `justify-${align[this.align]}`;
+    alignClass () {
+      return `justify-${align[this.align]}`
     },
-    length() {
+    length () {
       return this.model !== null && this.model !== undefined
-          ? ('' + this.model).length
-          : 0;
+        ? ('' + this.model).length
+        : 0
     },
-    editable() {
-      return !this.disable && !this.readonly;
+    editable () {
+      return !this.disable && !this.readonly
     }
   },
   methods: {
-    focus() {
+    focus () {
       if (!this.disable) {
-        this.$refs.input.focus();
+        this.$refs.input.focus()
       }
     }
   }
-};
+}

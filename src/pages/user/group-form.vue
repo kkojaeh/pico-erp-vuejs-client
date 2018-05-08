@@ -1,11 +1,11 @@
 <template>
 
-  <q-layout class="row items-baseline layout-padding" view="hHh Lpr fFf">
+  <q-page class="row layout-padding">
 
     <q-card class="col-12" flat>
 
       <q-card-title>
-        기본 정보
+        그룹 정보
       </q-card-title>
 
       <q-card-separator/>
@@ -16,7 +16,8 @@
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
+                   :hide-underline="!creating"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
@@ -32,11 +33,11 @@
 
     <q-tabs class="col-12" inverted>
       <!-- Tabs - notice slot="title" -->
-      <q-tab default :disable="creating" slot="title" name="tab-1" icon="fa-users">권한</q-tab>
+      <q-tab default :disable="creating" slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
       <q-tab :disable="creating" slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
       <!-- Targets -->
       <q-tab-pane :disabled="creating" name="tab-1" class="column no-border" style="height:400px;">
-        <ag-grid ref="roleGrid" class="ag-theme-material col"
+        <ag-grid ref="roleGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
@@ -47,7 +48,8 @@
                           cell-editor-framework="ag-grid-checkbox-editor"
                           :editable="true"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
-          <ag-grid-column field="roleDescription" header-name="설명" :width="250"/>
+          <ag-grid-column field="roleName" header-name="코드" :width="200"/>
+          <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
       </q-tab-pane>
       <q-tab-pane :disabled="creating" name="tab-2" class="column no-border"
@@ -59,7 +61,7 @@
               @selected="_onUserSelect"
           />
         </q-input>
-        <ag-grid ref="userGrid" class="ag-theme-material col"
+        <ag-grid ref="userGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
@@ -75,9 +77,9 @@
     </q-tabs>
 
 
-    <q-layout-footer>
+    <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" @click="$emit('close')" v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
@@ -86,20 +88,25 @@
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
                v-show="!creating">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" url="/audit/group/${id}" :data="model"></audit-viewer>
+            <audit-viewer ref="auditViewer" :url="`/audit/group/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
-    </q-layout-footer>
+    </q-page-sticky>
 
-  </q-layout>
+  </q-page>
 
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { GroupModel, GroupRoleArray, GroupUserArray, GroupUserModel } from './group-model'
-  import { UserLabelArray } from './user-model'
+  import {
+    GroupModel,
+    GroupRoleArray,
+    GroupUserArray,
+    GroupUserModel,
+    UserLabelArray
+  } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -126,28 +133,32 @@
       }
     },
     mounted () {
-      this.$nextTick(() => this[this.action]())
+      if (this.action) {
+        this.$nextTick(() => this[this.action]())
+      }
     },
     methods: {
       async create () {
         this.creating = true
+        this.model = new GroupModel()
         await Promise.all([this.fetchRoles(), this.fetchUsers()])
       },
       async show () {
         this.creating = false
-        this.model.id = this.id
-        await this.model.fetch()
+        this.model = await GroupModel.get(this.id)
         await Promise.all([this.fetchRoles(), this.fetchUsers()])
       },
       async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateForCreate()
-          : await this.model.validateForUpdate()
+        let valid = this.creating ? await this.model.validateCreate()
+          : await this.model.validateUpdate()
         if (valid) {
-          let ok = await this.$alert.confirm('저장 하시겠습니까?')
-          await this.save()
-          this.$alert.positive('저장 되었습니다')
-          this.id = this.model.id
-          this.show()
+          const ok = await this.$alert.confirm('저장 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            this.$alert.positive('저장 되었습니다')
+            this.id = this.model.id
+            this.show()
+          }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }
@@ -183,7 +194,7 @@
         }
       },
       async _onUserRemove (item) {
-        let ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')
+        const ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')
         if (ok) {
           await item.remove()
           await this.fetchUsers()

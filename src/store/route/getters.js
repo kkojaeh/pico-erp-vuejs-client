@@ -1,9 +1,9 @@
 export const lastAccessed = (state) => {
-  return state.lastAccessed;
-};
+  return state.lastAccessed
+}
 export const to = (state) => {
-  return state.to;
+  return state.to
 }
 export const next = (state) => {
-  return state.next;
+  return state.next
 }

@@ -1,9 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { Notify } from 'quasar'
+import { authenticate } from 'src/plugins/auth'
 
-import routes from './routes'
 import store from '../store'
+
+import userRoutes from './user'
+import companyRoutes from './company'
+import exampleRoutes from './example'
+import projectRoutes from './project'
+import quotationRoutes from './quotation'
+import processRoutes from './process'
+import itemRoutes from './item'
+import bomRoutes from './bom'
 
 Vue.use(VueRouter)
 
@@ -26,7 +35,44 @@ const Router = new VueRouter({
       return {x: 0, y: 0}
     }
   },
-  routes
+  routes: [
+    {
+      path: '/',
+      component: () => import('layouts/default'),
+      children: [
+        {
+          path: '',
+          component: () => import('pages/index'),
+          meta: {
+            title: 'Index',
+            authorize: 'isAuthenticated()'
+          }
+        },
+        ...userRoutes,
+        ...companyRoutes,
+        ...quotationRoutes,
+        ...projectRoutes,
+        ...processRoutes,
+        ...itemRoutes,
+        ...bomRoutes,
+        ...exampleRoutes
+      ]
+    },
+    {
+      path: '/sign-in',
+      component: () => import('src/pages/sign-in'),
+      meta: {
+        title: '로그인',
+        authorize: 'permitAll'
+      }
+    },
+
+    { // Always leave this as last one
+      path: '*',
+      component: () => import('pages/404')
+    }
+  ]
+
 })
 
 Router.beforeEach(async (to, from, next) => {
@@ -35,8 +81,7 @@ Router.beforeEach(async (to, from, next) => {
   }
 
   if (store.getters['global/initialized']) {
-    const authorized = await store.dispatch('auth/authenticate',
-      to.meta.authorize)
+    const authorized = authenticate(to.meta.authorize)
     if (authorized) {
       next()
     } else {
@@ -44,7 +89,7 @@ Router.beforeEach(async (to, from, next) => {
       if (authentication.isAuthenticated()) {
         Notify.create({
           icon: 'warning',
-          position: 'bottom-right',
+          position: 'top-right',
           message: '권한이 없습니다'
         })
         if (from) {

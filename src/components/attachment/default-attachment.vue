@@ -1,108 +1,108 @@
 <template>
   <uppy-attachment ref="attachment" v-model="model" :model-type="modelType"
-                       :multiple="multiple" :max-file-size="maxFileSize"
-                       :max-number-of-files="maxNumberOfFiles" :category="category">
+                   :multiple="multiple" :max-file-size="maxFileSize"
+                   :max-number-of-files="maxNumberOfFiles" :category="category"
+                   :readonly="readonly">
   </uppy-attachment>
 
 </template>
 
 <script>
   import UppyAttachment from './uppy-attachment.vue'
-  import {
-    AttachmentModel,
-    AttachmentFileModel
-  } from './attachment-model'
-  import {api} from 'src/plugins/axios';
-  import * as _ from 'lodash';
+  import { AttachmentFileModel, AttachmentModel } from './attachment-model'
+  import { api } from 'src/plugins/axios'
+  import * as _ from 'lodash'
+  import store from 'src/store'
 
   class DefaultAttachmentModel extends AttachmentModel {
 
-    async fetch(id) {
-      const response = await api.get(`/attachment/attachments/${id}`, {});
-      _.assign(this, response.data);
-      return this;
+    async fetch (id) {
+      const response = await api.get(`/attachment/attachments/${id}`, {})
+      _.assign(this, response.data)
+      return this
     }
 
-    async create() {
+    async create () {
       const response = await api.post('/attachment/attachments', {
         multiple: this.multiple,
         categoryId: this.category
-      });
-      _.assign(this, response.data);
-      return this.id;
+      })
+      _.assign(this, response.data)
+      return this.id
     }
 
-    async delete() {
-      const id = this.id;
-      await api.delete(`/attachment/attachments/${id}`, {});
+    async delete () {
+      const id = this.id
+      await api.delete(`/attachment/attachments/${id}`, {})
     }
 
-    get headers() {
-      return {
-        'X-Firebase-Auth': localStorage.getItem('API_FIREBASE_TOKEN')
-      }
+    get headers () {
+      const headers = {}
+      headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
+      return headers
     }
 
-    get files() {
-      return this.items.map(this.mapFile.bind(this));
+    get files () {
+      return this.items.map(this.mapFile.bind(this))
     }
 
-    mapFile(item){
-      const id = this.id;
-      const host = api.defaults.baseURL;
+    mapFile (item) {
+      const authQs = store.getters['auth/tokenParameterName'] + '=' + store.getters['auth/token']
+      const id = this.id
+      const host = api.defaults.baseURL
       return new AttachmentFileModel.Builder(this)
       .id(item.id)
       .name(item.name)
       .size(item.contentLength)
-      .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}`)
-      .download(`${host}/attachment/attachments/${id}/items/${item.id}`)
+      .thumbnail(`${host}/attachment/thumbnails/${id}/items/${item.id}?${authQs}`)
+      .download(`${host}/attachment/attachments/${id}/items/${item.id}?${authQs}`)
       .type(item.contentType)
       .build()
     }
 
-    get uploadUrl() {
-      const host = api.defaults.baseURL;
-      const id = this.id;
-      return `${host}/attachment/attachments/${id}/items`;
+    get uploadUrl () {
+      const host = api.defaults.baseURL
+      const id = this.id
+      return `${host}/attachment/attachments/${id}/items`
     }
 
-    static iconUrlByName(name, contentType) {
-      const host = api.defaults.baseURL;
-      if(contentType) {
-        return `${host}/attachment/icons/${contentType}`;
+    static iconUrlByName (name, contentType) {
+      const host = api.defaults.baseURL
+      if (contentType) {
+        return `${host}/attachment/icons/${contentType}`
       }
-      const extension = name.substring(name.lastIndexOf('.'));
-      return `${host}/attachment/icons/${extension}`;
+      const extension = name.substring(name.lastIndexOf('.'))
+      return `${host}/attachment/icons/${extension}`
     }
 
-    static iconUrlByContentType(name, contentType) {
-      const host = api.defaults.baseURL;
-      if(contentType) {
-        return `${host}/attachment/icons/${contentType}`;
+    static iconUrlByContentType (name, contentType) {
+      const host = api.defaults.baseURL
+      if (contentType) {
+        return `${host}/attachment/icons/${contentType}`
       }
-      const extension = name.substring(name.lastIndexOf('.'));
-      return `${host}/attachment/icons/${extension}`;
+      const extension = name.substring(name.lastIndexOf('.'))
+      return `${host}/attachment/icons/${extension}`
     }
 
-    async addFile(file) {
+    async addFile (file) {
       const item = {
         id: file.id,
         name: file.name,
         contentLength: file.size,
         contentType: file.type
-      };
-      this.items.push(item);
-      return this.mapFile(item);
+      }
+      this.items.push(item)
+      return this.mapFile(item)
     }
 
-    async removeFile(fileId) {
-      const id = this.id;
-      const item = this.items.find((item) => item.id === fileId);
-      if(!item){
-        throw Error('not fout item');
+    async removeFile (fileId) {
+      const id = this.id
+      const item = this.items.find((item) => item.id === fileId)
+      if (!item) {
+        throw Error('not fout item')
       }
-      await api.delete(`/attachment/attachments/${id}/items/${item.id}`);
-      return `${item.id}`;
+      await api.delete(`/attachment/attachments/${id}/items/${item.id}`)
+      return `${item.id}`
     }
 
   }
@@ -130,28 +130,32 @@
       category: {
         type: String,
         required: true
+      },
+      readonly: {
+        type: Boolean,
+        default: false
       }
     },
     components: {
       'uppy-attachment': UppyAttachment
     },
-    data() {
+    data () {
       return {
         model: null,
         modelType: DefaultAttachmentModel
       }
     },
     watch: {
-      value(to, from) {
-        this.model = to;
+      value (to, from) {
+        this.model = to
       },
-      model(to, from) {
-        this.$emit('input', to);
+      model (to, from) {
+        this.$emit('input', to)
       }
     },
     methods: {
-      async save() {
-        return await this.$refs.attachment.save();
+      async save () {
+        return await this.$refs.attachment.save()
       }
     }
 
