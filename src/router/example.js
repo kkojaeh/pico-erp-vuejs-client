@@ -5,10 +5,12 @@ let exampleMeta = {
 }
 
 export default [{
+  name: 'example-attachment',
   path: '/example/attachment',
   component: () => import('pages/example/attachment'),
   meta: exampleMeta
 }, {
+  name: 'example-html-editor',
   path: '/example/html-editor',
   component: () => import('pages/example/html-editor'),
   meta: exampleMeta

@@ -1,4 +1,5 @@
 export default {
   title: '',
-  initialized: false
+  initialized: false,
+  helpLink: null
 }

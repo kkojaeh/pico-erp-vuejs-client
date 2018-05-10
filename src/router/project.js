@@ -6,10 +6,12 @@ let meta = {
 }
 
 export default [{
+  name: 'project-list',
   path: '/project',
   component: () => import('pages/project/project-list'),
   meta,
   children: [{
+    name: 'project-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/project/project-form'), {
       onModalHide () {
@@ -22,6 +24,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'project-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/project/project-form'), {
       onModalHide () {

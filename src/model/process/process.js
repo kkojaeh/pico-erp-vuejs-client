@@ -77,7 +77,7 @@ export class ProcessModel extends Model {
 }
 
 export class ProcessPaginationArray extends SpringPaginationArray {
-  url = '/process/processes'
+  url = '/process/processes?${$QS}'
   axios = api
   model = ProcessModel
 }

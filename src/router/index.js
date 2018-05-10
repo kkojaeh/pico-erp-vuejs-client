@@ -37,10 +37,12 @@ const Router = new VueRouter({
   },
   routes: [
     {
+      name: 'default-layout',
       path: '/',
       component: () => import('layouts/default'),
       children: [
         {
+          name: 'index',
           path: '',
           component: () => import('pages/index'),
           meta: {
@@ -59,6 +61,7 @@ const Router = new VueRouter({
       ]
     },
     {
+      name: 'sign-in',
       path: '/sign-in',
       component: () => import('src/pages/sign-in'),
       meta: {
@@ -68,6 +71,7 @@ const Router = new VueRouter({
     },
 
     { // Always leave this as last one
+      name: '404',
       path: '*',
       component: () => import('pages/404')
     }
@@ -76,9 +80,8 @@ const Router = new VueRouter({
 })
 
 Router.beforeEach(async (to, from, next) => {
-  if (to.meta.title) {
-    store.commit('global/title', to.meta.title)
-  }
+  store.commit('global/title', to.meta.title)
+  store.commit('global/helpLink', to.meta.helpLink)
 
   if (store.getters['global/initialized']) {
     const authorized = authenticate(to.meta.authorize)

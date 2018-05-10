@@ -8,7 +8,10 @@
 
         <q-toolbar-title>
           {{title}}
-          <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
+          <a v-show="!!helpLink" :href="helpLink" target="_blank">
+            <q-icon name="help" class="q-ml-sm"></q-icon>
+          </a>
+          <div slot="subtitle">Version : {{$version}}</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
@@ -103,6 +106,7 @@
     computed: {
       ...mapGetters({
         title: 'global/title',
+        helpLink: 'global/helpLink',
         user: 'auth/user',
         menus: 'auth/menus'
       }),

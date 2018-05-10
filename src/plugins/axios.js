@@ -3,8 +3,9 @@ import * as _ from 'lodash'
 import { Loading, Notify } from 'quasar'
 import { init } from './auth'
 import store from 'src/store'
+import {apiBaseUrl, apiContentType} from 'src/plugins/config'
+import Vue from 'vue'
 
-let apiVersion = 'v1'
 let apiRequests = 0
 
 let loadFunction = (config) => {
@@ -16,14 +17,20 @@ let loadFunction = (config) => {
 
   config.headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
 
-  config.headers['Accept'] = `application/vnd.acepk.${apiVersion}+json`
-  config.headers['Content-Type'] = `application/vnd.acepk.${apiVersion}+json`
+  config.headers['Accept'] = apiContentType
+  config.headers['Content-Type'] = apiContentType
   if (apiRequests == 0) {
     Loading.show({
       delay: 0
     })
   }
   apiRequests++
+  const url = config.url
+  const qi = url.lastIndexOf('?')
+  Vue.analytics.trackEvent('api-' + config.method,
+    qi > -1 ? url.substr(0, qi) : url,
+    qi > -1 ? url.substr(qi + 1) : null
+    )
   return config
 }
 
@@ -102,7 +109,7 @@ let errorFunction = (error) => {
 }
 
 const axiosApi = axios.create({
-  baseURL: document.querySelector('meta[name=api-server-url]').content
+  baseURL: apiBaseUrl
 })
 
 axiosApi.interceptors.request.use(loadFunction)

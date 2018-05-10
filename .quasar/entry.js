@@ -45,6 +45,9 @@ store,
 
 const plugins = []
 
+import pluginConfig from 'src/plugins/config'
+plugins.push(pluginConfig)
+
 import pluginAxios from 'src/plugins/axios'
 plugins.push(pluginAxios)
 
@@ -68,6 +71,15 @@ plugins.push(pluginDate)
 
 import pluginCloseoverlay from 'src/plugins/close-overlay'
 plugins.push(pluginCloseoverlay)
+
+import pluginClipboard from 'src/plugins/clipboard'
+plugins.push(pluginClipboard)
+
+import pluginIntro from 'src/plugins/intro'
+plugins.push(pluginIntro)
+
+import pluginGoogleanalytics from 'src/plugins/google-analytics'
+plugins.push(pluginGoogleanalytics)
 
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 

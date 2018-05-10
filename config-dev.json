@@ -1,0 +1,19 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyBaS7v9fhkK6Nn6MBqV02ej5T3ffdDKujc",
+    "authDomain": "pico-erp-dev.firebaseapp.com",
+    "databaseURL": "https://pico-erp-dev.firebaseio.com",
+    "projectId": "pico-erp-dev",
+    "storageBucket": "pico-erp-dev.appspot.com",
+    "messagingSenderId": "211743559657"
+  },
+  "api": {
+    "baseUrl": "https://api-dev.acepk.biz/",
+    "contentType": "application/vnd.acepk.v1+json"
+  },
+  "googleAnalytics" : {
+    "appName": "pico-erp",
+    "trackingId": "UA-119013826-1",
+    "debug": true
+  }
+}

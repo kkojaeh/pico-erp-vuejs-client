@@ -2,14 +2,17 @@ import { wrapModal } from './default'
 
 let meta = {
   title: '견적 관리',
-  authorize: 'hasRole(\'QUOTATION_MANAGER\')'
+  authorize: 'hasRole(\'QUOTATION_MANAGER\')',
+  helpLink: 'https://kkojaeh.github.io/pico-erp-server/#/guide/quotation/'
 }
 
 export default [{
+  name: 'quotation-list',
   path: '/quotation',
   component: () => import('pages/quotation/quotation-list'),
   meta,
   children: [{
+    name: 'quotation-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
       maximized: true,
@@ -23,6 +26,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'quotation-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
       maximized: true,

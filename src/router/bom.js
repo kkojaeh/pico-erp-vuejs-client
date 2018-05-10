@@ -6,6 +6,7 @@ let meta = {
 }
 
 export default [{
+  name: 'bom-revision-list',
   path: '/bom/:itemId',
   component: () => import('pages/bom/bom-revision-list'),
   meta,
@@ -15,6 +16,7 @@ export default [{
     }
   },
   children: [{
+    name: 'bom-form',
     path: ':id',
     component: () => wrapModal(import('pages/bom/bom-form'), {
       maximized: true,

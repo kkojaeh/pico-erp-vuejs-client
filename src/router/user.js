@@ -15,10 +15,12 @@ const departmentMeta = {
   authorize: 'hasRole(\'USER_MANAGER\')'
 }
 export default [{
+  name: 'user-list',
   path: '/user',
   component: () => import('pages/user/user-list'),
   meta: userMeta,
   children: [{
+    name: 'user-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/user/user-form'), {
       onModalHide () {
@@ -31,6 +33,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'user-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/user/user-form'), {
       onModalHide () {
@@ -47,10 +50,12 @@ export default [{
     }
   }]
 }, {
+  name: 'group-list',
   path: '/group',
   component: () => import('pages/user/group-list'),
   meta: groupMeta,
   children: [{
+    name: 'group-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/user/group-form'), {
       onModalHide () {
@@ -63,6 +68,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'group-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/user/group-form'), {
       onModalHide () {
@@ -79,10 +85,12 @@ export default [{
     }
   }]
 }, {
+  name: 'department-list',
   path: '/department',
   component: () => import('pages/user/department-list'),
   meta: departmentMeta,
   children: [{
+    name: 'department-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/user/department-form'), {
       onModalHide () {
@@ -95,6 +103,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'department-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/user/department-form'), {
       onModalHide () {

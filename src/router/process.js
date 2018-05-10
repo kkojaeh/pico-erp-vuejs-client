@@ -11,10 +11,12 @@ let typeMeta = {
 }
 
 export default [{
+  name: 'process-list',
   path: '/process',
   component: () => import('pages/process/process-list'),
   meta: meta,
   children: [{
+    name: 'process-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/process/process-form'), {
       onModalHide () {
@@ -31,10 +33,12 @@ export default [{
     }
   }]
 }, {
+  name: 'process-type-list',
   path: '/process-type',
   component: () => import('pages/process/process-type-list'),
   meta: typeMeta,
   children: [{
+    name: 'process-type-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/process/process-type-form'), {
       onModalHide () {
@@ -47,6 +51,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'process-type-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/process/process-type-form'), {
       onModalHide () {

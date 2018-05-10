@@ -186,6 +186,7 @@ export class QuotationModel extends Model {
 
   get defaults () {
     return {
+      modifiable: true,
       status: 'DRAFT',
       customerManagerContact: {
         name: null,

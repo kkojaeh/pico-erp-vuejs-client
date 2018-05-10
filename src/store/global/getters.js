@@ -4,3 +4,8 @@ export const title = (state) => {
 export const initialized = (state) => {
   return state.initialized
 }
+
+export const helpLink = (state) => {
+  return state.helpLink
+}
+

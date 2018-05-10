@@ -1,8 +1,23 @@
 // Configuration for your app
+var fs = require('fs');
+
+
 
 module.exports = function (ctx) {
+
+  // ctx.dev 개발 여부
+  const cfgFileName =`config-${ctx.dev ? 'dev' : 'prd'}.json`
+  const cfg = JSON.parse(fs.readFileSync(cfgFileName, 'utf8'))
+  cfg.api.baseUrl = process.env.API_BASE_URL || cfg.api.baseUrl
+  cfg.version = this.pkg.version
+  const env = {};
+  env.APP_CONFIG = encodeURIComponent(JSON.stringify(cfg))
+  for(var key in env){
+    env[key] = '"' + env[key] + '"'
+  }
   return {
     plugins: [
+      'config',
       'axios',
       'alert',
       'auth',
@@ -10,7 +25,10 @@ module.exports = function (ctx) {
       'validate',
       'number',
       'date',
-      'close-overlay'
+      'close-overlay',
+      'clipboard',
+      'intro',
+      'google-analytics'
     ],
     css: [
       'app.styl'
@@ -29,15 +47,7 @@ module.exports = function (ctx) {
       remove: []
     },
     build: {
-      env: ctx.dev ? {
-        API_SERVER_URL: process.env.API_SERVER_URL
-        || '"https://api-dev.acepk.biz/"',
-        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '"pico-erp-dev"'
-      } : {
-        API_SERVER_URL: process.env.API_SERVER_URL
-        || '"https://api-dev.acepk.biz/"',
-        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '"pico-erp-dev"'
-      },
+      env: env,
       scopeHoisting: true,
       vueRouterMode: 'history',
       // gzip: true,

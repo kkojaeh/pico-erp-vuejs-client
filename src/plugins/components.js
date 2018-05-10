@@ -38,11 +38,10 @@ import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
+
 import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
-
-import VueClipboard from 'vue-clipboard2'
 
 const lang = language
 
@@ -53,47 +52,8 @@ moment.locale(languageAliases({
   'ko': 'ko'
 })[language])
 
-const clipboardSuccess = (event) => {
-  Notify.create({
-    icon: 'info',
-    position: 'top-right',
-    color: 'info',
-    timeout: 3000,
-    message: '클립보드에 값이 복사 되었습니다'
-  })
-}
-
-const clipboardError = (event) => {
-  Notify.create({
-    icon: 'error',
-    position: 'top-right',
-    color: 'error',
-    timeout: 3000,
-    message: '클립보드 값 복사에 실패 했습니다'
-  })
-}
-
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
-  Vue.use(VueClipboard)
-
-  Vue.directive('clipboard-notify', {
-    bind: function (el, binding, vnode) {
-      setTimeout(() => {
-        if (!el._v_clipboard_success) {
-          el._v_clipboard_success = clipboardSuccess
-        }
-        if (!el._v_clipboard_error) {
-          el._v_clipboard_error = clipboardError
-        }
-      }, 500)
-    },
-    unbind: function (el, binding) {
-      delete el._v_clipboard_success
-      delete el._v_clipboard_error
-    }
-  })
-
   Vue.component('c-autocomplete-select', AutocompleteSelect)
 
   Vue.component('c-list-filter-label', ListFilterLabel)

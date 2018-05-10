@@ -6,10 +6,12 @@ let meta = {
 }
 
 export default [{
+  name: 'company-list',
   path: '/company',
   component: () => import('pages/company/company-list'),
   meta,
   children: [{
+    name: 'company-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/company/company-form'), {
       onModalHide () {
@@ -22,6 +24,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'company-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/company/company-form'), {
       onModalHide () {

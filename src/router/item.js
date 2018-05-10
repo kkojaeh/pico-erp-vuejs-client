@@ -11,10 +11,12 @@ let categoryMeta = {
 }
 
 export default [{
+  name: 'item-category-list',
   path: '/item-category',
   component: () => import('pages/item/item-category-list'),
   meta: categoryMeta,
   children: [{
+    name: 'item-category-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/item/item-category-form'), {
       onModalHide () {
@@ -28,6 +30,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'item-category-form-create-by-parent',
     path: 'create/:parentId',
     component: () => wrapModal(import('pages/item/item-category-form'), {
       onModalHide () {
@@ -43,6 +46,7 @@ export default [{
       }
     }
   }, {
+    name: 'item-category-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/item/item-category-form'), {
       onModalHide () {
@@ -59,10 +63,12 @@ export default [{
     }
   }]
 }, {
+  name: 'item-list',
   path: '/item',
   component: () => import('pages/item/item-list'),
   meta: itemMeta,
   children: [{
+    name: 'item-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/item/item-form'), {
       onModalHide () {
@@ -75,6 +81,7 @@ export default [{
       closable: true
     }
   }, {
+    name: 'item-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/item/item-form'), {
       onModalHide () {
