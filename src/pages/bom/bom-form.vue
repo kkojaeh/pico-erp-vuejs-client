@@ -376,7 +376,6 @@
       editItemSpec (data) {
         const modal = this.$refs.itemSpecEditorModal
         const form = this.$refs.itemSpecEditor
-        console.log(this, this.selected)
         this.selected = data
         this.$nextTick(() => {
           modal.show()

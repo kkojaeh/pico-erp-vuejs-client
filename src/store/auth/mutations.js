@@ -1,7 +1,6 @@
 export const user = (state, payload) => {
   localStorage.setItem('AUTH/USER', JSON.stringify(payload))
   state.user = payload
-  console.log(payload)
   ga('set', 'userId', payload.email);
 }
 export const menus = (state, payload) => {

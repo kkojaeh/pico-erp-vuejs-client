@@ -47,9 +47,6 @@ export default {
   },
   computed: {
     labelIsAbove () {
-      console.log('labelIsAbove', this.focused || this.length
-        || this.additionalLength
-        || this.stackLabel)
       return this.focused || this.length || this.additionalLength
         || this.stackLabel
     },

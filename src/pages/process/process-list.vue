@@ -173,7 +173,6 @@
       },
       async onManagerSearch (keyword, done) {
         await this.userLabels.query(keyword)
-        console.log(this.userLabels)
         done()
       },
 
