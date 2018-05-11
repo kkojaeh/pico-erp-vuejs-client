@@ -31,8 +31,8 @@ before_install:
 
 before_script:
   - npm install
-  - if [ "$TRAVIS_BRANCH" = "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_PRD; fi
-  - if [ "$TRAVIS_BRANCH" != "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_DEV; fi
+  - if [ "$TRAVIS_BRANCH" = "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_PRD; export APP_PROFILE=prd; fi
+  - if [ "$TRAVIS_BRANCH" != "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_DEV; export APP_PROFILE=dev; fi
 
 script:
   - quasar build
