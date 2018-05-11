@@ -1,6 +1,6 @@
 <template>
   <div class="row items-center fit bom-item-spec-cell-renderer">
-    <div class="col-grow bom-item-spec-cell-renderer-label"></div>
+    <div class="col-grow bom-item-spec-cell-renderer-label">{{value}}</div>
     <q-btn icon="add_circle" flat v-show="isAddable" @click="edit"></q-btn>
     <q-btn icon="settings" flat v-show="isLinkable" @click="edit"></q-btn>
   </div>
@@ -20,6 +20,12 @@
       },
       form () {
         return this.params.form
+      },
+      value() {
+        const itemSpec = this.params.data.itemSpec
+        if(itemSpec){
+          return itemSpec.summary
+        }
       }
     },
     methods: {

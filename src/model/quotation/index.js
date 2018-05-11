@@ -2,7 +2,7 @@ import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model, uuid } from 'src/model/model'
 import { BomModel } from 'src/model/bom'
 import { ProcessModel } from 'src/model/process'
-import { ItemModel } from 'src/model/item'
+import { ItemModel, ItemSpecModel } from 'src/model/item'
 import { api } from 'src/plugins/axios'
 import store from 'src/store'
 import qs from 'qs'
@@ -12,6 +12,8 @@ const bomSymbol = Symbol('bom')
 const quotationSymbol = Symbol('quotation')
 
 const itemSymbol = Symbol('item')
+
+const itemSpecSymbol = Symbol('item-spec')
 
 const processSymbol = Symbol('process')
 
@@ -62,9 +64,13 @@ class QuotationBomItemModel extends Model {
     await bom.visit(async (node) => {
       node[itemSymbol] = await ItemModel.get(node.itemId, true)
       node[processSymbol] = await ProcessModel.get(node.processId, true)
+      node[itemSpecSymbol] = await ItemSpecModel.get(node.itemSpecId, true)
       Object.defineProperties(node, {
         'item': {
           get: function () { return this[itemSymbol] }
+        },
+        'itemSpec': {
+          get: function () { return this[itemSpecSymbol] }
         },
         'process': {
           get: function () { return this[processSymbol] }

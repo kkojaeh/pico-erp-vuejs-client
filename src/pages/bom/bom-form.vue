@@ -47,7 +47,7 @@
       <ag-grid-column field="processId" header-name="공정" :width="180"
                       cell-renderer-framework="bom-process-cell-renderer"
                       :cell-renderer-params="{editHandler: editProcess, removeHandler: removeProcess}"/>
-      <ag-grid-column field="itemSpecId" header-name="품목설정" :width="90"
+      <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
                       cell-renderer-framework="bom-item-spec-cell-renderer"
                       :cell-renderer-params="{editHandler: editItemSpec}"/>
       <ag-grid-column field="item.unit" header-name="단위" :width="80"
@@ -128,7 +128,7 @@
 </template>
 <script>
   import { BomModel, BomStatusArray } from 'src/model/bom'
-  import { ItemModel } from 'src/model/item'
+  import { ItemModel, ItemSpecModel } from 'src/model/item'
   import { ProcessModel } from 'src/model/process'
   import { UnitLabelArray } from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
@@ -140,6 +140,7 @@
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
 
   const itemSymbol = Symbol('item')
+  const itemSpecSymbol = Symbol('item-spec')
   const processSymbol = Symbol('process')
 
   export default {
@@ -239,10 +240,14 @@
         await this.model.fetchChildren(true)
         await this.model.visit(async (node) => {
           node[itemSymbol] = await ItemModel.get(node.itemId, true)
+          node[itemSpecSymbol] = await ItemSpecModel.get(node.itemSpecId, true)
           node[processSymbol] = await ProcessModel.get(node.processId, true)
           Object.defineProperties(node, {
             'item': {
               get: function () { return this[itemSymbol] }
+            },
+            'itemSpec': {
+              get: function () { return this[itemSpecSymbol] }
             },
             'process': {
               get: function () { return this[processSymbol] }

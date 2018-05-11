@@ -66,22 +66,17 @@
       return `${host}/attachment/attachments/${id}/items`
     }
 
-    static iconUrlByName (name, contentType) {
+    static iconUrlByName (name) {
       const host = api.defaults.baseURL
-      if (contentType) {
-        return `${host}/attachment/icons/${contentType}`
-      }
       const extension = name.substring(name.lastIndexOf('.'))
       return `${host}/attachment/icons/${extension}`
     }
 
-    static iconUrlByContentType (name, contentType) {
+    static iconUrlByContentType (contentType) {
       const host = api.defaults.baseURL
       if (contentType) {
         return `${host}/attachment/icons/${contentType}`
       }
-      const extension = name.substring(name.lastIndexOf('.'))
-      return `${host}/attachment/icons/${extension}`
     }
 
     async addFile (file) {
@@ -157,6 +152,9 @@
       async save () {
         return await this.$refs.attachment.save()
       }
+    },
+    mounted() {
+      this.model = this.value
     }
 
   }

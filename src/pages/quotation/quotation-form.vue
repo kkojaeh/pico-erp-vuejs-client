@@ -68,7 +68,6 @@
 
             <q-field icon="attachment" helper="견적 관련 첨부파일 입니다"
                      class="col-xs-12 col-md-12 col-xl-12">
-
               <c-attachment ref="attachment" v-model="model.attachmentId" category="quotation"
                             multiple :readonly="!isModifiable"></c-attachment>
             </q-field>

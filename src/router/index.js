@@ -37,7 +37,7 @@ const Router = new VueRouter({
   },
   routes: [
     {
-      name: 'default-layout',
+      name: '',
       path: '/',
       component: () => import('layouts/default'),
       children: [

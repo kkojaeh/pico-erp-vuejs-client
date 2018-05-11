@@ -1,6 +1,7 @@
 import firebase from 'firebase'
 import * as _ from 'lodash'
 import store from 'src/store'
+import { Loading } from 'quasar'
 import {firebaseConfig} from 'src/plugins/config'
 
 let filebaseApp
@@ -16,6 +17,9 @@ export async function signOut () {
 }
 
 export function init () {
+  Loading.show({
+    delay: 0
+  })
   return new Promise((resolve, reject) => {
     if (!filebaseApp) {
       filebaseApp = firebase.initializeApp(firebaseConfig)
@@ -23,15 +27,17 @@ export function init () {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdToken(true).then(
-          (token) => {
+          async (token) => {
             store.commit('auth/token', token)
             store.commit('global/initialized', true)
-            store.dispatch('auth/signIn', firebase.auth().currentUser)
+            await store.dispatch('auth/signIn', firebase.auth().currentUser)
+            Loading.hide()
             resolve()
           })
       } else {
         store.commit('global/initialized', true)
         store.dispatch('auth/signIn', null)
+        Loading.hide()
         resolve()
       }
     })

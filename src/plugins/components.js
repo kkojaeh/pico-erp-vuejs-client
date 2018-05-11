@@ -2,7 +2,9 @@ import Quasar, { Notify } from 'quasar'
 import { language, languageAliases } from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
-import 'ag-grid/dist/styles/ag-theme-balham.css'
+// import 'ag-grid/dist/styles/ag-theme-balham.css'
+import 'viewerjs/dist/viewer.min.css'
+
 
 import AgGrid from 'src/components/ag-grid/ag-grid.vue'
 import AgGridColumn from 'src/components/ag-grid/ag-grid-column.vue'

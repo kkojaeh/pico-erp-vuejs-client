@@ -14,6 +14,7 @@
   import * as _ from 'lodash'
   import Uppy from 'src/components/uppy/uppy.vue'
   import { AttachmentFileModel } from './attachment-model'
+  import Viewer from 'viewerjs/dist/viewer'
 
   export default {
     props: {
@@ -70,7 +71,8 @@
             endpoint: 'about:blank',
             fieldName: 'file'
           }
-        }
+        },
+        viewers: []
       }
     },
     watch: {
@@ -140,8 +142,27 @@
             uppy.setState({
               files: files
             })
+            if (this._isImage(file)) {
+              this._applyViewer(file)
+            }
           })
         }
+      },
+      _applyViewer (file) {
+        setTimeout(() => {
+          // TODO: 이미지 찾아가는 방식에 대한 개선이 필요할것으로 보임
+          const img = document.getElementById(`uppy_${file.id}`).querySelector('img')
+          img.style.cursor = 'pointer'
+          this.viewers.push(
+            new Viewer(img, {
+              fileId: file.id,
+              zIndex: 10000,
+              url (img) {
+                return file.remote
+              }
+            })
+          )
+        }, 100)
       },
       _onUppyFileRemoved ({file}) {
         const fileId = file
@@ -149,6 +170,11 @@
 
         if (source) {
           this.removed.push(source)
+          // viewer 제거
+          const viewerIndex = this.viewers.findIndex(viewer => viewer.fileId == fileId)
+          if (viewerIndex > -1) {
+            this.viewers.splice(viewerIndex, 1)
+          }
         }
       },
       async _onUppyUploadSuccess ({response, fileId}) {
@@ -251,7 +277,12 @@
         }
         return value
       }
+    },
 
+    beforeDestroy () {
+      // viewers 제거
+      this.viewers.forEach(viewer => viewer.destroy())
+      this.viewers = []
     }
   }
 

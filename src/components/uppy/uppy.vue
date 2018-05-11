@@ -111,7 +111,7 @@
       _createUppy () {
         const vm = this
         const uppy = new Uppy({
-          debug: true,
+          debug: false,
           autoProceed: this.autoProceed,
           restrictions: this.restrictions,
           locale: I18n.Uppy,
