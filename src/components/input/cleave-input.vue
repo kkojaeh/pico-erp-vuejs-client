@@ -87,6 +87,7 @@
       _onInput (e) {
         this.$nextTick(() => {
           this.model = this.cleave.getRawValue()
+          console.log('on input', this.model)
           this.$emit('input', this.model)
         })
       },

@@ -10,9 +10,13 @@
           <slot name="filter-label"></slot>
         </div>
       </transition>
-      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger" data-step="1" data-intro="처음 클릭시에는 검색 조건을 펼치게 되고<br>두번째 클릭시 검색이 실행됩니다">검색</q-btn>    </q-toolbar>
+      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger" data-step="1"
+             data-intro="처음 클릭시에는 검색 조건을 펼치게 되고<br>두번째 클릭시 검색이 실행됩니다">검색
+      </q-btn>
+    </q-toolbar>
     <transition name="fade">
-      <div ref="filters" class="list-view-filter row gutter-sm no-margin" data-step="3" data-intro="목록의 범위를 줄이는 검색 조건들입니다"
+      <div ref="filters" class="list-view-filter row gutter-sm no-margin" data-step="3"
+           data-intro="목록의 범위를 줄이는 검색 조건들입니다"
            v-show="filterAlways || filtersVisible">
         <slot name="filter"></slot>
       </div>
@@ -294,7 +298,7 @@
         this.retrieve()
       },
 
-      _onHelpClick(){
+      _onHelpClick () {
         this.filtersVisible = true
         this.$intro()
         .onexit(() => {

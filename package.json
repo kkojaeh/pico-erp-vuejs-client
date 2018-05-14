@@ -2,7 +2,7 @@
   "name": "pico-erp-vuejs-client",
   "productName": "pico-erp",
   "cordovaId": "pico.erp.client.vuejs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "pico-erp vuejs client",
   "author": "system@kd-ace.co.kr",
   "private": true,
@@ -16,17 +16,17 @@
     "axios": "^0.17.1",
     "babel-runtime": "^6.25.0",
     "big.js": "^5.0.3",
-    "cleave.js": "^1.3.3",
+    "cleave.js": "1.1.5",
     "firebase": "4.6.2",
-    "google-libphonenumber": "^3.1.4",
+    "google-libphonenumber": "^3.1.5",
     "intro.js": "^2.9.3",
     "json-editor": "^0.7.28",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.10",
     "lzutf8": "^0.5.0",
     "moment": "^2.22.1",
-    "number-to-text": "^0.3.2",
-    "qs": "^6.5.1",
-    "quasar-extras": "^1.0.2",
+    "number-to-text": "^0.3.3",
+    "qs": "^6.5.2",
+    "quasar-extras": "^1.0.3",
     "quasar-framework": "^0.15.10",
     "ssf": "^0.10.2",
     "tributejs": "^3.2.0",
@@ -61,23 +61,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 10"
-  ],
-  "firebaseConfig": {
-    "dev": {
-      "apiKey": "AIzaSyBaS7v9fhkK6Nn6MBqV02ej5T3ffdDKujc",
-      "authDomain": "pico-erp-dev.firebaseapp.com",
-      "databaseURL": "https://pico-erp-dev.firebaseio.com",
-      "projectId": "pico-erp-dev",
-      "storageBucket": "pico-erp-dev.appspot.com",
-      "messagingSenderId": "211743559657"
-    },
-    "prd": {
-      "apiKey": "AIzaSyBD3_7mawl1eTovCDWJEO1_0pdj4-0Z75I",
-      "authDomain": "pico-erp-prd.firebaseapp.com",
-      "databaseURL": "https://pico-erp-prd.firebaseio.com",
-      "projectId": "pico-erp-prd",
-      "storageBucket": "pico-erp-prd.appspot.com",
-      "messagingSenderId": "1073558054534"
-    }
-  }
+  ]
 }

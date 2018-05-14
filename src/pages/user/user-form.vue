@@ -69,6 +69,13 @@
 
       <q-card-title>
         권한 정보
+
+        <div slot="right" class="row items-center">
+          <q-field icon="search"
+                   class="col-12">
+            <q-input v-model="roleFilter" clearable></q-input>
+          </q-field>
+        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -76,7 +83,7 @@
       <q-card-main class="column gutter-md" style="height:100%;min-height:300px;"
                    :disabled="creating">
 
-        <ag-grid ref="grid" class="col"
+        <ag-grid ref="roleGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
@@ -140,7 +147,8 @@
         model: new UserModel(),
         creating: false,
         departmentLabels: new DepartmentLabelArray(),
-        roleArray: new UserRoleArray()
+        roleArray: new UserRoleArray(),
+        roleFilter: null
       }
     },
     mounted () {
@@ -204,6 +212,12 @@
     },
     computed: {
       ...mapGetters([])
+    },
+    watch: {
+      roleFilter(){
+        const grid = this.$refs.roleGrid
+        grid.api.setQuickFilter(this.roleFilter)
+      }
     },
     components: {AuditViewer}
   }

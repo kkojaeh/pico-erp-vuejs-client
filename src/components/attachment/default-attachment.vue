@@ -113,7 +113,7 @@
        */
       maxFileSize: {
         type: Number,
-        default: 1
+        default: 100
       },
       maxNumberOfFiles: {
         type: Number,

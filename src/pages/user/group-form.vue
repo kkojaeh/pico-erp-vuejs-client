@@ -54,13 +54,17 @@
       </q-tab-pane>
       <q-tab-pane :disabled="creating" name="tab-2" class="column no-border"
                   style="height:400px;">
-        <q-input v-model="groupUser.userId" placeholder="추가할 사용자의 이름을 입력하고 선택하세요">
-          <q-autocomplete
-              @search="_onUserSearch"
-              :min-characters="1"
-              @selected="_onUserSelect"
-          />
-        </q-input>
+        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="row">
+          <c-autocomplete-select float-label="담당자" v-model="groupUser.userId"
+                                 :options="userLabels"
+                                 label-field="label" value-field="value"
+                                 @search="_onUserSearch">
+            <template slot="option" slot-scope="option">
+              {{option.label}}1<br>
+              {{option.stamp}} - {{option.subLabel}}
+            </template>
+          </c-autocomplete-select>
+        </q-field>
         <ag-grid ref="userGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
@@ -128,7 +132,7 @@
         creating: false,
         roleArray: new GroupRoleArray(),
         userArray: new GroupUserArray(),
-        userLabelArray: new UserLabelArray(),
+        userLabels: new UserLabelArray(),
         groupUser: new GroupUserModel()
       }
     },
@@ -181,17 +185,8 @@
         })
       },
       async _onUserSearch (keyword, done) {
-        await this.userLabelArray.query(keyword)
-        done(this.userLabelArray)
-      },
-      async _onUserSelect (item) {
-        this.groupUser.groupId = this.model.id
-        try {
-          await this.groupUser.add()
-          await this.fetchUsers()
-        } finally {
-          this.groupUser.userId = null
-        }
+        await this.userLabels.query(keyword)
+        done()
       },
       async _onUserRemove (item) {
         const ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')
@@ -208,6 +203,19 @@
     },
     computed: {
       ...mapGetters([])
+    },
+    watch: {
+      'groupUser.userId': async function(to) {
+        if(to) {
+          this.groupUser.groupId = this.model.id
+          try {
+            await this.groupUser.add()
+            await this.fetchUsers()
+          } finally {
+            this.groupUser.userId = null
+          }
+        }
+      }
     },
     components: {AuditViewer}
   }
