@@ -60,3 +60,18 @@ $ quasar lint
 - [x] 소트 쿼리스트링 화
 - [x] 모델(콜렉션)과 그리드 연계
 - [ ] 조회조건 Responsive 반영
+
+# Release
+
+https://www.npmjs.com/package/release
+
+## 설치
+```
+npm install -g release
+```
+
+## 실행
+
+```
+release patch
+```

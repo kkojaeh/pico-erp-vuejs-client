@@ -2,12 +2,12 @@ import { wrapModal } from './default'
 
 let itemMeta = {
   title: '품목 관리',
-  authorize: 'hasRole(\'ITEM_MANAGER\')'
+  authorize: 'hasAnyRole(\'ITEM_MANAGER\', \'ITEM_ACCESSOR\')'
 }
 
 let categoryMeta = {
   title: '품목 분류 관리',
-  authorize: 'hasRole(\'ITEM_MANAGER\')'
+  authorize: 'hasRole(\'ITEM_MANAGER\', \'ITEM_ACCESSOR\')'
 }
 
 export default [{

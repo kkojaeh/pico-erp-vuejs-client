@@ -192,10 +192,10 @@
             <audit-viewer ref="auditViewer" :url="`/audit/item/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="play_arrow" v-show="!creating" v-if="model.isActivatable"
+        <q-btn flat icon="play_arrow" v-show="!creating && model.isActivatable" v-if="$authorized.itemManager"
                @click="_onActivateClick">활성화
         </q-btn>
-        <q-btn flat icon="pause" v-show="!creating" v-if="model.isDeactivatable"
+        <q-btn flat icon="pause" v-show="!creating && model.isDeactivatable" v-if="$authorized.itemManager"
                @click="_onDeactivateClick">비활성화
         </q-btn>
         <router-link :to="`/process/show/${processModel.id}`" v-show="!!processModel.id"
@@ -206,7 +206,7 @@
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
         </router-link>
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" v-if="$authorized.itemManager" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 

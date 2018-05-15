@@ -196,7 +196,7 @@
         }
       },
       _onRoleGridCellValueChanged (e) {
-        if (e.column.colId === 'granted') {
+        if (e.column.colDef.field === 'granted') {
           e.value ? e.data.grant() : e.data.revoke()
         }
       }

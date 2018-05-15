@@ -9,7 +9,7 @@
       <!-- action -->
 
       <div slot="action">
-        <router-link :to="{ path: '/item/create', query: $route.query}">
+        <router-link :to="{ path: '/item/create', query: $route.query}" v-if="$authorized.itemManager">
           <q-btn flat icon="add">생성</q-btn>
         </router-link>
       </div>
@@ -135,6 +135,9 @@
   import { CompanyLabelArray } from 'src/model/company'
 
   export default {
+    authorized: {
+      'itemManager': 'hasRole(\'ITEM_MANAGER\')'
+    },
     data () {
       return {
         array: new ItemPaginationArray(),

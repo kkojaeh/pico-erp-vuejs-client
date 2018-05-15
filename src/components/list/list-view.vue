@@ -253,7 +253,8 @@
 
       _onGridSortChanged (e) {
         this.sortQueryString = Sort.toQueryString(
-          e.api.getSortModel().map((sm) => Sort.createSort(sm.colId, sm.sort))
+          e.api.getSortModel().map(
+            (sm) => Sort.createSort(e.api.getColumnDef(sm.colId).field, sm.sort))
         )
       },
 
@@ -262,19 +263,21 @@
       },
 
       _applyGridSort () {
-        if (!this.grid.gridOptions.api) {
+        if (!this.grid.api) {
           return
         }
         if (this.sortQueryString) {
+          const columns = this.grid.api.columnController.getAllGridColumns()
           let parsed = Sort.parseQueryString(this.sortQueryString)
-          this.grid.gridOptions.api.setSortModel(parsed.map((value) => {
+          this.grid.api.setSortModel(parsed.map((value) => {
+            const column = columns.find(c => c.getColDef().field == value.getField())
             return {
-              colId: value.getField(),
+              colId: column.getId(),
               sort: value.getDir().toLowerCase()
             }
           }))
         } else {
-          this.grid.gridOptions.api.setSortModel([])
+          this.grid.api.setSortModel([])
         }
       },
 
