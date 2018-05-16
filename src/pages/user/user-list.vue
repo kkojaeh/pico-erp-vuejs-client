@@ -12,8 +12,43 @@
 
       <div slot="action">
         <router-link :to="{ path: '/user/create', query: $route.query}">
-          <q-btn flat icon="add">생성</q-btn>
+          <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
+        <q-btn flat icon="cloud_download" label="Export">
+          <q-popover style="width: 300px;">
+            <q-card flat>
+              <q-card-main>
+                <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
+              </q-card-main>
+              <q-card-actions align="end">
+                <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"></q-btn>
+              </q-card-actions>
+            </q-card>
+          </q-popover>
+        </q-btn>
+        <q-btn flat icon="cloud_upload" label="Import">
+          <q-popover style="width: 300px; min-height: 500px;">
+            <q-card flat>
+              <q-card-main>
+                <q-toggle v-model="importOptions.overwrite" label="덮어 쓰기"/>
+              </q-card-main>
+              <q-card-separator/>
+              <q-card-main>
+                <uppy-uploader ref="importByXlsxUploader" :url="importByXlsxUrl"
+                               :form-data="importOptions"
+                               :allowed-content-types="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip']"/>
+              </q-card-main>
+              <q-card-separator/>
+              <q-card-title>
+                <span slot="subtitle">확장자가 xlsx 인 파일만 사용 가능합니다</span>
+              </q-card-title>
+              <q-card-separator/>
+              <q-card-actions align="end">
+                <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"></q-btn>
+              </q-card-actions>
+            </q-card>
+          </q-popover>
+        </q-btn>
       </div>
 
       <!-- action -->
@@ -87,7 +122,14 @@
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { DepartmentLabelArray, UserPaginationArray } from 'src/model/user'
+  import {
+    DepartmentLabelArray,
+    UserExportOptions,
+    UserImportOptions,
+    UserModel,
+    UserPaginationArray
+  } from 'src/model/user'
+  import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
     data () {
@@ -100,6 +142,9 @@
           departmentId: null,
           departmentName: null
         },
+        exportOptions: new UserExportOptions(),
+        importOptions: new UserImportOptions(),
+        importByXlsxUrl: UserModel.importByXlsxUrl,
         dataAdjuster: null
       }
     },
@@ -117,6 +162,14 @@
         await this.departmentLabels.query(keyword)
         done()
       },
+      async importByXlsx () {
+        const uploader = this.$refs.importByXlsxUploader
+        await uploader.upload()
+        await uploader.clear()
+      },
+      exportAsXlsx () {
+        UserModel.exportAsXlsx(this.exportOptions)
+      }
     },
     computed: {
       ...mapGetters([])
@@ -131,6 +184,8 @@
       }
     },
 
-    components: {}
+    components: {
+      'uppy-uploader': UppyUploader
+    }
   }
 </script>

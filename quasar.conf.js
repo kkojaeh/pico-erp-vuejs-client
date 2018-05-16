@@ -115,7 +115,8 @@ module.exports = function (ctx) {
         'QResizeObservable',
         'QTooltip',
         'QPopover',
-        'QSpinner'
+        'QSpinner',
+        'QUploader'
       ],
       directives: [
         'Ripple',

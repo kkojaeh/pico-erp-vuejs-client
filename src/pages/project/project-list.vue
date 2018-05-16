@@ -12,7 +12,7 @@
 
       <div slot="action">
         <router-link :to="{ path: '/project/create', query: $route.query}">
-          <q-btn flat icon="add">생성</q-btn>
+          <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
       </div>
 

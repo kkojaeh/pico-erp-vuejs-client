@@ -428,8 +428,8 @@
         <q-btn flat icon="send" @click="commit()" v-show="model.committable">제출</q-btn>
 
         <q-btn flat icon="skip_next" @click="nextDraft()" v-show="model.nextDraftable">재견적</q-btn>
-        <q-btn flat icon="clear" @click="exportFile()" v-show="model.cancelable">취소</q-btn>
-        <q-btn flat icon="file_download" @click="exportFile()" v-show="model.exportable">출력</q-btn>
+        <q-btn flat icon="clear" @click="cancel()" v-show="model.cancelable">취소</q-btn>
+        <q-btn flat icon="file_download" @click="printSheet()" v-show="model.sheetPrintable">출력</q-btn>
         <q-btn flat icon="save" v-if="isInfoTab" @click="_onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
@@ -449,7 +449,7 @@
   import { mapGetters } from 'vuex'
   import {
     QuotationExpiryPolicyArray,
-    QuotationExportOptions,
+    QuotationPrintSheetOptions,
     QuotationModel,
     QuotationStatusArray
   } from 'src/model/quotation'
@@ -751,8 +751,8 @@
         }
       },
 
-      async exportFile () {
-        const model = new QuotationExportOptions()
+      async printSheet () {
+        const model = new QuotationPrintSheetOptions()
         let data = _.keys(model).filter(key => model[key])
         try {
           data = await this.$q.dialog({
@@ -771,7 +771,7 @@
             color: 'secondary'
           })
           _.keys(model).forEach(key => model[key] = data.includes(key))
-          await this.model.export(model)
+          await this.model.printSheet(model)
         } catch (e) {
         }
       }

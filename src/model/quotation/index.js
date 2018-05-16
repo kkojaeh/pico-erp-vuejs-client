@@ -17,7 +17,7 @@ const itemSpecSymbol = Symbol('item-spec')
 
 const processSymbol = Symbol('process')
 
-export class QuotationExportOptions {
+export class QuotationPrintSheetOptions {
 
   detailedUnitPrice = true
 
@@ -310,12 +310,12 @@ export class QuotationModel extends Model {
       this.validate('update')
   }
 
-  async export (options) {
+  async printSheet (options) {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
       + store.getters['auth/token']
     const link = document.createElement('a')
-    link.href = `${host}/quotation/quotations/${this.id}/export?${qs.stringify(
+    link.href = `${host}/quotation/quotations/${this.id}/print-sheet?${qs.stringify(
       options)}&${authQs}`
     document.body.appendChild(link)
     link.click()
