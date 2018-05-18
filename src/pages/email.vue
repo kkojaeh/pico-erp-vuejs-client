@@ -1,6 +1,6 @@
 <template>
   <div class="layout-padding row justify-center fit items-center" style="min-height: 100vh">
-    <q-card flat style="min-width: 300px; max-width: 90vw;">
+    <q-card flat style="min-width: 300px; max-width: 90vw;" v-if="resetPassword">
       <q-card-title>
         패스워드 재설정
       </q-card-title>
@@ -16,7 +16,7 @@
       </q-card-main>
       <q-card-separator/>
       <q-card-actions align="end">
-        <q-btn color="primary" @click="resetPassword()" label="Reset"></q-btn>
+        <q-btn color="primary" @click="onResetPasswordClick()" label="Reset"></q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -25,8 +25,8 @@
 <script type="text/javascript">
   import { Dialog } from 'quasar'
   import { mapGetters } from 'vuex'
-  import firebase from 'firebase'
   import { Model } from 'src/model/model'
+  import qs from 'qs'
 
   import { verifyAndConfirmPasswordReset } from 'src/plugins/auth'
 
@@ -45,7 +45,9 @@
   export default {
     data () {
       return {
-        form: new PasswordResetModel()
+        form: new PasswordResetModel(),
+        verifyEmail: false,
+        resetPassword: true
       }
     },
     computed: {
@@ -54,20 +56,23 @@
       })
     },
     mounted () {
-      this.$refs.password.focus()
+      const mode = qs.parse(location.search).mode
+      this[mode] = true
+      if (this.$refs.password) {
+        this.$refs.password.focus()
+      }
     },
     beforeDestroy () {
     },
     methods: {
-      async resetPassword () {
+      async onResetPasswordClick () {
         try {
           await verifyAndConfirmPasswordReset(this.form.password)
           this.$alert.positive('패스워드가 재설정 되었습니다.')
           this.$router.push('/sign-in')
-        }catch(error){
+        } catch (error) {
           this.$alert.negative(`${error.code} - ${error.message}`)
         }
-
 
       }
     }

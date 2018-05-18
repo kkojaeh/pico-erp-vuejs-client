@@ -69,11 +69,10 @@ const Router = new VueRouter({
       }
     },
     {
-      name: 'password-reset',
-      path: '/password-reset',
-      component: () => import('src/pages/password-reset'),
+      name: 'email',
+      path: '/email',
+      component: () => import('src/pages/email'),
       meta: {
-        title: '패스워드 재설정',
         authorize: 'permitAll'
       }
     },

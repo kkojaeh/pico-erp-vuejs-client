@@ -3,8 +3,6 @@ import * as _ from 'lodash'
 import store from 'src/store'
 import { Loading } from 'quasar'
 import {firebaseConfig} from 'src/plugins/config'
-import { api } from 'src/plugins/axios'
-import { MyModel } from 'src/model/user'
 import qs from 'qs'
 
 let firebaseApp
