@@ -41,6 +41,8 @@ import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
 
+import 'element-closest'
+
 import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'

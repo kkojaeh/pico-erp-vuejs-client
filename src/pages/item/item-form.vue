@@ -103,6 +103,13 @@
                    max-length="200"/>
         </q-field>
 
+        <q-field icon="attachment" helper="품목 관련 첨부파일 입니다"
+                 class="col-xs-12 col-md-12 col-xl-12">
+
+          <c-attachment ref="attachment" v-model="model.attachmentId" category="item"
+                        multiple ></c-attachment>
+        </q-field>
+
       </q-card-main>
 
     </q-card>
@@ -331,6 +338,8 @@
         }
       },
       async save () {
+        const attachment = this.$refs.attachment
+        await attachment.save()
         if (this.creating) {
           await this.model.create()
         } else {

@@ -1,13 +1,21 @@
 <template>
-  <uppy ref="uppy" :plugins="uppyPlugins" :auto-proceed="false"
-        :readonly="readonly"
-        :restrictions="restrictions"
-        @before-file-added="_onUppyBeforeFileAdded"
-        @file-added="_onUppyFileAdded"
-        @file-removed="_onUppyFileRemoved"
-        @before-upload="_onUppyBeforeUpload"
-        @upload-success="_onUppyUploadSuccess"
-        @complete="_onUppyUploadComplete"></uppy>
+  <div>
+    <uppy ref="uppy" :plugins="uppyPlugins" :auto-proceed="false"
+          :readonly="readonly"
+          :restrictions="restrictions"
+          @before-file-added="_onUppyBeforeFileAdded"
+          @file-added="_onUppyFileAdded"
+          @file-removed="_onUppyFileRemoved"
+          @before-upload="_onUppyBeforeUpload"
+          @upload-success="_onUppyUploadSuccess"
+          @complete="_onUppyUploadComplete"
+          @click.native="_onUppyClick"></uppy>
+    <q-modal ref="plyrModal" :value="!!video.remote" @show="" @hide="video = {}">
+      <video ref="plyrVideo" controls>
+
+      </video>
+    </q-modal>
+  </div>
 </template>
 
 <script>
@@ -15,6 +23,8 @@
   import Uppy from 'src/components/uppy/uppy.vue'
   import { AttachmentFileModel } from './attachment-model'
   import Viewer from 'viewerjs/dist/viewer'
+  import Plyr from 'plyr'
+  import 'plyr/dist/plyr.css'
 
   export default {
     props: {
@@ -52,7 +62,7 @@
       }
     },
     components: {
-      'uppy': Uppy
+      Uppy
     },
     data () {
       return {
@@ -60,6 +70,7 @@
         removed: [],
         headers: {},
         files: {},
+        video: {},
         uppyPlugins: {
           Dashboard: {
             hideUploadButton: true,
@@ -71,8 +82,7 @@
             endpoint: 'about:blank',
             fieldName: 'file'
           }
-        },
-        viewers: []
+        }
       }
     },
     watch: {
@@ -98,6 +108,7 @@
     },
     mounted () {
       this._initModel()
+      this.plyr = new Plyr(this.$refs.plyrVideo)
     },
     methods: {
       _initModel () {
@@ -122,6 +133,10 @@
         const type = file.type
         return type && type.indexOf('image/') > -1
       },
+      _isVideo (file) {
+        const type = file.type
+        return type && type.indexOf('video/') > -1
+      },
       _onUppyBeforeFileAdded ({file}) {
         const uppy = this.$refs.uppy
         if (!this.multiple) {
@@ -142,39 +157,56 @@
             uppy.setState({
               files: files
             })
-            if (this._isImage(file)) {
-              this._applyViewer(file)
-            }
           })
         }
       },
-      _applyViewer (file) {
-        setTimeout(() => {
-          // TODO: 이미지 찾아가는 방식에 대한 개선이 필요할것으로 보임
-          const img = document.getElementById(`uppy_${file.id}`).querySelector('img')
-          img.style.cursor = 'pointer'
-          this.viewers.push(
-            new Viewer(img, {
-              fileId: file.id,
-              zIndex: 10000,
-              url (img) {
-                return file.remote
-              }
-            })
-          )
-        }, 100)
+      _onUppyClick (e) {
+        const target = e.target
+        if (target.tagName !== 'IMG') {
+          return
+        }
+        const uppy = this.$refs.uppy
+        const id = target.closest('li[title]').id.substr('uppy_'.length)
+        const file = uppy.getFile(id)
+        if (file.isRemote) {
+          if (this._isImage(file)) {
+            this.openImage(file)
+          } else if (this._isVideo(file)) {
+            this.openVideo(file)
+          }
+        }
+      },
+      openVideo (file) {
+        this.$refs.plyrModal.show()
+        this.plyr.source = {
+          type: 'video',
+          sources: [
+            {
+              src: file.remote,
+              type: file.type
+            }
+          ]
+        }
+        this.plyr.play()
+      },
+      openImage (file) {
+        const viewer = new Viewer(document.body, {
+          zIndex: 10000,
+          url () {
+            return file.remote
+          },
+          hide () {
+            viewer.destroy()
+          }
+        })
+        viewer.show(true)
       },
       _onUppyFileRemoved ({file}) {
-        const fileId = file
+        const fileId = _.isString(file) ? file : file.id
         const source = this.files[fileId]
 
         if (source) {
           this.removed.push(source)
-          // viewer 제거
-          const viewerIndex = this.viewers.findIndex(viewer => viewer.fileId == fileId)
-          if (viewerIndex > -1) {
-            this.viewers.splice(viewerIndex, 1)
-          }
         }
       },
       async _onUppyUploadSuccess ({response, fileId}) {
@@ -280,10 +312,18 @@
     },
 
     beforeDestroy () {
-      // viewers 제거
-      this.viewers.forEach(viewer => viewer.destroy())
-      this.viewers = []
+      this.plyr.destroy()
+      this.plyr = null
     }
   }
 
 </script>
+<style lang="stylus">
+  .uppy-DashboardItem-preview
+    img[src*="video/"]
+      cursor: pointer
+    img[src*="image/"]
+      cursor: pointer
+    img[src*="/thumbnails/"]
+      cursor: pointer
+</style>
