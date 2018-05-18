@@ -37,7 +37,6 @@ const Router = new VueRouter({
   },
   routes: [
     {
-      name: '',
       path: '/',
       component: () => import('layouts/default'),
       children: [
@@ -66,6 +65,15 @@ const Router = new VueRouter({
       component: () => import('src/pages/sign-in'),
       meta: {
         title: '로그인',
+        authorize: 'permitAll'
+      }
+    },
+    {
+      name: 'password-reset',
+      path: '/password-reset',
+      component: () => import('src/pages/password-reset'),
+      meta: {
+        title: '패스워드 재설정',
         authorize: 'permitAll'
       }
     },

@@ -24,7 +24,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="담당자" v-model="model.managerId"
-                                 :label.sync="model.managerName" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabels"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -65,7 +65,7 @@
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
-                                 :label.sync="model.customerName" :options="companyLabels"
+                                 :label="customerModel.name" :options="companyLabels"
                                  label-field="label" value-field="value"
                                  @search="onCustomerSearch">
             <template slot="option" slot-scope="option">
@@ -143,19 +143,19 @@
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating">이력
+               v-show="!creating" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/project/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" @click="_onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -166,8 +166,8 @@
 <script>
   import { mapGetters } from 'vuex'
   import { ProjectModel } from 'src/model/project'
-  import { CompanyLabelArray } from 'src/model/company'
-  import { UserLabelArray } from 'src/model/user'
+  import { CompanyLabelArray, CompanyModel } from 'src/model/company'
+  import { UserLabelArray, UserModel } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
 
@@ -189,6 +189,8 @@
         model: new ProjectModel(),
         companyLabels: new CompanyLabelArray(),
         userLabels: new UserLabelArray(),
+        managerModel: new UserModel(),
+        customerModel: new CompanyModel(),
         creating: false,
         enabled: true
       }
@@ -245,6 +247,14 @@
     },
     computed: {
       ...mapGetters([])
+    },
+    watch: {
+      'model.managerId': async function (to) {
+        this.managerModel = await UserModel.get(to, true)
+      },
+      'model.customerId': async function (to) {
+        this.customerModel = await CompanyModel.get(to, true)
+      }
     },
     components: {
       AuditViewer,

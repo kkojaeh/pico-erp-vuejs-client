@@ -1,10 +1,12 @@
 import 'intro.js/introjs.css'
 import 'intro.js/themes/introjs-modern.css'
 import introJs from 'intro.js'
-import numberToText from 'number-to-text'
+import * as _ from 'lodash'
+
+let related = {}
 
 // leave the export, even if you don't use it
-export default ({ app, router, Vue }) => {
+export default ({app, router, Vue}) => {
 
   Vue.prototype.$intro = () => {
     const intro = introJs()
@@ -16,7 +18,32 @@ export default ({ app, router, Vue }) => {
       prevLabel: '이전',
       skipLabel: '넘기기'
     })
-    return intro
+    _.forIn(related, (value, key) => {
+      if(_.isFunction(value.start)){
+        value.start()
+      }
+    })
+    intro.onexit(() => {
+      _.forIn(related, (value, key) => {
+        if(_.isFunction(value.exit)){
+          value.exit()
+        }
+      })
+    })
+    intro.start()
   }
+
+  Vue.mixin({
+    beforeCreate: function () {
+      const options = this.$options
+      const intro = options.intro
+      if (intro) {
+        related[this._uid] = intro
+      }
+    },
+    beforeDestroy () {
+      delete related[this._uid]
+    }
+  })
 
 }

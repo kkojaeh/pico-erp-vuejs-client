@@ -2,6 +2,21 @@ import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model, uuid } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
+import qs from 'qs'
+import store from '../../store'
+import { UserModel } from './user'
+
+export class DepartmentImportOptions {
+
+  overwrite = false
+
+}
+
+export class DepartmentExportOptions {
+
+  empty = false
+
+}
 
 export class DepartmentModel extends Model {
 
@@ -11,8 +26,30 @@ export class DepartmentModel extends Model {
     }
   }
 
-  static async get (id) {
-    const response = await api.get(`/user/departments/${id}`)
+  static get importByXlsxUrl () {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+    return `${host}/user/import/departments/xlsx?${authQs}`
+  }
+
+  static exportAsXlsx (options) {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+    const link = document.createElement('a')
+    link.href = `${host}/user/export/departments/xlsx?${qs.stringify(
+      options)}&${authQs}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  static async get (id, cacheable) {
+    if (!id) {
+      return new DepartmentModel()
+    }
+    const response = await api.get(`/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new DepartmentModel(response.data)
   }
 

@@ -1,21 +1,23 @@
 <template>
   <div class="column fit">
     <q-toolbar ref="top">
-      <q-btn flat icon="help" @click="_onHelpClick()"></q-btn>
       <slot name="action"></slot>
       <q-toolbar-title>
       </q-toolbar-title>
       <transition name="fade">
-        <div ref="labels" data-step="2" data-intro="입력된 검색 조건이 표시됩니다.<br> ⊗ 를 클릭하여 조건을 삭제할 수 있습니다">
+        <div ref="labels" :data-step="introStepStart + 2"
+             data-intro="입력된 검색 조건이 표시됩니다.<br> ⊗ 를 클릭하여 조건을 삭제할 수 있습니다">
           <slot name="filter-label"></slot>
         </div>
       </transition>
-      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger" data-step="1"
-             data-intro="처음 클릭시에는 검색 조건을 펼치게 되고<br>두번째 클릭시 검색이 실행됩니다">검색
+      <q-btn flat icon="search" @click="_onSearch()" v-if="!hideTrigger"
+             :data-step="introStepStart + 1"
+             data-intro="처음 클릭시에는 검색 조건을 펼치게 되고<br>두번째 클릭시 검색이 실행됩니다" label="검색">
       </q-btn>
     </q-toolbar>
     <transition name="fade">
-      <div ref="filters" class="list-view-filter row gutter-sm no-margin" data-step="3"
+      <div ref="filters" class="list-view-filter row gutter-sm no-margin"
+           :data-step="introStepStart + 3"
            data-intro="목록의 범위를 줄이는 검색 조건들입니다"
            v-show="filterAlways || filtersVisible">
         <slot name="filter"></slot>
@@ -28,12 +30,13 @@
 
     <q-toolbar v-if="pagination" inverted flat class="justify-between list-view-pagination-bar"
                ref="bottom">
-      <q-field data-step="4" data-intro="한번에 표시되는 행 수를 의미 합니다">
+      <q-field :data-step="introStepStart + 4" data-intro="한번에 표시되는 행 수를 의미 합니다">
         <q-select v-model="rowsPerPage" :options="pageSizeOptions"></q-select>
       </q-field>
       <q-pagination v-if="rowsPerPage > 0" v-model="page" :max="max"
-                    @input="setPage" data-step="5" data-intro="전체 목록에 대한 페이지의 링크입니다"></q-pagination>
-      <div data-step="6" data-intro="(시작행번호) - (마지막행번호) / (전체 행수) 를 의미합니다">
+                    @input="setPage" :data-step="introStepStart + 5"
+                    data-intro="전체 목록에 대한 페이지의 링크입니다"></q-pagination>
+      <div :data-step="introStepStart + 6" data-intro="(시작행번호) - (마지막행번호) / (전체 행수) 를 의미합니다">
         {{start}} - {{end}} / {{entries}}
       </div>
     </q-toolbar>
@@ -114,6 +117,10 @@
       preventQueryString: {
         type: Boolean,
         default: false
+      },
+      introStepStart: {
+        type: Number,
+        default: 0
       }
     },
     data () {
@@ -301,15 +308,14 @@
         this.retrieve()
       },
 
-      _onHelpClick () {
+    },
+    intro: {
+      start () {
         this.filtersVisible = true
-        this.$intro()
-        .onexit(() => {
-          this.filtersVisible = false
-        })
-        .start()
+      },
+      exit () {
+        this.filtersVisible = false
       }
-
     },
     watch: {
       '$route' (to, from) {

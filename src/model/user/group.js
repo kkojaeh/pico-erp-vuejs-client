@@ -1,11 +1,44 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
+import qs from 'qs'
+import store from '../../store'
+
+export class GroupImportOptions {
+
+  overwrite = false
+
+}
+
+export class GroupExportOptions {
+
+  empty = false
+
+}
 
 export class GroupModel extends Model {
 
   get defaults () {
     return {}
+  }
+
+  static get importByXlsxUrl () {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+    return `${host}/user/import/groups/xlsx?${authQs}`
+  }
+
+  static exportAsXlsx (options) {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+    const link = document.createElement('a')
+    link.href = `${host}/user/export/groups/xlsx?${qs.stringify(
+      options)}&${authQs}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   static async get (id) {

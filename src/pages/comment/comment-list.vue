@@ -32,7 +32,7 @@
         </q-field>
       </q-item-main>
       <q-item-side right>
-        <q-btn color="secondary" icon="add" @click="register">등록</q-btn>
+        <q-btn color="secondary" icon="add" @click="register" label="등록"></q-btn>
       </q-item-side>
     </q-item>
   </q-list>

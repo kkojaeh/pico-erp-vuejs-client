@@ -14,6 +14,11 @@
       <!-- action -->
 
       <div slot="action">
+        <q-btn flat icon="arrow_drop_down">
+          <q-popover>
+            <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
+          </q-popover>
+        </q-btn>
         <q-btn flat icon="add" @click="_onDraftClick">생성</q-btn>
         <router-link :to="`/item/show/${itemId}`">
           <q-btn flat icon="open_in_new">품목</q-btn>

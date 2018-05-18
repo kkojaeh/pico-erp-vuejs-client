@@ -94,7 +94,11 @@ export class UserModel extends Model {
         presence: true,
         phoneNumber: true,
         length: {minimum: 2, maximum: 50}
+      },
+      position: {
+        length: {maximum: 20}
       }
+
     }
     return await this.$validate(constraints)
   }

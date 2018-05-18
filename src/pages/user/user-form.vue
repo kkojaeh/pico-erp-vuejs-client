@@ -34,12 +34,19 @@
           <q-input v-model="model.email" float-label="이메일" type="email"/>
         </q-field>
 
+        <q-field icon="account_circle" helper="직위 또는 직급을 입력하세요"
+                 class="col-xs-12 col-md-6 col-xl-4"
+                 :error="!!model.$errors.position"
+                 :error-label="model.$errors.position">
+          <q-input v-model="model.position" float-label="직위/직급"/>
+        </q-field>
+
         <q-field icon="fa-sitemap" helper="사용자의 부서를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
-                 :error="!!model.$errors.managerId"
-                 :error-label="model.$errors.managerId">
+                 :error="!!model.$errors.departmentId"
+                 :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
-                                 :label.sync="model.departmentName" :options="departmentLabels"
+                                 :label="departmentModel.name" :options="departmentLabels"
                                  label-field="label" value-field="value"
                                  @search="_onDepartmentSearch">
             <template slot="option" slot-scope="option">
@@ -105,19 +112,19 @@
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating">이력
+               v-show="!creating" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/user/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" @click="_onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -126,7 +133,7 @@
 </template>
 <script>
   import { mapGetters } from 'vuex'
-  import { DepartmentLabelArray, UserModel, UserRoleArray } from 'src/model/user'
+  import { DepartmentLabelArray, DepartmentModel, UserModel, UserRoleArray } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -147,6 +154,7 @@
         model: new UserModel(),
         creating: false,
         departmentLabels: new DepartmentLabelArray(),
+        departmentModel: new DepartmentModel(),
         roleArray: new UserRoleArray(),
         roleFilter: null
       }
@@ -217,7 +225,10 @@
       roleFilter(){
         const grid = this.$refs.roleGrid
         grid.api.setQuickFilter(this.roleFilter)
-      }
+      },
+      'model.departmentId': async function (to) {
+        this.departmentModel = await DepartmentModel.get(to, true)
+      },
     },
     components: {AuditViewer}
   }

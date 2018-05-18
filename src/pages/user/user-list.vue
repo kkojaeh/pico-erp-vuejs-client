@@ -11,44 +11,49 @@
       <!-- action -->
 
       <div slot="action">
+        <q-btn flat icon="arrow_drop_down">
+          <q-popover>
+            <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
+            <q-btn flat icon="cloud_download" label="Export">
+              <q-popover style="width: 300px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
+                  </q-card-main>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
+            <q-btn flat icon="cloud_upload" label="Import">
+              <q-popover style="width: 300px; min-height: 500px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="importOptions.overwrite" label="덮어 쓰기"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-main>
+                    <uppy-uploader ref="importByXlsxUploader" :url="importByXlsxUrl"
+                                   :form-data="importOptions"
+                                   :allowed-content-types="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip']"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-title>
+                    <span slot="subtitle">확장자가 xlsx 인 파일만 사용 가능합니다</span>
+                  </q-card-title>
+                  <q-card-separator/>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
+          </q-popover>
+        </q-btn>
         <router-link :to="{ path: '/user/create', query: $route.query}">
           <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
-        <q-btn flat icon="cloud_download" label="Export">
-          <q-popover style="width: 300px;">
-            <q-card flat>
-              <q-card-main>
-                <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
-              </q-card-main>
-              <q-card-actions align="end">
-                <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"></q-btn>
-              </q-card-actions>
-            </q-card>
-          </q-popover>
-        </q-btn>
-        <q-btn flat icon="cloud_upload" label="Import">
-          <q-popover style="width: 300px; min-height: 500px;">
-            <q-card flat>
-              <q-card-main>
-                <q-toggle v-model="importOptions.overwrite" label="덮어 쓰기"/>
-              </q-card-main>
-              <q-card-separator/>
-              <q-card-main>
-                <uppy-uploader ref="importByXlsxUploader" :url="importByXlsxUrl"
-                               :form-data="importOptions"
-                               :allowed-content-types="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip']"/>
-              </q-card-main>
-              <q-card-separator/>
-              <q-card-title>
-                <span slot="subtitle">확장자가 xlsx 인 파일만 사용 가능합니다</span>
-              </q-card-title>
-              <q-card-separator/>
-              <q-card-actions align="end">
-                <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"></q-btn>
-              </q-card-actions>
-            </q-card>
-          </q-popover>
-        </q-btn>
       </div>
 
       <!-- action -->
@@ -65,6 +70,7 @@
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/user/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="150"/>
+        <ag-grid-column field="position" header-name="직위/직급" :width="100"/>
         <ag-grid-column field="email" header-name="이메일" :width="200"/>
         <ag-grid-column field="departmentName" header-name="부서" :width="200"/>
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
@@ -132,6 +138,11 @@
   import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
+    intro: {
+      start () {
+
+      }
+    },
     data () {
       return {
         array: new UserPaginationArray(),
@@ -166,6 +177,8 @@
         const uploader = this.$refs.importByXlsxUploader
         await uploader.upload()
         await uploader.clear()
+        this.$refs.listView.retrieve(true)
+        uploader.$closeOverlay()
       },
       exportAsXlsx () {
         UserModel.exportAsXlsx(this.exportOptions)

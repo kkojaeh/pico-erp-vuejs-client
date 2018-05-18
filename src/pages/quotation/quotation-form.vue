@@ -421,16 +421,16 @@
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
         <q-toolbar-title>
           <q-toggle v-model="detailedItemUnitPrice" label="상세 단가"/>
         </q-toolbar-title>
-        <q-btn flat icon="send" @click="commit()" v-show="model.committable">제출</q-btn>
+        <q-btn flat icon="send" @click="commit()" v-show="model.committable" label="제출"></q-btn>
 
-        <q-btn flat icon="skip_next" @click="nextDraft()" v-show="model.nextDraftable">재견적</q-btn>
-        <q-btn flat icon="clear" @click="cancel()" v-show="model.cancelable">취소</q-btn>
-        <q-btn flat icon="file_download" @click="printSheet()" v-show="model.sheetPrintable">출력</q-btn>
-        <q-btn flat icon="save" v-if="isInfoTab" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="skip_next" @click="nextDraft()" v-show="model.nextDraftable" label="재견적"></q-btn>
+        <q-btn flat icon="clear" @click="cancel()" v-show="model.cancelable" label="취소"></q-btn>
+        <q-btn flat icon="file_download" @click="printSheet()" v-show="model.sheetPrintable" label="출력"></q-btn>
+        <q-btn flat icon="save" v-if="isInfoTab" @click="_onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 

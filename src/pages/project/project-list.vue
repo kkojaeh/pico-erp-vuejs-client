@@ -11,6 +11,11 @@
       <!-- action -->
 
       <div slot="action">
+        <q-btn flat icon="arrow_drop_down">
+          <q-popover>
+            <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
+          </q-popover>
+        </q-btn>
         <router-link :to="{ path: '/project/create', query: $route.query}">
           <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>

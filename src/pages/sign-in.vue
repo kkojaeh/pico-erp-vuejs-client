@@ -1,39 +1,40 @@
 <template>
-  <div class="layout-padding row justify-center">
-    <div style="width: 500px; max-width: 90vw;">
-      <q-card>
-        <q-card-title>
-          로그인
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-          <q-field icon="email" helper="이메일을 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
-                   :error="!!form.$errors.email"
-                   :error-label="form.$errors.email">
-            <q-input v-model="form.email" type="email" float-label="이메일"
-                     clearable @keyup.enter="signIn()"/>
-          </q-field>
-          <q-field icon="fa-unlock-alt" helper="패스워드를 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
-                   :error="!!form.$errors.password"
-                   :error-label="form.$errors.password">
-            <q-input v-model="form.password" type="password" float-label="패스워드" clearable
-                     @keyup.enter="signIn()"/>
-          </q-field>
-        </q-card-main>
-        <q-card-separator/>
-        <q-card-actions align="between">
-          <q-btn color="primary" @click="passwordReset()" flat>비밀번호 찾기</q-btn>
-          <q-btn color="primary" @click="signIn()">Sign In</q-btn>
-        </q-card-actions>
-      </q-card>
-    </div>
+  <div class="layout-padding row justify-center fit items-center" style="min-height: 100vh">
+    <q-card flat style="min-width: 300px; max-width: 90vw;">
+      <q-card-title>
+        로그인
+        <div slot="right" class="row items-center">
+          <q-checkbox slot="subtitle" v-model="keepEmail" label="로그인 이메일 유지"/>
+        </div>
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        <q-field icon="email" helper="이메일을 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
+                 :error="!!form.$errors.email"
+                 :error-label="form.$errors.email">
+          <q-input ref="email" v-model="form.email" type="email" float-label="이메일"
+                   clearable @keyup.enter="signIn()"/>
+        </q-field>
+        <q-field icon="fa-unlock-alt" helper="패스워드를 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
+                 :error="!!form.$errors.password"
+                 :error-label="form.$errors.password">
+          <q-input ref="password" v-model="form.password" type="password" float-label="패스워드"
+                   clearable
+                   @keyup.enter="signIn()"/>
+        </q-field>
+      </q-card-main>
+      <q-card-separator/>
+      <q-card-actions align="between">
+        <q-btn color="primary" @click="resetPassword()" flat label="비밀번호 찾기"></q-btn>
+        <q-btn color="primary" @click="signIn()" label="Sign In"></q-btn>
+      </q-card-actions>
+    </q-card>
   </div>
 </template>
 
 <script type="text/javascript">
   import { Dialog } from 'quasar'
   import { mapGetters } from 'vuex'
-  import firebase from 'firebase'
   import { Model } from 'src/model/model'
   import validate from 'validate.js'
 
@@ -53,22 +54,28 @@
   }
 
   export default {
-    mounted () {
-    },
-    beforeDestroy () {
-    },
-    computed: {},
     data () {
       return {
-        form: new SignInModel()
+        form: new SignInModel(),
+        keepEmail: false
       }
-    },
-    mounted () {
     },
     computed: {
       ...mapGetters({
         lastAccessed: 'route/lastAccessed'
       })
+    },
+    mounted () {
+      const email = localStorage.getItem('sign-in-email')
+      if (email) {
+        this.form.email = email
+        this.keepEmail = true
+        this.$refs.password.focus()
+      } else {
+        this.$refs.email.focus()
+      }
+    },
+    beforeDestroy () {
     },
     methods: {
       async signIn () {
@@ -76,9 +83,14 @@
         if (valid) {
           try {
             await this.$auth.signIn(this.form.email, this.form.password)
+            if (this.keepEmail) {
+              localStorage.setItem('sign-in-email', this.form.email)
+            } else {
+              localStorage.removeItem('sign-in-email')
+            }
             await this.$auth.init()
             const lastAccessed = this.lastAccessed
-            if (this.$route.path !== lastAccessed.path) {
+            if (this.$route.path !== lastAccessed.path && lastAccessed.path !== '/') {
               this.$router.push(lastAccessed)
             } else {
               this.$router.push('/')
@@ -90,40 +102,28 @@
           this.$alert.warning('데이터가 유효하지 않습니다.')
         }
       },
-      passwordReset () {
-        Dialog.create({
+      async resetPassword () {
+        const result = await Dialog.create({
           title: '패스워드 리셋',
           message: '가입한 이메일 주소를 입력하세요',
-          form: {
-            email: {
-              type: 'email',
-              label: 'e-mail',
-              model: ''
-            }
-          },
-          buttons: [
-            '취소',
-            {
-              label: '전송',
-              handler: async (data) => {
-                if (data.email && !validate.single(data.email, {email: true})) {
-                  try {
-                    await firebase.auth().sendPasswordResetEmail(data.email, {})
-                    this.$alert.positive('전송이 완료 되었습니다 이메일을 확인하세요')
-                  } catch (error) {
-                    this.$alert.negative(`${error.code} - ${error.message}`)
-                  }
-                } else {
-                  this.$alert.warning('이메일 양식이 아닙니다')
-                  this.passwordReset()
-                }
-              }
-            }
-          ]
-        })
+          cancel: true,
+          prompt: {
+            model: this.form.email,
+            type: 'text'
+          }
+        });
+        if (result && !validate.single(result, {email: true})) {
+          try {
+            await this.$auth.resetPassword(result)
+            this.$alert.positive('전송이 완료 되었습니다 이메일을 확인하세요')
+          } catch (error) {
+            this.$alert.negative(`${error.code} - ${error.message}`)
+          }
+        } else {
+          this.$alert.warning('이메일 양식이 아닙니다')
+          this.resetPassword()
+        }
       }
     }
   }
 </script>
-<style scoped>
-</style>

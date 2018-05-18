@@ -3,11 +3,15 @@ import * as _ from 'lodash'
 import store from 'src/store'
 import { Loading } from 'quasar'
 import {firebaseConfig} from 'src/plugins/config'
+import { api } from 'src/plugins/axios'
+import { MyModel } from 'src/model/user'
+import qs from 'qs'
 
-let filebaseApp
+let firebaseApp
 
-export function signIn (email, password) {
-  return firebase.auth().signInWithEmailAndPassword(email, password)
+export async function signIn (email, password) {
+  await firebase.auth().setPersistence(firebaseConfig.persistence)
+  return await firebase.auth().signInWithEmailAndPassword(email, password)
 }
 
 export async function signOut () {
@@ -21,8 +25,9 @@ export function init () {
     delay: 0
   })
   return new Promise((resolve, reject) => {
-    if (!filebaseApp) {
-      filebaseApp = firebase.initializeApp(firebaseConfig)
+    if (!firebaseApp) {
+      firebaseApp = firebase.initializeApp(firebaseConfig)
+      firebase.auth().useDeviceLanguage()
     }
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -44,6 +49,16 @@ export function init () {
   })
 }
 
+export async function resetPassword(email){
+  return await firebase.auth().sendPasswordResetEmail(email, {})
+}
+
+export async function verifyAndConfirmPasswordReset(password){
+  const actionCode = qs.parse(location.search).oobCode
+  await firebaseApp.auth().verifyPasswordResetCode(actionCode)
+  await firebaseApp.auth().confirmPasswordReset(actionCode, password)
+}
+
 const authenticator = new Function('authentication', 'authorize',
   `with(authentication){return eval(authorize)}`)
 
@@ -60,7 +75,8 @@ export default ({Vue, store}) => {
   Vue.prototype.$auth = {
     signIn,
     signOut,
-    init
+    init,
+    resetPassword
   }
 
   Vue.mixin({

@@ -3,7 +3,7 @@
     <a href="#comment-94475045-bc62-41b1-95f7-c129df05e9db">gogo</a>
     <c-html-editor ref="editor" v-model="html" :readonly="readonly"></c-html-editor>
     <textarea v-model="html"></textarea>
-    <q-btn @click="set()">값 지정</q-btn>
+    <q-btn @click="set()" label="값 지정"></q-btn>
     <q-checkbox v-model="readonly">readonly</q-checkbox>
     <comment-list subject-type="quotation" subject="a"></comment-list>
   </q-page>

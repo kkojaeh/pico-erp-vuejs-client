@@ -14,6 +14,11 @@ const departmentMeta = {
   title: '부서 관리',
   authorize: 'hasRole(\'USER_MANAGER\')'
 }
+
+const meMeta = {
+  title: '나의 계정',
+  authorize: 'isAuthenticated()'
+}
 export default [{
   name: 'user-list',
   path: '/user',
@@ -119,4 +124,9 @@ export default [{
       }
     }
   }]
+},{
+  name: 'my-form',
+  path: '/my',
+  component: () => import('pages/user/my-form'),
+  meta: meMeta
 }]

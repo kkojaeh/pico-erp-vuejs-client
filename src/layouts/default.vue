@@ -15,20 +15,23 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
-    <q-layout-drawer v-model="drawerOpend">
+    <q-layout-drawer v-model="drawerOpened">
       <q-card color="primary" flat v-if="user" class="auth-card">
         <q-card-title>
           {{ user.displayName }}
           <span slot="subtitle">{{ user.email }}</span>
         </q-card-title>
         <q-card-separator/>
-        <q-card-actions align="end">
-          <q-btn small round flat>
-            <q-icon name="person"/>
-          </q-btn>
-          <q-btn small round flat @click="_onSignOutClick()">
-            <q-icon name="exit_to_app"/>
-          </q-btn>
+        <q-card-actions align="between">
+          <router-link to="/">
+            <q-btn small round flat icon="home"/>
+          </router-link>
+          <div>
+            <router-link to="/my">
+              <q-btn small round flat icon="person"/>
+            </router-link>
+            <q-btn small round flat icon="exit_to_app" @click="_onSignOutClick()"/>
+          </div>
         </q-card-actions>
       </q-card>
 
@@ -72,13 +75,13 @@
     },
     data () {
       return {
-        drawerOpend: this.$q.platform.desktop,
+        drawerOpened: this.$q.platform.is.desktop,
         paddingBottom: 0
       }
     },
     methods: {
       _toggle () {
-        this.drawerOpend = !this.drawerOpend
+        this.drawerOpened = !this.drawerOpened
       },
       _onSignOutClick () {
         this.$alert.confirm('로그아웃 하시겠습니까?').then((ok) => {

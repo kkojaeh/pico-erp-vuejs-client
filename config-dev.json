@@ -5,7 +5,8 @@
     "databaseURL": "https://pico-erp-dev.firebaseio.com",
     "projectId": "pico-erp-dev",
     "storageBucket": "pico-erp-dev.appspot.com",
-    "messagingSenderId": "211743559657"
+    "messagingSenderId": "211743559657",
+    "persistence": "session"
   },
   "api": {
     "baseUrl": "https://api-dev.acepk.biz/",

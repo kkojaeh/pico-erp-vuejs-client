@@ -47,19 +47,19 @@
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
-        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
+        <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating">이력
+               v-show="!creating" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/department/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" @click="_onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
