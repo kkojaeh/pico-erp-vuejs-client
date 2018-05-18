@@ -121,6 +121,7 @@
     DepartmentExportOptions,
     DepartmentImportOptions,
     DepartmentModel} from 'src/model/user'
+  import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
     data () {
@@ -169,6 +170,8 @@
         DepartmentModel.exportAsXlsx(this.exportOptions)
       }
     },
-    computed: {}
+    computed: {
+      'uppy-uploader': UppyUploader
+    }
   }
 </script>

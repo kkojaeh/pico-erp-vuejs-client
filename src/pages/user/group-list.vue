@@ -107,6 +107,7 @@
     GroupImportOptions,
     GroupModel
   } from 'src/model/user'
+  import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
     data () {
@@ -152,6 +153,8 @@
       }
     },
 
-    components: {}
+    components: {
+      'uppy-uploader': UppyUploader
+    }
   }
 </script>
