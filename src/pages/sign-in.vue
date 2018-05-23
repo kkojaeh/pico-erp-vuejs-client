@@ -111,7 +111,7 @@
             model: this.form.email,
             type: 'text'
           }
-        });
+        })
         if (result && !validate.single(result, {email: true})) {
           try {
             await this.$auth.resetPassword(result)

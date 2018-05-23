@@ -69,9 +69,7 @@
         viewers: []
       }
     },
-    watch: {
-
-    },
+    watch: {},
     computed: {
       restrictions () {
         return {
@@ -126,7 +124,6 @@
         const uppy = this.$refs.uppy
         return await uppy.upload()
       }
-
 
     },
 

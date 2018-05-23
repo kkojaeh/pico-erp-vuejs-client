@@ -19,13 +19,13 @@ export default ({app, router, Vue}) => {
       skipLabel: '넘기기'
     })
     _.forIn(related, (value, key) => {
-      if(_.isFunction(value.start)){
+      if (_.isFunction(value.start)) {
         value.start()
       }
     })
     intro.onexit(() => {
       _.forIn(related, (value, key) => {
-        if(_.isFunction(value.exit)){
+        if (_.isFunction(value.exit)) {
           value.exit()
         }
       })

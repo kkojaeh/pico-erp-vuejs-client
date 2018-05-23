@@ -1,8 +1,8 @@
 import VueAnalytics from 'vue-ua'
 import Router from 'src/router'
-import {googleAnalytics, version} from 'src/plugins/config'
+import { googleAnalytics, version } from 'src/plugins/config'
 
-export default ({ app, router, Vue }) => {
+export default ({app, router, Vue}) => {
   Vue.use(VueAnalytics, {
     appName: googleAnalytics.appName,
     appVersion: version,

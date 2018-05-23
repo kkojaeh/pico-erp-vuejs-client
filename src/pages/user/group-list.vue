@@ -102,11 +102,7 @@
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { GroupArray,
-    GroupExportOptions,
-    GroupImportOptions,
-    GroupModel
-  } from 'src/model/user'
+  import { GroupArray, GroupExportOptions, GroupImportOptions, GroupModel } from 'src/model/user'
   import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {

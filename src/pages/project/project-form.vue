@@ -42,7 +42,7 @@
         <q-field icon="attachment" helper="프로젝트 관련 첨부파일 입니다"
                  class="col-xs-12 col-md-12 col-xl-12">
           <c-attachment ref="attachment" v-model="model.attachmentId" category="project"
-                        multiple ></c-attachment>
+                        multiple></c-attachment>
         </q-field>
 
       </q-card-main>

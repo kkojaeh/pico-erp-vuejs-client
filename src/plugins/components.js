@@ -5,7 +5,6 @@ import 'ag-grid/dist/styles/ag-theme-material.css'
 // import 'ag-grid/dist/styles/ag-theme-balham.css'
 import 'viewerjs/dist/viewer.min.css'
 
-
 import AgGrid from 'src/components/ag-grid/ag-grid.vue'
 import AgGridColumn from 'src/components/ag-grid/ag-grid-column.vue'
 import ListFilterLabel from 'src/components/list/list-filter-label.vue'

@@ -222,7 +222,7 @@
       ...mapGetters([])
     },
     watch: {
-      roleFilter(){
+      roleFilter () {
         const grid = this.$refs.roleGrid
         grid.api.setQuickFilter(this.roleFilter)
       },

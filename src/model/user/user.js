@@ -18,17 +18,17 @@ export class UserExportOptions {
 
 export class UserModel extends Model {
 
-  get defaults () {
-    return {
-      enabled: true
-    }
-  }
-
   static get importByXlsxUrl () {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
       + store.getters['auth/token']
     return `${host}/user/import/users/xlsx?${authQs}`
+  }
+
+  get defaults () {
+    return {
+      enabled: true
+    }
   }
 
   static exportAsXlsx (options) {

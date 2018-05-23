@@ -153,7 +153,7 @@
         return await this.$refs.attachment.save()
       }
     },
-    mounted() {
+    mounted () {
       this.model = this.value
     }
 

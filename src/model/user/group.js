@@ -18,15 +18,15 @@ export class GroupExportOptions {
 
 export class GroupModel extends Model {
 
-  get defaults () {
-    return {}
-  }
-
   static get importByXlsxUrl () {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
       + store.getters['auth/token']
     return `${host}/user/import/groups/xlsx?${authQs}`
+  }
+
+  get defaults () {
+    return {}
   }
 
   static exportAsXlsx (options) {

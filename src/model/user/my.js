@@ -1,7 +1,6 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
+import { FetchableArray } from 'src/model/array'
+import { Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
-import { UserModel } from './user'
 
 export class MyMenuArray extends FetchableArray {
   url = '/user/me/menus'
@@ -27,7 +26,7 @@ export class PasswordChangeModel extends Model {
       confirmPassword: {
         presence: true,
         length: {minimum: 2, maximum: 20},
-        equality: "newPassword"
+        equality: 'newPassword'
       },
       newPassword: {
         presence: true,

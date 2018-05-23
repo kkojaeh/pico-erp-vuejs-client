@@ -2,7 +2,7 @@ import firebase from 'firebase'
 import * as _ from 'lodash'
 import store from 'src/store'
 import { Loading } from 'quasar'
-import {firebaseConfig} from 'src/plugins/config'
+import { firebaseConfig } from 'src/plugins/config'
 import qs from 'qs'
 
 let firebaseApp
@@ -47,11 +47,11 @@ export function init () {
   })
 }
 
-export async function resetPassword(email){
+export async function resetPassword (email) {
   return await firebase.auth().sendPasswordResetEmail(email, {})
 }
 
-export async function verifyAndConfirmPasswordReset(password){
+export async function verifyAndConfirmPasswordReset (password) {
   const actionCode = qs.parse(location.search).oobCode
   await firebaseApp.auth().verifyPasswordResetCode(actionCode)
   await firebaseApp.auth().confirmPasswordReset(actionCode, password)

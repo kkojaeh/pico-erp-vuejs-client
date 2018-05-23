@@ -1,6 +1,5 @@
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
-import { ItemModel } from './item'
 
 export class ItemSpecModel extends Model {
 
@@ -14,7 +13,8 @@ export class ItemSpecModel extends Model {
     if (!id) {
       return new ItemSpecModel()
     }
-    const response = await api.get(`/item/specs/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/item/specs/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemSpecModel(response.data)
   }
 

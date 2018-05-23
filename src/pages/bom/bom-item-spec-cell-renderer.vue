@@ -21,9 +21,9 @@
       form () {
         return this.params.form
       },
-      value() {
+      value () {
         const itemSpec = this.params.data.itemSpec
-        if(itemSpec){
+        if (itemSpec) {
           return itemSpec.summary
         }
       }

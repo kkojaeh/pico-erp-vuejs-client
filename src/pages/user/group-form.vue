@@ -205,8 +205,8 @@
       ...mapGetters([])
     },
     watch: {
-      'groupUser.userId': async function(to) {
-        if(to) {
+      'groupUser.userId': async function (to) {
+        if (to) {
           this.groupUser.groupId = this.model.id
           try {
             await this.groupUser.add()

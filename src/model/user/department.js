@@ -4,7 +4,6 @@ import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
 import qs from 'qs'
 import store from '../../store'
-import { UserModel } from './user'
 
 export class DepartmentImportOptions {
 
@@ -20,17 +19,17 @@ export class DepartmentExportOptions {
 
 export class DepartmentModel extends Model {
 
-  get defaults () {
-    return {
-      customerManagerContact: {}
-    }
-  }
-
   static get importByXlsxUrl () {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
       + store.getters['auth/token']
     return `${host}/user/import/departments/xlsx?${authQs}`
+  }
+
+  get defaults () {
+    return {
+      customerManagerContact: {}
+    }
   }
 
   static exportAsXlsx (options) {
@@ -49,7 +48,8 @@ export class DepartmentModel extends Model {
     if (!id) {
       return new DepartmentModel()
     }
-    const response = await api.get(`/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    const response = await api.get(
+      `/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new DepartmentModel(response.data)
   }
 

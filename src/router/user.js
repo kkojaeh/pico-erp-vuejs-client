@@ -124,7 +124,7 @@ export default [{
       }
     }
   }]
-},{
+}, {
   name: 'my-form',
   path: '/my',
   component: () => import('pages/user/my-form'),

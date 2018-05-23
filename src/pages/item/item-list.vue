@@ -14,7 +14,8 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
-        <router-link :to="{ path: '/item/create', query: $route.query}" v-if="$authorized.itemManager">
+        <router-link :to="{ path: '/item/create', query: $route.query}"
+                     v-if="$authorized.itemManager">
           <q-btn flat icon="add">생성</q-btn>
         </router-link>
       </div>

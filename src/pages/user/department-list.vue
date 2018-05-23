@@ -117,10 +117,13 @@
 <script>
   import { DataAdjuster } from 'src/model/data'
   import { mapGetters } from 'vuex'
-  import { DepartmentPaginationArray, UserLabelArray,
+  import {
     DepartmentExportOptions,
     DepartmentImportOptions,
-    DepartmentModel} from 'src/model/user'
+    DepartmentModel,
+    DepartmentPaginationArray,
+    UserLabelArray
+  } from 'src/model/user'
   import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
@@ -170,7 +173,8 @@
         DepartmentModel.exportAsXlsx(this.exportOptions)
       }
     },
-    computed: {
+    computed: {},
+    components: {
       'uppy-uploader': UppyUploader
     }
   }

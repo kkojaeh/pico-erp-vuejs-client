@@ -1,4 +1,4 @@
-import Quasar, { Notify } from 'quasar'
+import { Notify } from 'quasar'
 import VueClipboard from 'vue-clipboard2'
 
 const clipboardSuccess = (event) => {
@@ -21,7 +21,7 @@ const clipboardError = (event) => {
   })
 }
 
-export default ({ app, router, Vue }) => {
+export default ({app, router, Vue}) => {
   Vue.use(VueClipboard)
 
   Vue.directive('clipboard-notify', {

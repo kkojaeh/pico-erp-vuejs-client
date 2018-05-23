@@ -35,7 +35,8 @@
                         :cell-renderer-params="{path:'/process-type/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="infoTypeName" header-name="분류" :width="150"/>
-        <ag-grid-column field="baseUnitCost" header-name="기준단가" :width="100" :cell-style="{textAlign: 'right'}"/>
+        <ag-grid-column field="baseUnitCost" header-name="기준단가" :width="100"
+                        :cell-style="{textAlign: 'right'}"/>
 
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
         <ag-grid-column field="createdDate" header-name="생성시간" :width="150"

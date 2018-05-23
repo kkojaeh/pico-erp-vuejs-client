@@ -1,7 +1,4 @@
-import { FetchableArray } from 'src/model/array'
-import { Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { MyModel, MyMenuArray } from 'src/model/user'
+import { MyMenuArray, MyModel } from 'src/model/user'
 
 export const signIn = async (context, user) => {
   if (user) {

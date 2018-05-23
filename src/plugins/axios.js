@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 import { Loading, Notify } from 'quasar'
 import { init } from './auth'
 import store from 'src/store'
-import {apiBaseUrl, apiContentType} from 'src/plugins/config'
+import { apiBaseUrl, apiContentType } from 'src/plugins/config'
 import Vue from 'vue'
 
 let apiRequests = 0
@@ -30,7 +30,7 @@ let loadFunction = (config) => {
   Vue.analytics.trackEvent('api-' + config.method,
     qi > -1 ? url.substr(0, qi) : url,
     qi > -1 ? url.substr(qi + 1) : null
-    )
+  )
   return config
 }
 

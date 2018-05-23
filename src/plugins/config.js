@@ -11,7 +11,7 @@ export const googleAnalytics = config.googleAnalytics
 
 export const version = config.version
 
-export default ({ app, router, Vue }) => {
+export default ({app, router, Vue}) => {
 
   Vue.prototype.$version = version
 
