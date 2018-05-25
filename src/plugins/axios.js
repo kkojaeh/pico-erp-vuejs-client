@@ -30,10 +30,12 @@ let loadFunction = (config) => {
   apiRequests++
   const url = config.url
   const qi = url.lastIndexOf('?')
-  Vue.analytics.trackEvent('api-' + config.method,
-    qi > -1 ? url.substr(0, qi) : url,
-    qi > -1 ? url.substr(qi + 1) : null
-  )
+  if (Vue.analytics) {
+    Vue.analytics.trackEvent('api-' + config.method,
+      qi > -1 ? url.substr(0, qi) : url,
+      qi > -1 ? url.substr(qi + 1) : null
+    )
+  }
   return config
 }
 
@@ -107,7 +109,7 @@ let errorHandler = (error) => {
 
 let errorFunction = (error) => {
   Loading.hide()
-  if (!error.config.preventDefault) {
+  if (error.config && !error.config.preventDefault) {
     errorHandler(error)
   } else {
     error.resumePreventDefault = _.bind(errorHandler, null, error)
