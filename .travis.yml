@@ -31,8 +31,22 @@ before_install:
 
 before_script:
   - npm install
-  - if [ "$TRAVIS_BRANCH" = "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_PRD; export APP_PROFILE=prd; fi
-  - if [ "$TRAVIS_BRANCH" != "$TRAVIS_TAG" ]; then export API_SERVER_URL=$API_SERVER_URL_DEV; export APP_PROFILE=dev; fi
+  - if [ "$TRAVIS_BRANCH" = "$TRAVIS_TAG" ];
+    then
+      export API_BASE_URL=$API_BASE_URL_PRD;
+      export FIREBASE_API_KEY=$FIREBASE_API_KEY_PRD;
+      export GOOGLE_ANALYTICS_APP_NAME=$GOOGLE_ANALYTICS_APP_NAME_PRD;
+      export GOOGLE_ANALYTICS_TRACKING_ID=$GOOGLE_ANALYTICS_TRACKING_ID_PRD;
+      export RAVEN_URL=$RAVEN_URL_PRD;
+    fi
+  - if [ "$TRAVIS_BRANCH" != "$TRAVIS_TAG" ];
+    then
+      export API_BASE_URL=$API_BASE_URL_DEV;
+      export FIREBASE_API_KEY=$FIREBASE_API_KEY_DEV;
+      export GOOGLE_ANALYTICS_APP_NAME=$GOOGLE_ANALYTICS_APP_NAME_DEV;
+      export GOOGLE_ANALYTICS_TRACKING_ID=$GOOGLE_ANALYTICS_TRACKING_ID_DEV;
+      export RAVEN_URL=$RAVEN_URL_DEV;
+    fi
 
 script:
   - quasar build

@@ -2,13 +2,17 @@ import firebase from 'firebase'
 import * as _ from 'lodash'
 import store from 'src/store'
 import { Loading } from 'quasar'
-import { firebaseConfig } from 'src/plugins/config'
 import qs from 'qs'
+
+const firebaseApiKey = document.querySelector(
+  'meta[name=firebase-api-key]').content
+const firebasePersistence = document.querySelector(
+  'meta[name=firebase-persistence]').content
 
 let firebaseApp
 
 export async function signIn (email, password) {
-  await firebase.auth().setPersistence(firebaseConfig.persistence)
+  await firebase.auth().setPersistence(firebasePersistence)
   return await firebase.auth().signInWithEmailAndPassword(email, password)
 }
 
@@ -24,7 +28,9 @@ export function init () {
   })
   return new Promise((resolve, reject) => {
     if (!firebaseApp) {
-      firebaseApp = firebase.initializeApp(firebaseConfig)
+      firebaseApp = firebase.initializeApp({
+        apiKey: firebaseApiKey
+      })
       firebase.auth().useDeviceLanguage()
     }
     firebase.auth().onAuthStateChanged((user) => {

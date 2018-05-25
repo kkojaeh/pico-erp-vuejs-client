@@ -76,7 +76,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label.sync="managerModel.name" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabels"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">

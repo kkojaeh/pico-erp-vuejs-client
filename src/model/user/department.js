@@ -1,5 +1,5 @@
 import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
+import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
 import qs from 'qs'
@@ -58,7 +58,6 @@ export class DepartmentModel extends Model {
   }
 
   async create () {
-    this.id = uuid()
     const response = await api.post('/user/departments', this)
     this.assign(response.data)
   }
@@ -73,7 +72,7 @@ export class DepartmentModel extends Model {
         presence: true,
         length: {minimum: 2, maximum: 50},
         format: {
-          pattern: '\\w',
+          pattern: '\\w+',
           message: languageAliases({
             ko: '형식이 틀립니다(영문 및 숫자 _ 만 사용가능합니다)'
           })[language]
@@ -85,8 +84,7 @@ export class DepartmentModel extends Model {
           if (state !== 'create') {
             return
           }
-          let result = await DepartmentModel.exists(value)
-          return result
+          return await DepartmentModel.exists(value)
         }
       },
       name: {

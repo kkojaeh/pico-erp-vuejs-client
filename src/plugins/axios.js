@@ -3,8 +3,11 @@ import * as _ from 'lodash'
 import { Loading, Notify } from 'quasar'
 import { init } from './auth'
 import store from 'src/store'
-import { apiBaseUrl, apiContentType } from 'src/plugins/config'
 import Vue from 'vue'
+
+const apiBaseUrl = document.querySelector('meta[name=api-base-url]').content
+const apiContentType = document.querySelector(
+  'meta[name=api-content-type]').content
 
 let apiRequests = 0
 
@@ -47,19 +50,23 @@ let finishFunction = (response) => {
   return response
 }
 
+const authRefresher = _.debounce(() => {
+  init().then(() => {
+    Notify.create({
+      icon: 'warning',
+      position: 'top-right',
+      message: '인증을 갱신하였습니다',
+      timeout: 3000,
+      detail: '다시 시도 하세요'
+    })
+  })
+}, 500)
+
 let statusHandlers = {
   '401': (error) => {
     let message = error.response.data.message.toLowerCase()
     if (message.indexOf('verify') > -1 && message.indexOf('token') > -1) {
-      init().then(() => {
-        Notify.create({
-          icon: 'warning',
-          position: 'top-right',
-          message: '인증을 갱신하였습니다',
-          timeout: 3000,
-          detail: '다시 시도 하세요'
-        })
-      })
+      authRefresher()
       return true
     }
   },

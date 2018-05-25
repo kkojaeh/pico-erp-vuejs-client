@@ -51,7 +51,7 @@
                  :error-label="model.$errors.categoryId">
 
           <c-autocomplete-select float-label="분류" v-model="model.categoryId"
-                                 :label.sync="categoryModel.name" :options="categoryLabels"
+                                 :label="categoryModel.name" :options="categoryLabels"
                                  label-field="label" value-field="value"
                                  @search="onCategorySearch">
             <template slot="option" slot-scope="option">
@@ -87,7 +87,7 @@
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.baseUnitCost"
                  :error-label="model.$errors.baseUnitCost">
-          <q-input type="number" label="기준 금액" v-model="model.baseUnitCost" align="right"/>
+          <q-input type="number" float-label="재료비" v-model="model.baseUnitCost" align="right"/>
           <q-tooltip>
             {{$number.words(model.baseUnitCost)}}
           </q-tooltip>
@@ -249,6 +249,10 @@
       closable: {
         type: Boolean,
         default: false
+      },
+      predefined: {
+        type: Object,
+        default: () => {}
       }
     },
     authorized: {
@@ -299,6 +303,9 @@
       async create () {
         this.creating = true
         this.model = new ItemModel()
+        _.forIn(this.predefined, (value, key) => {
+          this.model[key] = value
+        })
       },
       async show () {
         this.creating = false

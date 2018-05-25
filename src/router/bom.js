@@ -28,7 +28,7 @@ export default [{
     meta,
     props: (route) => {
       return {
-        id: route.params.id,
+        bomId: route.params.id,
         closable: true
       }
     }

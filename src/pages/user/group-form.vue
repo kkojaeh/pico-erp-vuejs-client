@@ -60,7 +60,7 @@
                                  label-field="label" value-field="value"
                                  @search="_onUserSearch">
             <template slot="option" slot-scope="option">
-              {{option.label}}1<br>
+              {{option.label}}<br>
               {{option.stamp}} - {{option.subLabel}}
             </template>
           </c-autocomplete-select>
@@ -160,8 +160,20 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            this.id = this.model.id
-            this.show()
+            if (this.closable) {
+              if (this.creating) {
+                const ok = await this.$alert.confirm('현재 화면을 닫으시겠습니까?')
+                if (ok) {
+                  this.$closeOverlay()
+                } else {
+                  this.$router.push({
+                    path: `/group/show/${this.model.id}`, query: this.$route.query
+                  })
+                }
+              } else {
+                this.$closeOverlay()
+              }
+            }
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')

@@ -31,7 +31,7 @@
                  :error="!!model.$errors.infoTypeId"
                  :error-label="model.$errors.infoTypeId">
           <c-autocomplete-select float-label="분류" v-model="model.infoTypeId"
-                                 :label.sync="model.infoTypeName" :options="infoTypeLabels"
+                                 :label="infoTypeModel.name" :options="infoTypeLabels"
                                  label-field="label" value-field="value"
                                  @search="onProcessInfoTypeSearch">
             <template slot="option" slot-scope="option">
@@ -213,7 +213,8 @@
   import {
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
-    ProcessTypeModel
+    ProcessTypeModel,
+    ProcessInfoTypeModel
   } from 'src/model/process'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import * as _ from 'lodash'
@@ -236,6 +237,7 @@
         model: new ProcessTypeModel(),
         infoTypeLabels: new ProcessInfoTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
+        infoTypeModel: new ProcessInfoTypeModel(),
         creating: false
       }
     },
@@ -294,6 +296,11 @@
           sum += value
         })
         return sum
+      }
+    },
+    watch: {
+      'model.infoTypeId': async function (to) {
+        this.infoTypeModel = await ProcessInfoTypeModel.get(to, true)
       }
     },
     components: {

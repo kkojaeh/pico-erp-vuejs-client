@@ -45,9 +45,6 @@ store,
 
 const plugins = []
 
-import pluginConfig from 'src/plugins/config'
-plugins.push(pluginConfig)
-
 import pluginAxios from 'src/plugins/axios'
 plugins.push(pluginAxios)
 

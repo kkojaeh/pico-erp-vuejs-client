@@ -298,10 +298,17 @@
                               :tooltip="tooltipNumberToWords"/>
 
 
-              <ag-grid-column field="description" header-name="비고" :width="200"
+              <ag-grid-column field="remark" header-name="비고" :width="200"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 50 }"
                               :editable="isModifiable"/>
+
+              <ag-grid-column field="@type" header-name="BOM" :width="80"
+                              cell-renderer-framework="ag-grid-icon-renderer"
+                              :cell-renderer-params="{ icon: 'fa-sitemap', link: true, handler: onOpenBomClicked}"
+                              :hide="!isModifiable"/>
+
+
             </ag-grid>
 
           </q-card-main>
@@ -437,12 +444,18 @@
     </q-page-sticky>
 
     <q-modal ref="itemFormModal">
-      <item-form ref="itemForm" action="create" closable></item-form>
+      <item-form ref="itemForm" action="create" closable
+                 :predefined="{customerId: model.customerId}"></item-form>
     </q-modal>
 
     <q-modal ref="itemSelectorModal" content-classes="column">
       <item-selector ref="itemSelector"></item-selector>
     </q-modal>
+
+    <q-modal ref="bomFormModal" maximized>
+      <bom-form ref="bomForm" closable></bom-form>
+    </q-modal>
+
 
   </q-page>
 
@@ -462,6 +475,7 @@
   import { UserLabelArray, UserModel } from 'src/model/user'
   import ItemSelector from 'src/pages/item/item-selector.vue'
   import ItemForm from 'src/pages/item/item-form.vue'
+  import BomForm from 'src/pages/bom/bom-form.vue'
   import QuotationBomRenderer from './quotation-bom-renderer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import * as _ from 'lodash'
@@ -511,6 +525,16 @@
       }
     },
     methods: {
+      onOpenBomClicked (data) {
+        const modal = this.$refs.bomFormModal
+        const form = this.$refs.bomForm
+        modal.show()
+        form.show(data.bomId)
+        modal.$once('hide', () => {
+          form.$off('saved')
+          this.load()
+        })
+      },
       onItemSelectionChanged (event) {
         this.selectedItem = event.api.getSelectedRows()[0]
       },
@@ -601,13 +625,13 @@
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
               if (this.creating) {
-                const ok = await this.$alert.confirm('계속 편집 하시겠습니까?')
+                const ok = await this.$alert.confirm('현재 화면을 닫으시겠습니까?')
                 if (ok) {
+                  this.$closeOverlay()
+                } else {
                   this.$router.push({
                     path: `/quotation/show/${this.model.id}`, query: this.$route.query
                   })
-                } else {
-                  this.$closeOverlay()
                 }
               } else {
                 this.$closeOverlay()
@@ -639,6 +663,7 @@
         modal.$once('hide', () => {
           form.$off('saved')
         })
+        form.create()
         form.$once('saved', async (itemModel) => {
           modal.hide()
           const bom = await BomModel.createByItemId(itemModel.id)
@@ -804,7 +829,8 @@
       ItemSelector,
       ItemForm,
       CommentList,
-      QuotationBomRenderer
+      QuotationBomRenderer,
+      BomForm
     }
   }
 </script>

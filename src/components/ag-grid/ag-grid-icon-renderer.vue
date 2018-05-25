@@ -1,6 +1,9 @@
 <template>
-  <q-icon :name="icon" size="1.5rem" v-if="icon" @click.native="_onIconClick"
-          :class="[link ? 'link' : '' ]"/>
+  <div class="row justify-center items-center fit">
+    <q-icon :name="icon" size="1.5rem" v-if="icon" @click.native="_onIconClick"
+            :class="[link ? 'link' : '' ]"/>
+  </div>
+
 </template>
 
 <script>

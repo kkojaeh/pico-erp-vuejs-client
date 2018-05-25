@@ -55,8 +55,13 @@ moment.locale(languageAliases({
   'ko': 'ko'
 })[language])
 
+const appVersion = document.querySelector('meta[name=app-version]').content
+
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
+
+  Vue.prototype.$version = appVersion
+
   Vue.component('c-autocomplete-select', AutocompleteSelect)
 
   Vue.component('c-list-filter-label', ListFilterLabel)

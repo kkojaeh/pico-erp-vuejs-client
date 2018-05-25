@@ -31,7 +31,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label.sync="model.managerName" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabels"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -68,7 +68,7 @@
 
 </template>
 <script>
-  import { DepartmentModel, UserLabelArray } from 'src/model/user'
+  import { DepartmentModel, UserLabelArray, UserModel } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -88,6 +88,7 @@
       return {
         model: new DepartmentModel(),
         userLabels: new UserLabelArray(),
+        managerModel: new UserModel(),
         creating: false
       }
     },
@@ -135,6 +136,11 @@
       }
     },
     computed: {},
+    watch: {
+      'model.managerId': async function (to) {
+        this.managerModel = await UserModel.get(to, true)
+      }
+    },
     components: {
       AuditViewer
     }

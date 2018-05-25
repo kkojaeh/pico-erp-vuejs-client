@@ -4,21 +4,15 @@ var fs = require('fs');
 
 
 module.exports = function (ctx) {
-
-  const profile = process.env.APP_PROFILE || 'dev'
-  // ctx.dev 개발 여부
-  const cfgFileName =`config-${profile}.json`
-  const cfg = JSON.parse(fs.readFileSync(cfgFileName, 'utf8'))
-  cfg.api.baseUrl = process.env.API_BASE_URL || cfg.api.baseUrl
-  cfg.version = this.pkg.version
-  const env = {};
-  env.APP_CONFIG = encodeURIComponent(JSON.stringify(cfg))
+  const env = {
+    APP_VERSION: this.pkg.version
+  }
+  Object.assign(env, process.env)
   for(var key in env){
     env[key] = '"' + env[key] + '"'
   }
   return {
     plugins: [
-      'config',
       'axios',
       'alert',
       'auth',

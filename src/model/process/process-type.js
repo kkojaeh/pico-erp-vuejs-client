@@ -61,8 +61,7 @@ export class ProcessTypeModel extends Model {
           if (state !== 'create') {
             return
           }
-          let result = await ProcessTypeModel.exists()
-          return result
+          return await ProcessTypeModel.exists(value)
         }
       },
       name: {

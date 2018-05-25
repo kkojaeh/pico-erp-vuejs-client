@@ -19,7 +19,8 @@
           </q-item>
         </q-list>
       </q-btn-dropdown>
-      <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"></q-btn>
+      <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
+             @click="removeMaterial()"></q-btn>
     </q-toolbar>
 
     <ag-grid ref="grid"
@@ -145,7 +146,7 @@
 
   export default {
     props: {
-      id: {
+      bomId: {
         type: String
       },
       closable: {
@@ -155,6 +156,7 @@
     },
     data () {
       return {
+        id: null,
         array: [],
         model: new BomModel(),
         selected: new BomModel({isNull: true}),
@@ -230,8 +232,11 @@
           event.node.setSelected(true, true)
         }
       },
-      async show () {
-        this.load()
+      async show (id) {
+        this.id = id || this.bomId
+        if (this.id) {
+          this.load()
+        }
       },
       async load () {
         const grid = this.$refs.grid
@@ -296,6 +301,15 @@
           this.$alert.warning(this.selected.$errors.determine)
         }
       },
+
+      async removeMaterial () {
+        const ok = await this.$alert.confirm('상위 품목에서 해당 자재를 삭제하시겠습니까?')
+        if (ok) {
+          await this.selected.parent.removeMaterial(this.selected)
+          this.$alert.positive('자재가 삭제 되었습니다')
+          this.load()
+        }
+      },
       /**
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
@@ -304,13 +318,14 @@
         const modal = this.$refs.itemFormModal
         const form = this.$refs.itemForm
         modal.show()
+        form.create()
         modal.$once('hide', () => {
           form.$off('saved')
         })
         form.$once('saved', async (itemModel) => {
           modal.hide()
           const material = await BomModel.createByItemId(itemModel.id)
-          selected.addMaterial(material)
+          await selected.addMaterial(material)
           this.load()
         })
       },
@@ -325,18 +340,20 @@
         })
         selector.$once('selected', async (itemModels) => {
           modal.hide()
-          itemModels.forEach(async (itemModel) => {
-            const itemId = itemModel.id
-            const exists = await BomModel.existsByItemId(itemId)
-            let material
-            if (exists) {
-              material = await BomModel.getByItemId(itemId)
-            } else {
-              material = await BomModel.createByItemId(itemModel.id)
-            }
-            await selected.addMaterial(material)
-          })
-          this.load()
+          await Promise.all(
+            itemModels.map(async (itemModel) => {
+              const itemId = itemModel.id
+              const exists = await BomModel.existsByItemId(itemId)
+              let material
+              if (exists) {
+                material = await BomModel.getByItemId(itemId)
+              } else {
+                material = await BomModel.createByItemId(itemModel.id)
+              }
+              await selected.addMaterial(material)
+            })
+          )
+          await this.load()
         })
       },
 
