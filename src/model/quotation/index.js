@@ -353,3 +353,14 @@ export class QuotationExpiryPolicyArray extends FetchableArray {
   url = '/quotation/expiry-policy-labels'
   axios = api
 }
+
+export class QuotationStatusCountPerMonthAggregateOptions {
+
+  year = new Date().getFullYear()
+
+}
+
+export class QuotationStatusCountPerMonthAggregateArray extends FetchableArray {
+  url = '/quotation/aggregate/statuses/count/month?${$QS}'
+  axios = api
+}
