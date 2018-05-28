@@ -1,5 +1,6 @@
 import VueAnalytics from 'vue-ua'
 import Router from 'src/router'
+import store from 'src/store'
 
 const appName = document.querySelector(
   'meta[name=google-analytics-app-name]').content
@@ -22,6 +23,12 @@ export default ({app, router, Vue}) => {
       ignoredViews: [],
       // Whether you want page changes to be recorded as pageviews (website) or screenviews (app), default: false
       trackPage: true
+    })
+    store.subscribe((mutation) => {
+      if (mutation.type == 'auth/user') {
+        window.ga('set', 'userId',
+          mutation.payload ? mutation.payload.email : null)
+      }
     })
   }
 }

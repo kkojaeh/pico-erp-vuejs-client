@@ -23,7 +23,8 @@ module.exports = function (ctx) {
       'close-overlay',
       'clipboard',
       'intro',
-      'google-analytics'
+      'google-analytics',
+      'raven'
     ],
     css: [
       'app.styl'
