@@ -128,6 +128,9 @@
   import { ItemLabelArray } from 'src/model/item'
 
   export default {
+    authorized: {
+      'processManager': 'hasRole(\'PROCESS_MANAGER\')'
+    },
     data () {
       return {
         array: new ProcessPaginationArray(),

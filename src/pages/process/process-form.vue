@@ -112,7 +112,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <comment-list class="col-xs-12 col-md-11 col-xl-11 no-border" :readonly="!isModifiable"
+        <comment-list class="col-xs-12 col-md-11 col-xl-11 no-border" :readonly="!isCommentable"
                       subject-type="process" :subject="model.commentSubjectId"></comment-list>
 
       </q-card-main>
@@ -145,6 +145,9 @@
   import CommentList from 'src/pages/comment/comment-list.vue'
 
   export default {
+    authorized: {
+      'processManager': 'hasRole(\'PROCESS_MANAGER\')'
+    },
     props: {
       action: {
         type: String
@@ -238,6 +241,9 @@
     },
     computed: {
       isModifiable () {
+        return this.$authorized.processManager && !this.model.deleted
+      },
+      isCommentable () {
         return !this.model.deleted
       }
     },

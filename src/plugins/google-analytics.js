@@ -6,11 +6,13 @@ const appName = document.querySelector(
 const trackingId = document.querySelector(
   'meta[name=google-analytics-tracking-id]').content
 
+const appVersion = document.querySelector('meta[name=app-version]').content
+
 export default ({app, router, Vue}) => {
   if (appName && trackingId) {
     Vue.use(VueAnalytics, {
       appName: appName,
-      appVersion: version,
+      appVersion: appVersion,
       trackingId: trackingId,
       // Whether or not display console logs debugs (optional)
       debug: false,
