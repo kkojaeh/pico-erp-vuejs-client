@@ -46,7 +46,8 @@ const Router = new VueRouter({
           component: () => import('pages/index'),
           meta: {
             title: 'Index',
-            authorize: 'isAuthenticated()'
+            authorize: 'isAuthenticated()',
+            helpLink: 'https://kkojaeh.github.io/pico-erp-docs/#/guide/'
           }
         },
         ...userRoutes,
