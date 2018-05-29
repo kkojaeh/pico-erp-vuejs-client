@@ -3,7 +3,7 @@ import { wrapModal } from './default'
 let meta = {
   title: '견적 관리',
   authorize: 'hasRole(\'QUOTATION_MANAGER\')',
-  helpLink: 'https://kkojaeh.github.io/pico-erp-server/#/guide/quotation/'
+  helpLink: 'https://kkojaeh.github.io/pico-erp-docs/#/guide/quotation/'
 }
 
 export default [{
