@@ -45,7 +45,9 @@
     },
     methods: {
       _onResize (size) {
-        this.chart.setSize(size.width, size.height)
+        if (this.chart) {
+          this.chart.setSize(size.width, size.height)
+        }
       },
       createChart () {
         const series = this.statusLabels.map(status => {
