@@ -55,7 +55,7 @@
       <q-tab-pane :disabled="creating" name="tab-2" class="column no-border"
                   style="height:400px;">
         <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="row">
-          <c-autocomplete-select float-label="담당자" v-model="groupUser.userId"
+          <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUser.userId"
                                  :options="userLabels"
                                  label-field="label" value-field="value"
                                  @search="_onUserSearch">
@@ -223,6 +223,8 @@
           try {
             await this.groupUser.add()
             await this.fetchUsers()
+            this.groupUser.userId = null
+            this.$refs.groupUser.focus()
           } finally {
             this.groupUser.userId = null
           }
