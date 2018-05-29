@@ -22,7 +22,9 @@
       },
       afterGuiAttached () {
         this.$nextTick(() => {
-          this.$refs.checkbox.focus()
+          if (this.$refs.checkbox) {
+            this.$refs.checkbox.focus()
+          }
         })
       }
     },
