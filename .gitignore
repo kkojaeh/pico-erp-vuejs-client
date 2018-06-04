@@ -4,5 +4,6 @@
 node_modules/
 dist/
 npm-debug.log*
-cordova/platforms
-cordova/plugins
+src-cordova/platforms
+src-cordova/plugins
+src-cordova/node_modules

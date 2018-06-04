@@ -11,7 +11,7 @@ export ANDROID_HOME="$HOME/Library/Android/sdk"
 PATH=$PATH:$ANDROID_HOME/tools;PATH=$PATH:$ANDROID_HOME/platform-tools
 npm install
 quasar wrap cordova
-cd cordova
+cd src-cordova
 ln -s www ../dist
 cordova plugin add cordova-plugin-crosswalk-webview
 cordova plugin add phonegap-nfc

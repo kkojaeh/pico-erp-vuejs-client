@@ -12,8 +12,11 @@
                             padding: 20
                           }"/>
       <ag-grid-column field="item.code" header-name="코드" :width="150"
-                      :cell-renderer="createCellRenderer('item.externalCode')"/>
-      <ag-grid-column field="process.name" header-name="공정" :width="100"/>
+                      cell-renderer-framework="ag-grid-router-link-renderer"
+                      :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
+      <ag-grid-column field="process.name" header-name="공정" :width="160"
+                      cell-renderer-framework="ag-grid-router-link-renderer"
+                      :cell-renderer-params="{path:'/process/show/${process.id}'}"/>
       <ag-grid-column field="itemSpec.summary" header-name="스펙" :width="160"/>
       <ag-grid-column field="quantity" header-name="수량" :width="100"
                       :cell-renderer="quantityCellRenderer" :tooltip="tooltipReversedQuantity"

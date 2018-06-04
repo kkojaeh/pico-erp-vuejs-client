@@ -5,7 +5,7 @@
     <q-tabs class="col-12" inverted v-model="tab">
       <q-tab default slot="title" name="info" icon="info">견적 정보</q-tab>
       <q-tab :disable="creating" slot="title" name="item" icon="view_list">견적 품목</q-tab>
-      <q-tab-pane name="info" class="column no-border">
+      <q-tab-pane name="info" class="column no-border" keep-alive>
         <q-card class="col-12" flat>
 
           <q-card-title>
@@ -180,7 +180,7 @@
         </q-card>
 
       </q-tab-pane>
-      <q-tab-pane :disabled="creating" name="item" class="column no-border">
+      <q-tab-pane :disabled="creating" name="item" class="column no-border" keep-alive>
         <q-card class="col-12" flat :disabled="creating">
 
           <q-card-title>
@@ -305,8 +305,7 @@
 
               <ag-grid-column field="@type" header-name="BOM" :width="80"
                               cell-renderer-framework="ag-grid-icon-renderer"
-                              :cell-renderer-params="{ icon: 'fa-sitemap', link: true, handler: onOpenBomClicked}"
-                              :hide="!isModifiable"/>
+                              :cell-renderer-params="{ icon: 'fa-sitemap', link: true, handler: onOpenBomClicked}"/>
 
 
             </ag-grid>
@@ -745,7 +744,7 @@
               const ok = await this.$alert.confirm('출력 하시겠습니까?')
               if (ok) {
                 await this.load()
-                await this.exportFile()
+                await this.printSheet()
               } else {
                 this.$closeOverlay()
               }

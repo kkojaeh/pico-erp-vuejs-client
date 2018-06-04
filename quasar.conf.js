@@ -46,8 +46,20 @@ module.exports = function (ctx) {
       env: env,
       scopeHoisting: true,
       vueRouterMode: 'history',
-      // gzip: true,
-      // analyze: true,
+      gzip: true,
+      /*
+      analyze: {
+        analyzerMode: 'server',
+        analyzerHost: 'localhost',
+        analyzerPort: '7000',
+        reportFilename: 'index.html',
+        defaultSizes: 'stat',
+        openAnalyzer: true,
+        generateStatsFile: true,
+        statsFilename: 'stats.json',
+        logLevel : 'warn'
+      },
+      */
       // extractCSS: false,
       // useNotifier: false,
       extendWebpack (cfg) {
@@ -166,7 +178,7 @@ module.exports = function (ctx) {
       }
     },
     cordova: {
-      // id: 'org.cordova.quasar.app'
+      id: 'pico.erp.client.vuejs'
     },
     electron: {
       extendWebpack (cfg) {

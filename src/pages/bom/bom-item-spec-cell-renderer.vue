@@ -44,6 +44,7 @@
     overflow: hidden
 
   .bom-item-spec-cell-renderer
+    flex-wrap: nowrap !important
     .q-btn
       padding: 5px 5px
 
