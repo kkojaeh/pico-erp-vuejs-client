@@ -11,7 +11,7 @@
                  :error-label="form.$errors.password">
           <q-input ref="password" v-model="form.password" type="password" float-label="패스워드"
                    clearable
-                   @keyup.enter="resetPassword()"/>
+                   @keyup.enter="onResetPasswordClick()"/>
         </q-field>
       </q-card-main>
       <q-card-separator/>
