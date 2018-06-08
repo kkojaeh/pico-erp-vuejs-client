@@ -275,6 +275,9 @@ export class QuotationModel extends Model {
         presence: true,
         length: {minimum: 2, maximum: 50}
       },
+      expiryPolicy: {
+        presence: true
+      },
       projectId: {
         presence: true
       },

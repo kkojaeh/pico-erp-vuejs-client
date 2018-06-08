@@ -1,6 +1,7 @@
 .DS_Store
 .thumbs.db
 .idea
+.gradle
 node_modules/
 dist/
 npm-debug.log*

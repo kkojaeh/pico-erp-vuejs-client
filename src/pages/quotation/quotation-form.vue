@@ -40,6 +40,14 @@
               </c-autocomplete-select>
             </q-field>
 
+            <q-field icon="error_outline" helper="만료 정책을 선택하세요"
+                     class="col-xs-12 col-md-6 col-xl-4"
+                     :error="!!model.$errors.expiryPolicy"
+                     :error-label="model.$errors.expiryPolicy">
+              <q-select float-label="만료 정책" v-model="model.expiryPolicy"
+                        :options="expiryPolicyLabels"></q-select>
+            </q-field>
+
             <q-field icon="check" helper="견적의 상태 입니다"
                      class="col-xs-12 col-md-6 col-xl-4">
               <q-select float-label="상태" v-model="model.status" readonly hide-underline
@@ -47,7 +55,7 @@
             </q-field>
 
             <q-field icon="description" helper="내부에서 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-6"
+                     class="col-xs-12 col-md-6 col-xl-4"
                      :error="!!model.$errors.protectedDescription"
                      :error-label="model.$errors.protectedDescription"
                      :count="200">
@@ -57,7 +65,7 @@
             </q-field>
 
             <q-field icon="description" helper="외부에 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-6"
+                     class="col-xs-12 col-md-6 col-xl-4"
                      :error="!!model.$errors.publicDescription"
                      :error-label="model.$errors.publicDescription"
                      :count="200">
