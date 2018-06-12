@@ -122,6 +122,16 @@
 
       async upload () {
         const uppy = this.$refs.uppy
+        const xhrUpload = uppy.getPlugin('XHRUpload')
+        _.forIn(this.formData, (value, key) => {
+          _.values(uppy.getState().files).forEach(file => {
+            file.meta[key] = value
+          })
+        })
+
+        console.log(uppy.getState().files)
+
+
         return await uppy.upload()
       }
 
