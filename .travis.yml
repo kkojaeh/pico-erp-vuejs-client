@@ -29,8 +29,10 @@ before_install:
 #  - export ANDROID_HOME=$(pwd)/android-sdk-macosx
 #  - export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/23.0.2
 
-before_script:
+install:
   - npm install
+
+before_script:
   - if [ "$TRAVIS_BRANCH" = "$TRAVIS_TAG" ];
     then
       export API_BASE_URL=$API_BASE_URL_PRD;
