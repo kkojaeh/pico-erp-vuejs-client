@@ -2,6 +2,20 @@ import { FetchableArray, SpringPaginationArray } from 'src/model/array'
 import { exists, Model } from 'src/model/model'
 import { api } from 'src/plugins/axios'
 import { language, languageAliases } from 'src/i18n'
+import store from "src/store";
+import qs from 'qs'
+
+export class ProcessTypeImportOptions {
+
+  overwrite = false
+
+}
+
+export class ProcessTypeExportOptions {
+
+  empty = false
+
+}
 
 export class ProcessTypeModel extends Model {
 
@@ -33,6 +47,26 @@ export class ProcessTypeModel extends Model {
 
   static async exists (id) {
     return await exists(api, `/process/process-types/${id}`)
+  }
+
+  static get importByXlsxUrl () {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+        + store.getters['auth/token']
+    return `${host}/process/import/process-types/xlsx?${authQs}`
+  }
+
+  static exportAsXlsx (options) {
+    const host = api.defaults.baseURL
+    const authQs = store.getters['auth/tokenParameterName'] + '='
+        + store.getters['auth/token']
+    const link = document.createElement('a')
+    link.href = `${host}/process/export/process-types/xlsx?${qs.stringify(
+        options)}&${authQs}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
   }
 
   async create () {
