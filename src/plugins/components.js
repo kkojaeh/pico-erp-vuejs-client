@@ -46,6 +46,15 @@ import 'moment/locale/ko'
 import 'cleave.js'
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'
 
+import $ from 'jquery';
+import 'imports-loader?jQuery=jquery!trumbowyg'
+import 'imports-loader?jQuery=jquery!trumbowyg/dist/plugins/pasteimage/trumbowyg.pasteimage'
+import 'imports-loader?jQuery=jquery!trumbowyg/dist/plugins/table/trumbowyg.table'
+import 'trumbowyg/dist/ui/trumbowyg.css'
+import 'trumbowyg/dist/plugins/table/ui/trumbowyg.table.css'
+import svgIcons from 'trumbowyg/dist/ui/icons.svg'
+$.trumbowyg.svgPath = svgIcons
+
 const lang = language
 
 import(`quasar-framework/i18n/${lang}`).then(data => {

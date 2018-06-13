@@ -1,16 +1,18 @@
 <template>
-  <textarea ref="textarea"></textarea>
+  <textarea></textarea>
 </template>
 
 <script>
-  import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+  import $ from 'jquery';
+  import {language, languageAliases} from 'src/i18n'
+
 
   class Adapter {
-    constructor (loader) {
+    constructor(loader) {
       this.loader = loader
     }
 
-    upload () {
+    upload() {
       const file = this.loader.file
       if (file.type && file.type.indexOf('image/') > -1) {
         return new Promise((resolve, reject) => {
@@ -29,7 +31,7 @@
       return Promise.reject()
     }
 
-    async abort () {
+    async abort() {
     }
   }
 
@@ -44,72 +46,77 @@
       }
     },
     components: {},
-    mounted () {
+    mounted() {
       this.model = this.value
       this._initEditor()
     },
-    beforeDestroy () {
-      this.editor.destroy()
-      .then(() => {
-        this.editor = null
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    beforeDestroy() {
+      if (this.$el) {
+        $(this.$el).trumbowyg('destroy')
+      }
     },
-    data () {
+    data() {
       return {
         model: null
       }
     },
     watch: {
-      value (value) {
+      value(value) {
         if (value !== this.model) {
           this.model = value
-          if (this.editor) {
-            this.editor.setData(value || '')
+          if (this.$el) {
+            $(this.$el).trumbowyg('html', value)
           }
         }
       },
-      readonly (readonly) {
-        this.editor.isReadOnly = readonly
+      readonly(value) {
+        const el = $(this.$el)
+        el.trumbowyg(
+            value ? 'disable' : 'enable'
+        )
       }
     },
     methods: {
-      async _createEditor () {
-        return ClassicEditor.create(this.$refs.textarea, {
-          image: {
-            toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full',
-              'imageStyle:alignRight'],
-            styles: ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight']
-          },
-          toolbar: [
-            'heading', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', '|',
-            'imageUpload', '|', 'blockQuote', '|', 'undo', 'redo'
-          ]
-        })
+      _onTrumbowygChange(event) {
+        console.log("_onTrumbowygChange", event.target.value)
+        this.model = event.target.value
+        this.$emit('input', this.model)
       },
-      async _initEditor () {
-        const editor = await this._createEditor()
-        editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
-          return new Adapter(loader)
-        }
-        editor.isReadOnly = this.readonly
-        editor.setData(this.model || '')
-        editor.model.document.on('change', () => {
-          this.model = editor.getData()
-          this.$emit('input', this.model)
+      async _initEditor() {
+        const el = $(this.$el)
+        el.trumbowyg({
+          btns: [
+            ['table'],
+            ['undo', 'redo'],
+            ['formatting'],
+            ['strong', 'em', 'del'],
+            ['superscript', 'subscript'],
+            ['link'],
+            ['insertImage'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+            ['removeformat'],
+            ['fullscreen']
+          ],
+          imageWidthModalEdit: true,
+          disabled: this.readonly,
+          lang: languageAliases({
+            ko: 'ko'
+          })[language],
+          plugins: {
+            table: {
+              rows: 7,
+              columns: 7
+            }
+          }
         })
-        this.editor = editor
+        el.trumbowyg('html', this.model);
+        el.on(`tbwchange`, this._onTrumbowygChange);
+        el.on(`tbwpaste`, this._onTrumbowygChange);
       }
     }
 
   }
 
 </script>
-<style>
-  .ck-editor .ck-content.ck-editor__editable {
-    min-height: 300px;
-  }
-
-</style>
