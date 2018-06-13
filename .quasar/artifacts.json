@@ -1,6 +1,1 @@
-{
-  "folders": [
-    "dist/spa-mat",
-    "src-cordova/www"
-  ]
-}
+{"folders":["dist/spa-mat"]}

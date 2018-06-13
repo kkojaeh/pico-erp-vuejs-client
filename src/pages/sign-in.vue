@@ -96,6 +96,7 @@
               this.$router.push('/')
             }
           } catch (e) {
+            console.error(e)
             this.$alert.negative(`${e.code} - ${e.message}`)
           }
         } else {
