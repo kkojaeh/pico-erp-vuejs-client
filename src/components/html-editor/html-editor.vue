@@ -78,7 +78,6 @@
     },
     methods: {
       _onTrumbowygChange(event) {
-        console.log("_onTrumbowygChange", event.target.value)
         this.model = event.target.value
         this.$emit('input', this.model)
       },
