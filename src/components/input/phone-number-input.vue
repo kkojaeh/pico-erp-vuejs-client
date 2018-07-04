@@ -6,7 +6,7 @@
                 class="col-1 no-padding"
                 style="min-width:50px;" :disable="disable || readonly"
                 :display-value="` `" :hide-underline="hideUnderline"></q-select>
-      <c-cleave-input class="col-10" type="tel" v-model="model"
+      <c-cleave-input class="col-10" type="tel" v-model="model" ref="input"
                       :cleave-options="cleaveOptions" :stack-label="stackLabel"
                       :float-label="floatLabel" :disable="disable"
                       :hide-underline="hideUnderline"
@@ -78,6 +78,9 @@
         } else {
           this.model = null
         }
+      },
+      focus() {
+        this.$refs.input.focus()
       }
     },
     watch: {

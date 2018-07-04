@@ -12,6 +12,9 @@
 
 <script>
   import InputMixin from './input-mixin'
+  import {
+    AddressSelector
+  } from 'src/model/data'
 
   let PostCode = window.daum.Postcode
 
@@ -34,24 +37,12 @@
       }
     },
     methods: {
-      find () {
-        let width = 500
-        let height = 600
-        let p = new PostCode({
-          oncomplete: (data) => {
-            this.$set(this.model, 'postalCode', data.zonecode)
-            this.$set(this.model, 'street', data.roadAddress)
-            this.$set(this.model, 'detail', null)
-          }
-        })
-        // open({q: '검색어', left: '팝업위치 x값', top: '팝업위치 y값', popupName: '팝업이름', autoClose: '자동닫힘유무'})
-        p.open({
-          q: this.model.street,
-          popupName: 'address-input-popup',
-          left: (window.screen.width / 2) - (width / 2),
-          top: (window.screen.height / 2) - (height / 2)
-          // autoClose: true
-        })
+      async find () {
+        const selector = new AddressSelector()
+        const address = await selector.select(this.model.street)
+        this.$set(this.model, 'postalCode', address.postalCode)
+        this.$set(this.model, 'street', address.street)
+        this.$set(this.model, 'detail', null)
       },
       clear () {
         this.model.postalCode = null

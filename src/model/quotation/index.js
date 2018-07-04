@@ -122,14 +122,14 @@ class QuotationUnitPriceRateItemAdditionModel extends Model {
 
   async update () {
     await api.put(
-      `/quotation/quotations/${this.quotation.id}/item-additions/${this.id}`, {
+      `/quotation/quotations/${this.quotation.id}/item-addition-rates/${this.id}`, {
         itemAddition: this
       })
   }
 
   async remove () {
     await api.delete(
-      `/quotation/quotations/${this.quotation.id}/item-additions/${this.id}`,
+      `/quotation/quotations/${this.quotation.id}/item-addition-rates/${this.id}`,
       {})
   }
 
@@ -258,8 +258,8 @@ export class QuotationModel extends Model {
   }
 
   async addUnitPriceRateItemAddition () {
-    await api.post(`/quotation/quotations/${this.id}/item-additions`, {
-      itemAddition: QuotationUnitPriceRateItemAdditionModel.create()
+    await api.post(`/quotation/quotations/${this.id}/item-addition-rates`, {
+      itemAdditionRate: QuotationUnitPriceRateItemAdditionModel.create()
     })
   }
 

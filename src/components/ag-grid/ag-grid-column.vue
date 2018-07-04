@@ -5,20 +5,48 @@
 </template>
 
 <script>
-  import { ColDefUtil } from 'ag-grid'
+  import {ColDefUtil} from 'ag-grid'
   import * as _ from 'lodash'
+  import lzutf8 from 'lzutf8'
 
   let count = 0
 
-  const predefined = {
-    cellClass: {
-      type: [String, Function],
-      default: () => (params) => {
-        const editable = params.colDef.editable
-        if (editable == true || (_.isFunction(editable) && editable(params))) {
-          return 'ag-cell-editable'
+  function createCellClassProxy(value) {
+    return (params) => {
+      let names = []
+      let hasError = false;
+      if (params.data.$errors) {
+        let errors = _.get(params.data.$errors, params.colDef.field)
+        if (errors && _.isString(errors)) {
+          hasError = true
+          names.push('ag-cell-error')
+          const encoded = lzutf8.compress(errors, {
+            outputEncoding: 'Base64'
+          })
+          names.push('ag-cell-encoded-errors-' + encoded)
         }
       }
+      if(!hasError) {
+        const editable = params.colDef.editable
+        if (editable == true || (_.isFunction(editable) && editable(params))) {
+          names.push('ag-cell-editable')
+        }
+      }
+      if(_.isFunction(value)){
+        let original = value(params)
+        if(_.isArray(original)){
+          _.union(names, original)
+        }else{
+          names.push(original)
+        }
+      }
+      return names
+    }
+  }
+
+  const predefined = {
+    cellClass: {
+      type: [String, Function]
     },
     editable: {
       type: [Boolean, Function]
@@ -45,13 +73,13 @@
   export default {
     name: 'ag-grid-column',
     props: props,
-    data () {
+    data() {
       return {
         _initialised: false
       }
     },
     methods: {
-      processChanges (propertyName, val, oldVal) {
+      processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
           if (!this._grid) {
             this.setGrid(this.findGrid())
@@ -60,24 +88,25 @@
 
         }
       },
-      getChildren () {
+      getChildren() {
         return (this.$slots.default || []).filter(
-          (c) => c.componentInstance && c.componentInstance.getColumnDefinition)
+            (c) => c.componentInstance && c.componentInstance.getColumnDefinition)
       },
-      getColumnDefinition () {
+      getColumnDefinition() {
         let colDef = _.assign({}, this.$props)
+        colDef.cellClass = createCellClassProxy(colDef.cellClass)
         colDef.children = this.getChildren().map(
-          (column) => column.componentInstance.getColumnDefinition())
+            (column) => column.componentInstance.getColumnDefinition())
         if (!colDef.children.length) {
           delete colDef.children
         }
         return colDef
       },
-      setGrid (grid) {
+      setGrid(grid) {
         this._grid = grid
         this.getChildren().forEach((column) => column.componentInstance.setGrid(grid))
       },
-      findGrid () {
+      findGrid() {
         let parent = this.$parent
         while (parent) {
           if (parent.isAgGrid) {
@@ -90,10 +119,10 @@
       }
     },
     watch: watchedProperties,
-    mounted () {
+    mounted() {
       this._initialised = true
     },
-    destroyed () {
+    destroyed() {
       this._grid = null
     }
   }

@@ -126,3 +126,35 @@ export class DataAdjuster {
   }
 
 }
+
+const PostCode = window.daum.Postcode
+
+export class AddressSelector {
+  constructor(){
+    this.width = 500
+    this.height = 600
+    this.popupName = 'address-selector'
+    this.autoClose = true
+  }
+
+  select(keyword){
+    return new Promise((resolve, reject) => {
+      let p = new PostCode({
+        oncomplete: (data) => {
+          resolve({
+            'postalCode': data.zonecode,
+            'street': data.roadAddress
+          })
+        }
+      })
+      // open({q: '검색어', left: '팝업위치 x값', top: '팝업위치 y값', popupName: '팝업이름', autoClose: '자동닫힘유무'})
+      p.open({
+        q: keyword,
+        popupName: 'address-input-popup',
+        left: (window.screen.width / 2) - (this.width / 2),
+        top: (window.screen.height / 2) - (this.height / 2),
+        autoClose: this.autoClose
+      })
+    })
+  }
+}

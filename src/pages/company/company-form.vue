@@ -62,10 +62,15 @@
 
     </q-card>
 
-    <q-card class="col-12" flat>
+    <q-card class="col-12" flat :disabled="creating">
 
       <q-card-title>
-        연락처 및 기타
+        연락처
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="addContact"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selectedContact"
+                 @click="removeContact"/>
+        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -73,31 +78,114 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
-                 :error="!!model.$errors.mobilePhoneNumber"
-                 :error-label="model.$errors.mobilePhoneNumber">
-          <c-phone-number-input v-model="model.mobilePhoneNumber" float-label="핸드폰 번호"/>
-        </q-field>
+        <q-card-main class="row">
 
-        <q-field icon="phone" helper="전화 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
-                 :error="!!model.$errors.telephoneNumber"
-                 :error-label="model.$errors.telephoneNumber">
-          <c-phone-number-input v-model="model.telephoneNumber" float-label="전화번호"/>
-        </q-field>
+          <ag-grid class="col"
+                   ref="contactGrid"
+                   dom-layout='autoHeight'
+                   row-selection="single"
+                   enable-col-resize
+                   :editable="true"
+                   suppress-no-rows-overlay
+                   @selection-changed="onContactSelectionChanged"
+                   :row-data="contacts"
+          >
 
-        <q-field icon="fa-fax" helper="FAX 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
-                 :error="!!model.$errors.faxNumber"
-                 :error-label="model.$errors.faxNumber">
-          <c-phone-number-input v-model="model.faxNumber" float-label="FAX 번호"/>
-        </q-field>
+            <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
+            <ag-grid-column field="contact.name" header-name="이름" :width="150" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50 }"/>
 
-        <q-field icon="fa-map-marker" helper="회사의 주소를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4">
-          <c-address-input v-model="model.address"/>
-        </q-field>
+            <ag-grid-column field="contact.email" header-name="이메일" :width="150" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50, type: 'email' }"/>
+
+            <ag-grid-column field="contact.mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+
+            <ag-grid-column field="contact.telephoneNumber" header-name="전화번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+
+            <ag-grid-column field="contact.faxNumber" header-name="FAX 번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+            <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"
+                            cell-editor-framework="ag-grid-checkbox-editor"
+                            :editable="true"/>
+
+          </ag-grid>
+
+        </q-card-main>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat :disabled="creating">
+
+      <q-card-title>
+        주소지
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="addAddress"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selectedAddress"
+                 @click="removeAddress"/>
+        </div>
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-card-main class="row">
+
+          <ag-grid class="col"
+                   ref="addressGrid"
+                   dom-layout='autoHeight'
+                   row-selection="single"
+                   enable-col-resize
+                   :editable="true"
+                   suppress-no-rows-overlay
+                   @selection-changed="onAddressSelectionChanged"
+                   :row-data="addresses"
+          >
+
+            <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
+            <ag-grid-column field="name" header-name="이름" :width="150" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50 }"/>
+
+            <ag-grid-column field="mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+
+            <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+            <ag-grid-column field="" header-name="" :width="40" suppress-sorting
+                            cell-renderer-framework="ag-grid-icon-renderer"
+                            :cell-renderer-params="{handler:onAddressSearch, icon:'search', link:true}"/>
+            <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90" :cell-style="{textAlign: 'center'}" />
+            <ag-grid-column field="address.street" header-name="주소" :width="220"/>
+            <ag-grid-column field="address.detail" header-name="상세주소" :width="180" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50 }"/>
+            <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"
+                            cell-editor-framework="ag-grid-checkbox-editor"
+                            :editable="true"/>
+
+          </ag-grid>
+
+        </q-card-main>
 
       </q-card-main>
 
@@ -125,8 +213,15 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { CompanyModel } from 'src/model/company'
+  import {mapGetters} from 'vuex'
+  import {
+    CompanyAddressModel,
+    CompanyAddressPaginationArray,
+    CompanyContactModel,
+    CompanyContactPaginationArray,
+    CompanyModel
+  } from 'src/model/company'
+  import {AddressSelector} from 'src/model/data'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -142,30 +237,80 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new CompanyModel(),
+        contacts: new CompanyContactPaginationArray(),
+        addresses: new CompanyAddressPaginationArray(),
+        removedContacts: [],
+        removedAddresses: [],
         creating: false,
-        enabled: true
+        enabled: true,
+        selectedContact: null,
+        selectedAddress: null
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
     methods: {
-      async create () {
+      addressRenderer(params) {
+        let address = params.value
+        return `[${address.postalCode}] ${address.street} ${address.detail}`
+      },
+      async create() {
         this.creating = true
         this.model = new CompanyModel()
+        this.contacts.clear()
+        this.addresses.clear()
       },
-      async show () {
+      async show() {
         this.creating = false
         this.model = await CompanyModel.get(this.id)
+        await this.contacts.query(this.id)
+        this.contacts.forEach((contact) => {
+          contact.snapshot()
+        })
+        await this.addresses.query(this.id)
+        this.addresses.forEach((address) => {
+          address.snapshot()
+        })
+        /*
+        this.contacts.push(new CompanyContactModel())
+        this.contacts.push(new CompanyContactModel())
+        this.contacts.forEach(async (c, index) => {
+          await c.validateCreate()
+          Vue.set(this.contacts, index, c)
+        })
+        */
       },
-      async _onSaveClick () {
+      onContactSelectionChanged(event) {
+        this.selectedContact = event.api.getSelectedRows()[0]
+      },
+
+      onAddressSelectionChanged(event) {
+        this.selectedAddress = event.api.getSelectedRows()[0]
+      },
+
+      async onAddressSearch(data) {
+        const selector = new AddressSelector()
+        const address = await selector.select(data.address.street)
+        data.address.postalCode = address.postalCode
+        data.address.street = address.street
+        data.address.detail = null
+        const grid = this.$refs.addressGrid
+        grid.api.redrawRows()
+      },
+
+      async _onSaveClick() {
         let valid = this.creating ? await this.model.validateCreate()
-          : await this.model.validateUpdate()
+            : await this.model.validateUpdate()
+
+        valid = await this.contacts.validates() && valid
+        valid = await this.addresses.validates() && valid
+
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -176,14 +321,51 @@
             }
           }
         } else {
+          [this.$refs.addressGrid, this.$refs.contactGrid].forEach(grid => grid.api.redrawRows())
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         if (this.creating) {
           await this.model.create()
         } else {
           await this.model.update()
+        }
+        await this.contacts.save()
+        await this.addresses.save()
+      },
+
+      async addContact() {
+        this.contacts.push(new CompanyContactModel({
+          companyId: this.model.id
+        }))
+      },
+
+      async removeContact() {
+        const name = this.selectedContact.contact.name || '이름 없음'
+        const ok = await this.$alert.confirm(`'${name}' 의 연락처를 삭제 하시겠습니까?`)
+        if (ok) {
+          if (this.selectedContact.id) {
+            this.removedContacts.push(this.selectedContact)
+          }
+          this.contacts.remove(this.selectedContact)
+        }
+      },
+
+      async addAddress() {
+        this.addresses.push(new CompanyAddressModel({
+          companyId: this.model.id
+        }))
+      },
+
+      async removeAddress() {
+        const name = this.selectedAddress.name || '이름 없음'
+        const ok = await this.$alert.confirm(`'${name}' 의 주소지를 삭제 하시겠습니까?`)
+        if (ok) {
+          if (this.selectedAddress.id) {
+            this.removedContacts.push(this.selectedContact)
+          }
+          this.addresses.remove(this.selectedAddress)
         }
       }
     },

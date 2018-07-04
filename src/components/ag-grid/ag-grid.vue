@@ -6,11 +6,13 @@
 </template>
 
 <script>
-  import { ComponentUtil, Grid } from 'ag-grid'
-  import { VueFrameworkFactory } from './vue-framework-factory'
-  import { VueFrameworkComponentWrapper } from './vue-framework-component-wrapper'
+  import {ComponentUtil, Grid} from 'ag-grid'
+  import {VueFrameworkFactory} from './vue-framework-factory'
+  import {VueFrameworkComponentWrapper} from './vue-framework-component-wrapper'
   import * as _ from 'lodash'
   import i18n from 'src/i18n/ag-grid'
+  import lzutf8 from 'lzutf8'
+  import Tooltip from 'tooltip.js'
 
   let count = 0
 
@@ -38,7 +40,7 @@
   export default {
     name: 'ag-grid',
     props: props,
-    data () {
+    data() {
       return {
         isAgGrid: true,
         _initialised: false,
@@ -49,7 +51,7 @@
       }
     },
     methods: {
-      globalEventListener (eventType, event) {
+      globalEventListener(eventType, event) {
         if (this._destroyed) {
           return
         }
@@ -58,62 +60,117 @@
           this.$emit(kebabCaseEventType, event)
         }
       },
-      processChanges (propertyName, val, oldVal) {
+      processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
           let changes = {}
           changes[propertyName] = {currentValue: val, previousValue: oldVal}
           ComponentUtil.processOnChange(changes, this.gridOptions, this.gridOptions.api,
-            this.gridOptions.columnApi)
+              this.gridOptions.columnApi)
         }
       },
 
-      invalidateColumnDefinitions () {
+      invalidateColumnDefinitions() {
         if (this._editing) {
           this._invalidateColumnDefinitionsQueued = true
           return
         }
         if (this.api) {
           this.api.setColumnDefs(
-            this.$slots.default
-            .filter(
-              (column) => column.componentInstance
-                && column.componentInstance.getColumnDefinition)
-            .map((column) => column.componentInstance.getColumnDefinition())
+              this.$slots.default
+              .filter(
+                  (column) => column.componentInstance
+                      && column.componentInstance.getColumnDefinition)
+              .map((column) => column.componentInstance.getColumnDefinition())
           )
         }
       },
 
-      getColumns () {
+      getColumns() {
         return (this.$slots.default || [])
         .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition)
       },
 
-      onGridSizeChanged (event) {
+      onGridSizeChanged(event) {
         if (this.autoSizeColumnsToFit) {
           this.api.sizeColumnsToFit()
         }
       },
-      onGridNewColumnsLoaded (event) {
+      onGridNewColumnsLoaded(event) {
         if (this.autoSizeColumnsToFit) {
           this.api.sizeColumnsToFit()
         }
       },
-      onGridCellEditingStarted (event) {
+      onGridCellEditingStarted(event) {
         this._editing = true
+        if (this._tooltip) {
+          this._tooltip.dispose()
+          this._tooltip = null
+        }
       },
-      onGridCellEditingStopped (event) {
+      onGridCellEditingStopped(event) {
         this._editing = false
         if (this._invalidateColumnDefinitionsQueued) {
           this._invalidateColumnDefinitionsQueued = false
           this.invalidateColumnDefinitions()
         }
       },
-      onWindowCopy (e) {
+      onGridCellMouseOver(event) {
+        let dom = event.event.target
+        if (dom.getAttribute('role') !== 'gridcell') {
+          return
+        }
+
+        let errors = false,
+            classList = dom.classList
+
+        for (let i = 0; i < classList.length; i++) {
+          let cls = classList[i]
+          if (cls.startsWith('ag-cell-encoded-errors-')) {
+            const encoded = cls.substr('ag-cell-encoded-errors-'.length)
+            errors = lzutf8.decompress(encoded, {
+              inputEncoding: 'Base64'
+            })
+            break
+          }
+        }
+
+        if (errors) {
+          if (this._tooltip) {
+            this._tooltip.dispose()
+            this._tooltip = null
+          }
+          errors = errors.split('\n').map(error => `<li>${error}</li>`).join('')
+          this._tooltip = new Tooltip(dom, {
+            title: `<ul>${errors}</ul>`,
+            placement: 'bottom',
+            offset: -200,
+            html: true,
+            container: this.$el,
+            trigger: 'manual'
+          })
+          this._tooltip.show()
+        }
+      },
+      onGridCellMouseOut(event) {
+        const dom = event.event.target
+        const related = event.event.relatedTarget
+        if (dom.getAttribute('role') !== 'gridcell') {
+          return
+        }
+        if (related && related.closest('.ag-cell-error')) {
+          return
+        }
+        if (this._tooltip) {
+          this._tooltip.dispose()
+          this._tooltip = null
+        }
+      },
+      onWindowCopy(e) {
         const cell = this._keyActingCell
         e.clipboardData.setData('text/plain', cell.innerText)
         e.preventDefault()
       },
-      onWindowKeydowned (event) {
+      onWindowKeydowned(event) {
         if (this._keyActingCell) {
           return
         }
@@ -126,7 +183,7 @@
         this._keyActingCell = target
         window.addEventListener('copy', this.onWindowCopy)
       },
-      onWindowKeyuped (event) {
+      onWindowKeyuped(event) {
         if (!this._keyActingCell) {
           return
         }
@@ -134,11 +191,11 @@
         window.removeEventListener('copy', this.onWindowCopy)
       }
     },
-    created () {
+    created() {
       this.invalidateColumnDefinitions = _.debounce(this.invalidateColumnDefinitions, 500)
       this.onGridSizeChanged = _.debounce(this.onGridSizeChanged, 200)
     },
-    mounted () {
+    mounted() {
       this.gridOptions = {}
       let frameworkComponentWrapper = new VueFrameworkComponentWrapper(this)
       let vueFrameworkFactory = new VueFrameworkFactory(this.$el, this)
@@ -162,26 +219,28 @@
       this.$on('new-columns-loaded', this.onGridNewColumnsLoaded)
       this.$on('cell-editing-started', this.onGridCellEditingStarted)
       this.$on('cell-editing-stopped', this.onGridCellEditingStopped)
+      this.$on('cell-mouse-over', this.onGridCellMouseOver)
+      this.$on('cell-mouse-out', this.onGridCellMouseOut)
       window.addEventListener('keydown', this.onWindowKeydowned)
       window.addEventListener('keyup', this.onWindowKeyuped)
     },
     watch: watchedProperties,
     computed: {
-      api () {
+      api() {
         if (this.gridOptions) {
           return this.gridOptions.api
         }
       },
-      columnApi () {
+      columnApi() {
         return this.gridOptions.columnApi
       },
-      wrapperClasses () {
+      wrapperClasses() {
         const classes = []
         classes.push(`ag-theme-${this.theme}`)
         return classes
       }
     },
-    destroyed () {
+    destroyed() {
       if (this._initialised) {
         this.gridOptions.api.destroy()
         this.gridOptions = null
@@ -189,6 +248,10 @@
         this._destroyed = true
         window.removeEventListener('keydown', this.onWindowKeydowned)
         window.removeEventListener('keyup', this.onWindowKeyuped)
+        if (this._tooltip) {
+          this._tooltip.dispose()
+          this._tooltip = null
+        }
       }
     }
   }
@@ -197,6 +260,73 @@
 <style lang="stylus">
   .ag-grid-wrapper
     overflow: auto
+    .tooltip
+      z-index: 20000
+      pointer-events: none
+      position: absolute
+      background: red
+      color: white
+      border-radius: 3px
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.5)
+      padding: 10px
+      text-align: left
+      .tooltip-arrow
+        width: 0
+        height: 0
+        border-style: solid
+        position: absolute
+        margin: 5px
+        border-color: red
+      ul
+        padding: 5px
+        margin-top: 0px
+        margin-bottom: 0px
+        list-style-type: none
+
+    .tooltip[x-placement^="top"]
+      margin-bottom: 5px
+      .tooltip-arrow
+        border-width: 5px 5px 0 5px
+        border-left-color: transparent
+        border-right-color: transparent
+        border-bottom-color: transparent
+        bottom: -5px
+        left: calc(50% - 5px)
+        margin-top: 0
+        margin-bottom: 0
+    .tooltip[x-placement^="bottom"]
+      margin-top: 5px
+      .tooltip-arrow
+        border-width: 0 5px 5px 5px
+        border-left-color: transparent
+        border-right-color: transparent
+        border-top-color: transparent
+        top: -5px
+        left: calc(50% - 5px)
+        margin-top: 0
+        margin-bottom: 0
+    .tooltip[x-placement^="right"]
+      margin-left: 5px
+      .tooltip-arrow
+        border-width: 5px 5px 5px 0
+        border-left-color: transparent
+        border-top-color: transparent
+        border-bottom-color: transparent
+        left: -5px
+        top: calc(50% - 5px)
+        margin-left: 0
+        margin-right: 0
+    .tooltip[x-placement^="left"]
+      margin-right: 5px
+      .tooltip-arrow
+        border-width: 5px 0 5px 5px
+        border-top-color: transparent
+        border-right-color: transparent
+        border-bottom-color: transparent
+        right: -5px
+        top: calc(50% - 5px)
+        margin-left: 0
+        margin-right: 0
 
   .ag-theme-material
     .ag-cell
@@ -214,6 +344,15 @@
       left: 0px
       border-left: 5px solid darkseagreen
       border-top: 5px solid darkseagreen
+      border-right: 5px solid transparent
+      border-bottom: 5px solid transparent
+      content: ""
+    .ag-cell-error::after
+      position: absolute
+      top: 0px
+      left: 0px
+      border-left: 5px solid red
+      border-top: 5px solid red
       border-right: 5px solid transparent
       border-bottom: 5px solid transparent
       content: ""

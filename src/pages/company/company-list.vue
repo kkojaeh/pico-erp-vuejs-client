@@ -39,11 +39,12 @@
                         cell-renderer-framework="ag-grid-cleave-renderer"
                         :cell-renderer-params="{cleaveOptions:{ delimiter: '-', blocks: [3, 2, 5]}}"/>
         <ag-grid-column field="representative" header-name="대표자" :width="120"/>
-        <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="130"
-                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
-        <ag-grid-column field="mobilePhoneNumber" header-name="핸드폰번호" :width="130"
-                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
-
+        <ag-grid-column field="supplier" header-name="공급사" :width="80"
+                        cell-renderer-framework="ag-grid-checkbox-renderer"/>
+        <ag-grid-column field="customer" header-name="고객사" :width="80"
+                        cell-renderer-framework="ag-grid-checkbox-renderer"/>
+        <ag-grid-column field="outsourcing" header-name="외주사" :width="80"
+                        cell-renderer-framework="ag-grid-checkbox-renderer"/>
       </ag-grid>
 
       <!-- main -->
