@@ -48,7 +48,6 @@
   import Vue from 'vue'
   import * as _ from 'lodash'
   import Sort from 'src/model/sort'
-  import { Base64 } from 'js-base64'
   import lzutf8 from 'lzutf8'
 
   export default {

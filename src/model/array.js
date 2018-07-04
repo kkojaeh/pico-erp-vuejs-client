@@ -13,7 +13,7 @@ export class FetchableArray extends Array {
   fetch = async (data) => {
     this.fetching = true
     let result = await this.axios.get(this.resolveUrl(this.url, data),
-      {data: data})
+        {data: data})
     let parsed = this.parse(result)
     if (parsed) {
       if (this.model) {
@@ -41,6 +41,14 @@ export class FetchableArray extends Array {
   clear = () => {
     this.splice(0, this.length)
   }
+
+  remove = (element) => {
+    const index = this.indexOf(element)
+    if (index > -1) {
+      return this.splice(index, 1)
+    }
+    throw new Error('not found element')
+  }
 }
 
 export class PaginationArray extends FetchableArray {
@@ -64,7 +72,7 @@ export class SpringPaginationArray extends PaginationArray {
     })
     if (this.sorters) {
       query.sort = this.sorters.map(
-        (s) => s.getField() + ',' + s.getDir().toLowerCase())
+          (s) => s.getField() + ',' + s.getDir().toLowerCase())
     }
     if (query) {
       query.$QS = qs.stringify(query, {arrayFormat: 'repeat'})

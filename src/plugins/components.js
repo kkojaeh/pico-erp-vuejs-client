@@ -33,6 +33,9 @@ import AgGridCleaveRenderer
   from 'src/components/ag-grid/ag-grid-cleave-renderer.vue'
 import AgGridPhoneNumberRenderer
   from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
+import AgGridPhoneNumberEditor
+  from 'src/components/ag-grid/ag-grid-phone-number-editor.vue'
+
 import AgGridArrayLabelRenderer
   from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
@@ -90,6 +93,7 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-router-link-renderer', AgGridRouterLinkRenderer)
   Vue.component('ag-grid-cleave-renderer', AgGridCleaveRenderer)
   Vue.component('ag-grid-phone-number-renderer', AgGridPhoneNumberRenderer)
+  Vue.component('ag-grid-phone-number-editor', AgGridPhoneNumberEditor)
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
