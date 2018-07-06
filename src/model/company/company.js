@@ -1,11 +1,12 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
+import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {exists, Model} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+import {language, languageAliases} from 'src/i18n'
+import {LabelModel} from 'src/model/shared'
 
 export class CompanyModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {
       address: {},
       enabled: true,
@@ -15,7 +16,7 @@ export class CompanyModel extends Model {
     }
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new CompanyModel()
     }
@@ -24,24 +25,29 @@ export class CompanyModel extends Model {
     return new CompanyModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return exists(api, `/company/companies/${id}`)
   }
 
-  static async existsByRegistrationNumber (registrationNumber) {
+  static async existsByRegistrationNumber(registrationNumber) {
     return exists(api, `/company/registration-numbers/${registrationNumber}`)
   }
 
-  async create () {
-    const response = await api.post('/company/companies', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id || this.hasChanged("id")
   }
 
-  async update () {
-    return await api.put(`/company/companies/${this.id}`, this)
+  async save() {
+    if (this.phantom) {
+      const response = await api.post('/company/companies', this)
+      this.assign(response.data)
+    } else {
+      await api.put(`/company/companies/${this.id}`, this)
+    }
   }
 
-  async validate (state) {
+  async validate() {
+    const phantom = this.phantom
     let constraints = {
       id: {
         presence: true,
@@ -56,7 +62,7 @@ export class CompanyModel extends Model {
           if (!value) {
             return
           }
-          if (state !== 'create') {
+          if (!phantom) {
             return
           }
           let result = await CompanyModel.exists(value)
@@ -88,33 +94,43 @@ export class CompanyModel extends Model {
 
     return await this.$validate(constraints)
   }
-
-  async validateCreate () {
-    return await
-        this.validate('create')
-  }
-
-  async validateUpdate () {
-    return await
-        this.validate('update')
-  }
 }
 
-export class CompanyPaginationArray extends SpringPaginationArray {
-  url = '/company/companies?${$QS}'
-  axios = api
-  model = CompanyModel
-}
+export const CompanyPaginationArray = Array.decorate(
+    class extends SpringPaginationArray {
 
-export class CompanyLabelArray extends FetchableArray {
-  url = '/company/company-query-labels?${$QS}'
-  axios = api
+      get url() {
+        return '/company/companies?${$QS}'
+      }
 
-  query = async (keyword) => {
-    return await this.fetch({
-      query: keyword || ''
-    })
-  }
-}
+      get axios() {
+        return api
+      }
 
+      get model() {
+        return CompanyModel
+      }
+    }
+)
 
+export const CompanyLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/company/company-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async query (keyword) {
+        return await this.fetch({
+          query: keyword || ''
+        })
+      }
+    }
+)

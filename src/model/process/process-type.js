@@ -1,9 +1,10 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
+import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {exists, Model} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+import {language, languageAliases} from 'src/i18n'
 import store from "src/store";
 import qs from 'qs'
+import {LabelModel} from "../shared";
 
 export class ProcessTypeImportOptions {
 
@@ -19,7 +20,7 @@ export class ProcessTypeExportOptions {
 
 export class ProcessTypeModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {
       costRates: {
         directLabor: 0.25,
@@ -36,27 +37,27 @@ export class ProcessTypeModel extends Model {
     }
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new ProcessTypeModel()
     }
     const response = await api.get(
-      `/process/process-types/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+        `/process/process-types/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ProcessTypeModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return await exists(api, `/process/process-types/${id}`)
   }
 
-  static get importByXlsxUrl () {
+  static get importByXlsxUrl() {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
         + store.getters['auth/token']
     return `${host}/process/import/process-types/xlsx?${authQs}`
   }
 
-  static exportAsXlsx (options) {
+  static exportAsXlsx(options) {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
         + store.getters['auth/token']
@@ -69,15 +70,15 @@ export class ProcessTypeModel extends Model {
 
   }
 
-  async create () {
+  async create() {
     return await api.post('/process/process-types', this)
   }
 
-  async update () {
+  async update() {
     await api.put(`/process/process-types/${this.id}`, this)
   }
 
-  async validate (state) {
+  async validate(state) {
     let constraints = {
       id: {
         presence: true,
@@ -122,28 +123,49 @@ export class ProcessTypeModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate () {
+  async validateCreate() {
     return await this.validate('create')
   }
 
-  async validateUpdate () {
+  async validateUpdate() {
     return await this.validate('update')
   }
 }
 
-export class ProcessTypePaginationArray extends SpringPaginationArray {
-  url = '/process/process-types'
-  axios = api
-  model = ProcessTypeModel
-}
+export const ProcessTypePaginationArray = Array.decorate(
+    class extends SpringPaginationArray {
+      get url() {
+        return '/process/process-types'
+      }
 
-export class ProcessTypeLabelArray extends FetchableArray {
-  url = '/process/process-type-query-labels?${$QS}'
-  axios = api
+      get axios() {
+        return api
+      }
 
-  query = (keyword) => {
-    return this.fetch({
-      query: keyword || ''
-    })
-  }
-}
+      get model() {
+        return ProcessTypeModel
+      }
+    }
+)
+
+export const ProcessTypeLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/process/process-type-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async query(keyword) {
+        return await this.fetch({
+          query: keyword || ''
+        })
+      }
+    }
+)

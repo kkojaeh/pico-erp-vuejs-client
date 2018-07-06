@@ -1,10 +1,11 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
-import { api } from 'src/plugins/axios'
+import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {exists, Model, uuid} from 'src/model/model'
+import {LabelModel} from 'src/model/shared'
+import {api} from 'src/plugins/axios'
 
 export class ProjectModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {
       customerManagerContact: {
         name: null,
@@ -16,36 +17,36 @@ export class ProjectModel extends Model {
     }
   }
 
-  get defaultErrors () {
+  get defaultErrors() {
     return {
       customerManagerContact: {}
     }
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new ProjectModel()
     }
     const response = await api.get(
-      `/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+        `/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ProjectModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return await exists(api, `/project/projects/${id}`)
   }
 
-  async create () {
+  async create() {
     this.id = uuid()
     const response = await api.post('/project/projects', this)
     this.assign(response.data)
   }
 
-  async update () {
+  async update() {
     await api.put(`/project/projects/${this.id}`, this)
   }
 
-  async validate (state) {
+  async validate(state) {
     let constraints = {
       name: {
         presence: true,
@@ -86,32 +87,52 @@ export class ProjectModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate () {
+  async validateCreate() {
     return await
-      this.validate('create')
+        this.validate('create')
   }
 
-  async validateUpdate () {
+  async validateUpdate() {
     return await
-      this.validate('update')
+        this.validate('update')
   }
 }
 
-export class ProjectPaginationArray extends SpringPaginationArray {
-  url = '/project/projects?${$QS}'
-  axios = api
-  model = ProjectModel
-}
+export const ProjectPaginationArray = Array.decorate(
+    class extends SpringPaginationArray {
+      get url() {
+        return '/project/projects?${$QS}'
+      }
 
-export class ProjectLabelArray extends FetchableArray {
-  url = '/project/project-query-labels?${$QS}'
-  axios = api
+      get axios() {
+        return api
+      }
 
-  query = (keyword) => {
-    return this.fetch({
-      query: keyword || ''
-    })
-  }
-}
+      get model() {
+        return ProjectModel
+      }
+    }
+)
 
+export const ProjectLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/project/project-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async query(keyword) {
+        return this.fetch({
+          query: keyword || ''
+        })
+      }
+    }
+)
 

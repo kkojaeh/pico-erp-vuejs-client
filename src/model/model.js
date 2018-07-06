@@ -1,26 +1,29 @@
 import * as _ from 'lodash'
 import Vue from 'vue'
 import validate from 'validate.js'
-import { date } from 'quasar'
+import {date} from 'quasar'
 import uuidv4 from 'uuid/v4'
+
+const snapshotSymbol = Symbol('snapshot')
 
 export class Model {
 
-  constructor (data) {
+  constructor(data) {
     _.assign(this, data)
+    this.snapshot()
     _.defaults(this, this.defaults)
     this.$errors = this.defaultErrors
   }
 
-  get defaults () {
+  get defaults() {
     return {}
   }
 
-  get defaultErrors () {
+  get defaultErrors() {
     return {}
   }
 
-  async $validate (constraints) {
+  async $validate(constraints) {
     try {
       this.$errors = this.defaultErrors
       await validate.async(this, constraints, validate.globalOptions)
@@ -40,31 +43,29 @@ export class Model {
     }
   }
 
-  snapshot () {
-    Object.defineProperty(this, '_snapshot', {
-      value: _.assign({}, this)
-    })
+  snapshot() {
+    this[snapshotSymbol] = _.assign({}, this)
   }
 
-  hasChanged (property) {
+  hasChanged(property) {
+    const snapshot = this[snapshotSymbol]
     if (property) {
-      return !this.equals(this._snapshot[property], this[property])
+      return !this.equals(snapshot[property], this[property])
     }
-    return !_.keys(this._snapshot).reduce(
-      (acc, key) => acc && this.equals(this._snapshot[key], this[key]),
-      true)
+    return !_.keys(snapshot).reduce(
+        (acc, key) => acc && this.equals(snapshot[key], this[key]), true)
   }
 
-  equals (a, b) {
+  equals(a, b) {
     return _.isEqual(a, b)
   }
 
-  assign (data) {
+  assign(data) {
     _.assign(this, data)
   }
 }
 
-export async function exists (axios, url, data) {
+export async function exists(axios, url, data) {
   try {
     let response = await axios.get(url, {
       data: data,
@@ -81,6 +82,6 @@ export async function exists (axios, url, data) {
   }
 }
 
-export function uuid () {
+export function uuid() {
   return uuidv4()
 }

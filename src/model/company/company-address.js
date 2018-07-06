@@ -1,24 +1,25 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
+import {FetchableArray} from 'src/model/array'
+import {exists, Model, uuid} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+
+const removedSymbol = Symbol('removed')
 
 export class CompanyAddressModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {
       enabled: true,
       address: {}
     }
   }
 
-  get defaultErrors () {
+  get defaultErrors() {
     return {
       address: {}
     }
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new CompanyAddressModel()
     }
@@ -27,21 +28,29 @@ export class CompanyAddressModel extends Model {
     return new CompanyAddressModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return exists(api, `/company/addresses/${id}`)
   }
 
-  async create () {
-    this.id = uuid()
-    const response = await api.post('/company/addresses', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id
   }
 
-  async update () {
-    return await api.put(`/company/addresses/${this.id}`, this)
+  async save() {
+    if (this.phantom) {
+      this.id = uuid()
+      const response = await api.post('/company/addresses', this)
+      this.assign(response.data)
+    } else {
+      await api.put(`/company/addresses/${this.id}`, this)
+    }
   }
 
-  async validate (state) {
+  async delete() {
+    await api.delete(`/company/addresses/${this.id}`, this)
+  }
+
+  async validate() {
     let constraints = {
       companyId: {
         presence: true
@@ -68,73 +77,92 @@ export class CompanyAddressModel extends Model {
       },
       'address.detail': {
         presence: true,
-        length: {minimum: 5, maximum: 50}
+        length: {minimum: 3, maximum: 50}
       }
     }
 
     return await this.$validate(constraints)
   }
 
-  async validateCreate () {
-    return await
-        this.validate('create')
-  }
-
-  async validateUpdate () {
-    return await
-        this.validate('update')
-  }
 }
 
-export class CompanyAddressPaginationArray extends SpringPaginationArray {
-  url = '/company/addresses?${$QS}'
-  axios = api
-  model = CompanyAddressModel
+export const CompanyAddressArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/company/companies/${companyId}/addresses'
+      }
 
-  query = async (companyId) => {
-    return await this.fetch({
-      companyId: companyId
-    })
-  }
+      get axios() {
+        return api
+      }
 
-  validates = async () => {
-    const results = await Promise.all(
-        this.map(address => {
-          if (!address.id) {
-            return address.validateCreate()
-          } else if (address.hasChanged()) {
-            return address.validateUpdate()
-          }
-        }).filter(validate => !!validate)
-    )
-    // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-    return results.filter(valid => valid == false).length == 0
-  }
+      get model() {
+        return CompanyAddressModel
+      }
 
-  save = async () => {
-    await Promise.all(
-        this.map(address => {
-          if (!address.id) {
-            return address.create()
-          } else if (address.hasChanged()) {
-            return address.update()
-          }
-        }).filter(execute => !!execute)
-    )
-  }
+      initialize(companyId) {
+        super.initialize(companyId)
+        this.companyId = companyId
+        this[removedSymbol] = []
+      }
 
-}
+      async query() {
+        return await this.fetch({
+          companyId: this.companyId
+        })
+      }
 
-export class CompanyAddressLabelArray extends FetchableArray {
-  url = '/company/address-query-labels?${$QS}'
-  axios = api
+      async validates() {
+        const results = await Promise.all(
+            this.filter(address => !address.id || address.hasChanged())
+            .map(address => address.validate())
+        )
+        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
+        return results.filter(valid => valid == false).length == 0
+      }
 
-  query = async (companyId, keyword) => {
-    return await this.fetch({
-      companyId: companyId,
-      query: keyword || ''
-    })
-  }
-}
+      async save() {
+        await Promise.all(
+            this.filter(address => !address.id || address.hasChanged())
+            .map(address => address.save())
+        )
+        await Promise.all(
+            this[removedSymbol].map(address => address.delete())
+        )
+        this[removedSymbol] = []
+      }
+
+      remove(element) {
+        super.remove(element)
+        if (!element.phantom) {
+          this[removedSymbol].push(element)
+        }
+      }
+
+      clear() {
+        super.clear()
+        this[removedSymbol] = []
+      }
+    }
+)
+
+export const CompanyAddressLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/company/address-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      async query(companyId, keyword) {
+        return await this.fetch({
+          companyId: companyId,
+          query: keyword || ''
+        })
+      }
+    }
+)
 
 

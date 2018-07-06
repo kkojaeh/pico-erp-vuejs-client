@@ -1,10 +1,12 @@
-import { SpringPaginationArray } from 'src/model/array'
-import { Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
+import {SpringPaginationArray} from 'src/model/array'
+import {Model} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+import {FetchableArray} from "../array";
+import {LabelModel} from "../shared";
 
 export class CommentModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {
       subjectTypeId: null,
       subjectId: null,
@@ -12,12 +14,12 @@ export class CommentModel extends Model {
     }
   }
 
-  async create () {
+  async save() {
     const response = await api.post('/comment/comments', this)
     this.assign(response.data)
   }
 
-  async validateCreate () {
+  async validate() {
     return await this.$validate({
       comment: {
         presence: true,
@@ -27,8 +29,18 @@ export class CommentModel extends Model {
   }
 }
 
-export class CommentArray extends SpringPaginationArray {
-  url = '/comment/comments?${$QS}'
-  axios = api
-  model = CommentModel
-}
+export const CommentArray = Array.decorate(
+    class extends SpringPaginationArray {
+      get url() {
+        return '/comment/comments?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return CommentModel
+      }
+    }
+)

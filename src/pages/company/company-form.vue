@@ -173,7 +173,8 @@
             <ag-grid-column field="" header-name="" :width="40" suppress-sorting
                             cell-renderer-framework="ag-grid-icon-renderer"
                             :cell-renderer-params="{handler:onAddressSearch, icon:'search', link:true}"/>
-            <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90" :cell-style="{textAlign: 'center'}" />
+            <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
+                            :cell-style="{textAlign: 'center'}"/>
             <ag-grid-column field="address.street" header-name="주소" :width="220"/>
             <ag-grid-column field="address.detail" header-name="상세주소" :width="180" :editable="true"
                             cell-editor-framework="ag-grid-input-editor"
@@ -215,10 +216,10 @@
 <script>
   import {mapGetters} from 'vuex'
   import {
+    CompanyAddressArray,
     CompanyAddressModel,
-    CompanyAddressPaginationArray,
+    CompanyContactArray,
     CompanyContactModel,
-    CompanyContactPaginationArray,
     CompanyModel
   } from 'src/model/company'
   import {AddressSelector} from 'src/model/data'
@@ -240,10 +241,8 @@
     data() {
       return {
         model: new CompanyModel(),
-        contacts: new CompanyContactPaginationArray(),
-        addresses: new CompanyAddressPaginationArray(),
-        removedContacts: [],
-        removedAddresses: [],
+        contacts: new CompanyContactArray(),
+        addresses: new CompanyAddressArray(),
         creating: false,
         enabled: true,
         selectedContact: null,
@@ -256,10 +255,6 @@
       }
     },
     methods: {
-      addressRenderer(params) {
-        let address = params.value
-        return `[${address.postalCode}] ${address.street} ${address.detail}`
-      },
       async create() {
         this.creating = true
         this.model = new CompanyModel()
@@ -269,14 +264,11 @@
       async show() {
         this.creating = false
         this.model = await CompanyModel.get(this.id)
-        await this.contacts.query(this.id)
-        this.contacts.forEach((contact) => {
-          contact.snapshot()
-        })
-        await this.addresses.query(this.id)
-        this.addresses.forEach((address) => {
-          address.snapshot()
-        })
+        this.contacts = new CompanyContactArray(this.id)
+        this.addresses = new CompanyAddressArray(this.id)
+        await this.addresses.query()
+        await this.contacts.query()
+
         /*
         this.contacts.push(new CompanyContactModel())
         this.contacts.push(new CompanyContactModel())
@@ -305,9 +297,7 @@
       },
 
       async _onSaveClick() {
-        let valid = this.creating ? await this.model.validateCreate()
-            : await this.model.validateUpdate()
-
+        let valid = await this.model.validate()
         valid = await this.contacts.validates() && valid
         valid = await this.addresses.validates() && valid
 
@@ -326,11 +316,7 @@
         }
       },
       async save() {
-        if (this.creating) {
-          await this.model.create()
-        } else {
-          await this.model.update()
-        }
+        await this.model.save()
         await this.contacts.save()
         await this.addresses.save()
       },
@@ -345,9 +331,6 @@
         const name = this.selectedContact.contact.name || '이름 없음'
         const ok = await this.$alert.confirm(`'${name}' 의 연락처를 삭제 하시겠습니까?`)
         if (ok) {
-          if (this.selectedContact.id) {
-            this.removedContacts.push(this.selectedContact)
-          }
           this.contacts.remove(this.selectedContact)
         }
       },
@@ -362,9 +345,6 @@
         const name = this.selectedAddress.name || '이름 없음'
         const ok = await this.$alert.confirm(`'${name}' 의 주소지를 삭제 하시겠습니까?`)
         if (ok) {
-          if (this.selectedAddress.id) {
-            this.removedContacts.push(this.selectedContact)
-          }
           this.addresses.remove(this.selectedAddress)
         }
       }

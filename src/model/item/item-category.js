@@ -1,38 +1,39 @@
-import { FetchableArray } from 'src/model/array'
-import { exists, Model, uuid } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
+import {FetchableArray} from 'src/model/array'
+import {exists, Model, uuid} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+import {language, languageAliases} from 'src/i18n'
+import {LabelModel} from 'src/model/shared'
 
 export class ItemCategoryModel extends Model {
 
-  get defaults () {
+  get defaults() {
     return {}
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new ItemCategoryModel()
     }
     const response = await api.get(
-      `/item/categories/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+        `/item/categories/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new ItemCategoryModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return await exists(api, `/item/categories/${id}`)
   }
 
-  async create () {
+  async create() {
     this.id = uuid()
     const response = await api.post('/item/categories', this)
     this.assign(response.data)
   }
 
-  async update () {
+  async update() {
     return api.put(`/item/categories/${this.id}`, this)
   }
 
-  async validate (state) {
+  async validate(state) {
     let constraints = {
       name: {
         presence: true,
@@ -53,33 +54,52 @@ export class ItemCategoryModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate () {
+  async validateCreate() {
     return await
-      this.validate('create')
+        this.validate('create')
   }
 
-  async validateUpdate () {
+  async validateUpdate() {
     return await
-      this.validate('update')
+        this.validate('update')
   }
 
 }
 
-export class ItemCategoryHierarchyArray extends FetchableArray {
-  url = '/item/categories'
-  axios = api
-  model = ItemCategoryModel
-}
+export const ItemCategoryHierarchyArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/item/categories'
+      }
 
-export class ItemCategoryLabelArray extends FetchableArray {
-  url = '/item/category-query-labels?${$QS}'
-  axios = api
+      get axios() {
+        return api
+      }
 
-  query = (keyword) => {
-    return this.fetch({
-      query: keyword || ''
-    })
-  }
-}
+      get model() {
+        return ItemCategoryModel
+      }
+    }
+)
 
+export const ItemCategoryLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/item/category-query-labels?${$QS}'
+      }
 
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async query(keyword) {
+        return await this.fetch({
+          query: keyword || ''
+        })
+      }
+    }
+)

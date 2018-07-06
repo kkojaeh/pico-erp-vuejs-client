@@ -3,18 +3,38 @@ export * from './item-spec'
 export * from './item-spec-type'
 export * from './item-category'
 
-import { api } from 'src/plugins/axios'
-import { FetchableArray } from 'src/model/array'
-import { LabelModel } from 'src/model/shared'
+import {api} from 'src/plugins/axios'
+import {FetchableArray} from 'src/model/array'
+import {LabelModel} from 'src/model/shared'
 
-export class ItemTypeArray extends FetchableArray {
-  url = '/item/item-type-labels'
-  axios = api
-  model = LabelModel
-}
+export const ItemTypeArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/item/item-type-labels'
+      }
 
-export class ItemStatusArray extends FetchableArray {
-  url = '/item/item-status-labels'
-  axios = api
-  model = LabelModel
-}
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+    }
+)
+
+export const ItemStatusArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/item/item-status-labels'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+    }
+)

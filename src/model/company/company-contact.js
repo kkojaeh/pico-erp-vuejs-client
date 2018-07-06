@@ -1,6 +1,8 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {FetchableArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
+
+const removedSymbol = Symbol('removed')
 
 export class CompanyContactModel extends Model {
 
@@ -30,17 +32,25 @@ export class CompanyContactModel extends Model {
     return exists(api, `/company/contacts/${id}`)
   }
 
-  async create() {
-    this.id = uuid()
-    const response = await api.post('/company/contacts', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id
   }
 
-  async update() {
-    return await api.put(`/company/contacts/${this.id}`, this)
+  async save() {
+    if (this.phantom) {
+      this.id = uuid()
+      const response = await api.post('/company/contacts', this)
+      this.assign(response.data)
+    } else {
+      await api.put(`/company/contacts/${this.id}`, this)
+    }
   }
 
-  async validate(state) {
+  async delete() {
+    await api.delete(`/company/contacts/${this.id}`, this)
+  }
+
+  async validate() {
     let constraints = {
       companyId: {
         presence: true
@@ -74,66 +84,83 @@ export class CompanyContactModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate() {
-    return await
-        this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await
-        this.validate('update')
-  }
 }
 
-export class CompanyContactPaginationArray extends SpringPaginationArray {
-  url = '/company/contacts?${$QS}'
-  axios = api
-  model = CompanyContactModel
+export const CompanyContactArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/company/companies/${companyId}/contacts'
+      }
 
-  query = async (companyId) => {
-    return await this.fetch({
-      companyId: companyId
-    })
-  }
+      get axios() {
+        return api
+      }
 
-  validates = async () => {
-    const results = await Promise.all(
-        this.map(contact => {
-          if (!contact.id) {
-            return contact.validateCreate()
-          } else if (contact.hasChanged()) {
-            return contact.validateUpdate()
-          }
-        }).filter(validate => !!validate)
-    )
-    // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-    return results.filter(valid => valid == false).length == 0
-  }
+      get model() {
+        return CompanyContactModel
+      }
 
-  save = async () => {
-    await Promise.all(
-        this.map(contact => {
-          if (!contact.id) {
-            return contact.create()
-          } else if (contact.hasChanged()) {
-            return contact.update()
-          }
-        }).filter(execute => !!execute)
-    )
-  }
+      initialize(companyId) {
+        super.initialize(companyId)
+        this.companyId = companyId
+        this[removedSymbol] = []
+      }
 
-}
+      async query() {
+        return await this.fetch({
+          companyId: this.companyId
+        })
+      }
 
-export class CompanyContactLabelArray extends FetchableArray {
-  url = '/company/contact-query-labels?${$QS}'
-  axios = api
+      async validates() {
+        const results = await Promise.all(
+            this.filter(contact => !contact.id || contact.hasChanged())
+            .map(contact => contact.validate())
+        )
+        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
+        return results.filter(valid => valid == false).length == 0
+      }
 
-  query = async (companyId, keyword) => {
-    return await this.fetch({
-      companyId: companyId,
-      query: keyword || ''
-    })
-  }
-}
+      async save() {
+        await Promise.all(
+            this.filter(contact => !contact.id || contact.hasChanged())
+            .map(contact => contact.save())
+        )
+        await Promise.all(
+            this[removedSymbol].map(contact => contact.delete())
+        )
+        this[removedSymbol] = []
+      }
 
+      remove(element) {
+        super.remove(element)
+        if (!element.phantom) {
+          this[removedSymbol].push(element)
+        }
+      }
 
+      clear() {
+        super.clear()
+        this[removedSymbol] = []
+      }
+    }
+)
+
+export const CompanyContactLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/company/contact-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      async query(companyId, keyword) {
+        return await this.fetch({
+          companyId: companyId,
+          query: keyword || ''
+        })
+      }
+    }
+)

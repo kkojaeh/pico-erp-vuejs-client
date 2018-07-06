@@ -376,7 +376,7 @@
             modal.hide()
             data.processId = processModel.id
             if (creating) {
-              await data.update()
+              await data.save()
             }
             await this.load()
           })
