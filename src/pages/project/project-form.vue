@@ -53,6 +53,10 @@
 
       <q-card-title>
         고객 정보
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts" @click="loadCompanyContacts"
+           :disabled="!model.customerId"/>
+        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -164,10 +168,10 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { ProjectModel } from 'src/model/project'
-  import { CompanyLabelArray, CompanyModel } from 'src/model/company'
-  import { UserLabelArray, UserModel } from 'src/model/user'
+  import {mapGetters} from 'vuex'
+  import {ProjectModel} from 'src/model/project'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
 
@@ -184,7 +188,7 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new ProjectModel(),
         companyLabels: new CompanyLabelArray(),
@@ -195,7 +199,7 @@
         enabled: true
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
@@ -203,23 +207,23 @@
       this.userLabels.query()
     },
     methods: {
-      async onCustomerSearch (keyword, done) {
+      async onCustomerSearch(keyword, done) {
         await this.companyLabels.query(keyword)
         done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
       },
-      async create () {
+      async create() {
         this.creating = true
         this.model = new ProjectModel()
       },
-      async show () {
+      async show() {
         this.creating = false
         this.model = await ProjectModel.get(this.id)
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -234,10 +238,14 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         const attachment = this.$refs.attachment
         await attachment.save()
         await this.model.save()
+      },
+
+      async loadCompanyContacts() {
+
       }
     },
     computed: {
