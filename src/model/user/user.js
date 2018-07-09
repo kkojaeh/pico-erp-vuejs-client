@@ -57,17 +57,22 @@ export class UserModel extends Model {
     return await exists(api, `/user/users/${id}`)
   }
 
-  async create() {
-    const response = api.post('/user/users', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id || this.hasChanged("id")
   }
 
-  async update() {
-    await api.put(`/user/users/${this.id}`, this)
+  async save() {
+    if(this.phantom){
+      const response = api.post('/user/users', this)
+      this.assign(response.data)
+    }else{
+      await api.put(`/user/users/${this.id}`, this)
+    }
   }
 
-  async validate(state) {
-    let constraints = {
+  async validate() {
+    const phantom = this.phantom
+    const constraints = {
       id: {
         presence: true,
         length: {minimum: 2, maximum: 50},
@@ -75,7 +80,7 @@ export class UserModel extends Model {
           if (!value) {
             return
           }
-          if (state !== 'create') {
+          if (!phantom) {
             return
           }
           let result = await UserModel.exists(value)
@@ -102,14 +107,6 @@ export class UserModel extends Model {
 
     }
     return await this.$validate(constraints)
-  }
-
-  async validateCreate() {
-    return await this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await this.validate('update')
   }
 
 }

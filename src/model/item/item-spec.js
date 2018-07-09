@@ -29,7 +29,7 @@ export class ItemSpecModel extends Model {
     return await exists(api, `/item/specs/${id}`)
   }
 
-  async update () {
+  async save () {
     await api.put(`/item/specs/${this.id}`, this)
   }
 

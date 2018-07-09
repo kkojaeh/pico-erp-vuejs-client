@@ -39,6 +39,8 @@ export class Model {
           Vue.set(this.$errors, key, errors[key])
         })
         return false
+      } else {
+        console.error(e)
       }
     }
   }

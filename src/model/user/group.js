@@ -47,21 +47,26 @@ export class GroupModel extends Model {
     return new GroupModel(response.data)
   }
 
+  get phantom() {
+    return !this.id || this.hasChanged("id")
+  }
+
   static async exists(id) {
     return await exists(api, `/user/groups/${id}`)
   }
 
-  async create() {
-    const response = await api.post('/user/groups', this)
-    this.assign(response.data)
+  async save() {
+    if(this.phantom) {
+      const response = await api.post('/user/groups', this)
+      this.assign(response.data)
+    }else{
+      await api.put(`/user/groups/${this.id}`, this)
+    }
   }
 
-  async update() {
-    await api.put(`/user/groups/${this.id}`, this)
-  }
-
-  async validate(state) {
-    let constraints = {
+  async validate() {
+    const phantom = this.phantom
+    const constraints = {
       id: {
         presence: true,
         length: {minimum: 2, maximum: 50},
@@ -69,7 +74,7 @@ export class GroupModel extends Model {
           if (!value) {
             return
           }
-          if (!state !== 'create') {
+          if (!phantom) {
             return
           }
           let result = await GroupModel.exists(value)
@@ -82,14 +87,6 @@ export class GroupModel extends Model {
       }
     }
     return await this.$validate(constraints)
-  }
-
-  async validateCreate() {
-    return await this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await this.validate('update')
   }
 
 }

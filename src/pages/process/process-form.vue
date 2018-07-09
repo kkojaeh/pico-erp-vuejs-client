@@ -124,7 +124,7 @@
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
-        <q-btn v-if="isModifiable" flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn v-if="isModifiable" flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -206,9 +206,8 @@
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
         this.managerModel = await UserModel.get(this.model.managerId)
       },
-      async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateCreate()
-          : await this.model.validateUpdate()
+      async onSaveClick () {
+        let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -225,11 +224,7 @@
       async save () {
         const attachment = this.$refs.attachment
         await attachment.save()
-        if (this.creating) {
-          await this.model.create()
-        } else {
-          await this.model.update()
-        }
+        await this.model.save()
         this.$emit('saved', this.model)
       },
 

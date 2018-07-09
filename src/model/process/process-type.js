@@ -70,16 +70,21 @@ export class ProcessTypeModel extends Model {
 
   }
 
-  async create() {
-    return await api.post('/process/process-types', this)
+  get phantom() {
+    return !this.id || this.hasChanged("id")
   }
 
-  async update() {
-    await api.put(`/process/process-types/${this.id}`, this)
+  async save() {
+    if(this.phantom){
+      await api.post('/process/process-types', this)
+    }else{
+      await api.put(`/process/process-types/${this.id}`, this)
+    }
   }
 
-  async validate(state) {
-    let constraints = {
+  async validate() {
+    const phantom = this.phantom
+    const constraints = {
       id: {
         presence: true,
         length: {minimum: 2, maximum: 50},
@@ -93,7 +98,7 @@ export class ProcessTypeModel extends Model {
           if (!value) {
             return
           }
-          if (state !== 'create') {
+          if (!phantom) {
             return
           }
           return await ProcessTypeModel.exists(value)
@@ -123,19 +128,12 @@ export class ProcessTypeModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate() {
-    return await this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await this.validate('update')
-  }
 }
 
 export const ProcessTypePaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/process/process-types'
+        return '/process/process-types?${$QS}'
       }
 
       get axios() {

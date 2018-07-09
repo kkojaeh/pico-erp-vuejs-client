@@ -48,14 +48,18 @@ export class ItemModel extends Model {
     return data
   }
 
-  async create() {
-    this.id = uuid()
-    const response = await api.post('/item/items', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id
   }
 
-  async update() {
-    await api.put(`/item/items/${this.id}`, this)
+  async save() {
+    if(this.phantom) {
+      this.id = uuid()
+      const response = await api.post('/item/items', this)
+      this.assign(response.data)
+    }else{
+      await api.put(`/item/items/${this.id}`, this)
+    }
   }
 
   async activate() {
@@ -66,7 +70,7 @@ export class ItemModel extends Model {
     return api.put(`/item/items/${this.id}/deactivate`, this)
   }
 
-  async validate(state) {
+  async validate() {
     let constraints = {
       name: {
         presence: true,
@@ -107,14 +111,6 @@ export class ItemModel extends Model {
       }
     }
     return await this.$validate(constraints)
-  }
-
-  async validateCreate() {
-    return await this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await this.validate('update')
   }
 
 }

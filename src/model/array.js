@@ -170,6 +170,7 @@ export class PaginationArray extends FetchableArray {
 export class SpringPaginationArray extends PaginationArray {
 
   resolveUrl(url, data) {
+
     let query = {
       size: this.size,
       page: this.page - 1

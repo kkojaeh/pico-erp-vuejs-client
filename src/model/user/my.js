@@ -25,7 +25,7 @@ export class MyModel extends Model {
 
 export class PasswordChangeModel extends Model {
 
-  async validate(state) {
+  async validate() {
     let constraints = {
       id: {
         presence: true

@@ -23,17 +23,21 @@ export class ItemCategoryModel extends Model {
     return await exists(api, `/item/categories/${id}`)
   }
 
-  async create() {
-    this.id = uuid()
-    const response = await api.post('/item/categories', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id
   }
 
-  async update() {
-    return api.put(`/item/categories/${this.id}`, this)
+  async save() {
+    if(this.phantom) {
+      this.id = uuid()
+      const response = await api.post('/item/categories', this)
+      this.assign(response.data)
+    }else{
+      await api.put(`/item/categories/${this.id}`, this)
+    }
   }
 
-  async validate(state) {
+  async validate() {
     let constraints = {
       name: {
         presence: true,
@@ -52,16 +56,6 @@ export class ItemCategoryModel extends Model {
     }
 
     return await this.$validate(constraints)
-  }
-
-  async validateCreate() {
-    return await
-        this.validate('create')
-  }
-
-  async validateUpdate() {
-    return await
-        this.validate('update')
   }
 
 }

@@ -206,7 +206,7 @@
             <audit-viewer ref="auditViewer" :url="`/audit/company/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -268,15 +268,6 @@
         this.addresses = new CompanyAddressArray(this.id)
         await this.addresses.query()
         await this.contacts.query()
-
-        /*
-        this.contacts.push(new CompanyContactModel())
-        this.contacts.push(new CompanyContactModel())
-        this.contacts.forEach(async (c, index) => {
-          await c.validateCreate()
-          Vue.set(this.contacts, index, c)
-        })
-        */
       },
       onContactSelectionChanged(event) {
         this.selectedContact = event.api.getSelectedRows()[0]
@@ -296,7 +287,7 @@
         grid.api.redrawRows()
       },
 
-      async _onSaveClick() {
+      async onSaveClick() {
         let valid = await this.model.validate()
         valid = await this.contacts.validates() && valid
         valid = await this.addresses.validates() && valid
