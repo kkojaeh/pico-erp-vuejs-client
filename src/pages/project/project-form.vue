@@ -19,7 +19,7 @@
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
-        <q-field ref="registrationNumber" icon="account_box" helper="담당자를 선택하세요"
+        <q-field icon="account_box" helper="담당자를 선택하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
@@ -54,8 +54,24 @@
       <q-card-title>
         고객 정보
         <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts" @click="loadCompanyContacts"
-           :disabled="!model.customerId"/>
+          <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts" @click="selectCompanyContact"
+           :disabled="!model.customerId" v-show="!companyContactSelecting"/>
+          <q-field helper="담당자를 선택하세요"
+                   v-show="companyContactSelecting">
+            <c-autocomplete-select v-model="selectedCompanyContactId"
+                                   class="col-xs-12 col-md-6 col-xl-6"
+                                   ref="companyContactSelect"
+                                   float-label="담당자 이름"
+                                   :options="companyContactLabels"
+                                   label-field="label" value-field="value"
+                                   @search="onCompanyContactSearch"
+                                  @blur="companyContactSelecting = false">
+              <template slot="option" slot-scope="option">
+                {{option.label}}<br>
+                {{option.stamp}} - {{option.subLabel}}
+              </template>
+            </c-autocomplete-select>
+          </q-field>
         </div>
       </q-card-title>
 
@@ -163,14 +179,13 @@
       </q-toolbar>
     </q-page-sticky>
 
-
   </q-page>
 
 </template>
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectModel} from 'src/model/project'
-  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel, CompanyContactLabelArray, CompanyContactModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
@@ -195,8 +210,11 @@
         userLabels: new UserLabelArray(),
         managerModel: new UserModel(),
         customerModel: new CompanyModel(),
+        companyContactLabels: new CompanyContactLabelArray(),
         creating: false,
-        enabled: true
+        enabled: true,
+        selectedCompanyContactId: null,
+        companyContactSelecting: false
       }
     },
     mounted() {
@@ -213,6 +231,11 @@
       },
       async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
+        done()
+      },
+
+      async onCompanyContactSearch(keyword, done) {
+        await this.companyContactLabels.query(this.model.customerId, keyword)
         done()
       },
       async create() {
@@ -244,8 +267,12 @@
         await this.model.save()
       },
 
-      async loadCompanyContacts() {
-
+      async selectCompanyContact() {
+        await this.companyContactLabels.query(this.model.customerId)
+        this.companyContactSelecting = true
+        this.$nextTick(() => {
+          this.$refs.companyContactSelect.focus()
+        })
       }
     },
     computed: {
@@ -257,6 +284,20 @@
       },
       'model.customerId': async function (to) {
         this.customerModel = await CompanyModel.get(to, true)
+      },
+      'selectedCompanyContactId': async function(to) {
+        if(to){
+          const model = this.model
+          const companyContact = await CompanyContactModel.get(to, true)
+
+          model.customerManagerContact.name = companyContact.contact.name
+          model.customerManagerContact.email = companyContact.contact.email
+          model.customerManagerContact.faxNumber = companyContact.contact.faxNumber
+          model.customerManagerContact.mobilePhoneNumber = companyContact.contact.mobilePhoneNumber
+          model.customerManagerContact.telephoneNumber = companyContact.contact.telephoneNumber
+          this.selectedCompanyContactId = null
+          this.companyContactSelecting = false
+        }
       }
     },
     components: {
