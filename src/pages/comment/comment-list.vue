@@ -99,9 +99,9 @@
         this.registering = true
         this.model.subjectId = this.subject
         this.model.subjectTypeId = this.subjectType
-        const valid = await this.model.validateCreate()
+        const valid = await this.model.validate()
         if (valid) {
-          await this.model.create()
+          await this.model.save()
           await this.load()
           this.model = new CommentModel()
         } else {

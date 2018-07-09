@@ -2,18 +2,38 @@ export * from './process-info-type'
 export * from './process-type'
 export * from './process'
 
-import { api } from 'src/plugins/axios'
-import { LabelModel } from 'src/model/shared'
-import { FetchableArray } from 'src/model/array'
+import {api} from 'src/plugins/axios'
+import {LabelModel} from 'src/model/shared'
+import {FetchableArray} from 'src/model/array'
 
-export class ProcessDifficultyArray extends FetchableArray {
-  url = '/process/process-difficulty-labels'
-  axios = api
-  model = LabelModel
-}
+export const ProcessDifficultyArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/process/process-difficulty-labels'
+      }
 
-export class ProcessStatusArray extends FetchableArray {
-  url = '/process/process-status-labels'
-  axios = api
-  model = LabelModel
-}
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+    }
+)
+
+export const ProcessStatusArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/process/process-status-labels'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+    }
+)

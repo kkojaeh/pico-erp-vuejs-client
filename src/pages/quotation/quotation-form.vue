@@ -446,7 +446,7 @@
         <q-btn flat icon="clear" @click="cancel()" v-show="model.cancelable" label="취소"></q-btn>
         <q-btn flat icon="file_download" @click="printSheet()" v-show="model.sheetPrintable"
                label="출력"></q-btn>
-        <q-btn flat icon="save" v-if="isInfoTab" @click="_onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" v-if="isInfoTab" @click="onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -567,7 +567,7 @@
         if (e.newValue == e.oldValue) {
           return
         }
-        await e.data.update()
+        await e.data.save()
         this.load()
       },
       percentGetValue (value) {
@@ -622,9 +622,8 @@
         this.itemAdditionArray = this.model.itemAdditions
         this.additionArray = this.model.additions
       },
-      async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateCreate()
-          : await this.model.validateUpdate()
+      async onSaveClick () {
+        let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -652,11 +651,7 @@
       async save () {
         const attachment = this.$refs.attachment
         await attachment.save()
-        if (this.creating) {
-          await this.model.create()
-        } else {
-          await this.model.update()
-        }
+        await this.model.save()
         this.$emit('saved', this.model)
       },
       /**

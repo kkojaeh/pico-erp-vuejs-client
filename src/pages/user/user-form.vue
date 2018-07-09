@@ -124,7 +124,7 @@
             <audit-viewer ref="auditViewer" :url="`/audit/user/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -180,9 +180,8 @@
         await this.departmentLabels.query(keyword)
         done()
       },
-      async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateCreate()
-          : await this.model.validateUpdate()
+      async onSaveClick () {
+        let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -197,11 +196,7 @@
         }
       },
       async save () {
-        if (this.creating) {
-          await this.model.create()
-        } else {
-          await this.model.update()
-        }
+        await this.model.save()
       },
       async fetchRoles () {
         let array = await this.roleArray.fetch({

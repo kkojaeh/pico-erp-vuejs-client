@@ -35,14 +35,29 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { date } from 'quasar'
-  import { FetchableArray } from 'src/model/array'
-  import { api } from 'src/plugins/axios'
+  import {mapGetters} from 'vuex'
+  import {date} from 'quasar'
+  import {FetchableArray} from 'src/model/array'
+  import {api} from 'src/plugins/axios'
 
-  class AuditArray extends FetchableArray {
-    axios = api
-  }
+  const urlSymbol = Symbol('url')
+
+  export const AuditArray = Array.decorate(
+      class extends FetchableArray {
+
+        set url(value) {
+          this[urlSymbol] = value
+        }
+
+        get url() {
+          return this[urlSymbol]
+        }
+
+        get axios() {
+          return api
+        }
+      }
+  )
 
   export default {
     name: 'audit-viewer',
@@ -52,33 +67,33 @@
         required: true
       }
     },
-    data () {
+    data() {
       return {
         array: new AuditArray()
       }
     },
     methods: {
-      load () {
+      load() {
         this.array.url = this.url
         this.array.fetch({})
       },
-      printCommit (item) {
+      printCommit(item) {
         if (item.initial) {
           return '최초 생성 했습니다'
         } else {
           return '변경 했습니다'
         }
       },
-      isFromTo (change) {
+      isFromTo(change) {
         return change.from !== undefined && change.to !== undefined
       },
-      isAddedAndRemoved (change) {
+      isAddedAndRemoved(change) {
         return change.added && change.added.length && change.removed && change.removed.length
       },
-      isAddedOnly (change) {
+      isAddedOnly(change) {
         return change.added && change.added.length
       },
-      isRemovedOnly (change) {
+      isRemovedOnly(change) {
         return change.removed && change.removed.length
       }
     },
@@ -86,7 +101,7 @@
       ...mapGetters([])
     },
     components: {},
-    mounted () {
+    mounted() {
     }
   }
 </script>

@@ -1,9 +1,10 @@
-import { FetchableArray, SpringPaginationArray } from 'src/model/array'
-import { exists, Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
-import { language, languageAliases } from 'src/i18n'
+import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {exists, Model} from 'src/model/model'
+import {api} from 'src/plugins/axios'
+import {language, languageAliases} from 'src/i18n'
 import qs from 'qs'
-import store from '../../store'
+import store from 'src/store'
+import {LabelModel} from 'src/model/shared'
 
 export class DepartmentImportOptions {
 
@@ -19,55 +20,60 @@ export class DepartmentExportOptions {
 
 export class DepartmentModel extends Model {
 
-  static get importByXlsxUrl () {
+  static get importByXlsxUrl() {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
-      + store.getters['auth/token']
+        + store.getters['auth/token']
     return `${host}/user/import/departments/xlsx?${authQs}`
   }
 
-  get defaults () {
+  get defaults() {
     return {
       customerManagerContact: {}
     }
   }
 
-  static exportAsXlsx (options) {
+  static exportAsXlsx(options) {
     const host = api.defaults.baseURL
     const authQs = store.getters['auth/tokenParameterName'] + '='
-      + store.getters['auth/token']
+        + store.getters['auth/token']
     const link = document.createElement('a')
     link.href = `${host}/user/export/departments/xlsx?${qs.stringify(
-      options)}&${authQs}`
+        options)}&${authQs}`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
 
-  static async get (id, cacheable) {
+  static async get(id, cacheable) {
     if (!id) {
       return new DepartmentModel()
     }
     const response = await api.get(
-      `/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+        `/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new DepartmentModel(response.data)
   }
 
-  static async exists (id) {
+  static async exists(id) {
     return await exists(api, `/user/departments/${id}`)
   }
 
-  async create () {
-    const response = await api.post('/user/departments', this)
-    this.assign(response.data)
+  get phantom() {
+    return !this.id || this.hasChanged("id")
   }
 
-  async update () {
-    await api.put(`/user/departments/${this.id}`, this)
+  async save() {
+    if(this.phantom) {
+      const response = await api.post('/user/departments', this)
+      this.assign(response.data)
+    }else{
+      await api.put(`/user/departments/${this.id}`, this)
+    }
   }
 
-  async validate (state) {
-    let constraints = {
+  async validate() {
+    const phantom = this.phantom
+    const constraints = {
       id: {
         presence: true,
         length: {minimum: 2, maximum: 50},
@@ -81,7 +87,7 @@ export class DepartmentModel extends Model {
           if (!value) {
             return
           }
-          if (state !== 'create') {
+          if (!phantom) {
             return
           }
           return await DepartmentModel.exists(value)
@@ -99,32 +105,42 @@ export class DepartmentModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateCreate () {
-    return await
-      this.validate('create')
-  }
-
-  async validateUpdate () {
-    return await
-      this.validate('update')
-  }
 }
 
-export class DepartmentPaginationArray extends SpringPaginationArray {
-  url = '/user/departments?${$QS}'
-  axios = api
-  model = DepartmentModel
-}
+export const DepartmentPaginationArray = Array.decorate(
+    class extends SpringPaginationArray {
+      get url() {
+        return '/user/departments?${$QS}'
+      }
 
-export class DepartmentLabelArray extends FetchableArray {
-  url = '/user/department-query-labels?${$QS}'
-  axios = api
+      get axios() {
+        return api
+      }
 
-  query = (keyword) => {
-    return this.fetch({
-      query: keyword || ''
-    })
-  }
-}
+      get model() {
+        return DepartmentModel
+      }
+    }
+)
 
+export const DepartmentLabelArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/user/department-query-labels?${$QS}'
+      }
 
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async query(keyword) {
+        return await this.fetch({
+          query: keyword || ''
+        })
+      }
+    }
+)

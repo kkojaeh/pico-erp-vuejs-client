@@ -1,15 +1,22 @@
-import { FetchableArray } from 'src/model/array'
-import { Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
+import {FetchableArray} from 'src/model/array'
+import {Model} from 'src/model/model'
+import {api} from 'src/plugins/axios'
 
-export class MyMenuArray extends FetchableArray {
-  url = '/user/me/menus'
-  axios = api
-}
+export const MyMenuArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/user/me/menus'
+      }
+
+      get axios() {
+        return api
+      }
+    }
+)
 
 export class MyModel extends Model {
 
-  static async get () {
+  static async get() {
     const response = await api.get('/user/me')
     return new MyModel(response.data)
   }
@@ -18,7 +25,7 @@ export class MyModel extends Model {
 
 export class PasswordChangeModel extends Model {
 
-  async validate (state) {
+  async validate() {
     let constraints = {
       id: {
         presence: true
@@ -40,7 +47,7 @@ export class PasswordChangeModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async change () {
+  async change() {
     const response = api.put(`/user/users/${this.id}/password`, this)
     this.assign(response.data)
   }

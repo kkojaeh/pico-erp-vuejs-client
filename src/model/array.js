@@ -3,14 +3,76 @@ import qs from 'qs'
 
 /* eslint-disable */
 
-export class FetchableArray extends Array {
-  axios = null
-  url = null
-  model = null
-  fetched = false
-  fetching = false
+function getDescriptors(prototype, descriptors = {}) {
+  if (prototype == Object.prototype) {
+    return descriptors
+  } else {
+    const owns = Object.getOwnPropertyDescriptors(prototype)
+    _.forIn(owns, (value, key) => {
+      if (!descriptors[key]) {
+        descriptors[key] = value
+      }
+    })
+    return getDescriptors(Object.getPrototypeOf(prototype), descriptors)
+  }
+}
 
-  fetch = async (data) => {
+Array.decorate = (ArrayDecoratorType) => {
+  return class extends Array {
+    constructor(...args) {
+      super()
+      Object.defineProperties(this, getDescriptors(ArrayDecoratorType.prototype))
+      this.initialize(args)
+    }
+  }
+}
+
+class ArrayDecorator {
+
+  initialize(...args) {
+
+  }
+
+}
+
+const fetchedSymbol = Symbol('fetched')
+const fetchingSymbol = Symbol('fetching')
+
+export class FetchableArray extends ArrayDecorator{
+
+  get axis() {
+    throw new Error('not implemented')
+  }
+
+  get url() {
+    throw new Error('not implemented')
+  }
+
+  get model() {
+  }
+
+  get fetched() {
+    return this[fetchedSymbol]
+  }
+
+  set fetched(value) {
+    this[fetchedSymbol] = value
+  }
+
+  get fetching() {
+    return this[fetchingSymbol]
+  }
+
+  set fetching(value) {
+    this[fetchingSymbol] = value
+  }
+
+  initialize(...args) {
+    this.fetched = false
+    this.fetching = false
+  }
+
+  async fetch(data) {
     this.fetching = true
     let result = await this.axios.get(this.resolveUrl(this.url, data),
         {data: data})
@@ -19,14 +81,18 @@ export class FetchableArray extends Array {
       if (this.model) {
         parsed = parsed.map((o) => new this.model(o))
       }
-      this.splice.apply(this, [0, this.length].concat(parsed))
+      try {
+        this.splice.apply(this, [0, this.length].concat(parsed))
+      }catch(e){
+        debugger
+      }
     }
     this.fetching = false
     this.fetched = true
     return parsed
   }
 
-  resolveUrl = (url, data) => {
+  resolveUrl(url, data) {
     if (data) {
       data = _.assign({}, data)
       data.$QS = qs.stringify(data)
@@ -34,32 +100,77 @@ export class FetchableArray extends Array {
     return _.template(url)(data)
   }
 
-  parse = (response) => {
+  parse(response) {
     return response.data
   }
 
-  clear = () => {
+  clear() {
     this.splice(0, this.length)
   }
 
-  remove = (element) => {
+  remove(element) {
     const index = this.indexOf(element)
     if (index > -1) {
       return this.splice(index, 1)
     }
     throw new Error('not found element')
   }
+
 }
 
+const totalSymbol = Symbol('total')
+const sizeSymbol = Symbol('size')
+const pageSymbol = Symbol('page')
+const sortersSymbol = Symbol('sorters')
+
 export class PaginationArray extends FetchableArray {
-  total = 0
-  size = 20
-  page = 1
-  sorters = null
+
+  initialize(...args) {
+    super.initialize(args)
+    this.total = 0
+    this.size = 20
+    this.page = 1
+    this.sorters = null
+  }
+
+  get total() {
+    return this[totalSymbol]
+  }
+
+  set total(value) {
+    this[totalSymbol] = value
+  }
+
+  get size() {
+    return this[sizeSymbol]
+  }
+
+  set size(value) {
+    this[sizeSymbol] = value
+  }
+
+  get page() {
+    return this[pageSymbol]
+  }
+
+  set page(value) {
+    this[pageSymbol] = value
+  }
+
+  get sorters() {
+    return this[sortersSymbol]
+  }
+
+  set sorters(value) {
+    this[sortersSymbol] = value
+  }
+
 }
 
 export class SpringPaginationArray extends PaginationArray {
-  resolveUrl = (url, data) => {
+
+  resolveUrl(url, data) {
+
     let query = {
       size: this.size,
       page: this.page - 1
@@ -82,7 +193,7 @@ export class SpringPaginationArray extends PaginationArray {
     return _.template(url)(query)
   }
 
-  parse = (response) => {
+  parse(response) {
     if (response) {
       let data = response.data
       this.total = data.totalElements

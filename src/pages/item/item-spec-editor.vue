@@ -24,7 +24,7 @@
         <q-toolbar-title>
         </q-toolbar-title>
 
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -103,7 +103,7 @@
         this.model = await ItemSpecModel.get(this.id)
         this.initEditor()
       },
-      async _onSaveClick () {
+      async onSaveClick () {
         let errors = this.editor.validate()
         if (!errors.length) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -120,7 +120,7 @@
       },
       async save () {
         this.model.variables = _.defaultsDeep(this.editor.getValue(), this.model.variables)
-        await this.model.update()
+        await this.model.save()
         this.$emit('saved', this.model)
       }
     },

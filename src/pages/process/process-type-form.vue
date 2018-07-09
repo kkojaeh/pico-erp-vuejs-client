@@ -201,7 +201,7 @@
             <audit-viewer ref="auditViewer" :url="`/audit/process-type/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="_onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -265,9 +265,8 @@
         this.creating = false
         this.model = await ProcessTypeModel.get(this.id)
       },
-      async _onSaveClick () {
-        let valid = this.creating ? await this.model.validateCreate()
-          : await this.model.validateUpdate()
+      async onSaveClick () {
+        let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -282,11 +281,7 @@
         }
       },
       async save () {
-        if (this.creating) {
-          await this.model.create()
-        } else {
-          await this.model.update()
-        }
+        await this.model.save()
       }
     },
     computed: {
