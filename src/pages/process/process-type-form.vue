@@ -15,8 +15,8 @@
         <q-field icon="perm_identity" helper="공정 유형을 식별하는 아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
-                   :hide-underline="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
+                   :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="공정 유형의 이름을 입력하세요"
@@ -193,10 +193,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating">이력
+               v-show="!phantom">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/process-type/${model.id}`"></audit-viewer>
           </q-modal>
@@ -237,8 +237,7 @@
         model: new ProcessTypeModel(),
         infoTypeLabels: new ProcessInfoTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
-        infoTypeModel: new ProcessInfoTypeModel(),
-        creating: false
+        infoTypeModel: new ProcessInfoTypeModel()
       }
     },
     mounted () {
@@ -258,11 +257,9 @@
         done()
       },
       async create () {
-        this.creating = true
         this.model = new ProcessTypeModel()
       },
       async show () {
-        this.creating = false
         this.model = await ProcessTypeModel.get(this.id)
       },
       async onSaveClick () {
@@ -291,6 +288,9 @@
           sum += value
         })
         return sum
+      },
+      phantom() {
+        return this.model.phantom
       }
     },
     watch: {

@@ -4,7 +4,7 @@
 
     <q-tabs class="col-12" inverted v-model="tab">
       <q-tab default slot="title" name="info" icon="info">견적 정보</q-tab>
-      <q-tab :disable="creating" slot="title" name="item" icon="view_list">견적 품목</q-tab>
+      <q-tab slot="title" name="item" icon="view_list">견적 품목</q-tab>
       <q-tab-pane name="info" class="column no-border" keep-alive>
         <q-card class="col-12" flat>
 
@@ -188,8 +188,8 @@
         </q-card>
 
       </q-tab-pane>
-      <q-tab-pane :disabled="creating" name="item" class="column no-border" keep-alive>
-        <q-card class="col-12" flat :disabled="creating">
+      <q-tab-pane name="item" class="column no-border" keep-alive>
+        <q-card class="col-12" flat>
 
           <q-card-title>
             품목
@@ -209,7 +209,7 @@
                 </q-list>
               </q-btn-dropdown>
               <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItem"
-                     :disabled="!selectedItem" v-show="isModifiable"/>
+                     :disabled="!selected.item" v-show="isModifiable"/>
             </div>
           </q-card-title>
 
@@ -230,8 +230,7 @@
                      :does-data-flower="doesDataFlower"
                      :get-row-height="getRowHeight"
                      :row-data="itemArray"
-                     @selection-changed="onItemSelectionChanged"
-                     @cell-value-changed="onItemCellValueChanged">
+                     @selection-changed="onItemSelectionChanged">
               <ag-grid-column field="bom.item.name" header-name="이름"
                               cellRenderer="agGroupCellRenderer"
                               :checkbox-selection="true"
@@ -323,7 +322,7 @@
 
         </q-card>
 
-        <q-card class="col-12" flat :disabled="creating">
+        <q-card class="col-12" flat>
 
           <q-card-title>
             품목 부가비
@@ -331,7 +330,7 @@
               <q-btn flat color="secondary" label="추가" icon="add" @click="onAddItemAddition"
                      v-show="isModifiable"/>
               <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItemAddition"
-                     v-show="isModifiable" :disabled="!selectedItemAddition"/>
+                     v-show="isModifiable" :disabled="!selected.itemAddition"/>
             </div>
           </q-card-title>
 
@@ -347,8 +346,7 @@
                      enable-sorting
                      suppress-no-rows-overlay
                      :row-data="itemAdditionArray"
-                     @selection-changed="onItemAdditionSelectionChanged"
-                     @cell-value-changed="onItemCellValueChanged">
+                     @selection-changed="onItemAdditionSelectionChanged">
               <ag-grid-column field="name" header-name="이름"
                               :checkbox-selection="true"
                               :width="300"
@@ -359,7 +357,7 @@
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 200 }"
                               :editable="isModifiable"/>
-              <ag-grid-column field="value" header-name="추가 단가 비율(%)" :width="150"
+              <ag-grid-column field="additionalRate" header-name="추가 단가 비율(%)" :width="150"
                               :cell-style="{textAlign: 'right'}"
                               :value-formatter="percentFormatter"
                               :editable="isModifiable" cell-editor-framework="ag-grid-input-editor"
@@ -375,7 +373,7 @@
 
         </q-card>
 
-        <q-card class="col-12" flat :disabled="creating">
+        <q-card class="col-12" flat>
 
           <q-card-title>
             부가비
@@ -383,7 +381,7 @@
               <q-btn color="secondary" outline label="추가" flat icon="add" @click="onAddAddition"
                      v-show="isModifiable"/>
               <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveAddition"
-                     v-show="isModifiable" :disabled="!selectedAddition"/>
+                     v-show="isModifiable" :disabled="!selected.addition"/>
             </div>
           </q-card-title>
 
@@ -399,8 +397,7 @@
                      enable-sorting
                      suppress-no-rows-overlay
                      :row-data="additionArray"
-                     @selection-changed="onAdditionSelectionChanged"
-                     @cell-value-changed="onItemCellValueChanged">
+                     @selection-changed="onAdditionSelectionChanged">
               <ag-grid-column field="name" header-name="이름"
                               :checkbox-selection="true"
                               :width="300" :editable="isModifiable"/>
@@ -422,7 +419,7 @@
               <ag-grid-column field="amount" header-name="금액" :width="100"
                               :cell-style="{textAlign: 'right'}"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="description" header-name="비고" :width="200"
+              <ag-grid-column field="remark" header-name="비고" :width="200"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 50 }"
                               :editable="isModifiable"/>
@@ -447,7 +444,7 @@
         <q-btn flat icon="clear" @click="onCancel()" v-show="model.cancelable" label="취소"></q-btn>
         <q-btn flat icon="file_download" @click="onPrintSheet()" v-show="model.sheetPrintable"
                label="출력"></q-btn>
-        <q-btn flat icon="save" v-if="isInfoTab" @click="onSave()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSave()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -496,6 +493,7 @@
   import Big from 'big.js'
 
   export default {
+
     props: {
       action: {
         type: String
@@ -522,11 +520,12 @@
         itemArray: new QuotationItemArray(),
         itemAdditionArray: new QuotationItemAdditionArray(),
         additionArray: new QuotationAdditionArray(),
-        creating: false,
         detailedItemUnitPrice: false,
-        selectedItem: null,
-        selectedItemAddition: null,
-        selectedAddition: null
+        selected: {
+          item: null,
+          itemAddition: null,
+          addition: null
+        }
       }
     },
     mounted() {
@@ -550,13 +549,13 @@
         })
       },
       onItemSelectionChanged(event) {
-        this.selectedItem = event.api.getSelectedRows()[0]
+        this.selected.item = event.api.getSelectedRows()[0]
       },
       onItemAdditionSelectionChanged(event) {
-        this.selectedItemAddition = event.api.getSelectedRows()[0]
+        this.selected.itemAddition = event.api.getSelectedRows()[0]
       },
       onAdditionSelectionChanged(event) {
-        this.selectedAddition = event.api.getSelectedRows()[0]
+        this.selected.addition = event.api.getSelectedRows()[0]
       },
       tooltipNumberToWords(params) {
         return this.$number.words(params.value)
@@ -569,13 +568,6 @@
           }
           return `${params.value} (${addition})`
         }
-      },
-      async onItemCellValueChanged(e) {
-        if (e.newValue == e.oldValue) {
-          return
-        }
-        await e.data.save()
-        this.load()
       },
       percentGetValue(value) {
         return Number(new Big(value).times(100).round(2))
@@ -618,21 +610,19 @@
         }
       },
       async create() {
-        this.creating = true
         this.model = new QuotationModel()
-        this.itemArray = new QuotationItemArray(this.model.id)
-        this.itemAdditionArray = new QuotationItemAdditionArray(this.model.id)
-        this.additionArray = new QuotationAdditionArray(this.model.id);
+        this.itemArray = new QuotationItemArray(this.model)
+        this.itemAdditionArray = new QuotationItemAdditionArray(this.model)
+        this.additionArray = new QuotationAdditionArray(this.model)
       },
       async show() {
-        this.creating = false
         this.load()
       },
       async load() {
         this.model = await QuotationModel.get(this.id)
-        this.itemArray = new QuotationItemArray(this.model.id)
-        this.itemAdditionArray = new QuotationItemAdditionArray(this.model.id)
-        this.additionArray = new QuotationAdditionArray(this.model.id);
+        this.itemArray = new QuotationItemArray(this.model)
+        this.itemAdditionArray = new QuotationItemAdditionArray(this.model)
+        this.additionArray = new QuotationAdditionArray(this.model)
         await Promise.all(
             [this.itemArray.query(), this.additionArray.query(), this.itemAdditionArray.query()])
       },
@@ -650,7 +640,7 @@
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              if (this.creating) {
+              if (this.phantom) {
                 const ok = await this.$alert.confirm('현재 화면을 닫으시겠습니까?')
                 if (ok) {
                   this.$closeOverlay()
@@ -736,8 +726,8 @@
       async onRemoveItem() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          this.itemArray.remove(this.selectedItem)
-          this.selectedItem = null
+          this.itemArray.remove(this.selected.item)
+          this.selected.item = null
         }
       },
 
@@ -750,8 +740,8 @@
       async onRemoveItemAddition() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          this.itemAdditionArray.remove(this.selectedItemAddition)
-          this.selectedItemAddition = null
+          this.itemAdditionArray.remove(this.selected.itemAddition)
+          this.selected.itemAddition = null
           //await this.load()
         }
       },
@@ -765,8 +755,8 @@
       async onRemoveAddition() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          this.additionArray.remove(this.selectedAddition)
-          this.selectedAddition = null
+          this.additionArray.remove(this.selected.addition)
+          this.selected.addition = null
           //await this.load()
         }
       },
@@ -843,12 +833,11 @@
 
     },
     computed: {
-      ...mapGetters({}),
+      phantom() {
+        this.model.phantom
+      },
       isModifiable() {
         return this.model.modifiable
-      },
-      isInfoTab() {
-        return this.tab == 'info'
       }
     },
     watch: {
@@ -870,6 +859,7 @@
       QuotationBomRenderer,
       BomForm
     }
+
   }
 </script>
 <style lang="stylus">

@@ -82,16 +82,16 @@
       _toggle () {
         this.drawerOpened = !this.drawerOpened
       },
-      _onSignOutClick () {
-        this.$alert.confirm('로그아웃 하시겠습니까?').then((ok) => {
-          if (ok) {
-            this.$auth.signOut().then(() => {
-              this.$router.push('/sign-in')
-            }).catch(() => {
-              this.$alert.negative('로그아웃중 오류 발생')
-            })
+      async _onSignOutClick () {
+        const ok = await this.$alert.confirm('로그아웃 하시겠습니까?')
+        if (ok) {
+          try {
+            await this.$auth.signOut()
+          } catch(e) {
+            this.$alert.negative('로그아웃중 오류 발생')
           }
-        })
+          this.$router.push('/sign-in')
+        }
       },
       _onResize (size) {
         const el = this.$el

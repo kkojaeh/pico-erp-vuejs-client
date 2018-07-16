@@ -5,7 +5,7 @@ Vue.component('modal-router-view', ModalRouterView)
 
 export const wrapModal = async (loader, data = {}) => {
   const component = (await loader).default
-  return Vue.extend({
+  const config = {
     extends: Vue.component('modal-router-view'),
     props: component.props,
     data () {
@@ -14,5 +14,14 @@ export const wrapModal = async (loader, data = {}) => {
         component: Vue.extend(component)
       })
     }
-  })
+  }
+  if(component.beforeRouteEnter){
+    config.beforeRouteEnter = component.beforeRouteEnter
+  }
+  if(component.beforeRouteLeave){
+    config.beforeRouteLeave = function() {
+      component.beforeRouteLeave.apply(this.$refs.component, Array.from(arguments))
+    }
+  }
+  return Vue.extend(config)
 }

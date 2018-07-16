@@ -9,7 +9,7 @@ export class CompanyModel extends Model {
 
   constructor(data) {
     super(data)
-    this.id || uuid()
+    this.id = this.id || uuid()
   }
 
   get defaults() {

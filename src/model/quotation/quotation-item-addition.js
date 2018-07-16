@@ -34,6 +34,28 @@ export class QuotationItemAdditionModel extends Model {
         {})
   }
 
+  async validate() {
+    let constraints = {
+      quotationId: {
+        presence: true
+      },
+      additionalRate: {
+        presence: true,
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
+      },
+      description: {
+        length: {maximum: 200}
+      },
+      remark: {
+        length: {maximum: 50}
+      }
+    }
+
+    return await this.$validate(constraints)
+  }
+
 }
 
 const removedSymbol = Symbol('removed')
@@ -52,20 +74,20 @@ export const QuotationItemAdditionArray = Array.decorate(
         return QuotationItemAdditionModel
       }
 
-      initialize(quotationId) {
+      initialize(quotation) {
         super.initialize()
-        this.quotationId = quotationId
+        this.quotation = quotation
         this[removedSymbol] = []
       }
 
       async query() {
         await this.fetch({
-          quotationId: this.quotationId
+          quotationId: this.quotation.id
         })
-        await Promise.all(this.map(async (item) => await item.fetch()))
       }
 
       async validate() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         const results = await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.validate())
@@ -75,6 +97,7 @@ export const QuotationItemAdditionArray = Array.decorate(
       }
 
       async save() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.save())

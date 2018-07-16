@@ -54,18 +54,19 @@
       <q-card-title>
         고객 정보
         <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts" @click="selectCompanyContact"
-           :disabled="!model.customerId" v-show="!companyContactSelecting"/>
+          <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts"
+                 @click="selectCompanyContact"
+                 :disabled="!model.customerId" v-show="!companyContact.selecting"/>
           <q-field helper="담당자를 선택하세요"
-                   v-show="companyContactSelecting">
-            <c-autocomplete-select v-model="selectedCompanyContactId"
+                   v-show="companyContact.selecting">
+            <c-autocomplete-select v-model="companyContact.id"
                                    class="col-xs-12 col-md-6 col-xl-6"
                                    ref="companyContactSelect"
                                    float-label="담당자 이름"
                                    :options="companyContactLabels"
                                    label-field="label" value-field="value"
                                    @search="onCompanyContactSearch"
-                                  @blur="companyContactSelecting = false">
+                                   @blur="companyContact.selecting = false">
               <template slot="option" slot-scope="option">
                 {{option.label}}<br>
                 {{option.stamp}} - {{option.subLabel}}
@@ -143,13 +144,13 @@
 
     </q-card>
 
-    <q-card class="col-12" flat :disabled="creating">
+    <q-card class="col-12" flat :disabled="phantom">
 
       <q-card-title>
         판매 품목
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="addSaleItem"/>
-          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!creating"
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!phantom"
                  @click="removeSaleItem"/>
         </div>
       </q-card-title>
@@ -162,13 +163,13 @@
         <q-card-main class="row">
 
           <ag-grid class="col"
-                   ref="addressGrid"
+                   ref="itemGrid"
                    dom-layout='autoHeight'
                    row-selection="single"
                    enable-col-resize
                    :editable="true"
                    suppress-no-rows-overlay
-                   @selection-changed="onAddressSelectionChanged"
+                   @selection-changed="onItemSelectionChanged"
                    :row-data="[]"
           >
 
@@ -233,10 +234,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" label="이력">
+               v-show="!phantom" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/project/${model.id}`"></audit-viewer>
           </q-modal>
@@ -251,7 +252,12 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectModel} from 'src/model/project'
-  import {CompanyLabelArray, CompanyModel, CompanyContactLabelArray, CompanyContactModel} from 'src/model/company'
+  import {
+    CompanyContactLabelArray,
+    CompanyContactModel,
+    CompanyLabelArray,
+    CompanyModel
+  } from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
@@ -277,9 +283,14 @@
         managerModel: new UserModel(),
         customerModel: new CompanyModel(),
         companyContactLabels: new CompanyContactLabelArray(),
-        creating: false,
         enabled: true,
-        selectedCompanyContactId: null,
+        selected: {
+          item: null
+        },
+        companyContact: {
+          id: null,
+          selecting: false
+        },
         companyContactSelecting: false
       }
     },
@@ -304,12 +315,15 @@
         await this.companyContactLabels.query(this.model.customerId, keyword)
         done()
       },
+
+      onItemSelectionChanged(event) {
+        this.selectedAddress = event.api.getSelectedRows()[0]
+      },
+
       async create() {
-        this.creating = true
         this.model = new ProjectModel()
       },
       async show() {
-        this.creating = false
         this.model = await ProjectModel.get(this.id)
       },
       async onSaveClick() {
@@ -335,22 +349,24 @@
 
       async selectCompanyContact() {
         await this.companyContactLabels.query(this.model.customerId)
-        this.companyContactSelecting = true
+        this.companyContact.selecting = true
         this.$nextTick(() => {
           this.$refs.companyContactSelect.focus()
         })
       },
 
-      async addSaleItem(){
+      async addSaleItem() {
 
       },
 
-      async removeSaleItem(){
+      async removeSaleItem() {
 
       }
     },
     computed: {
-      ...mapGetters([])
+      phantom() {
+        return this.model.phantom
+      }
     },
     watch: {
       'model.managerId': async function (to) {
@@ -359,8 +375,8 @@
       'model.customerId': async function (to) {
         this.customerModel = await CompanyModel.get(to, true)
       },
-      'selectedCompanyContactId': async function(to) {
-        if(to){
+      'companyContact.id': async function (to) {
+        if (to) {
           const model = this.model
           const companyContact = await CompanyContactModel.get(to, true)
 
@@ -369,8 +385,8 @@
           model.customerManagerContact.faxNumber = companyContact.contact.faxNumber
           model.customerManagerContact.mobilePhoneNumber = companyContact.contact.mobilePhoneNumber
           model.customerManagerContact.telephoneNumber = companyContact.contact.telephoneNumber
-          this.selectedCompanyContactId = null
-          this.companyContactSelecting = false
+          this.companyContact.id = null
+          this.companyContact.selecting = false
         }
       }
     },

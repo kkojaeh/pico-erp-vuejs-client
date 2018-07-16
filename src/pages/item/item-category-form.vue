@@ -49,10 +49,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating">이력
+               v-show="!phantom">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer"
                           :url="`/audit/item-category/${model.id}`"></audit-viewer>
@@ -67,7 +67,7 @@
 
 </template>
 <script>
-  import { ItemCategoryModel } from 'src/model/item'
+  import {ItemCategoryModel} from 'src/model/item'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -86,32 +86,29 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new ItemCategoryModel(),
         parentModel: new ItemCategoryModel(),
-        creating: false
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
     methods: {
-      async create () {
-        this.creating = true
+      async create() {
         this.model = new ItemCategoryModel()
         if (this.parentId) {
           this.parentModel = await ItemCategoryModel.get(this.parentId)
           this.model.parentId = this.parentId
         }
       },
-      async show () {
-        this.creating = false
+      async show() {
         this.model = await ItemCategoryModel.get(this.id)
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -126,12 +123,12 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         await this.model.save()
       }
     },
     computed: {
-      path () {
+      path() {
         if (this.model.path) {
           return this.model.path
         }
@@ -140,6 +137,9 @@
         } else {
           return this.model.name
         }
+      },
+      phantom() {
+        return this.mode.phantom
       }
     },
     components: {

@@ -15,8 +15,8 @@
         <q-field icon="perm_identity" helper="부서를 식별하는 아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
-                   :hide-underline="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
+                   :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="부서 이름을 입력하세요"
@@ -51,10 +51,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" label="이력">
+               v-show="!phantom" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/department/${model.id}`"></audit-viewer>
           </q-modal>
@@ -68,7 +68,7 @@
 
 </template>
 <script>
-  import { DepartmentModel, UserLabelArray, UserModel } from 'src/model/user'
+  import {DepartmentModel, UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -84,34 +84,31 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new DepartmentModel(),
         userLabels: new UserLabelArray(),
-        managerModel: new UserModel(),
-        creating: false
+        managerModel: new UserModel()
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
       this.userLabels.query()
     },
     methods: {
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
       },
-      async create () {
-        this.creating = true
+      async create() {
         this.model = new DepartmentModel()
       },
-      async show () {
-        this.creating = false
+      async show() {
         this.model = await DepartmentModel.get(this.id)
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -126,11 +123,15 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         await this.model.save()
       }
     },
-    computed: {},
+    computed: {
+      phantom() {
+        return this.model.phantom
+      }
+    },
     watch: {
       'model.managerId': async function (to) {
         this.managerModel = await UserModel.get(to, true)

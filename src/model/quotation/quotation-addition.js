@@ -32,6 +32,34 @@ export class QuotationAdditionModel extends Model {
         `/quotation/quotations/${this.quotationId}/additions/${this.id}`, {})
   }
 
+  async validate() {
+    let constraints = {
+      quotationId: {
+        presence: true
+      },
+      unitPrice: {
+        presence: true,
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
+      },
+      quantity: {
+        presence: false,
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
+      },
+      description: {
+        length: {maximum: 200}
+      },
+      remark: {
+        length: {maximum: 50}
+      }
+    }
+
+    return await this.$validate(constraints)
+  }
+
 }
 
 const removedSymbol = Symbol('removed')
@@ -50,20 +78,20 @@ export const QuotationAdditionArray = Array.decorate(
         return QuotationAdditionModel
       }
 
-      initialize(quotationId) {
+      initialize(quotation) {
         super.initialize()
-        this.quotationId = quotationId
+        this.quotation = quotation
         this[removedSymbol] = []
       }
 
       async query() {
         await this.fetch({
-          quotationId: this.quotationId
+          quotationId: this.quotation.id
         })
-        await Promise.all(this.map(async (item) => await item.fetch()))
       }
 
       async validate() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         const results = await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.validate())
@@ -73,6 +101,7 @@ export const QuotationAdditionArray = Array.decorate(
       }
 
       async save() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.save())

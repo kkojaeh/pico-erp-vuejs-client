@@ -171,8 +171,7 @@
         managerModel: new UserModel(),
         processTypeLabels: new ProcessTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
-        userLabels: new UserLabelArray(),
-        creating: false
+        userLabels: new UserLabelArray()
       }
     },
     mounted () {
@@ -193,14 +192,12 @@
         done()
       },
       async create () {
-        this.creating = true
         this.itemModel = await ItemModel.get(this.itemId)
         this.model = new ProcessModel()
         this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
       },
       async show () {
-        this.creating = false
         this.model = await ProcessModel.get(this.id)
         this.itemModel = await ItemModel.get(this.model.itemId)
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
@@ -240,6 +237,9 @@
       },
       isCommentable () {
         return !this.model.deleted
+      },
+      phantom() {
+        return this.model.phantom
       }
     },
     watch: {

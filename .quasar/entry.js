@@ -81,6 +81,9 @@ plugins.push(pluginGoogleanalytics)
 import pluginRaven from 'src/plugins/raven'
 plugins.push(pluginRaven)
 
+import pluginAggrid from 'src/plugins/ag-grid'
+plugins.push(pluginAggrid)
+
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 
 

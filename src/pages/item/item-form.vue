@@ -191,19 +191,19 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating">삭제</q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" v-if="$authorized.itemManager">이력
+               v-show="!phantom" v-if="$authorized.itemManager">이력
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/item/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="play_arrow" v-show="!creating && model.isActivatable"
+        <q-btn flat icon="play_arrow" v-show="!phantom && model.isActivatable"
                v-if="$authorized.itemManager"
                @click="_onActivateClick">활성화
         </q-btn>
-        <q-btn flat icon="pause" v-show="!creating && model.isDeactivatable"
+        <q-btn flat icon="pause" v-show="!phantom && model.isDeactivatable"
                v-if="$authorized.itemManager"
                @click="_onDeactivateClick">비활성화
         </q-btn>
@@ -211,7 +211,7 @@
                      v-if="$authorized.processManager">
           <q-btn flat icon="settings_applications">공정</q-btn>
         </router-link>
-        <router-link :to="`/bom/${model.id}`" v-show="!creating"
+        <router-link :to="`/bom/${model.id}`" v-show="!phantom"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
         </router-link>
@@ -273,7 +273,6 @@
         customerModel: new CompanyModel(),
         specTypeModel: new ItemSpecTypeModel(),
         processModel: new ProcessModel(),
-        creating: false
       }
     },
     mounted () {
@@ -301,14 +300,12 @@
         done()
       },
       async create () {
-        this.creating = true
         this.model = new ItemModel()
         _.forIn(this.predefined, (value, key) => {
           this.model[key] = value
         })
       },
       async show () {
-        this.creating = false
         this.model = await ItemModel.get(this.id)
         const processExists = await ProcessModel.existsByItemId(this.id)
         this.processModel = processExists ? await ProcessModel.getByItemId(this.id, true)
@@ -352,7 +349,11 @@
         this.$emit('saved', this.model)
       }
     },
-    computed: {},
+    computed: {
+      phantom() {
+        return this.model.phantom
+      }
+    },
     watch: {
       'model.categoryId': async function (to) {
         this.categoryModel = await ItemCategoryModel.get(to, true)

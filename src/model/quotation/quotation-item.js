@@ -93,20 +93,21 @@ export const QuotationItemArray = Array.decorate(
         return QuotationItemModel
       }
 
-      initialize(quotationId) {
+      initialize(quotation) {
         super.initialize()
-        this.quotationId = quotationId
+        this.quotation = quotation
         this[removedSymbol] = []
       }
 
       async query() {
         await this.fetch({
-          quotationId: this.quotationId
+          quotationId: this.quotation.id
         })
         await Promise.all(this.map(async (item) => await item.fetch()))
       }
 
       async validate() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         const results = await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.validate())
@@ -116,6 +117,7 @@ export const QuotationItemArray = Array.decorate(
       }
 
       async save() {
+        this.forEach(element => element.quotationId = this.quotation.id)
         await Promise.all(
             this.filter(element => !element.id || element.hasChanged())
             .map(address => address.save())

@@ -22,8 +22,8 @@
         <q-field icon="perm_identity"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
-                   :hide-underline="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
+                   :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle"
@@ -93,7 +93,6 @@
     data () {
       return {
         model: new MyModel(),
-        creating: false,
         departmentLabels: new DepartmentLabelArray(),
         departmentModel: new DepartmentModel()
       }
@@ -124,7 +123,9 @@
     },
 
     computed: {
-      ...mapGetters([])
+      phantom() {
+        return this.model.phantom
+      }
     },
     watch: {
       'model.departmentId': async function (to) {

@@ -92,13 +92,11 @@
         this.editor.setValue(this.model.variables)
       },
       async create () {
-        this.creating = true
         this.metadata = await ItemModel.getSpecMetadata(this.itemId)
         this.model = await ItemSpecModel.create(this.itemId)
         this.initEditor()
       },
       async show () {
-        this.creating = false
         this.metadata = await ItemModel.getSpecMetadata(this.itemId)
         this.model = await ItemSpecModel.get(this.id)
         this.initEditor()
