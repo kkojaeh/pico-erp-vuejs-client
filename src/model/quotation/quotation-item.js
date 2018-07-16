@@ -1,93 +1,141 @@
 import {Model, uuid} from 'src/model/model'
 import {BomModel} from 'src/model/bom'
-import {ProcessModel} from 'src/model/process'
-import {ItemModel, ItemSpecModel} from 'src/model/item'
 import {api} from 'src/plugins/axios'
+import {FetchableArray} from "src/model/array";
 
-const itemSpecSymbol = Symbol('itemSpec')
-const processSymbol = Symbol('process')
-const itemSymbol = Symbol('item')
 const bomSymbol = Symbol('bom')
-const quotationSymbol = Symbol('quotation')
 
-export class QuotationBomItemModel extends Model {
+export class QuotationItemModel extends Model {
 
   get defaults() {
     return {
-      '@type': 'bom',
-      unitPrice: {
-        original: 0,
-        directLabor: 0,
-        indirectLabor: 0,
-        indirectMaterial: 0,
-        directMaterial: 0,
-        indirectExpenses: 0,
-        discountRate: 0
-      }
+      discountRate: 0
     }
-  }
-
-  set bom(value) {
-    this[bomSymbol] = value
   }
 
   get bom() {
     return this[bomSymbol]
   }
 
-  get quotation() {
-    return this[quotationSymbol]
+  get phantom() {
+    return !this.id
   }
 
-  set quotation(value) {
-    this[quotationSymbol] = value
-  }
+  async validate() {
+    let constraints = {
+      quotationId: {
+        presence: true
+      },
+      itemId: {
+        presence: true
+      },
+      discountRate: {
+        presence: true,
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
+      },
+      quantity: {
+        presence: false,
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
+      },
+      description: {
+        length: {maximum: 200}
+      },
+      remark: {
+        length: {maximum: 50}
+      }
+    }
 
-  static create(bom) {
-    return new QuotationBomItemModel({
-      id: uuid(),
-      bomId: bom.id
-    })
+    return await this.$validate(constraints)
   }
 
   async fetch() {
-    const bom = await BomModel.get(this.bomId)
+    const bom = await BomModel.getByItemId(this.itemId)
     this[bomSymbol] = bom
-    await bom.fetchChildren(true)
-    await bom.visit(async (node) => {
-      node[itemSymbol] = await ItemModel.get(node.itemId, true)
-      node[processSymbol] = await ProcessModel.get(node.processId, true)
-      node[itemSpecSymbol] = await ItemSpecModel.get(node.itemSpecId, true)
-      Object.defineProperties(node, {
-        'item': {
-          get: function () {
-            return this[itemSymbol]
-          }
-        },
-        'itemSpec': {
-          get: function () {
-            return this[itemSpecSymbol]
-          }
-        },
-        'process': {
-          get: function () {
-            return this[processSymbol]
-          }
-        }
-      })
-    })
+    await bom.fetchChildren(true, true)
   }
 
   async save() {
-    await api.put(`/quotation/quotations/${this.quotation.id}/items/${this.id}`,
-        {
-          item: this
-        })
+    if (this.phantom) {
+      this.id = uuid()
+      const response = await api.post(
+          `/quotation/quotations/${this.quotationId}/items`, this)
+      this.assign(response.data)
+    } else {
+      await api.put(
+          `/quotation/quotations/${this.quotationId}/items/${this.id}`, this)
+    }
   }
 
   async remove() {
     await api.delete(
-        `/quotation/quotations/${this.quotation.id}/items/${this.id}`, {})
+        `/quotation/quotations/${this.quotationId}/items/${this.id}`, {})
   }
 
 }
+
+const removedSymbol = Symbol('removed')
+
+export const QuotationItemArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/quotation/quotations/${quotationId}/items'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return QuotationItemModel
+      }
+
+      initialize(quotationId) {
+        super.initialize()
+        this.quotationId = quotationId
+        this[removedSymbol] = []
+      }
+
+      async query() {
+        await this.fetch({
+          quotationId: this.quotationId
+        })
+        await Promise.all(this.map(async (item) => await item.fetch()))
+      }
+
+      async validate() {
+        const results = await Promise.all(
+            this.filter(element => !element.id || element.hasChanged())
+            .map(address => address.validate())
+        )
+        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
+        return results.filter(valid => valid == false).length == 0
+      }
+
+      async save() {
+        await Promise.all(
+            this.filter(element => !element.id || element.hasChanged())
+            .map(address => address.save())
+        )
+        await Promise.all(
+            this[removedSymbol].map(element => element.delete())
+        )
+        this[removedSymbol] = []
+      }
+
+      remove(element) {
+        super.remove(element)
+        if (!element.phantom) {
+          this[removedSymbol].push(element)
+        }
+      }
+
+      clear() {
+        super.clear()
+        this[removedSymbol] = []
+      }
+    }
+)

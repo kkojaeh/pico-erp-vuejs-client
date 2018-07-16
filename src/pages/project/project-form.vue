@@ -143,6 +143,72 @@
 
     </q-card>
 
+    <q-card class="col-12" flat :disabled="creating">
+
+      <q-card-title>
+        판매 품목
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="addSaleItem"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!creating"
+                 @click="removeSaleItem"/>
+        </div>
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-card-main class="row">
+
+          <ag-grid class="col"
+                   ref="addressGrid"
+                   dom-layout='autoHeight'
+                   row-selection="single"
+                   enable-col-resize
+                   :editable="true"
+                   suppress-no-rows-overlay
+                   @selection-changed="onAddressSelectionChanged"
+                   :row-data="[]"
+          >
+
+            <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
+            <ag-grid-column field="name" header-name="이름" :width="150" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50 }"/>
+
+            <ag-grid-column field="mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+
+            <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="150"
+                            :editable="true"
+                            cell-renderer-framework="ag-grid-phone-number-renderer"
+                            cell-editor-framework="ag-grid-phone-number-editor"/>
+            <ag-grid-column field="" header-name="" :width="40" suppress-sorting
+                            cell-renderer-framework="ag-grid-icon-renderer"
+                            :cell-renderer-params="{handler:onAddressSearch, icon:'search', link:true}"/>
+            <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
+                            :cell-style="{textAlign: 'center'}"/>
+            <ag-grid-column field="address.street" header-name="주소" :width="220"/>
+            <ag-grid-column field="address.detail" header-name="상세주소" :width="180" :editable="true"
+                            cell-editor-framework="ag-grid-input-editor"
+                            :cell-editor-params="{ maxlength: 50 }"/>
+            <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"
+                            cell-editor-framework="ag-grid-checkbox-editor"
+                            :editable="true"/>
+
+          </ag-grid>
+
+        </q-card-main>
+
+      </q-card-main>
+
+    </q-card>
+
+
     <q-card v-if="model.commentSubjectId" class="col-12" flat>
 
       <q-card-title>
@@ -273,6 +339,14 @@
         this.$nextTick(() => {
           this.$refs.companyContactSelect.focus()
         })
+      },
+
+      async addSaleItem(){
+
+      },
+
+      async removeSaleItem(){
+
       }
     },
     computed: {

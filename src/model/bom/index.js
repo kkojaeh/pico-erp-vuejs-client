@@ -3,9 +3,14 @@ import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
 import {language, languageAliases} from 'src/i18n'
+import {ProcessModel} from "src/model/process";
+import {ItemModel, ItemSpecModel} from "src/model/item";
 
 const parentSymbol = Symbol('parent')
 const childrenSymbol = Symbol('children')
+const itemSpecSymbol = Symbol('itemSpec')
+const processSymbol = Symbol('process')
+const itemSymbol = Symbol('item')
 
 export class BomModel extends Model {
 
@@ -23,6 +28,18 @@ export class BomModel extends Model {
 
   get children() {
     return this[childrenSymbol]
+  }
+
+  get item() {
+    return this[itemSymbol]
+  }
+
+  get itemSpec() {
+    return this[itemSpecSymbol]
+  }
+
+  get process() {
+    return this[processSymbol]
   }
 
   get count() {
@@ -61,6 +78,12 @@ export class BomModel extends Model {
 
   static async existsByItemId(itemId) {
     return await exists(api, `/bom/items/${itemId}/0`)
+  }
+
+  async fetchReference() {
+    this[itemSymbol] = await ItemModel.get(this.itemId, true)
+    this[processSymbol] = await ProcessModel.get(this.processId, true)
+    this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
   }
 
   async nextRevision() {
@@ -115,16 +138,19 @@ export class BomModel extends Model {
     return false
   }
 
-  async fetchChildren(cascade) {
+  async fetchChildren(cascade, withReference) {
+    if(withReference){
+      await this.fetchReference()
+    }
     const children = this[childrenSymbol] = new BomChildArray()
-
     await children.fetch(this)
     children.forEach(child => child[parentSymbol] = this)
     if (cascade) {
       await Promise.all(
-          children.map(async (child) => await child.fetchChildren(true))
+          children.map(async (child) => await child.fetchChildren(true, withReference))
       )
     }
+
   }
 
   async visit(visitor) {

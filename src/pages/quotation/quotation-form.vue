@@ -198,17 +198,17 @@
                               v-show="isModifiable">
                 <!-- dropdown content -->
                 <q-list link>
-                  <q-item @click.native="addBomBySelect" v-close-overlay>
+                  <q-item @click.native="onAddItemBySelect" v-close-overlay>
                     <q-item-side left icon="add"></q-item-side>
                     <q-item-main label="기존 품목"></q-item-main>
                   </q-item>
-                  <q-item @click.native="addBomByNew" v-close-overlay>
+                  <q-item @click.native="onAddItemByNew" v-close-overlay>
                     <q-item-side left icon="add"></q-item-side>
                     <q-item-main label="신규 품목"></q-item-main>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
-              <q-btn flat color="secondary" label="삭제" icon="remove" @click="removeItem"
+              <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItem"
                      :disabled="!selectedItem" v-show="isModifiable"/>
             </div>
           </q-card-title>
@@ -218,7 +218,7 @@
 
           <q-card-main class="row">
 
-            <ag-grid class="col"
+            <ag-grid class="col" ref="itemGrid"
                      dom-layout='autoHeight'
                      row-selection="single"
                      enable-col-resize
@@ -232,7 +232,8 @@
                      :row-data="itemArray"
                      @selection-changed="onItemSelectionChanged"
                      @cell-value-changed="onItemCellValueChanged">
-              <ag-grid-column field="name" header-name="이름" cellRenderer="agGroupCellRenderer"
+              <ag-grid-column field="bom.item.name" header-name="이름"
+                              cellRenderer="agGroupCellRenderer"
                               :checkbox-selection="true"
                               :width="300"
                               :cell-renderer-params="{
@@ -245,46 +246,46 @@
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 200 }"
                               :editable="isModifiable"/>
-              <ag-grid-column field="unit" header-name="단위" :width="100"
+              <ag-grid-column field="bom.item.unit" header-name="단위" :width="100"
                               :cell-style="{textAlign: 'center'}"/>
               <ag-grid-column field="quantity" header-name="수량" :width="100"
                               :cell-style="{textAlign: 'right'}"
                               :editable="isModifiable" cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ type: 'number' }"/>
-              <ag-grid-column field="unitPrice.original" header-name="단가" :width="100"
+              <ag-grid-column field="originalUnitPrice" header-name="단가" :width="100"
                               :cell-style="{textAlign: 'right'}"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.directMaterial" header-name="직접 재료비"
+              <ag-grid-column field="directMaterialUnitPrice" header-name="직접 재료비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.indirectMaterial" header-name="간접 재료비"
+              <ag-grid-column field="indirectMaterialUnitPrice" header-name="간접 재료비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.directLabor" header-name="직접 노무비"
+              <ag-grid-column field="directLaborUnitPrice" header-name="직접 노무비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :hide="!detailedItemUnitPrice"
                               :cell-style="{textAlign: 'right'}"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.indirectLabor" header-name="간접 노무비"
+              <ag-grid-column field="indirectLaborUnitPrice" header-name="간접 노무비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :hide="!detailedItemUnitPrice"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.indirectExpenses" header-name="간접경비"
+              <ag-grid-column field="indirectExpensesUnitPrice" header-name="간접경비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
                               :tooltip="tooltipNumberToWords"/>
-              <ag-grid-column field="unitPrice.discountRate" header-name="할인율" :width="100"
+              <ag-grid-column field="discountRate" header-name="할인율" :width="100"
                               :cell-style="{textAlign: 'right'}" :editable="isModifiable"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ type: 'number', decimals: 2, prefix:'-', suffix:'%', align:'right', getValue: percentGetValue, setValue: percentSetValue  }"
@@ -327,9 +328,9 @@
           <q-card-title>
             품목 부가비
             <div slot="right" class="row items-center">
-              <q-btn flat color="secondary" label="추가" icon="add" @click="addItemAddition"
+              <q-btn flat color="secondary" label="추가" icon="add" @click="onAddItemAddition"
                      v-show="isModifiable"/>
-              <q-btn flat color="secondary" label="삭제" icon="remove" @click="removeItemAddition"
+              <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItemAddition"
                      v-show="isModifiable" :disabled="!selectedItemAddition"/>
             </div>
           </q-card-title>
@@ -339,7 +340,7 @@
 
           <q-card-main class="row">
 
-            <ag-grid class="col"
+            <ag-grid class="col" ref="itemAdditionGrid"
                      dom-layout='autoHeight'
                      row-selection="single"
                      enable-col-resize
@@ -379,9 +380,9 @@
           <q-card-title>
             부가비
             <div slot="right" class="row items-center">
-              <q-btn color="secondary" outline label="추가" flat icon="add" @click="addAddition"
+              <q-btn color="secondary" outline label="추가" flat icon="add" @click="onAddAddition"
                      v-show="isModifiable"/>
-              <q-btn flat color="secondary" label="삭제" icon="remove" @click="removeAddition"
+              <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveAddition"
                      v-show="isModifiable" :disabled="!selectedAddition"/>
             </div>
           </q-card-title>
@@ -391,7 +392,7 @@
 
           <q-card-main class="row">
 
-            <ag-grid class="col"
+            <ag-grid class="col" ref="additionGrid"
                      dom-layout='autoHeight'
                      row-selection="single"
                      enable-col-resize
@@ -439,14 +440,14 @@
         <q-toolbar-title>
           <q-toggle v-model="detailedItemUnitPrice" label="상세 단가"/>
         </q-toolbar-title>
-        <q-btn flat icon="send" @click="commit()" v-show="model.committable" label="제출"></q-btn>
+        <q-btn flat icon="send" @click="onCommit()" v-show="model.committable" label="제출"></q-btn>
 
-        <q-btn flat icon="skip_next" @click="nextDraft()" v-show="model.nextDraftable"
+        <q-btn flat icon="skip_next" @click="onNextDraft()" v-show="model.nextDraftable"
                label="재견적"></q-btn>
-        <q-btn flat icon="clear" @click="cancel()" v-show="model.cancelable" label="취소"></q-btn>
-        <q-btn flat icon="file_download" @click="printSheet()" v-show="model.sheetPrintable"
+        <q-btn flat icon="clear" @click="onCancel()" v-show="model.cancelable" label="취소"></q-btn>
+        <q-btn flat icon="file_download" @click="onPrintSheet()" v-show="model.sheetPrintable"
                label="출력"></q-btn>
-        <q-btn flat icon="save" v-if="isInfoTab" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" v-if="isInfoTab" @click="onSave()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -468,18 +469,24 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import {
+    QuotationAdditionArray,
+    QuotationAdditionModel,
     QuotationExpiryPolicyArray,
+    QuotationItemAdditionArray,
+    QuotationItemAdditionModel,
+    QuotationItemArray,
+    QuotationItemModel,
     QuotationModel,
     QuotationPrintSheetOptions,
     QuotationStatusArray
   } from 'src/model/quotation'
-  import { ProjectLabelArray, ProjectModel } from 'src/model/project'
-  import { BomModel } from 'src/model/bom'
-  import { CompanyModel } from 'src/model/company'
+  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
+  import {BomModel} from 'src/model/bom'
+  import {CompanyModel} from 'src/model/company'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import { UserLabelArray, UserModel } from 'src/model/user'
+  import {UserLabelArray, UserModel} from 'src/model/user'
   import ItemSelector from 'src/pages/item/item-selector.vue'
   import ItemForm from 'src/pages/item/item-form.vue'
   import BomForm from 'src/pages/bom/bom-form.vue'
@@ -501,7 +508,7 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         tab: 'info',
         model: new QuotationModel(),
@@ -512,9 +519,9 @@
         statusLabels: new QuotationStatusArray(),
         userLabels: new UserLabelArray(),
         expiryPolicyLabels: new QuotationExpiryPolicyArray(),
-        itemArray: [],
-        itemAdditionArray: [],
-        additionArray: [],
+        itemArray: new QuotationItemArray(),
+        itemAdditionArray: new QuotationItemAdditionArray(),
+        additionArray: new QuotationAdditionArray(),
         creating: false,
         detailedItemUnitPrice: false,
         selectedItem: null,
@@ -522,7 +529,7 @@
         selectedAddition: null
       }
     },
-    mounted () {
+    mounted() {
       this.statusLabels.fetch()
       this.expiryPolicyLabels.fetch()
       this.projectLabels.query()
@@ -532,7 +539,7 @@
       }
     },
     methods: {
-      onOpenBomClicked (data) {
+      onOpenBomClicked(data) {
         const modal = this.$refs.bomFormModal
         const form = this.$refs.bomForm
         modal.show()
@@ -542,19 +549,19 @@
           this.load()
         })
       },
-      onItemSelectionChanged (event) {
+      onItemSelectionChanged(event) {
         this.selectedItem = event.api.getSelectedRows()[0]
       },
-      onItemAdditionSelectionChanged (event) {
+      onItemAdditionSelectionChanged(event) {
         this.selectedItemAddition = event.api.getSelectedRows()[0]
       },
-      onAdditionSelectionChanged (event) {
+      onAdditionSelectionChanged(event) {
         this.selectedAddition = event.api.getSelectedRows()[0]
       },
-      tooltipNumberToWords (params) {
+      tooltipNumberToWords(params) {
         return this.$number.words(params.value)
       },
-      createCellRenderer (additionalField) {
+      createCellRenderer(additionalField) {
         return function (params) {
           const addition = _.get(params.data, additionalField)
           if (addition == null || addition == undefined) {
@@ -563,27 +570,30 @@
           return `${params.value} (${addition})`
         }
       },
-      async onItemCellValueChanged (e) {
+      async onItemCellValueChanged(e) {
         if (e.newValue == e.oldValue) {
           return
         }
         await e.data.save()
         this.load()
       },
-      percentGetValue (value) {
+      percentGetValue(value) {
         return Number(new Big(value).times(100).round(2))
       },
-      percentSetValue (value) {
+      percentSetValue(value) {
         return Number(new Big(value).div(100))
       },
-      percentFormatter (params) {
-        return new Big(params.value).times(100).toFixed(2) + ' %'
+      percentFormatter(params) {
+        if (params.value) {
+          return new Big(params.value).times(100).toFixed(2) + ' %'
+        }
       },
-      isFullWidthCell (node) {
+      isFullWidthCell(node) {
         return node.flower
       },
-      doesDataFlower (data) {
-        return data['@type'] == 'bom'
+      doesDataFlower(data) {
+        return true
+        //data['@type'] == 'bom'
       },
       getRowHeight: function (params) {
         var rowIsNestedRow = params.node.flower
@@ -593,37 +603,47 @@
         }
         return 48
       },
-      async onProjectSearch (keyword, done) {
+      async onProjectSearch(keyword, done) {
         await this.projectLabels.query(keyword)
         done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
       },
-      async onCopyContactFromProjectClick () {
+      async onCopyContactFromProjectClick() {
         const ok = await this.$alert.confirm('프로젝트의 고객 담당자 정보를 불러 오시겠습니까?')
         if (ok) {
           _.assign(this.model.customerManagerContact, this.projectModel.customerManagerContact)
         }
       },
-      async create () {
+      async create() {
         this.creating = true
         this.model = new QuotationModel()
+        this.itemArray = new QuotationItemArray(this.model.id)
+        this.itemAdditionArray = new QuotationItemAdditionArray(this.model.id)
+        this.additionArray = new QuotationAdditionArray(this.model.id);
       },
-      async show () {
+      async show() {
         this.creating = false
         this.load()
       },
-      async load () {
+      async load() {
         this.model = await QuotationModel.get(this.id)
-        await this.model.fetchAll()
-        this.itemArray = this.model.items
-        this.itemAdditionArray = this.model.itemAdditions
-        this.additionArray = this.model.additions
+        this.itemArray = new QuotationItemArray(this.model.id)
+        this.itemAdditionArray = new QuotationItemAdditionArray(this.model.id)
+        this.additionArray = new QuotationAdditionArray(this.model.id);
+        await Promise.all(
+            [this.itemArray.query(), this.additionArray.query(), this.itemAdditionArray.query()])
       },
-      async onSaveClick () {
-        let valid = await this.model.validate()
+      async onSave() {
+        let valid = ![
+          await this.model.validate(),
+          await this.itemArray.validate(),
+          await this.itemAdditionArray.validate(),
+          await this.additionArray.validate()
+        ].includes(false)
+
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -645,20 +665,23 @@
             }
           }
         } else {
+          this.$redrawGrids()
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         const attachment = this.$refs.attachment
         await attachment.save()
         await this.model.save()
+        await this.itemArray.save()
+        await this.itemAdditionArray.save()
+        await this.additionArray.save()
         this.$emit('saved', this.model)
       },
       /**
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
-      addBomByNew () {
-        const model = this.model
+      onAddItemByNew() {
         const modal = this.$refs.itemFormModal
         const form = this.$refs.itemForm
         modal.show()
@@ -669,13 +692,12 @@
         form.$once('saved', async (itemModel) => {
           modal.hide()
           const bom = await BomModel.createByItemId(itemModel.id)
-          await model.addBomItem(bom)
-          this.load()
+          this.addItem(bom)
         })
       },
 
-      addBomBySelect () {
-        const model = this.model
+      onAddItemBySelect() {
+
         const modal = this.$refs.itemSelectorModal
         const selector = this.$refs.itemSelector
         modal.show()
@@ -685,57 +707,71 @@
         selector.$once('selected', async (itemModels) => {
           modal.hide()
           await Promise.all(
-            itemModels.map(async (itemModel) => {
-              const itemId = itemModel.id
-              const exists = await BomModel.existsByItemId(itemId)
-              let bom
-              if (exists) {
-                bom = await BomModel.getByItemId(itemId)
-              } else {
-                bom = await BomModel.createByItemId(itemModel.id)
-              }
-              await model.addBomItem(bom)
-            })
+              itemModels.map(async (itemModel) => {
+                const itemId = itemModel.id
+                const exists = await BomModel.existsByItemId(itemId)
+                let bom
+                if (exists) {
+                  bom = await BomModel.getByItemId(itemId)
+                } else {
+                  bom = await BomModel.createByItemId(itemModel.id)
+                }
+                this.addItem(bom)
+              })
           )
-          this.load()
         })
       },
 
-      async removeItem () {
+      async addItem(bom) {
+        const itemArray = this.itemArray
+        const item = new QuotationItemModel({
+          quotationId: this.model.id,
+          itemId: bom.itemId,
+          bomId: bom.id
+        })
+        await item.fetch()
+        itemArray.push(item)
+      },
+
+      async onRemoveItem() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          await this.selectedItem.remove()
-          await this.load()
+          this.itemArray.remove(this.selectedItem)
+          this.selectedItem = null
         }
       },
 
-      async addItemAddition () {
-        await this.model.addUnitPriceRateItemAddition()
-        this.load()
+      async onAddItemAddition() {
+        const model = new QuotationItemAdditionModel()
+        this.itemAdditionArray.push(model)
+        //this.load()
       },
 
-      async removeItemAddition () {
+      async onRemoveItemAddition() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          await this.selectedItemAddition.remove()
-          await this.load()
+          this.itemAdditionArray.remove(this.selectedItemAddition)
+          this.selectedItemAddition = null
+          //await this.load()
         }
       },
 
-      async addAddition () {
-        await this.model.addAddition()
-        this.load()
+      async onAddAddition() {
+        const model = new QuotationAdditionModel()
+        this.additionArray.push(model)
+        //this.load()
       },
 
-      async removeAddition () {
+      async onRemoveAddition() {
         const ok = await this.$alert.confirm('삭제 하시겠습니까?')
         if (ok) {
-          await this.selectedAddition.remove()
-          await this.load()
+          this.additionArray.remove(this.selectedAddition)
+          this.selectedAddition = null
+          //await this.load()
         }
       },
 
-      async commit () {
+      async onCommit() {
         let valid = await this.model.validateCommit()
         if (valid) {
           const ok = await this.$alert.confirm('제출 하시겠습니까?')
@@ -758,7 +794,7 @@
         }
       },
 
-      async cancel () {
+      async onCancel() {
         const ok = await this.$alert.confirm('취소 하시겠습니까?')
         if (ok) {
           await this.model.cancel()
@@ -769,7 +805,7 @@
         }
       },
 
-      async nextDraft () {
+      async onNextDraft() {
         const ok = await this.$alert.confirm('재견적 하시겠습니까?')
         if (ok) {
           await this.model.nextDraft()
@@ -780,7 +816,7 @@
         }
       },
 
-      async printSheet () {
+      async onPrintSheet() {
         const model = new QuotationPrintSheetOptions()
         let data = _.keys(model).filter(key => model[key])
         try {
@@ -808,10 +844,10 @@
     },
     computed: {
       ...mapGetters({}),
-      isModifiable () {
+      isModifiable() {
         return this.model.modifiable
       },
-      isInfoTab () {
+      isInfoTab() {
         return this.tab == 'info'
       }
     },

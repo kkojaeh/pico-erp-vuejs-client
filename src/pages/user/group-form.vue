@@ -16,8 +16,8 @@
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
-                   :hide-underline="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
+                   :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
@@ -33,15 +33,14 @@
 
     <q-tabs class="col-12" inverted>
       <!-- Tabs - notice slot="title" -->
-      <q-tab default :disable="creating" slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
-      <q-tab :disable="creating" slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
+      <q-tab default slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
+      <q-tab slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
       <!-- Targets -->
-      <q-tab-pane :disabled="creating" name="tab-1" class="column no-border" style="height:400px;">
+      <q-tab-pane name="tab-1" class="column no-border" style="height:400px;">
         <ag-grid ref="roleGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
-                 @cell-value-changed="_onRoleGridCellValueChanged"
                  :row-data="roleArray">
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
@@ -52,13 +51,13 @@
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
       </q-tab-pane>
-      <q-tab-pane :disabled="creating" name="tab-2" class="column no-border"
+      <q-tab-pane name="tab-2" class="column no-border"
                   style="height:400px;">
         <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="row">
-          <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUser.userId"
+          <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUserId"
                                  :options="userLabels"
                                  label-field="label" value-field="value"
-                                 @search="_onUserSearch">
+                                 @search="onUserSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
               {{option.stamp}} - {{option.subLabel}}
@@ -71,9 +70,9 @@
                  enable-sorting
                  :row-data="userArray">
 
-          <ag-grid-column field="granted" header-name="삭제" :width="100" suppress-sorting
+          <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:_onUserRemove, icon:'fa-ban', link:true}"/>
+                          :cell-renderer-params="{handler:onUserRemove, icon:'fa-ban', link:true}"/>
           <ag-grid-column field="userId" header-name="아이디" :width="200"/>
           <ag-grid-column field="userName" header-name="이름" :width="250"/>
         </ag-grid>
@@ -87,10 +86,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" label="이력">
+               v-show="!phantom" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/group/${model.id}`"></audit-viewer>
           </q-modal>
@@ -103,13 +102,14 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import {
     GroupModel,
     GroupRoleArray,
     GroupUserArray,
     GroupUserModel,
-    UserLabelArray
+    UserLabelArray,
+    UserModel
   } from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
@@ -126,33 +126,36 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new GroupModel(),
-        creating: false,
         roleArray: new GroupRoleArray(),
         userArray: new GroupUserArray(),
         userLabels: new UserLabelArray(),
-        groupUser: new GroupUserModel()
+        groupUserId: null
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
     methods: {
-      async create () {
-        this.creating = true
+      async create() {
         this.model = new GroupModel()
-        await Promise.all([this.fetchRoles(), this.fetchUsers()])
+        this.roleArray = new GroupRoleArray(this.model)
+        this.userArray = new GroupUserArray(this.model)
+        await this.roleArray.query()
+        await this.userArray.query()
       },
-      async show () {
-        this.creating = false
+      async show() {
         this.model = await GroupModel.get(this.id)
-        await Promise.all([this.fetchRoles(), this.fetchUsers()])
+        this.roleArray = new GroupRoleArray(this.model)
+        this.userArray = new GroupUserArray(this.model)
+        await this.roleArray.query()
+        await this.userArray.query()
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -160,69 +163,45 @@
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              if (this.creating) {
-                const ok = await this.$alert.confirm('현재 화면을 닫으시겠습니까?')
-                if (ok) {
-                  this.$closeOverlay()
-                } else {
-                  this.$router.push({
-                    path: `/group/show/${this.model.id}`, query: this.$route.query
-                  })
-                }
-              } else {
-                this.$closeOverlay()
-              }
+              this.$closeOverlay()
             }
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         await this.model.save()
+        await this.roleArray.save()
+        await this.userArray.save()
       },
-      async fetchUsers () {
-        return await this.userArray.fetch({
-          id: this.model.id || ' '
-        })
-      },
-      async fetchRoles () {
-        return await this.roleArray.fetch({
-          id: this.model.id || ' '
-        })
-      },
-      async _onUserSearch (keyword, done) {
+      async onUserSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
       },
-      async _onUserRemove (item) {
+      async onUserRemove(user) {
         const ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')
         if (ok) {
-          await item.remove()
-          await this.fetchUsers()
+          this.userArray.remove(user)
         }
       },
-      _onRoleGridCellValueChanged (e) {
-        if (e.column.colDef.field === 'granted') {
-          e.value ? e.data.grant() : e.data.revoke()
-        }
-      }
     },
     computed: {
-      ...mapGetters([])
+      phantom() {
+        return this.model.phantom
+      }
     },
     watch: {
-      'groupUser.userId': async function (to) {
+      'groupUserId': async function (to) {
         if (to) {
-          this.groupUser.groupId = this.model.id
-          try {
-            await this.groupUser.add()
-            await this.fetchUsers()
-            this.groupUser.userId = null
-            this.$refs.groupUser.focus()
-          } finally {
-            this.groupUser.userId = null
-          }
+          console.log('groupUserId')
+          const user = await UserModel.get(to, true)
+          const groupUser = new GroupUserModel()
+          groupUser.userId = user.id
+          groupUser.userName = user.name
+          this.userArray.push(groupUser)
+          this.groupUserId = null
+          this.$refs.groupUser.focus()
         }
       }
     },

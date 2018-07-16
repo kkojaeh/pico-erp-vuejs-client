@@ -16,8 +16,8 @@
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <q-input v-model="model.id" float-label="아이디" :readonly="!creating"
-                   :hide-underline="!creating"/>
+          <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
+                   :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
@@ -87,14 +87,12 @@
 
       <q-card-separator/>
 
-      <q-card-main class="column gutter-md" style="height:100%;min-height:300px;"
-                   :disabled="creating">
+      <q-card-main class="column gutter-md" style="height:100%;min-height:300px;">
 
         <ag-grid ref="roleGrid" class="col"
                  row-selection="multiple"
                  enable-col-resize
                  enable-sorting
-                 @cell-value-changed="_onGridCellValueChanged"
                  :row-data="roleArray">
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
@@ -116,10 +114,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" label="이력">
+               v-show="!phantom" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/user/${model.id}`"></audit-viewer>
           </q-modal>
@@ -132,8 +130,8 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { DepartmentLabelArray, DepartmentModel, UserModel, UserRoleArray } from 'src/model/user'
+  import {mapGetters} from 'vuex'
+  import {DepartmentLabelArray, DepartmentModel, UserModel, UserRoleArray} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
@@ -149,38 +147,37 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new UserModel(),
-        creating: false,
         departmentLabels: new DepartmentLabelArray(),
         departmentModel: new DepartmentModel(),
         roleArray: new UserRoleArray(),
         roleFilter: null
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
       this.departmentLabels.query()
     },
     methods: {
-      async create () {
-        this.creating = true
+      async create() {
         this.model = new UserModel()
-        await this.clearRoles()
+        this.roleArray = new UserRoleArray(this.model)
+        await this.roleArray.query()
       },
-      async show () {
-        this.creating = false
+      async show() {
         this.model = await UserModel.get(this.id)
-        await this.fetchRoles()
+        this.roleArray = new UserRoleArray(this.model)
+        await this.roleArray.query()
       },
-      async _onDepartmentSearch (keyword, done) {
+      async _onDepartmentSearch(keyword, done) {
         await this.departmentLabels.query(keyword)
         done()
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -195,29 +192,18 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         await this.model.save()
-      },
-      async fetchRoles () {
-        let array = await this.roleArray.fetch({
-          id: this.model.id || ' '
-        })
-        array.forEach((item) => item.snapshot())
-      },
-      async clearRoles () {
-        this.roleArray.clear()
-      },
-      _onGridCellValueChanged (e) {
-        if (e.column.colDef.field === 'granted') {
-          e.value ? e.data.grant() : e.data.revoke()
-        }
+        await this.roleArray.save()
       }
     },
     computed: {
-      ...mapGetters([])
+      phantom() {
+        return this.model.phantom
+      }
     },
     watch: {
-      roleFilter () {
+      roleFilter() {
         const grid = this.$refs.roleGrid
         grid.api.setQuickFilter(this.roleFilter)
       },

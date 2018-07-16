@@ -24,7 +24,8 @@ module.exports = function (ctx) {
       'clipboard',
       'intro',
       'google-analytics',
-      'raven'
+      'raven',
+      'ag-grid'
     ],
     css: [
       'app.styl'

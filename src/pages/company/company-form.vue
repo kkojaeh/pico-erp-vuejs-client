@@ -16,9 +16,9 @@
         <q-field icon="perm_identity" helper="회사를 식별하는 아이디를 입력하세요"
                  class="col-xs-12 col-md-6 col-xl-4"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
-          <c-cleave-input v-model="model.id" float-label="코드" :readonly="!creating"
+          <c-cleave-input v-model="model.id" float-label="코드" :readonly="!phantom"
                           :cleave-options="{uppercase:true, blocks: [5]}"
-                          class="ime-mode-disabled" :hide-underline="!creating"/>
+                          class="ime-mode-disabled" :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
@@ -62,7 +62,7 @@
 
     </q-card>
 
-    <q-card class="col-12" flat :disabled="creating">
+    <q-card class="col-12" flat>
 
       <q-card-title>
         연락처
@@ -127,7 +127,7 @@
 
     </q-card>
 
-    <q-card class="col-12" flat :disabled="creating">
+    <q-card class="col-12" flat>
 
       <q-card-title>
         주소지
@@ -198,10 +198,10 @@
         <q-toolbar-title>
         </q-toolbar-title>
         <!--
-        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!creating" label="삭제"></q-btn>
+        <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
         <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!creating" label="이력">
+               v-show="!phantom" label="이력">
           <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
             <audit-viewer ref="auditViewer" :url="`/audit/company/${model.id}`"></audit-viewer>
           </q-modal>
@@ -243,7 +243,6 @@
         model: new CompanyModel(),
         contacts: new CompanyContactArray(),
         addresses: new CompanyAddressArray(),
-        creating: false,
         enabled: true,
         selectedContact: null,
         selectedAddress: null
@@ -256,16 +255,14 @@
     },
     methods: {
       async create() {
-        this.creating = true
         this.model = new CompanyModel()
-        this.contacts.clear()
-        this.addresses.clear()
+        this.contacts = new CompanyContactArray(this.model)
+        this.addresses = new CompanyAddressArray(this.model)
       },
       async show() {
-        this.creating = false
         this.model = await CompanyModel.get(this.id)
-        this.contacts = new CompanyContactArray(this.id)
-        this.addresses = new CompanyAddressArray(this.id)
+        this.contacts = new CompanyContactArray(this.model)
+        this.addresses = new CompanyAddressArray(this.model)
         await this.addresses.query()
         await this.contacts.query()
       },
@@ -283,14 +280,15 @@
         data.address.postalCode = address.postalCode
         data.address.street = address.street
         data.address.detail = null
-        const grid = this.$refs.addressGrid
-        grid.api.redrawRows()
+        this.$redrawGrids()
       },
 
       async onSaveClick() {
-        let valid = await this.model.validate()
-        valid = await this.contacts.validates() && valid
-        valid = await this.addresses.validates() && valid
+        let valid = ![
+          await this.model.validate(),
+          await this.contacts.validate(),
+          await this.addresses.validate()
+        ].includes(false)
 
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -302,7 +300,7 @@
             }
           }
         } else {
-          [this.$refs.addressGrid, this.$refs.contactGrid].forEach(grid => grid.api.redrawRows())
+          this.$redrawGrids()
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
@@ -313,9 +311,7 @@
       },
 
       async addContact() {
-        this.contacts.push(new CompanyContactModel({
-          companyId: this.model.id
-        }))
+        this.contacts.push(new CompanyContactModel())
       },
 
       async removeContact() {
@@ -327,9 +323,7 @@
       },
 
       async addAddress() {
-        this.addresses.push(new CompanyAddressModel({
-          companyId: this.model.id
-        }))
+        this.addresses.push(new CompanyAddressModel())
       },
 
       async removeAddress() {
@@ -341,7 +335,9 @@
       }
     },
     computed: {
-      ...mapGetters([])
+      phantom() {
+        return this.model.phantom
+      }
     },
     components: {
       AuditViewer

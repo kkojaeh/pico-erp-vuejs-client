@@ -1,13 +1,15 @@
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {FetchableArray} from "../array";
+import {QuotationAdditionModel} from "./quotation-addition";
 
-export class QuotationAdditionModel extends Model {
+
+export class QuotationItemAdditionModel extends Model {
+
   get defaults() {
     return {
       name: '',
-      unitPrice: 0,
-      quantity: 1
+      additionalRate: 0
     }
   }
 
@@ -18,28 +20,28 @@ export class QuotationAdditionModel extends Model {
   async save() {
     if (this.phantom) {
       this.id = uuid()
-      const response = await api.post(
-          `/quotation/quotations/${this.quotationId}/additions`, this)
+      const response = await api.post(`/quotation/quotations/${this.quotationId}/item-additions`, this)
       this.assign(response.data)
-    } else {
+    }else {
       await api.put(
-          `/quotation/quotations/${this.quotationId}/additions/${this.id}`, this)
+          `/quotation/quotations/${this.quotationId}/item-additions/${this.id}`, this)
     }
   }
 
   async remove() {
     await api.delete(
-        `/quotation/quotations/${this.quotationId}/additions/${this.id}`, {})
+        `/quotation/quotations/${this.quotationId}/item-additions/${this.id}`,
+        {})
   }
 
 }
 
 const removedSymbol = Symbol('removed')
 
-export const QuotationAdditionArray = Array.decorate(
+export const QuotationItemAdditionArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/quotation/quotations/${quotationId}/additions'
+        return '/quotation/quotations/${quotationId}/item-additions'
       }
 
       get axios() {
@@ -47,7 +49,7 @@ export const QuotationAdditionArray = Array.decorate(
       }
 
       get model() {
-        return QuotationAdditionModel
+        return QuotationItemAdditionModel
       }
 
       initialize(quotationId) {

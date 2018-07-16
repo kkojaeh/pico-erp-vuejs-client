@@ -3,6 +3,9 @@ import {LabelModel} from "src/model/shared"
 import {api} from "src/plugins/axios"
 
 export * from './quotation'
+export * from './quotation-item'
+export * from './quotation-addition'
+export * from './quotation-item-addition'
 
 export const QuotationStatusArray = Array.decorate(
     class extends FetchableArray {

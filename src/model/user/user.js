@@ -112,20 +112,13 @@ export class UserModel extends Model {
 }
 
 export class UserRoleModel extends Model {
-  get axios() {
-    return api
-  }
-
-  get url() {
-    return `/user/users/${this.userId}/role`
-  };
 
   async grant() {
-    await api.post(`/user/users/${this.userId}/role`, this)
+    await api.post(`/user/users/${this.userId}/roles`, this)
   }
 
   async revoke() {
-    await api.delete(`/user/users/${this.userId}/role`, {
+    await api.delete(`/user/users/${this.userId}/roles`, {
       data: this
     })
   }
@@ -151,7 +144,7 @@ export const UserPaginationArray = Array.decorate(
 export const UserRoleArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/user/users/${id}/role'
+        return '/user/users/${userId}/roles'
       }
 
       get axios() {
@@ -160,6 +153,25 @@ export const UserRoleArray = Array.decorate(
 
       get model() {
         return UserRoleModel
+      }
+
+      initialize(user) {
+        super.initialize()
+        this.user = user
+      }
+
+      async query() {
+        return await this.fetch({
+          userId: this.user.id || ' '
+        })
+      }
+
+      async save() {
+        this.forEach(element => element.userId = this.user.id)
+        await Promise.all(
+            this.filter(element => element.hasChanged('granted'))
+            .map(element => element.granted ? element.grant() : element.revoke())
+        )
       }
     }
 )

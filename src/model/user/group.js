@@ -3,7 +3,6 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import qs from 'qs'
 import store from '../../store'
-import {CompanyModel} from "../company/company";
 
 export class GroupImportOptions {
 
@@ -111,23 +110,28 @@ export const GroupArray = Array.decorate(
 export class GroupRoleModel extends Model {
 
   async grant() {
-    await api.post(`/user/groups/${this.groupId}/role`, this)
+    await api.post(`/user/groups/${this.groupId}/roles`, this)
   }
 
   async revoke() {
-    await api.delete(`/user/groups/${this.groupId}/role`, {
+    await api.delete(`/user/groups/${this.groupId}/roles`, {
       data: this
     })
   }
 }
 
 export class GroupUserModel extends Model {
+
+  get phantom(){
+    return this.hasChanged("userId")
+  }
+
   async add() {
-    await api.post(`/user/groups/${this.groupId}/user`, this)
+    await api.post(`/user/groups/${this.groupId}/users`, this)
   }
 
   async remove() {
-    await api.delete(`/user/groups/${this.groupId}/user`, {
+    await api.delete(`/user/groups/${this.groupId}/users`, {
       data: this
     })
   }
@@ -136,7 +140,7 @@ export class GroupUserModel extends Model {
 export const GroupRoleArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/user/groups/${id}/role'
+        return '/user/groups/${groupId}/roles'
       }
 
       get axios() {
@@ -147,13 +151,34 @@ export const GroupRoleArray = Array.decorate(
         return GroupRoleModel
       }
 
+      initialize(group) {
+        super.initialize()
+        this.group = group
+      }
+
+      async query() {
+        return await this.fetch({
+          groupId: this.group.id || ' '
+        })
+      }
+
+      async save() {
+        this.forEach(element => element.groupId = this.group.id)
+        await Promise.all(
+            this.filter(element => element.hasChanged('granted'))
+                .map(element => element.granted ? element.grant() : element.revoke())
+        )
+      }
+
     }
 )
+
+const removedSymbol = Symbol('removed')
 
 export const GroupUserArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/user/groups/${id}/user'
+        return '/user/groups/${groupId}/users'
       }
 
       get axios() {
@@ -162,6 +187,43 @@ export const GroupUserArray = Array.decorate(
 
       get model() {
         return GroupUserModel
+      }
+
+      initialize(group) {
+        super.initialize()
+        this.group = group
+        this[removedSymbol] = []
+      }
+
+      async query() {
+        return await this.fetch({
+          groupId: this.group.id || ' '
+        })
+      }
+
+      async save() {
+        this.forEach(element => element.groupId = this.group.id)
+        await Promise.all(
+            this.filter(element => element.phantom)
+            .map(element => element.add())
+        )
+
+        await Promise.all(
+            this[removedSymbol].map(element => element.remove())
+        )
+        this[removedSymbol] = []
+      }
+
+      remove(element) {
+        super.remove(element)
+        if (!element.phantom) {
+          this[removedSymbol].push(element)
+        }
+      }
+
+      clear() {
+        super.clear()
+        this[removedSymbol] = []
       }
     }
 )

@@ -100,7 +100,7 @@ export class ItemModel extends Model {
       purchasable: {
         presence: true
       },
-      saleable: {
+      sellable: {
         presence: true
       },
       baseUnitCost: {

@@ -4,8 +4,8 @@ import {api} from 'src/plugins/axios'
 import store from 'src/store'
 import qs from 'qs'
 import {QuotationAdditionModel} from './quotation-addition'
-import {QuotationBomItemModel} from './quotation-item'
-import {QuotationItemAdditionRateModel} from './quotation-item-addition-rate'
+import {QuotationItemModel} from './quotation-item'
+import {QuotationItemAdditionModel} from './quotation-item-addition'
 
 export class QuotationPrintSheetOptions {
 
@@ -19,22 +19,7 @@ export class QuotationModel extends Model {
 
   constructor(data) {
     super(data)
-    if (this.items) {
-      this.items = this.items.map(QuotationModel.itemConverter)
-      this.items.forEach(item => item.quotation = this)
-    }
-    if (this.itemAdditions) {
-      this.itemAdditions = this.itemAdditions.map(
-          QuotationModel.itemAdditionConverter)
-      this.itemAdditions.forEach(
-          itemAddition => itemAddition.quotation = this)
-    }
-    if (this.additions) {
-      this.additions = this.additions.map(
-          QuotationModel.additionConverter)
-      this.additions.forEach(addition => addition.quotation = this)
-    }
-
+    this.id || uuid()
   }
 
   get defaults() {
@@ -57,22 +42,6 @@ export class QuotationModel extends Model {
     }
   }
 
-  static itemConverter(data) {
-    const type = data['@type']
-    if (type == 'bom') {
-      return new QuotationBomItemModel(data)
-    }
-  }
-
-  static itemAdditionConverter(data) {
-    const type = data['@type']
-    return new QuotationItemAdditionRateModel(data)
-  }
-
-  static additionConverter(data) {
-    return new QuotationAdditionModel(data)
-  }
-
   static async get(id) {
     const response = await api.get(`/quotation/quotations/${id}`)
     return new QuotationModel(response.data)
@@ -82,12 +51,8 @@ export class QuotationModel extends Model {
     return await exists(api, `/quotation/quotations/${id}`)
   }
 
-  async fetchAll() {
-    await Promise.all(this.items.map(async (item) => await item.fetch()))
-  }
-
   get phantom() {
-    return !this.id
+    return !this.id || this.hasChanged("id")
   }
 
   async save() {
@@ -98,24 +63,6 @@ export class QuotationModel extends Model {
     } else {
       await api.put(`/quotation/quotations/${this.id}`, this)
     }
-  }
-
-  async addBomItem(bom) {
-    await api.post(`/quotation/quotations/${this.id}/items`, {
-      item: QuotationBomItemModel.create(bom)
-    })
-  }
-
-  async addUnitPriceRateItemAddition() {
-    await api.post(`/quotation/quotations/${this.id}/item-addition-rates`, {
-      itemAdditionRate: QuotationItemAdditionRateModel.create()
-    })
-  }
-
-  async addAddition() {
-    await api.post(`/quotation/quotations/${this.id}/additions`, {
-      addition: QuotationAdditionModel.create()
-    })
   }
 
   async validate() {

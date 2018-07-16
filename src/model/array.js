@@ -22,7 +22,7 @@ Array.decorate = (ArrayDecoratorType) => {
     constructor(...args) {
       super()
       Object.defineProperties(this, getDescriptors(ArrayDecoratorType.prototype))
-      this.initialize(args)
+      this.initialize.apply(this, args)
     }
   }
 }

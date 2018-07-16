@@ -1,4 +1,4 @@
-<template>
+₩<template>
 
   <q-page class="row layout-padding">
 
@@ -78,9 +78,9 @@
 
         <q-field icon="monetization_on" helper="판매 가능 여부를 체크하세요(판매시 노출여부가 달라 집니다)"
                  class="col-xs-12 col-md-6 col-xl-4"
-                 :error="!!model.$errors.saleable"
-                 :error-label="model.$errors.saleable">
-          <q-checkbox label="판매가능" v-model="model.saleable"/>
+                 :error="!!model.$errors.sellable"
+                 :error-label="model.$errors.sellable">
+          <q-checkbox label="판매가능" v-model="model.sellable"/>
         </q-field>
 
         <q-field icon="monetization_on" helper="공정 비용을 제외한 금액(구매/외주 기준 금액, 직접 재료비)"

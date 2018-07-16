@@ -100,21 +100,22 @@ export const CompanyAddressArray = Array.decorate(
         return CompanyAddressModel
       }
 
-      initialize(companyId) {
-        super.initialize(companyId)
-        this.companyId = companyId
+      initialize(company) {
+        super.initialize()
+        this.company = company
         this[removedSymbol] = []
       }
 
       async query() {
         return await this.fetch({
-          companyId: this.companyId
+          companyId: this.company.id
         })
       }
 
-      async validates() {
+      async validate() {
+        this.forEach(element => element.companyId = this.company.id)
         const results = await Promise.all(
-            this.filter(address => !address.id || address.hasChanged())
+            this.filter(element => !element.id || element.hasChanged())
             .map(address => address.validate())
         )
         // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
@@ -122,12 +123,13 @@ export const CompanyAddressArray = Array.decorate(
       }
 
       async save() {
+        this.forEach(element => element.companyId = this.company.id)
         await Promise.all(
-            this.filter(address => !address.id || address.hasChanged())
+            this.filter(element => !element.id || element.hasChanged())
             .map(address => address.save())
         )
         await Promise.all(
-            this[removedSymbol].map(address => address.delete())
+            this[removedSymbol].map(element => element.delete())
         )
         this[removedSymbol] = []
       }
