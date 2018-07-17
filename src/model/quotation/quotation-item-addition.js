@@ -1,6 +1,6 @@
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {FetchableArray} from "../array";
+import {FetchableArray, SavableArray, ValidatableArray} from "../array";
 import {QuotationAdditionModel} from "./quotation-addition";
 
 
@@ -28,7 +28,7 @@ export class QuotationItemAdditionModel extends Model {
     }
   }
 
-  async remove() {
+  async delete() {
     await api.delete(
         `/quotation/quotations/${this.quotationId}/item-additions/${this.id}`,
         {})
@@ -58,9 +58,9 @@ export class QuotationItemAdditionModel extends Model {
 
 }
 
-const removedSymbol = Symbol('removed')
-
 export const QuotationItemAdditionArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
     class extends FetchableArray {
       get url() {
         return '/quotation/quotations/${quotationId}/item-additions'
@@ -77,7 +77,6 @@ export const QuotationItemAdditionArray = Array.decorate(
       initialize(quotation) {
         super.initialize()
         this.quotation = quotation
-        this[removedSymbol] = []
       }
 
       async query() {
@@ -86,38 +85,8 @@ export const QuotationItemAdditionArray = Array.decorate(
         })
       }
 
-      async validate() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        const results = await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.validate())
-        )
-        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-        return results.filter(valid => valid == false).length == 0
-      }
-
-      async save() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.save())
-        )
-        await Promise.all(
-            this[removedSymbol].map(element => element.delete())
-        )
-        this[removedSymbol] = []
-      }
-
-      remove(element) {
-        super.remove(element)
-        if (!element.phantom) {
-          this[removedSymbol].push(element)
-        }
-      }
-
-      clear() {
-        super.clear()
-        this[removedSymbol] = []
+      applyEach(element){
+        element.quotationId = this.quotation.id
       }
     }
 )

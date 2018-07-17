@@ -1,11 +1,18 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {FetchableArray, SavableArray,
+  ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
+import {ItemModel} from "src/model/item";
 
-const projectSymbol = Symbol('project')
+const itemSymbol = Symbol('item')
 
 export class ProjectSaleItemModel extends Model {
+
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
 
   get defaults() {
     return {
@@ -17,12 +24,12 @@ export class ProjectSaleItemModel extends Model {
     return {}
   }
 
-  get project() {
-    return this[projectSymbol]
+  get item() {
+    return this[itemSymbol]
   }
 
-  set project(value) {
-    this[projectSymbol] = value
+  async fetchReference() {
+    this[itemSymbol] = await ItemModel.get(this.itemId, true)
   }
 
   /*
@@ -42,7 +49,7 @@ export class ProjectSaleItemModel extends Model {
   */
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async save() {
@@ -50,10 +57,10 @@ export class ProjectSaleItemModel extends Model {
     if (this.phantom) {
       this.id = uuid()
       const response = await api.post(
-          `/project/projects/${projectId}/charges`, this)
+          `/project/projects/${projectId}/sale-items`, this)
       this.assign(response.data)
     } else {
-      await api.put(`/project/projects/${projectId}/charges/${this.id}`,
+      await api.put(`/project/projects/${projectId}/sale-items/${this.id}`,
           this)
     }
   }
@@ -77,4 +84,44 @@ export class ProjectSaleItemModel extends Model {
 
     return await this.$validate(constraints)
   }
+
+  async delete() {
+    await api.delete(
+        `/project/projects/${projectId}/sale-items/${this.id}`, {})
+  }
 }
+
+export const ProjectSaleItemArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
+    class extends FetchableArray {
+      get url() {
+        return '/project/projects/${projectId}/sale-items'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return ProjectSaleItemModel
+      }
+
+      initialize(project) {
+        super.initialize()
+        this.project = project
+      }
+
+      async query() {
+        await this.fetch({
+          projectId: this.project.id
+        })
+        await Promise.all(this.map(async (element) => await element.fetchReference()))
+      }
+
+      applyEach(element){
+        element.projectId = this.project.id
+      }
+
+    }
+)

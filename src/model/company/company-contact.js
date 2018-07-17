@@ -1,8 +1,6 @@
-import {FetchableArray} from 'src/model/array'
+import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-
-const removedSymbol = Symbol('removed')
 
 export class CompanyContactModel extends Model {
 
@@ -87,6 +85,8 @@ export class CompanyContactModel extends Model {
 }
 
 export const CompanyContactArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
     class extends FetchableArray {
       get url() {
         return '/company/companies/${companyId}/contacts'
@@ -103,7 +103,6 @@ export const CompanyContactArray = Array.decorate(
       initialize(company) {
         super.initialize()
         this.company = company
-        this[removedSymbol] = []
       }
 
       async query() {
@@ -112,39 +111,10 @@ export const CompanyContactArray = Array.decorate(
         })
       }
 
-      async validate() {
-        this.forEach(element => element.companyId = this.company.id)
-        const results = await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(contact => contact.validate())
-        )
-        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-        return results.filter(valid => valid == false).length == 0
+      applyEach(element){
+        element.companyId = this.company.id
       }
 
-      async save() {
-        this.forEach(element => element.companyId = this.company.id)
-        await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(contact => contact.save())
-        )
-        await Promise.all(
-            this[removedSymbol].map(element => element.delete())
-        )
-        this[removedSymbol] = []
-      }
-
-      remove(element) {
-        super.remove(element)
-        if (!element.phantom) {
-          this[removedSymbol].push(element)
-        }
-      }
-
-      clear() {
-        super.clear()
-        this[removedSymbol] = []
-      }
     }
 )
 

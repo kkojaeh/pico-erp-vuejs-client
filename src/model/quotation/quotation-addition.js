@@ -1,6 +1,6 @@
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {FetchableArray} from "../array";
+import {FetchableArray, SavableArray, ValidatableArray} from "src/model/array";
 
 export class QuotationAdditionModel extends Model {
   get defaults() {
@@ -23,11 +23,12 @@ export class QuotationAdditionModel extends Model {
       this.assign(response.data)
     } else {
       await api.put(
-          `/quotation/quotations/${this.quotationId}/additions/${this.id}`, this)
+          `/quotation/quotations/${this.quotationId}/additions/${this.id}`,
+          this)
     }
   }
 
-  async remove() {
+  async delete() {
     await api.delete(
         `/quotation/quotations/${this.quotationId}/additions/${this.id}`, {})
   }
@@ -62,9 +63,9 @@ export class QuotationAdditionModel extends Model {
 
 }
 
-const removedSymbol = Symbol('removed')
-
 export const QuotationAdditionArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
     class extends FetchableArray {
       get url() {
         return '/quotation/quotations/${quotationId}/additions'
@@ -81,7 +82,6 @@ export const QuotationAdditionArray = Array.decorate(
       initialize(quotation) {
         super.initialize()
         this.quotation = quotation
-        this[removedSymbol] = []
       }
 
       async query() {
@@ -90,38 +90,9 @@ export const QuotationAdditionArray = Array.decorate(
         })
       }
 
-      async validate() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        const results = await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.validate())
-        )
-        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-        return results.filter(valid => valid == false).length == 0
+      applyEach(element) {
+        element.quotationId = this.quotation.id
       }
 
-      async save() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.save())
-        )
-        await Promise.all(
-            this[removedSymbol].map(element => element.delete())
-        )
-        this[removedSymbol] = []
-      }
-
-      remove(element) {
-        super.remove(element)
-        if (!element.phantom) {
-          this[removedSymbol].push(element)
-        }
-      }
-
-      clear() {
-        super.clear()
-        this[removedSymbol] = []
-      }
     }
 )

@@ -15,7 +15,6 @@ export default [{
     name: 'quotation-form-create',
     path: 'create',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
-      maximized: true,
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }
@@ -29,7 +28,6 @@ export default [{
     name: 'quotation-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('pages/quotation/quotation-form'), {
-      maximized: true,
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }

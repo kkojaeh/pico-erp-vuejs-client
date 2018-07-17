@@ -1,4 +1,4 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {FetchableArray, SpringPaginationArray, SavableArray} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
@@ -142,6 +142,7 @@ export const UserPaginationArray = Array.decorate(
 
 
 export const UserRoleArray = Array.decorate(
+    SavableArray,
     class extends FetchableArray {
       get url() {
         return '/user/users/${userId}/roles'
@@ -165,13 +166,16 @@ export const UserRoleArray = Array.decorate(
           userId: this.user.id || ' '
         })
       }
+      async saveElement(element){
+        return await element.granted ? element.grant() : element.revoke()
+      }
 
-      async save() {
-        this.forEach(element => element.userId = this.user.id)
-        await Promise.all(
-            this.filter(element => element.hasChanged('granted'))
-            .map(element => element.granted ? element.grant() : element.revoke())
-        )
+      isSaveTarget(element){
+        return element.hasChanged('granted')
+      }
+
+      applyEach(element){
+        element.userId = this.user.id
       }
     }
 )

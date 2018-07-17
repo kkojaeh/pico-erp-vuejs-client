@@ -35,7 +35,6 @@
              enable-group-edit
              :row-data="array">
       <ag-grid-column field="item.name" header-name="이름" cellRenderer="agGroupCellRenderer"
-                      col-id="xxx"
                       :checkbox-selection="true" :width="400"
                       :cell-renderer-params="{
                             innerRenderer: bomNameRenderer,
@@ -242,23 +241,7 @@
         const grid = this.$refs.grid
         const selectedId = this.selected.id
         this.model = await BomModel.get(this.id)
-        await this.model.fetchChildren(true)
-        await this.model.visit(async (node) => {
-          node[itemSymbol] = await ItemModel.get(node.itemId, true)
-          node[itemSpecSymbol] = await ItemSpecModel.get(node.itemSpecId, true)
-          node[processSymbol] = await ProcessModel.get(node.processId, true)
-          Object.defineProperties(node, {
-            'item': {
-              get: function () { return this[itemSymbol] }
-            },
-            'itemSpec': {
-              get: function () { return this[itemSpecSymbol] }
-            },
-            'process': {
-              get: function () { return this[processSymbol] }
-            }
-          })
-        })
+        await this.model.fetchChildren(true, true)
         this.array = [this.model]
         // 첫행 선택
         this.$nextTick(() => {

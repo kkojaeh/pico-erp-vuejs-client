@@ -54,32 +54,6 @@
                         :options="statusLabels"></q-select>
             </q-field>
 
-            <q-field icon="description" helper="내부에서 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
-                     :error="!!model.$errors.protectedDescription"
-                     :error-label="model.$errors.protectedDescription"
-                     :count="200">
-              <q-input type="textarea" v-model="model.protectedDescription" float-label="내부 설명"
-                       rows="5"
-                       max-length="200"/>
-            </q-field>
-
-            <q-field icon="description" helper="외부에 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
-                     :error="!!model.$errors.publicDescription"
-                     :error-label="model.$errors.publicDescription"
-                     :count="200">
-              <q-input type="textarea" v-model="model.publicDescription" float-label="외부 설명"
-                       rows="5"
-                       max-length="200"/>
-            </q-field>
-
-            <q-field icon="attachment" helper="견적 관련 첨부파일 입니다"
-                     class="col-xs-12 col-md-12 col-xl-12">
-              <c-attachment ref="attachment" v-model="model.attachmentId" category="quotation"
-                            multiple :readonly="!isModifiable"></c-attachment>
-            </q-field>
-
           </q-card-main>
 
         </q-card>
@@ -170,6 +144,49 @@
 
         </q-card>
 
+        <q-card class="col-12" flat>
+
+          <q-card-title>
+            설명 및 관련 파일
+          </q-card-title>
+
+          <q-card-separator/>
+
+
+          <q-card-main class="row gutter-md">
+
+
+            <q-field icon="description" helper="내부에서 공유할 의견 및 설명을 입력하세요"
+                     class="col-xs-12 col-md-6 col-xl-4"
+                     :error="!!model.$errors.protectedDescription"
+                     :error-label="model.$errors.protectedDescription"
+                     :count="200">
+              <q-input type="textarea" v-model="model.protectedDescription" float-label="내부 설명"
+                       rows="5"
+                       max-length="200"/>
+            </q-field>
+
+            <q-field icon="description" helper="외부에 공유할 의견 및 설명을 입력하세요"
+                     class="col-xs-12 col-md-6 col-xl-4"
+                     :error="!!model.$errors.publicDescription"
+                     :error-label="model.$errors.publicDescription"
+                     :count="200">
+              <q-input type="textarea" v-model="model.publicDescription" float-label="외부 설명"
+                       rows="5"
+                       max-length="200"/>
+            </q-field>
+
+            <q-field icon="attachment" helper="견적 관련 첨부파일 입니다"
+                     class="col-xs-12 col-md-10 col-xl-8">
+              <c-attachment ref="attachment" v-model="model.attachmentId" category="quotation"
+                            multiple :readonly="!isModifiable"></c-attachment>
+            </q-field>
+
+
+          </q-card-main>
+
+        </q-card>
+
         <q-card v-if="model.commentSubjectId" class="col-12" flat>
 
           <q-card-title>
@@ -219,7 +236,7 @@
           <q-card-main class="row">
 
             <ag-grid class="col" ref="itemGrid"
-                     dom-layout='autoHeight'
+                     :grid-auto-height="true"
                      row-selection="single"
                      enable-col-resize
                      enable-sorting
@@ -231,13 +248,11 @@
                      :get-row-height="getRowHeight"
                      :row-data="itemArray"
                      @selection-changed="onItemSelectionChanged">
+              <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
               <ag-grid-column field="bom.item.name" header-name="이름"
                               cellRenderer="agGroupCellRenderer"
-                              :checkbox-selection="true"
                               :width="300"
-                              :cell-renderer-params="{
-                            suppressCount: true
-                          }"/>
+                              :cell-renderer-params="{suppressCount: true}"/>
               <ag-grid-column field="bom.item.code" header-name="코드" :width="150"
                               cell-renderer-framework="ag-grid-router-link-renderer"
                               :cell-renderer-params="{path:'/item/show/${bom.item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
@@ -340,15 +355,15 @@
           <q-card-main class="row">
 
             <ag-grid class="col" ref="itemAdditionGrid"
-                     dom-layout='autoHeight'
+                     :grid-auto-height="true"
                      row-selection="single"
                      enable-col-resize
                      enable-sorting
                      suppress-no-rows-overlay
                      :row-data="itemAdditionArray"
                      @selection-changed="onItemAdditionSelectionChanged">
+              <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
               <ag-grid-column field="name" header-name="이름"
-                              :checkbox-selection="true"
                               :width="300"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 200 }"
@@ -391,15 +406,15 @@
           <q-card-main class="row">
 
             <ag-grid class="col" ref="additionGrid"
-                     dom-layout='autoHeight'
+                     :grid-auto-height="true"
                      row-selection="single"
                      enable-col-resize
                      enable-sorting
                      suppress-no-rows-overlay
                      :row-data="additionArray"
                      @selection-changed="onAdditionSelectionChanged">
+              <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
               <ag-grid-column field="name" header-name="이름"
-                              :checkbox-selection="true"
                               :width="300" :editable="isModifiable"/>
               <ag-grid-column field="description" header-name="설명" :width="200"
                               cell-editor-framework="ag-grid-input-editor"
@@ -542,10 +557,12 @@
         const modal = this.$refs.bomFormModal
         const form = this.$refs.bomForm
         modal.show()
-        form.show(data.bomId)
-        modal.$once('hide', () => {
+        form.show(data.bom.id)
+        modal.$once('hide', async () => {
           form.$off('saved')
-          this.load()
+          await data.fetchReference()
+          const model = await QuotationModel.get(this.id)
+          this.model.committable = model.committable
         })
       },
       onItemSelectionChanged(event) {
@@ -619,12 +636,16 @@
         this.load()
       },
       async load() {
-        this.model = await QuotationModel.get(this.id)
-        this.itemArray = new QuotationItemArray(this.model)
-        this.itemAdditionArray = new QuotationItemAdditionArray(this.model)
-        this.additionArray = new QuotationAdditionArray(this.model)
+        const model = await QuotationModel.get(this.id)
+        const itemArray = new QuotationItemArray(model)
+        const itemAdditionArray = new QuotationItemAdditionArray(model)
+        const additionArray = new QuotationAdditionArray(model)
         await Promise.all(
-            [this.itemArray.query(), this.additionArray.query(), this.itemAdditionArray.query()])
+            [itemArray.query(), additionArray.query(), itemAdditionArray.query()])
+        this.model = model
+        this.itemArray = itemArray
+        this.itemAdditionArray = itemAdditionArray
+        this.additionArray = additionArray
       },
       async onSave() {
         let valid = ![
@@ -719,7 +740,7 @@
           itemId: bom.itemId,
           bomId: bom.id
         })
-        await item.fetch()
+        await item.fetchReference()
         itemArray.push(item)
       },
 

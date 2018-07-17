@@ -26,6 +26,10 @@
     autoSizeColumnsToFit: {
       type: Boolean,
       default: false
+    },
+    gridAutoHeight: {
+      type: Boolean,
+      default: false
     }
   }
   ComponentUtil.ALL_PROPERTIES.forEach((propertyName) => {
@@ -47,7 +51,9 @@
         _destroyed: false,
         _editing: false,
         _invalidateColumnDefinitionsQueued: false,
-        _keyActingCell: null
+        _keyActingCell: null,
+        visibleHorizontalScrollLeft: false,
+        visibleHorizontalScrollRight: false
       }
     },
     methods: {
@@ -190,6 +196,8 @@
         this._keyActingCell = null
         window.removeEventListener('copy', this.onWindowCopy)
       }
+
+
     },
     created() {
       this.invalidateColumnDefinitions = _.debounce(this.invalidateColumnDefinitions, 500)
@@ -259,6 +267,7 @@
 
 <style lang="stylus">
   .ag-grid-wrapper
+    position: relative
     overflow: auto
     .tooltip
       z-index: 20000

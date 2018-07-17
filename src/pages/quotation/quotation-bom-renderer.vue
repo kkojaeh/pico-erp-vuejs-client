@@ -1,7 +1,7 @@
 <template>
   <div class="quotation-bom-renderer">
     <ag-grid enable-col-resize
-             dom-layout='autoHeight'
+             :grid-auto-height="true"
              row-selection="single"
              :get-node-child-details="getNodeChildDetails"
              :row-data="[params.data.bom]">

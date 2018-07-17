@@ -1,7 +1,8 @@
 import {Model, uuid} from 'src/model/model'
 import {BomModel} from 'src/model/bom'
 import {api} from 'src/plugins/axios'
-import {FetchableArray} from "src/model/array";
+import {FetchableArray, SavableArray,
+  ValidatableArray} from "src/model/array";
 
 const bomSymbol = Symbol('bom')
 
@@ -52,7 +53,7 @@ export class QuotationItemModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async fetch() {
+  async fetchReference() {
     const bom = await BomModel.getByItemId(this.itemId)
     this[bomSymbol] = bom
     await bom.fetchChildren(true, true)
@@ -70,16 +71,16 @@ export class QuotationItemModel extends Model {
     }
   }
 
-  async remove() {
+  async delete() {
     await api.delete(
         `/quotation/quotations/${this.quotationId}/items/${this.id}`, {})
   }
 
 }
 
-const removedSymbol = Symbol('removed')
-
 export const QuotationItemArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
     class extends FetchableArray {
       get url() {
         return '/quotation/quotations/${quotationId}/items'
@@ -96,48 +97,18 @@ export const QuotationItemArray = Array.decorate(
       initialize(quotation) {
         super.initialize()
         this.quotation = quotation
-        this[removedSymbol] = []
       }
 
       async query() {
         await this.fetch({
           quotationId: this.quotation.id
         })
-        await Promise.all(this.map(async (item) => await item.fetch()))
+        await Promise.all(this.map(async (element) => await element.fetchReference()))
       }
 
-      async validate() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        const results = await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.validate())
-        )
-        // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
-        return results.filter(valid => valid == false).length == 0
+      applyEach(element){
+        element.quotationId = this.quotation.id
       }
 
-      async save() {
-        this.forEach(element => element.quotationId = this.quotation.id)
-        await Promise.all(
-            this.filter(element => !element.id || element.hasChanged())
-            .map(address => address.save())
-        )
-        await Promise.all(
-            this[removedSymbol].map(element => element.delete())
-        )
-        this[removedSymbol] = []
-      }
-
-      remove(element) {
-        super.remove(element)
-        if (!element.phantom) {
-          this[removedSymbol].push(element)
-        }
-      }
-
-      clear() {
-        super.clear()
-        this[removedSymbol] = []
-      }
     }
 )

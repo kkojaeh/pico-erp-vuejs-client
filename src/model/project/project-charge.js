@@ -1,16 +1,23 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {FetchableArray, SavableArray,
+  ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
-
-const projectSymbol = Symbol('project')
+import {ProjectSaleItemModel} from "./project-sale-item";
 
 export class ProjectChargeModel extends Model {
+
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
 
   get defaults() {
     return {
       unitPrice: 0,
-      quantity: 0
+      quantity: 0,
+      paid: false,
+      charged: false
     }
   }
 
@@ -18,12 +25,8 @@ export class ProjectChargeModel extends Model {
     return {}
   }
 
-  get project() {
-    return this[projectSymbol]
-  }
-
-  set project(value) {
-    this[projectSymbol] = value
+  get phantom() {
+    return this.hasChanged("id")
   }
 
   /*
@@ -42,19 +45,15 @@ export class ProjectChargeModel extends Model {
     }
   */
 
-  get phantom() {
-    return !this.id
-  }
-
   async save() {
     const projectId = this.project.id
     if (this.phantom) {
       this.id = uuid()
       const response = await api.post(
-          `/project/projects/${projectId}/sale-items`, this)
+          `/project/projects/${projectId}/charges`, this)
       this.assign(response.data)
     } else {
-      await api.put(`/project/projects/${projectId}/sale-items/${this.id}`,
+      await api.put(`/project/projects/${projectId}/charges/${this.id}`,
           this)
     }
   }
@@ -80,4 +79,42 @@ export class ProjectChargeModel extends Model {
 
     return await this.$validate(constraints)
   }
+
+  async delete() {
+    await api.delete(
+        `/project/projects/${projectId}/charges/${this.id}`, {})
+  }
 }
+
+export const ProjectChargeArray = Array.decorate(
+    SavableArray,
+    ValidatableArray,
+    class extends FetchableArray {
+      get url() {
+        return '/project/projects/${projectId}/charges'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return ProjectChargeModel
+      }
+
+      initialize(project) {
+        super.initialize()
+        this.project = project
+      }
+
+      async query() {
+        await this.fetch({
+          projectId: this.project.id
+        })
+      }
+
+      applyEach(element){
+        element.projectId = this.project.id
+      }
+    }
+)

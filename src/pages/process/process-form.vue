@@ -92,7 +92,7 @@
         </q-field>
 
         <q-field icon="attachment" helper="공정 관련 첨부파일 입니다"
-                 class="col-xs-12 col-md-12 col-xl-12">
+                 class="col-xs-12 col-md-10 col-xl-8">
 
           <c-attachment ref="attachment" v-model="model.attachmentId" category="process"
                         multiple :readonly="!isModifiable"></c-attachment>

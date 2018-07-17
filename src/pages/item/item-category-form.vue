@@ -139,7 +139,7 @@
         }
       },
       phantom() {
-        return this.mode.phantom
+        return this.model.phantom
       }
     },
     components: {

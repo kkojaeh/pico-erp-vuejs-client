@@ -1,8 +1,8 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {FetchableArray, SpringPaginationArray, SavableArray} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import qs from 'qs'
-import store from '../../store'
+import store from 'src/store'
 
 export class GroupImportOptions {
 
@@ -138,6 +138,7 @@ export class GroupUserModel extends Model {
 }
 
 export const GroupRoleArray = Array.decorate(
+    SavableArray,
     class extends FetchableArray {
       get url() {
         return '/user/groups/${groupId}/roles'
@@ -162,20 +163,23 @@ export const GroupRoleArray = Array.decorate(
         })
       }
 
-      async save() {
-        this.forEach(element => element.groupId = this.group.id)
-        await Promise.all(
-            this.filter(element => element.hasChanged('granted'))
-                .map(element => element.granted ? element.grant() : element.revoke())
-        )
+      isSaveTarget(element){
+        return element.hasChanged('granted')
+      }
+
+      async saveElement(element){
+        return await element.granted ? element.grant() : element.revoke()
+      }
+
+      applyEach(element){
+        element.groupId = this.group.id
       }
 
     }
 )
 
-const removedSymbol = Symbol('removed')
-
 export const GroupUserArray = Array.decorate(
+    SavableArray,
     class extends FetchableArray {
       get url() {
         return '/user/groups/${groupId}/users'
@@ -192,7 +196,6 @@ export const GroupUserArray = Array.decorate(
       initialize(group) {
         super.initialize()
         this.group = group
-        this[removedSymbol] = []
       }
 
       async query() {
@@ -201,29 +204,17 @@ export const GroupUserArray = Array.decorate(
         })
       }
 
-      async save() {
-        this.forEach(element => element.groupId = this.group.id)
-        await Promise.all(
-            this.filter(element => element.phantom)
-            .map(element => element.add())
-        )
-
-        await Promise.all(
-            this[removedSymbol].map(element => element.remove())
-        )
-        this[removedSymbol] = []
+      async saveElement(element){
+        return await element.add()
       }
 
-      remove(element) {
-        super.remove(element)
-        if (!element.phantom) {
-          this[removedSymbol].push(element)
-        }
+      async removeElement(element){
+        return await element.remove()
       }
 
-      clear() {
-        super.clear()
-        this[removedSymbol] = []
+      applyEach(element){
+        element.groupId = this.group.id
       }
+
     }
 )

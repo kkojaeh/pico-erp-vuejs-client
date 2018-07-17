@@ -19,7 +19,6 @@ export default [{
     name: 'bom-form',
     path: ':id',
     component: () => wrapModal(import('pages/bom/bom-form'), {
-      maximized: true,
       onModalHide () {
         const itemId = this.$route.params.itemId
         this.$router.push(`/bom/${itemId}`)

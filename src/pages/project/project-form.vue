@@ -34,17 +34,6 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
-                 class="col-xs-12 col-md-12 col-xl-12">
-          <c-html-editor v-model="model.description"></c-html-editor>
-        </q-field>
-
-        <q-field icon="attachment" helper="프로젝트 관련 첨부파일 입니다"
-                 class="col-xs-12 col-md-12 col-xl-12">
-          <c-attachment ref="attachment" v-model="model.attachmentId" category="project"
-                        multiple></c-attachment>
-        </q-field>
-
       </q-card-main>
 
     </q-card>
@@ -55,13 +44,13 @@
         고객 정보
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts"
-                 @click="selectCompanyContact"
+                 @click="onLoadContactByCompanyContact"
                  :disabled="!model.customerId" v-show="!companyContact.selecting"/>
           <q-field helper="담당자를 선택하세요"
                    v-show="companyContact.selecting">
             <c-autocomplete-select v-model="companyContact.id"
                                    class="col-xs-12 col-md-6 col-xl-6"
-                                   ref="companyContactSelect"
+                                   ref="companyContactSelector"
                                    float-label="담당자 이름"
                                    :options="companyContactLabels"
                                    label-field="label" value-field="value"
@@ -144,14 +133,14 @@
 
     </q-card>
 
-    <q-card class="col-12" flat :disabled="phantom">
+    <q-card class="col-12" flat>
 
       <q-card-title>
         판매 품목
-        <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="추가" icon="add" @click="addSaleItem"/>
-          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!phantom"
-                 @click="removeSaleItem"/>
+        <div slot="right" class="row items-center" v-show="false">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddSaleItem"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.saleItem"
+                 @click="onRemoveSaleItem"/>
         </div>
       </q-card-title>
 
@@ -163,47 +152,111 @@
         <q-card-main class="row">
 
           <ag-grid class="col"
-                   ref="itemGrid"
-                   dom-layout='autoHeight'
+                   :grid-auto-height="true"
                    row-selection="single"
                    enable-col-resize
                    :editable="true"
                    suppress-no-rows-overlay
-                   @selection-changed="onItemSelectionChanged"
-                   :row-data="[]"
+                   @selection-changed="onSaleItemSelectionChanged"
+                   :row-data="saleItemArray"
           >
 
-            <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
-            <ag-grid-column field="name" header-name="이름" :width="150" :editable="true"
-                            cell-editor-framework="ag-grid-input-editor"
-                            :cell-editor-params="{ maxlength: 50 }"/>
-
-            <ag-grid-column field="mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
-                            :editable="true"
-                            cell-renderer-framework="ag-grid-phone-number-renderer"
-                            cell-editor-framework="ag-grid-phone-number-editor"/>
-
-            <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="150"
-                            :editable="true"
-                            cell-renderer-framework="ag-grid-phone-number-renderer"
-                            cell-editor-framework="ag-grid-phone-number-editor"/>
-            <ag-grid-column field="" header-name="" :width="40" suppress-sorting
-                            cell-renderer-framework="ag-grid-icon-renderer"
-                            :cell-renderer-params="{handler:onAddressSearch, icon:'search', link:true}"/>
-            <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
-                            :cell-style="{textAlign: 'center'}"/>
-            <ag-grid-column field="address.street" header-name="주소" :width="220"/>
-            <ag-grid-column field="address.detail" header-name="상세주소" :width="180" :editable="true"
-                            cell-editor-framework="ag-grid-input-editor"
-                            :cell-editor-params="{ maxlength: 50 }"/>
-            <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
-                            cell-renderer-framework="ag-grid-checkbox-renderer"
-                            cell-editor-framework="ag-grid-checkbox-editor"
-                            :editable="true"/>
+            <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
+            <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
+            <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
+            <ag-grid-column field="unitPrice" header-name="단가" :width="150"
+                            :cell-style="{textAlign: 'right'}"/>
+            <ag-grid-column field="createdDate" header-name="생성일" :width="200"
+                            cell-renderer-framework="ag-grid-datetime-renderer"/>
+            <ag-grid-column field="expirationDate" header-name="만료예정" :width="200"
+                            cell-renderer-framework="ag-grid-datetime-renderer"/>
+            <ag-grid-column field="expired" header-name="만료여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
 
           </ag-grid>
 
         </q-card-main>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        비용
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddCharge"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.charge"
+                 @click="onRemoveCharge"/>
+        </div>
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-card-main class="row">
+
+          <ag-grid class="col"
+                   :grid-auto-height="true"
+                   row-selection="single"
+                   enable-col-resize
+                   :editable="true"
+                   suppress-no-rows-overlay
+                   @selection-changed="onChargeSelectionChanged"
+                   :row-data="chargeArray"
+          >
+
+            <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
+            <ag-grid-column field="name" header-name="이름" :width="200" :editable="isChargeEditable"/>
+            <ag-grid-column field="unitPrice" header-name="단가" :width="150"
+                            :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+            <ag-grid-column field="quantity" header-name="수량" :width="100"
+                            :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+            <ag-grid-column field="createdDate" header-name="생성일" :width="200"
+                            cell-renderer-framework="ag-grid-datetime-renderer"/>
+            <ag-grid-column field="charged" header-name="청구여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
+            <ag-grid-column field="chargedDate" header-name="청구일" :width="200"
+                            cell-renderer-framework="ag-grid-datetime-renderer"/>
+            <ag-grid-column field="paid" header-name="결제여부" :width="90" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
+            <ag-grid-column field="paidDate" header-name="결제일" :width="200"
+                            cell-renderer-framework="ag-grid-datetime-renderer"/>
+
+          </ag-grid>
+
+        </q-card-main>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        내용 및 관련 파일
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+
+        <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
+                 class="col-xs-12 col-md-10 col-xl-8">
+          <c-html-editor v-model="model.description"></c-html-editor>
+        </q-field>
+
+        <q-field icon="attachment" helper="프로젝트 관련 첨부파일 입니다"
+                 class="col-xs-12 col-md-10 col-xl-8">
+          <c-attachment ref="attachment" v-model="model.attachmentId" category="project"
+                        multiple></c-attachment>
+        </q-field>
+
 
       </q-card-main>
 
@@ -242,16 +295,26 @@
             <audit-viewer ref="auditViewer" :url="`/audit/project/${model.id}`"></audit-viewer>
           </q-modal>
         </q-btn>
-        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSave()" label="저장"></q-btn>
       </q-toolbar>
     </q-page-sticky>
+
+    <q-modal ref="itemSelectorModal" content-classes="column">
+      <item-selector ref="itemSelector"></item-selector>
+    </q-modal>
 
   </q-page>
 
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import {ProjectModel} from 'src/model/project'
+  import {
+    ProjectChargeArray,
+    ProjectChargeModel,
+    ProjectModel,
+    ProjectSaleItemArray,
+    ProjectSaleItemModel
+  } from 'src/model/project'
   import {
     CompanyContactLabelArray,
     CompanyContactModel,
@@ -261,6 +324,7 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
+  import ItemSelector from 'src/pages/item/item-selector.vue'
 
   export default {
     props: {
@@ -283,15 +347,17 @@
         managerModel: new UserModel(),
         customerModel: new CompanyModel(),
         companyContactLabels: new CompanyContactLabelArray(),
+        saleItemArray: new ProjectSaleItemArray(),
+        chargeArray: new ProjectChargeArray(),
         enabled: true,
         selected: {
-          item: null
+          saleItem: null,
+          charge: null
         },
         companyContact: {
           id: null,
           selecting: false
         },
-        companyContactSelecting: false
       }
     },
     mounted() {
@@ -302,6 +368,9 @@
       this.userLabels.query()
     },
     methods: {
+      isChargeEditable(params){
+        return params.data.phantom;
+      },
       async onCustomerSearch(keyword, done) {
         await this.companyLabels.query(keyword)
         done()
@@ -316,17 +385,28 @@
         done()
       },
 
-      onItemSelectionChanged(event) {
-        this.selectedAddress = event.api.getSelectedRows()[0]
+      onSaleItemSelectionChanged(event) {
+        this.selected.saleItem = event.api.getSelectedRows()[0]
+      },
+
+      onChargeSelectionChanged(event) {
+        this.selected.charge = event.api.getSelectedRows()[0]
       },
 
       async create() {
         this.model = new ProjectModel()
+        this.saleItemArray = new ProjectSaleItemArray(this.model)
       },
       async show() {
-        this.model = await ProjectModel.get(this.id)
+        const model = await ProjectModel.get(this.id)
+        const saleItemArray = new ProjectSaleItemArray(model)
+        const chargeArray = new ProjectChargeArray(model)
+        await Promise.all([saleItemArray.query(), chargeArray.query()])
+        this.model = model
+        this.saleItemArray = saleItemArray
+        this.chargeArray = chargeArray
       },
-      async onSaveClick() {
+      async onSave() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -347,20 +427,52 @@
         await this.model.save()
       },
 
-      async selectCompanyContact() {
+      async onLoadContactByCompanyContact() {
         await this.companyContactLabels.query(this.model.customerId)
         this.companyContact.selecting = true
         this.$nextTick(() => {
-          this.$refs.companyContactSelect.focus()
+          this.$refs.companyContactSelector.focus()
         })
       },
 
-      async addSaleItem() {
-
+      async onAddSaleItem() {
+        const modal = this.$refs.itemSelectorModal
+        const selector = this.$refs.itemSelector
+        modal.show()
+        modal.$once('hide', () => {
+          selector.$off('selected')
+        })
+        selector.$once('selected', async (itemModels) => {
+          modal.hide()
+          itemModels.map(async (itemModel) => {
+            const itemId = itemModel.id
+            const saleItem = new ProjectSaleItemModel({
+              itemId: itemId
+            })
+            saleItem.fetchReference()
+            this.saleItemArray.push(saleItem)
+          })
+        })
       },
 
-      async removeSaleItem() {
+      async onAddCharge() {
+        this.chargeArray.push(new ProjectChargeModel())
+      },
 
+      async onRemoveSaleItem() {
+        const ok = await this.$alert.confirm('삭제 하시겠습니까?')
+        if (ok) {
+          this.saleItemArray.remove(this.selected.saleItem)
+          this.selected.saleItem = null
+        }
+      },
+
+      async onRemoveCharge() {
+        const ok = await this.$alert.confirm('삭제 하시겠습니까?')
+        if (ok) {
+          this.chargeArray.remove(this.selected.charge)
+          this.selected.charge = null
+        }
       }
     },
     computed: {
@@ -392,7 +504,8 @@
     },
     components: {
       AuditViewer,
-      CommentList
+      CommentList,
+      ItemSelector
     }
   }
 </script>

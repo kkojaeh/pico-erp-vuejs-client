@@ -93,23 +93,6 @@
           </q-tooltip>
         </q-field>
 
-        <q-field icon="description" helper="품목의 설명을 입력하세요"
-                 class="col-xs-12 col-md-12 col-xl-12"
-                 :error="!!model.$errors.description"
-                 :error-label="model.$errors.description"
-                 :count="200">
-          <q-input type="textarea" v-model="model.description" float-label="설명"
-                   rows="5"
-                   max-length="200"/>
-        </q-field>
-
-        <q-field icon="attachment" helper="품목 관련 첨부파일 입니다"
-                 class="col-xs-12 col-md-12 col-xl-12">
-
-          <c-attachment ref="attachment" v-model="model.attachmentId" category="item"
-                        multiple></c-attachment>
-        </q-field>
-
       </q-card-main>
 
     </q-card>
@@ -179,6 +162,37 @@
               {{option.subLabel}}
             </template>
           </c-autocomplete-select>
+        </q-field>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        설명 및 관련 파일
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="row gutter-md">
+
+        <q-field icon="description" helper="품목의 설명을 입력하세요"
+                 class="col-xs-12 col-md-10 col-xl-8"
+                 :error="!!model.$errors.description"
+                 :error-label="model.$errors.description"
+                 :count="200">
+          <q-input type="textarea" v-model="model.description" float-label="설명"
+                   rows="5"
+                   max-length="200"/>
+        </q-field>
+
+        <q-field icon="attachment" helper="품목 관련 첨부파일 입니다"
+                 class="col-xs-12 col-md-10 col-xl-8">
+
+          <c-attachment ref="attachment" v-model="model.attachmentId" category="item"
+                        multiple></c-attachment>
         </q-field>
 
       </q-card-main>

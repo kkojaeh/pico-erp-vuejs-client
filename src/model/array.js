@@ -17,12 +17,14 @@ function getDescriptors(prototype, descriptors = {}) {
   }
 }
 
-Array.decorate = (ArrayDecoratorType) => {
+Array.decorate = (...types) => {
   return class extends Array {
     constructor(...args) {
       super()
-      Object.defineProperties(this, getDescriptors(ArrayDecoratorType.prototype))
-      this.initialize.apply(this, args)
+      types.forEach(type => {
+        Object.defineProperties(this, getDescriptors(type.prototype))
+        this.initialize.apply(this, args)
+      })
     }
   }
 }
@@ -114,6 +116,92 @@ export class FetchableArray extends ArrayDecorator{
       return this.splice(index, 1)
     }
     throw new Error('not found element')
+  }
+
+}
+
+export class ValidatableArray extends ArrayDecorator{
+
+  applyEach(element){}
+
+  isValidateTarget(element){
+    return element.phantom || element.hasChanged()
+  }
+
+  async validateElement(element){
+    return await element.validate()
+  }
+
+  async validate() {
+    this.forEach(this.applyEach.bind(this))
+    const results = await Promise.all(
+        this.filter(this.isValidateTarget.bind(this))
+        .map(this.validateElement.bind(this))
+    )
+    // 결과가 false 인 유효하지 않은 값이 없다면 모두 유효함
+    return results.filter(valid => valid == false).length == 0
+  }
+
+}
+
+const removedSymbol = Symbol('removed')
+
+export class SavableArray extends ArrayDecorator{
+
+  initialize() {
+    this[removedSymbol] = []
+  }
+
+  applyEach(element){  }
+
+  isSaveTarget(element){
+    return element.phantom || element.hasChanged()
+  }
+
+  isRemoveTarget(element){
+    return !element.phantom
+  }
+
+  async saveElement(element){
+    return await element.save()
+  }
+
+  async removeElement(element){
+    return await element.delete()
+  }
+
+  hasChanged(){
+    return this.filter(this.isSaveTarget.bind(this)).length + this[removedSymbol].length > 0
+  }
+
+  async save() {
+    this.forEach(this.applyEach.bind(this))
+    await Promise.all(
+        this.filter(this.isSaveTarget.bind(this))
+        .map(this.saveElement.bind(this))
+    )
+    await Promise.all(
+        this[removedSymbol].map(this.removeElement.bind(this))
+    )
+    this[removedSymbol] = []
+  }
+
+  remove(element) {
+    const index = this.indexOf(element)
+    if (index > -1) {
+      element = this.splice(index, 1)
+    } else {
+      throw new Error('not found element')
+    }
+    if (this.isRemoveTarget(element.phantom)) {
+      this[removedSymbol].push(element)
+    }
+    return element
+  }
+
+  clear() {
+    this.splice(0, this.length)
+    this[removedSymbol] = []
   }
 
 }
