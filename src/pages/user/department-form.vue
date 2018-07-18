@@ -13,21 +13,21 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity" helper="부서를 식별하는 아이디를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
                    :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="부서 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
         <q-field icon="account_box" helper="부서의 관리자를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"

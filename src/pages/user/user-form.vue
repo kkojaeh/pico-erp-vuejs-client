@@ -14,35 +14,35 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
                    :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름"/>
         </q-field>
 
         <q-field icon="email" helper="사용하는 이메일을 입력하세요(로그인에 사용됩니다)"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.email"
                  :error-label="model.$errors.email">
           <q-input v-model="model.email" float-label="이메일" type="email"/>
         </q-field>
 
         <q-field icon="account_circle" helper="직위 또는 직급을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.position"
                  :error-label="model.$errors.position">
           <q-input v-model="model.position" float-label="직위/직급"/>
         </q-field>
 
         <q-field icon="fa-sitemap" helper="사용자의 부서를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
@@ -57,14 +57,14 @@
         </q-field>
 
         <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
           <c-phone-number-input v-model="model.mobilePhoneNumber" clearable float-label="핸드폰 번호"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 로그인이 불가합니다"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
         </q-field>
 

@@ -14,7 +14,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input :value="model.code" float-label="코드" readonly hide-underline>
             <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
                    flat></q-btn>
@@ -22,13 +22,13 @@
         </q-field>
 
         <q-field icon="fa-comment" helper="품목의 상태를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status"
                     :options="statusLabels" readonly hide-underline></q-select>
         </q-field>
 
         <q-field icon="fa-comment" helper="품목의 유형을 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.type"
                  :error-label="model.$errors.type">
           <q-select float-label="유형" v-model="model.type"
@@ -36,7 +36,7 @@
         </q-field>
 
         <q-field icon="account_circle" helper="품목 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
@@ -46,7 +46,7 @@
         </q-field>
 
         <q-field icon="fa-tag" helper="품목 분류를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.categoryId"
                  :error-label="model.$errors.categoryId">
 
@@ -62,7 +62,7 @@
         </q-field>
 
         <q-field icon="chevron_right" helper="품목에서 사용되는 단위를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.unit"
                  :error-label="model.$errors.unit">
           <q-select float-label="단위" v-model="model.unit"
@@ -70,21 +70,21 @@
         </q-field>
 
         <q-field icon="monetization_on" helper="구매 가능 여부를 체크하세요(구매시 노출여부가 달라 집니다)"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.purchasable"
                  :error-label="model.$errors.purchasable">
           <q-checkbox label="구매가능" v-model="model.purchasable"/>
         </q-field>
 
         <q-field icon="monetization_on" helper="판매 가능 여부를 체크하세요(판매시 노출여부가 달라 집니다)"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.sellable"
                  :error-label="model.$errors.sellable">
           <q-checkbox label="판매가능" v-model="model.sellable"/>
         </q-field>
 
         <q-field icon="monetization_on" helper="공정 비용을 제외한 금액(구매/외주 기준 금액, 직접 재료비)"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.baseUnitCost"
                  :error-label="model.$errors.baseUnitCost">
           <q-input type="number" float-label="재료비" v-model="model.baseUnitCost" align="right"/>
@@ -109,7 +109,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="fa-building" helper="고객사를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
@@ -124,7 +124,7 @@
         </q-field>
 
         <q-field icon="account_circle" helper="외부에서 식별에 사용되는 코드를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.externalCode"
                  :error-label="model.$errors.externalCode">
           <q-input v-model="model.externalCode" float-label="외부 코드" class="ime-mode-disabled">
@@ -149,7 +149,7 @@
 
         <q-field icon="view_comfy"
                  helper="스펙 유형을 지정하세요(종이와 같이 세부 사항에 따라 단가 정보등이 가변합니다)"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.specTypeId"
                  :error-label="model.$errors.specTypeId">
 

@@ -1,100 +1,110 @@
 <template>
-  <q-page class="column fit">
+  <q-page class="row">
 
-    <q-toolbar>
-      <q-toolbar-title>
-      </q-toolbar-title>
-      <q-btn flat icon="check" @click="_onDetermineClick" v-if="isDeterminable">확정</q-btn>
-      <q-btn flat icon="autorenew" @click="_onNextRevisionClick" v-if="isNextDraftable">새버전</q-btn>
-      <q-btn-dropdown label="추가" flat icon="add" :disabled="!isSelectedAddable">
-        <!-- dropdown content -->
-        <q-list link>
-          <q-item @click.native="addBomBySelect" v-close-overlay>
-            <q-item-side left icon="add"></q-item-side>
-            <q-item-main label="기존 품목"></q-item-main>
-          </q-item>
-          <q-item @click.native="addBomByNew" v-close-overlay>
-            <q-item-side left icon="add"></q-item-side>
-            <q-item-main label="신규 품목"></q-item-main>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
-      <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
-             @click="removeMaterial()"></q-btn>
-    </q-toolbar>
+    <q-card class="col-12" flat>
 
-    <ag-grid ref="grid"
-             class="col-grow"
-             row-selection="single"
-             enable-col-resize
-             enable-sorting
-             :get-node-child-details="getNodeChildDetails"
-             @selection-changed="onGridSelectionChanged"
-             @row-clicked="onGridRowClicked"
-             @cell-value-changed="onCellValueChanged"
-             enable-group-edit
-             :row-data="array">
-      <ag-grid-column field="item.name" header-name="이름" cellRenderer="agGroupCellRenderer"
-                      :checkbox-selection="true" :width="400"
-                      :cell-renderer-params="{
+      <q-toolbar>
+        <q-toolbar-title>
+        </q-toolbar-title>
+        <q-btn flat icon="check" @click="_onDetermineClick" v-if="isDeterminable">확정</q-btn>
+        <q-btn flat icon="autorenew" @click="_onNextRevisionClick" v-if="isNextDraftable">새버전
+        </q-btn>
+        <q-btn-dropdown label="추가" flat icon="add" :disabled="!isSelectedAddable">
+          <!-- dropdown content -->
+          <q-list link>
+            <q-item @click.native="addBomBySelect" v-close-overlay>
+              <q-item-side left icon="add"></q-item-side>
+              <q-item-main label="기존 품목"></q-item-main>
+            </q-item>
+            <q-item @click.native="addBomByNew" v-close-overlay>
+              <q-item-side left icon="add"></q-item-side>
+              <q-item-main label="신규 품목"></q-item-main>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
+               @click="removeMaterial()"></q-btn>
+      </q-toolbar>
+
+      <q-card-separator/>
+
+      <q-card-main class="row">
+
+        <ag-grid ref="grid"
+                 class="col-grow"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 enable-sorting
+                 :get-node-child-details="getNodeChildDetails"
+                 @selection-changed="onGridSelectionChanged"
+                 @row-clicked="onGridRowClicked"
+                 @cell-value-changed="onCellValueChanged"
+                 enable-group-edit
+                 :row-data="array">
+          <ag-grid-column field="item.name" header-name="이름" cellRenderer="agGroupCellRenderer"
+                          :checkbox-selection="true" :width="400"
+                          :cell-renderer-params="{
                             innerRenderer: bomNameRenderer,
                             suppressCount: true,
                             padding: 20
                           }"/>
-      <ag-grid-column field="item.code" header-name="코드" :width="150"
-                      cell-renderer-framework="ag-grid-router-link-renderer"
-                      :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
-      <ag-grid-column field="processId" header-name="공정" :width="180"
-                      cell-renderer-framework="bom-process-cell-renderer"
-                      :cell-renderer-params="{editHandler: editProcess, removeHandler: removeProcess}"/>
-      <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
-                      cell-renderer-framework="bom-item-spec-cell-renderer"
-                      :cell-renderer-params="{editHandler: editItemSpec}"/>
-      <ag-grid-column field="item.unit" header-name="단위" :width="80"
-                      :cell-style="{textAlign: 'center'}"
-                      cell-renderer-framework="ag-grid-array-label-renderer"
-                      :cell-renderer-params="{array:unitLabels, valueField:'value', labelField: 'label'}"/>
-      <ag-grid-column field="quantity" header-name="수량" :width="80"
-                      :editable="isQuantityEditable"
-                      cell-editor-framework="ag-grid-input-editor"
-                      :cell-renderer="quantityCellRenderer" :tooltip="tooltipReversedQuantity"
-                      :cell-editor-params="{ type: 'number', decimals: 5, align: 'right' }"
-                      :cell-style="{textAlign: 'right'}"/>
-      <ag-grid-column field="status" header-name="상태" :width="80"
-                      :cell-style="{textAlign: 'center'}"
-                      cell-renderer-framework="ag-grid-array-label-renderer"
-                      :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
-      <ag-grid-column field="estimatedAccumulatedUnitCost.total" header-name="단가" :width="100"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.total')"
-                      :cell-style="{textAlign: 'right'}" :tooltip="tooltipNumberToWords"/>
+          <ag-grid-column field="item.code" header-name="코드" :width="150"
+                          cell-renderer-framework="ag-grid-router-link-renderer"
+                          :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
+          <ag-grid-column field="processId" header-name="공정" :width="180"
+                          cell-renderer-framework="bom-process-cell-renderer"
+                          :cell-renderer-params="{editHandler: editProcess, removeHandler: removeProcess}"/>
+          <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
+                          cell-renderer-framework="bom-item-spec-cell-renderer"
+                          :cell-renderer-params="{editHandler: editItemSpec}"/>
+          <ag-grid-column field="item.unit" header-name="단위" :width="80"
+                          :cell-style="{textAlign: 'center'}"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:unitLabels, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="quantity" header-name="수량" :width="80"
+                          :editable="isQuantityEditable"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-renderer="quantityCellRenderer" :tooltip="tooltipReversedQuantity"
+                          :cell-editor-params="{ type: 'number', decimals: 5, align: 'right' }"
+                          :cell-style="{textAlign: 'right'}"/>
+          <ag-grid-column field="status" header-name="상태" :width="80"
+                          :cell-style="{textAlign: 'center'}"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.total" header-name="단가" :width="100"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.total')"
+                          :cell-style="{textAlign: 'right'}" :tooltip="tooltipNumberToWords"/>
 
-      <ag-grid-column field="estimatedAccumulatedUnitCost.directMaterial" header-name="재료비(직접)"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directMaterial')"
-                      :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
-                      header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
-      <ag-grid-column field="estimatedAccumulatedUnitCost.indirectMaterial"
-                      header-name="재료비(간접)"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectMaterial')"
-                      :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
-                      header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
-      <ag-grid-column field="estimatedAccumulatedUnitCost.directLabor" header-name="노무비(직접)"
-                      :width="100"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directLabor')"
-                      :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
-                      header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
-      <ag-grid-column field="estimatedAccumulatedUnitCost.indirectLabor" header-name="노무비(간접)"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectLabor')"
-                      :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
-                      header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
-      <ag-grid-column field="estimatedAccumulatedUnitCost.indirectExpenses" header-name="간접경비"
-                      :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectExpenses')"
-                      :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
-                      header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
-      <ag-grid-column field="determinedBy.name" header-name="확정자" :width="100"/>
-      <ag-grid-column field="determinedDate" header-name="확정일" :width="200"
-                      :cell-renderer-params="{ago: true}"
-                      cell-renderer-framework="ag-grid-datetime-renderer"/>
-    </ag-grid>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.directMaterial" header-name="재료비(직접)"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directMaterial')"
+                          :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
+                          header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.indirectMaterial"
+                          header-name="재료비(간접)"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectMaterial')"
+                          :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
+                          header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.directLabor" header-name="노무비(직접)"
+                          :width="100"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directLabor')"
+                          :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
+                          header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.indirectLabor" header-name="노무비(간접)"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectLabor')"
+                          :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
+                          header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
+          <ag-grid-column field="estimatedAccumulatedUnitCost.indirectExpenses" header-name="간접경비"
+                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectExpenses')"
+                          :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
+                          header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
+          <ag-grid-column field="determinedBy.name" header-name="확정자" :width="100"/>
+          <ag-grid-column field="determinedDate" header-name="확정일" :width="200"
+                          :cell-renderer-params="{ago: true}"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+        </ag-grid>
+      </q-card-main>
+    </q-card>
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
@@ -127,10 +137,9 @@
 
 </template>
 <script>
-  import { BomModel, BomStatusArray } from 'src/model/bom'
-  import { ItemModel, ItemSpecModel } from 'src/model/item'
-  import { ProcessModel } from 'src/model/process'
-  import { UnitLabelArray } from 'src/model/shared'
+  import {BomModel, BomStatusArray} from 'src/model/bom'
+  import {ProcessModel} from 'src/model/process'
+  import {UnitLabelArray} from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import ItemForm from 'src/pages/item/item-form.vue'
   import ItemSelector from 'src/pages/item/item-selector.vue'
@@ -153,7 +162,7 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         id: null,
         array: [],
@@ -164,17 +173,17 @@
         detailedUnitCost: false
       }
     },
-    mounted () {
+    mounted() {
       this.statusLabels.fetch()
       this.unitLabels.fetch()
       this.$nextTick(() => this.show())
     },
     methods: {
-      quantityCellRenderer (params) {
+      quantityCellRenderer(params) {
         const value = params.value
         return `${value} <sub>(${params.data.quantityPerRoot})</sub>`
       },
-      async onCellValueChanged (e) {
+      async onCellValueChanged(e) {
         if (e.newValue == e.oldValue) {
           return
         }
@@ -184,21 +193,21 @@
         await parent.changeMaterial(data)
         await this.load()
       },
-      isQuantityEditable (params) {
+      isQuantityEditable(params) {
         const parent = params.data.parent
         return parent && parent.modifiable
       },
-      bomNameRenderer (params) {
+      bomNameRenderer(params) {
         return `${params.value}<sub class="bom-name-sub">[${params.data.revision}]</sub>`
       },
-      tooltipNumberToWords (params) {
+      tooltipNumberToWords(params) {
         return this.$number.words(params.value)
       },
-      tooltipReversedQuantity (params) {
+      tooltipReversedQuantity(params) {
         return `역수량 : ${(1 / params.value).toFixed(5)} (${(1 / params.data.quantityPerRoot).toFixed(
-          5)})`
+            5)})`
       },
-      createCellRenderer (additionalField) {
+      createCellRenderer(additionalField) {
         return function (params) {
           const addition = _.get(params.data, additionalField)
           if (addition == null || addition == undefined) {
@@ -207,7 +216,7 @@
           return `${params.value} (${addition})`
         }
       },
-      getNodeChildDetails (data) {
+      getNodeChildDetails(data) {
         const children = data.children
         if (children && children.length) {
           return {
@@ -221,23 +230,23 @@
         }
         return null
       },
-      async onGridSelectionChanged (event) {
+      async onGridSelectionChanged(event) {
         this.$nextTick(() => {
           this.selected = event.api.getSelectedRows()[0] || new BomModel({isNull: true})
         })
       },
-      onGridRowClicked (event) {
+      onGridRowClicked(event) {
         if (!event.node.isSelected()) {
           event.node.setSelected(true, true)
         }
       },
-      async show (id) {
+      async show(id) {
         this.id = id || this.bomId
         if (this.id) {
           this.load()
         }
       },
-      async load () {
+      async load() {
         const grid = this.$refs.grid
         const selectedId = this.selected.id
         this.model = await BomModel.get(this.id)
@@ -257,7 +266,7 @@
           candidate.setSelected(true)
         })
       },
-      async _onNextRevisionClick () {
+      async _onNextRevisionClick() {
         let valid = await this.selected.validateNextRevision()
         if (valid) {
           const ok = await this.$alert.confirm('다음 버전으로 진행 하시겠습니까?')
@@ -271,7 +280,7 @@
         }
       },
 
-      async _onDetermineClick () {
+      async _onDetermineClick() {
         let valid = await this.selected.validateDetermine()
         if (valid) {
           const ok = await this.$alert.confirm('확정을 진행 하시겠습니까?')
@@ -285,7 +294,7 @@
         }
       },
 
-      async removeMaterial () {
+      async removeMaterial() {
         const ok = await this.$alert.confirm('상위 품목에서 해당 자재를 삭제하시겠습니까?')
         if (ok) {
           await this.selected.parent.removeMaterial(this.selected)
@@ -296,7 +305,7 @@
       /**
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
-      addBomByNew () {
+      addBomByNew() {
         const selected = this.selected
         const modal = this.$refs.itemFormModal
         const form = this.$refs.itemForm
@@ -313,7 +322,7 @@
         })
       },
 
-      addBomBySelect () {
+      addBomBySelect() {
         const selected = this.selected
         const modal = this.$refs.itemSelectorModal
         const selector = this.$refs.itemSelector
@@ -324,23 +333,23 @@
         selector.$once('selected', async (itemModels) => {
           modal.hide()
           await Promise.all(
-            itemModels.map(async (itemModel) => {
-              const itemId = itemModel.id
-              const exists = await BomModel.existsByItemId(itemId)
-              let material
-              if (exists) {
-                material = await BomModel.getByItemId(itemId)
-              } else {
-                material = await BomModel.createByItemId(itemModel.id)
-              }
-              await selected.addMaterial(material)
-            })
+              itemModels.map(async (itemModel) => {
+                const itemId = itemModel.id
+                const exists = await BomModel.existsByItemId(itemId)
+                let material
+                if (exists) {
+                  material = await BomModel.getByItemId(itemId)
+                } else {
+                  material = await BomModel.createByItemId(itemModel.id)
+                }
+                await selected.addMaterial(material)
+              })
           )
           await this.load()
         })
       },
 
-      editProcess (data) {
+      editProcess(data) {
         const modal = this.$refs.processFormModal
         const form = this.$refs.processForm
         const creating = !data.processId
@@ -366,7 +375,7 @@
         })
       },
 
-      async removeProcess (data) {
+      async removeProcess(data) {
         if (!data.processId) {
           this.$alert.warning('삭제할 공정이 없습니다')
         }
@@ -378,7 +387,7 @@
         }
       },
 
-      editItemSpec (data) {
+      editItemSpec(data) {
         const modal = this.$refs.itemSpecEditorModal
         const form = this.$refs.itemSpecEditor
         this.selected = data
@@ -407,19 +416,19 @@
       /**
        * 선택 대상 삭제 여부
        */
-      isSelectedRemovable () {
+      isSelectedRemovable() {
         return this.selected.parent && this.selected.parent.modifiable
       },
 
-      isSelectedAddable () {
+      isSelectedAddable() {
         return this.selected.modifiable
       },
 
-      isNextDraftable () {
+      isNextDraftable() {
         return !this.selected.modifiable
       },
 
-      isDeterminable () {
+      isDeterminable() {
         return this.selected.modifiable
       }
     },
@@ -433,6 +442,7 @@
       BomItemSpecCellRenderer
     }
   }
+
 </script>
 <style lang="stylus">
   .bom-name-sub

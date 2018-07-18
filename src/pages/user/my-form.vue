@@ -20,28 +20,28 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
                    :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" readonly hide-underline/>
         </q-field>
 
         <q-field icon="email"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.email"
                  :error-label="model.$errors.email">
           <q-input v-model="model.email" float-label="이메일" type="email" readonly hide-underline/>
         </q-field>
 
         <q-field icon="fa-sitemap"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
@@ -56,7 +56,7 @@
         </q-field>
 
         <q-field icon="fa-mobile"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
           <c-phone-number-input v-model="model.mobilePhoneNumber" clearable float-label="핸드폰 번호"

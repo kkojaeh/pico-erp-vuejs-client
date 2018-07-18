@@ -14,7 +14,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity" helper="회사를 식별하는 아이디를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <c-cleave-input v-model="model.id" float-label="코드" :readonly="!phantom"
                           :cleave-options="{uppercase:true, blocks: [5]}"
@@ -22,14 +22,14 @@
         </q-field>
 
         <q-field icon="account_circle" helper="회사 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름"/>
         </q-field>
 
         <q-field icon="email" helper="등록번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.registrationNumber"
                  :error-label="model.$errors.registrationNumber">
           <c-cleave-input v-model="model.registrationNumber"
@@ -38,19 +38,19 @@
         </q-field>
 
         <q-field icon="account_circle" helper="대표자 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.representative"
                  :error-label="model.$errors.representative">
           <q-input v-model="model.representative" float-label="대표자"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
         </q-field>
 
         <q-field icon="fa-building" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-4">
           <div class="row justify-between">
             <q-checkbox label="공급사" v-model="model.supplier"/>
             <q-checkbox label="고객사" v-model="model.customer"/>

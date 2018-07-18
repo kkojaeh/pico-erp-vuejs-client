@@ -10,7 +10,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="shopping_cart" helper="공정의 대상 품목입니다"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input v-model="itemModel.code" float-label="품목 코드" readonly hide-underline>
             <q-btn icon="content_copy" v-clipboard:copy="itemModel.code" v-clipboard-notify
                    flat></q-btn>
@@ -19,7 +19,7 @@
         </q-field>
 
         <q-field icon="shopping_cart" helper="공정의 대상 품목입니다"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input v-model="itemModel.name" float-label="품목 이름" readonly hide-underline>
             <q-btn icon="content_copy" v-clipboard:copy="itemModel.name" v-clipboard-notify
                    flat></q-btn>
@@ -43,7 +43,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="account_circle" helper="공정 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active" readonly
@@ -51,7 +51,7 @@
         </q-field>
 
         <q-field icon="account_box" helper="공정 유형을 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.typeId"
                  :error-label="model.$errors.typeId">
           <c-autocomplete-select float-label="공정 유형" v-model="model.typeId"
@@ -66,13 +66,13 @@
         </q-field>
 
         <q-field icon="fa-comment" helper="공정 난이도를 지정하세요"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="난이도" v-model="model.difficulty"
                     :options="difficultyLabels"></q-select>
         </q-field>
 
         <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"

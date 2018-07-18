@@ -30,7 +30,7 @@
         </q-field>
 
         <q-field icon="description" helper="품목 분류의 설명을 입력하세요"
-                 class="col-xs-12 col-md-12 col-xl-12"
+                 class="col-xs-12 col-md-8 col-lg-8 col-xl-8"
                  :error="!!model.$errors.description"
                  :error-label="model.$errors.description"
                  :count="200">

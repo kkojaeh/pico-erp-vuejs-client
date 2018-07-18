@@ -13,14 +13,14 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="account_circle" helper="프로젝트 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-8"
+                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
         <q-field icon="account_box" helper="담당자를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="담당자" v-model="model.managerId"
@@ -71,7 +71,7 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="fa-building" helper="고객사를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
@@ -86,7 +86,7 @@
         </q-field>
 
         <q-field icon="account_circle" helper="고객 담당자 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerManagerContact.name"
                  :error-label="model.$errors.customerManagerContact.name">
           <q-input v-model="model.customerManagerContact.name" float-label="고객 담당자 이름"
@@ -94,7 +94,7 @@
         </q-field>
 
         <q-field icon="email" helper="고객 담당자 이메일을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerManagerContact.email"
                  :error-label="model.$errors.customerManagerContact.email">
           <q-input v-model="model.customerManagerContact.email" type="email"
@@ -103,7 +103,7 @@
         </q-field>
 
         <q-field icon="fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
           <c-phone-number-input v-model="model.customerManagerContact.mobilePhoneNumber"
@@ -112,7 +112,7 @@
         </q-field>
 
         <q-field icon="phone" helper="고객 담당자 전화 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.telephoneNumber"
                  :error-label="model.$errors.telephoneNumber">
           <c-phone-number-input v-model="model.customerManagerContact.telephoneNumber"
@@ -121,7 +121,7 @@
         </q-field>
 
         <q-field icon="fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.faxNumber"
                  :error-label="model.$errors.faxNumber">
           <c-phone-number-input v-model="model.customerManagerContact.faxNumber"
@@ -147,37 +147,34 @@
       <q-card-separator/>
 
 
-      <q-card-main class="row gutter-md">
+      <q-card-main class="row">
 
-        <q-card-main class="row">
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="true"
+                 suppress-no-rows-overlay
+                 @selection-changed="onSaleItemSelectionChanged"
+                 :row-data="saleItemArray"
+        >
 
-          <ag-grid class="col"
-                   :grid-auto-height="true"
-                   row-selection="single"
-                   enable-col-resize
-                   :editable="true"
-                   suppress-no-rows-overlay
-                   @selection-changed="onSaleItemSelectionChanged"
-                   :row-data="saleItemArray"
-          >
+          <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
+          <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
+          <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
+          <ag-grid-column field="unitPrice" header-name="단가" :width="150"
+                          :cell-style="{textAlign: 'right'}"/>
+          <ag-grid-column field="createdDate" header-name="생성일" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+          <ag-grid-column field="expirationDate" header-name="만료예정" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+          <ag-grid-column field="expired" header-name="만료여부" :width="90" suppress-sorting
+                          cell-renderer-framework="ag-grid-checkbox-renderer"/>
 
-            <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
-            <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
-            <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
-            <ag-grid-column field="unitPrice" header-name="단가" :width="150"
-                            :cell-style="{textAlign: 'right'}"/>
-            <ag-grid-column field="createdDate" header-name="생성일" :width="200"
-                            cell-renderer-framework="ag-grid-datetime-renderer"/>
-            <ag-grid-column field="expirationDate" header-name="만료예정" :width="200"
-                            cell-renderer-framework="ag-grid-datetime-renderer"/>
-            <ag-grid-column field="expired" header-name="만료여부" :width="90" suppress-sorting
-                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
-
-          </ag-grid>
-
-        </q-card-main>
+        </ag-grid>
 
       </q-card-main>
+
 
     </q-card>
 
@@ -195,40 +192,37 @@
       <q-card-separator/>
 
 
-      <q-card-main class="row gutter-md">
+      <q-card-main class="row">
 
-        <q-card-main class="row">
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="true"
+                 suppress-no-rows-overlay
+                 @selection-changed="onChargeSelectionChanged"
+                 :row-data="chargeArray"
+        >
 
-          <ag-grid class="col"
-                   :grid-auto-height="true"
-                   row-selection="single"
-                   enable-col-resize
-                   :editable="true"
-                   suppress-no-rows-overlay
-                   @selection-changed="onChargeSelectionChanged"
-                   :row-data="chargeArray"
-          >
+          <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
+          <ag-grid-column field="name" header-name="이름" :width="200"
+                          :editable="isChargeEditable"/>
+          <ag-grid-column field="unitPrice" header-name="단가" :width="150"
+                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+          <ag-grid-column field="quantity" header-name="수량" :width="100"
+                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+          <ag-grid-column field="createdDate" header-name="생성일" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+          <ag-grid-column field="charged" header-name="청구여부" :width="90" suppress-sorting
+                          cell-renderer-framework="ag-grid-checkbox-renderer"/>
+          <ag-grid-column field="chargedDate" header-name="청구일" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+          <ag-grid-column field="paid" header-name="결제여부" :width="90" suppress-sorting
+                          cell-renderer-framework="ag-grid-checkbox-renderer"/>
+          <ag-grid-column field="paidDate" header-name="결제일" :width="200"
+                          cell-renderer-framework="ag-grid-datetime-renderer"/>
 
-            <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
-            <ag-grid-column field="name" header-name="이름" :width="200" :editable="isChargeEditable"/>
-            <ag-grid-column field="unitPrice" header-name="단가" :width="150"
-                            :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
-            <ag-grid-column field="quantity" header-name="수량" :width="100"
-                            :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
-            <ag-grid-column field="createdDate" header-name="생성일" :width="200"
-                            cell-renderer-framework="ag-grid-datetime-renderer"/>
-            <ag-grid-column field="charged" header-name="청구여부" :width="90" suppress-sorting
-                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
-            <ag-grid-column field="chargedDate" header-name="청구일" :width="200"
-                            cell-renderer-framework="ag-grid-datetime-renderer"/>
-            <ag-grid-column field="paid" header-name="결제여부" :width="90" suppress-sorting
-                            cell-renderer-framework="ag-grid-checkbox-renderer"/>
-            <ag-grid-column field="paidDate" header-name="결제일" :width="200"
-                            cell-renderer-framework="ag-grid-datetime-renderer"/>
-
-          </ag-grid>
-
-        </q-card-main>
+        </ag-grid>
 
       </q-card-main>
 
@@ -368,7 +362,7 @@
       this.userLabels.query()
     },
     methods: {
-      isChargeEditable(params){
+      isChargeEditable(params) {
         return params.data.phantom;
       },
       async onCustomerSearch(keyword, done) {

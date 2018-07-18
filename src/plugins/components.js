@@ -1,4 +1,4 @@
-import Quasar, { Notify } from 'quasar'
+import Quasar, { Notify, QModal } from 'quasar'
 import { language, languageAliases } from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
@@ -69,6 +69,11 @@ moment.locale(languageAliases({
 
 const appVersion = document.querySelector('meta[name=app-version]').content
 
+
+// horizontal scroll 이 안되는 문제 수정
+const preventScroll = QModal.mixins.find(mixin => !!mixin.methods.__preventScroll)
+preventScroll.methods.__preventScroll = () => {}
+//__preventScroll
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
 

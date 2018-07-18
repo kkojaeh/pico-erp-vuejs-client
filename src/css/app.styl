@@ -71,10 +71,11 @@ a[disabled] > *
   .modal-content
     main
       min-height: calc(80vh) !important
-      min-width: 70vw
       @media (min-width: 1200px)
-        max-width: 80vw
+        min-width: 90vw !important
+        max-width: 90vw !important
       @media (min-width: 768px)
+        min-width: 80vw
         max-width: 80vw
     .fixed-bottom.q-page-sticky-expand
       left: 0px !important

@@ -26,10 +26,6 @@
     autoSizeColumnsToFit: {
       type: Boolean,
       default: false
-    },
-    gridAutoHeight: {
-      type: Boolean,
-      default: false
     }
   }
   ComponentUtil.ALL_PROPERTIES.forEach((propertyName) => {
@@ -81,6 +77,7 @@
           return
         }
         if (this.api) {
+          const focused = this.api.getFocusedCell()
           this.api.setColumnDefs(
               this.$slots.default
               .filter(
@@ -88,6 +85,9 @@
                       && column.componentInstance.getColumnDefinition)
               .map((column) => column.componentInstance.getColumnDefinition())
           )
+          if(focused){
+            this.api.setFocusedCell(focused.rowIndex, focused.column.getColId(), focused.floating)
+          }
         }
       },
 
@@ -103,6 +103,7 @@
       },
       onGridNewColumnsLoaded(event) {
         if (this.autoSizeColumnsToFit) {
+          console.log('sizeColumnsToFit')
           this.api.sizeColumnsToFit()
         }
       },
@@ -267,7 +268,6 @@
 
 <style lang="stylus">
   .ag-grid-wrapper
-    position: relative
     overflow: auto
     .tooltip
       z-index: 20000

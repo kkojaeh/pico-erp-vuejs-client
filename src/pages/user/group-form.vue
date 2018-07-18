@@ -14,14 +14,14 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity" helper="아이디를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
                    :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름"/>

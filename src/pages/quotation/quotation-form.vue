@@ -18,14 +18,14 @@
           <q-card-main class="row gutter-md">
 
             <q-field icon="label" helper="견적 이름을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                      :error="!!model.$errors.name"
                      :error-label="model.$errors.name">
               <q-input v-model="model.name" float-label="이름"/>
             </q-field>
 
             <q-field icon="account_box" helper="담당자를 선택하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                      :error="!!model.$errors.managerId"
                      :error-label="model.$errors.managerId">
 
@@ -41,7 +41,7 @@
             </q-field>
 
             <q-field icon="error_outline" helper="만료 정책을 선택하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                      :error="!!model.$errors.expiryPolicy"
                      :error-label="model.$errors.expiryPolicy">
               <q-select float-label="만료 정책" v-model="model.expiryPolicy"
@@ -49,7 +49,7 @@
             </q-field>
 
             <q-field icon="check" helper="견적의 상태 입니다"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-select float-label="상태" v-model="model.status" readonly hide-underline
                         :options="statusLabels"></q-select>
             </q-field>
@@ -70,7 +70,7 @@
           <q-card-main class="row gutter-md">
 
             <q-field icon="fa-building" helper="프로젝트를 선택하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                      :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
 
               <c-autocomplete-select float-label="프로젝트" v-model="model.projectId"
@@ -85,7 +85,7 @@
             </q-field>
 
             <q-field icon="fa-building" helper="견적 대상 고객사 입니다"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-input float-label="고객사" v-model="customerModel.name"
                        readonly hide-underline>
               </q-input>
@@ -107,34 +107,34 @@
           <q-card-main class="row gutter-md">
 
             <q-field icon="account_circle" helper="고객 담당자 이름을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-input v-model="projectModel.customerManagerContact.name" float-label="고객 담당자 이름"
                        class="ime-mode-active" readonly hide-underline/>
             </q-field>
 
             <q-field icon="email" helper="고객 담당자 이메일을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-input v-model="projectModel.customerManagerContact.email" type="email"
                        float-label="고객 담당자 이메일"
                        class="ime-mode-disabled" readonly hide-underline/>
             </q-field>
 
             <q-field icon="fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <c-phone-number-input v-model="projectModel.customerManagerContact.mobilePhoneNumber"
                                     float-label="고객 담당자 핸드폰 번호"
                                     class="ime-mode-disabled" readonly hide-underline/>
             </q-field>
 
             <q-field icon="phone" helper="고객 담당자 전화 번호를 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <c-phone-number-input v-model="projectModel.customerManagerContact.telephoneNumber"
                                     float-label="고객 담당자 전화번호"
                                     class="ime-mode-disabled" readonly hide-underline/>
             </q-field>
 
             <q-field icon="fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4">
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <c-phone-number-input v-model="projectModel.customerManagerContact.faxNumber"
                                     float-label="고객 담당자 FAX 번호"
                                     class="ime-mode-disabled" readonly hide-underline/>
@@ -157,7 +157,7 @@
 
 
             <q-field icon="description" helper="내부에서 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-4"
                      :error="!!model.$errors.protectedDescription"
                      :error-label="model.$errors.protectedDescription"
                      :count="200">
@@ -167,7 +167,7 @@
             </q-field>
 
             <q-field icon="description" helper="외부에 공유할 의견 및 설명을 입력하세요"
-                     class="col-xs-12 col-md-6 col-xl-4"
+                     class="col-xs-12 col-md-6 col-lg-4 col-xl-4"
                      :error="!!model.$errors.publicDescription"
                      :error-label="model.$errors.publicDescription"
                      :count="200">

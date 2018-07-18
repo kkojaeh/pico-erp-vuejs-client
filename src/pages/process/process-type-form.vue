@@ -13,21 +13,21 @@
       <q-card-main class="row gutter-md">
 
         <q-field icon="perm_identity" helper="공정 유형을 식별하는 아이디를 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.id" :error-label="model.$errors.id">
           <q-input v-model="model.id" float-label="아이디" :readonly="!phantom"
                    :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="account_circle" helper="공정 유형의 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
         </q-field>
 
         <q-field icon="account_box" helper="공정 유형의 분류를 선택하세요"
-                 class="col-xs-12 col-md-6 col-xl-4"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.infoTypeId"
                  :error-label="model.$errors.infoTypeId">
           <c-autocomplete-select float-label="분류" v-model="model.infoTypeId"
@@ -44,7 +44,7 @@
         <q-field icon="attach_money" helper="공정유형의 기준 단가 입니다"
                  :error="!!model.$errors.baseUnitCost"
                  :error-label="model.$errors.baseUnitCost"
-                 class="col-xs-12 col-md-6 col-xl-4">
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input type="number" v-model="model.baseUnitCost" float-label="기준 단가" align="right"/>
         </q-field>
 
@@ -71,6 +71,7 @@
               <div style="padding-right: 10px;">{{Math.round(totalCostRate * 100)}}% / 100%</div>
 
             </q-list-header>
+            <q-item-separator/>
             <q-item>
               <q-item-main>
                 <q-item-tile stamp>
@@ -87,6 +88,7 @@
                 />
               </q-item-main>
             </q-item>
+            <q-item-separator/>
             <q-item>
               <q-item-main>
                 <q-item-tile stamp>
@@ -103,6 +105,7 @@
                 />
               </q-item-main>
             </q-item>
+            <q-item-separator/>
             <q-item>
               <q-item-main>
                 <q-item-tile stamp>
@@ -119,6 +122,7 @@
                 />
               </q-item-main>
             </q-item>
+            <q-item-separator/>
             <q-item>
               <q-item-main>
                 <q-item-tile stamp>
@@ -155,6 +159,7 @@
             <q-list-header class="row justify-end">
               <div style="padding-right: 10px;">단가 반영률: 난이도에 따른 단가 변동을 의미합니다</div>
             </q-list-header>
+            <q-item-separator/>
             <q-item v-for="grade in model.difficultyGrades" :key="grade.difficulty">
               <q-item-main>
                 <q-item-tile>
@@ -218,6 +223,7 @@
   } from 'src/model/process'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import * as _ from 'lodash'
+  import QItemSeparator from "quasar-framework/src/components/list/QItemSeparator";
 
   export default {
     props: {
@@ -299,6 +305,7 @@
       }
     },
     components: {
+      QItemSeparator,
       AuditViewer
     }
   }
