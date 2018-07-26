@@ -9,20 +9,27 @@
 
 <script>
   import UppyAttachment from './uppy-attachment.vue'
-  import { AttachmentFileModel, AttachmentModel } from './attachment-model'
-  import { api } from 'src/plugins/axios'
+  import {AttachmentFileModel, AttachmentModel} from './attachment-model'
+  import {api} from 'src/plugins/axios'
   import * as _ from 'lodash'
   import store from 'src/store'
 
   class DefaultAttachmentModel extends AttachmentModel {
 
-    async fetch (id) {
+    constructor() {
+      super()
+      this.items = []
+    }
+
+    async fetch(id) {
       const response = await api.get(`/attachment/attachments/${id}`, {})
       _.assign(this, response.data)
+      const itemResponse = await api.get(`/attachment/attachments/${id}/items`, {})
+      this.items = itemResponse.data
       return this
     }
 
-    async create () {
+    async create() {
       const response = await api.post('/attachment/attachments', {
         multiple: this.multiple,
         categoryId: this.category
@@ -31,22 +38,22 @@
       return this.id
     }
 
-    async delete () {
+    async delete() {
       const id = this.id
       await api.delete(`/attachment/attachments/${id}`, {})
     }
 
-    get headers () {
+    get headers() {
       const headers = {}
       headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
       return headers
     }
 
-    get files () {
+    get files() {
       return this.items.map(this.mapFile.bind(this))
     }
 
-    mapFile (item) {
+    mapFile(item) {
       const authQs = store.getters['auth/tokenParameterName'] + '=' + store.getters['auth/token']
       const id = this.id
       const host = api.defaults.baseURL
@@ -60,26 +67,26 @@
       .build()
     }
 
-    get uploadUrl () {
+    get uploadUrl() {
       const host = api.defaults.baseURL
       const id = this.id
       return `${host}/attachment/attachments/${id}/items`
     }
 
-    static iconUrlByName (name) {
+    static iconUrlByName(name) {
       const host = api.defaults.baseURL
       const extension = name.substring(name.lastIndexOf('.'))
       return `${host}/attachment/icons/${extension}`
     }
 
-    static iconUrlByContentType (contentType) {
+    static iconUrlByContentType(contentType) {
       const host = api.defaults.baseURL
       if (contentType) {
         return `${host}/attachment/icons/${contentType}`
       }
     }
 
-    async addFile (file) {
+    async addFile(file) {
       const item = {
         id: file.id,
         name: file.name,
@@ -90,7 +97,7 @@
       return this.mapFile(item)
     }
 
-    async removeFile (fileId) {
+    async removeFile(fileId) {
       const id = this.id
       const item = this.items.find((item) => item.id === fileId)
       if (!item) {
@@ -134,26 +141,26 @@
     components: {
       'uppy-attachment': UppyAttachment
     },
-    data () {
+    data() {
       return {
         model: null,
         modelType: DefaultAttachmentModel
       }
     },
     watch: {
-      value (to, from) {
+      value(to, from) {
         this.model = to
       },
-      model (to, from) {
+      model(to, from) {
         this.$emit('input', to)
       }
     },
     methods: {
-      async save () {
+      async save() {
         return await this.$refs.attachment.save()
       }
     },
-    mounted () {
+    mounted() {
       this.model = this.value
     }
 

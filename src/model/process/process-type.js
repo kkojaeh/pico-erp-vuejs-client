@@ -1,10 +1,11 @@
 import {FetchableArray, SpringPaginationArray} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
+import {authorizedUrl} from 'src/plugins/auth'
 import {language, languageAliases} from 'src/i18n'
-import store from "src/store";
 import qs from 'qs'
-import {LabelModel} from "../shared";
+import {LabelModel} from "src/model/shared";
+import {download} from 'src/model/data'
 
 export class ProcessTypeImportOptions {
 
@@ -52,22 +53,14 @@ export class ProcessTypeModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    return `${host}/process/import/process-types/xlsx?${authQs}`
+    return authorizedUrl(`${host}/process/import/process-types/xlsx`)
   }
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    const link = document.createElement('a')
-    link.href = `${host}/process/export/process-types/xlsx?${qs.stringify(
-        options)}&${authQs}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
+    const url = `${host}/process/export/process-types/xlsx?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
   }
 
   get phantom() {
@@ -75,9 +68,9 @@ export class ProcessTypeModel extends Model {
   }
 
   async save() {
-    if(this.phantom){
+    if (this.phantom) {
       await api.post('/process/process-types', this)
-    }else{
+    } else {
       await api.put(`/process/process-types/${this.id}`, this)
     }
   }

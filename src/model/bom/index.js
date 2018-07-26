@@ -105,23 +105,19 @@ export class BomModel extends Model {
 
   async addMaterial(material) {
     await api.post(`/bom/boms/${this.id}/materials`, {
-      material: {
-        id: material.id,
-        quantity: material.quantity
-      }
+      bomId: this.id,
+      materialId: material.id,
+      quantity: material.quantity
     })
   }
 
   async changeMaterial(material) {
-    await api.put(
-        `/bom/boms/${this.id}/materials/${material.id}`,
-        {
-          material: {
-            id: material.id,
-            quantity: material.quantity,
-            itemSpecId: material.itemSpecId
-          }
-        })
+    await api.put(`/bom/boms/${this.id}/materials/${material.id}`, {
+      bomId: this.id,
+      materialId: material.id,
+      quantity: material.quantity,
+      itemSpecId: material.itemSpecId
+    })
   }
 
   async removeMaterial(material) {
@@ -139,7 +135,7 @@ export class BomModel extends Model {
   }
 
   async fetchChildren(cascade, withReference) {
-    if(withReference){
+    if (withReference) {
       await this.fetchReference()
     }
     const children = this[childrenSymbol] = new BomChildArray()
@@ -147,7 +143,8 @@ export class BomModel extends Model {
     children.forEach(child => child[parentSymbol] = this)
     if (cascade) {
       await Promise.all(
-          children.map(async (child) => await child.fetchChildren(true, withReference))
+          children.map(
+              async (child) => await child.fetchChildren(true, withReference))
       )
     }
 

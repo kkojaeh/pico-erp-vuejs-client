@@ -45,9 +45,10 @@
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
 
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -130,15 +131,15 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
   import {
     ItemCategoryLabelArray,
     ItemPaginationArray,
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
-  import { CompanyLabelArray } from 'src/model/company'
+  import {CompanyLabelArray} from 'src/model/company'
 
   export default {
     authorized: {

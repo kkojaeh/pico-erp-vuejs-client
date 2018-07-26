@@ -1,9 +1,9 @@
 <template>
-  <div>{{value}} <sub>{{ago}}</sub></div>
+  <div>{{value}} <sub v-if="visibleAgo">({{ago}})</sub></div>
 </template>
 
 <script>
-  import { dateTimeFormat } from 'src/plugins/date'
+  import {dateTimeFormat} from 'src/plugins/date'
 
   export default {
     name: 'ag-grid-datetime-renderer',
@@ -21,12 +21,17 @@
           return
         }
         if (this.params.ago) {
-          return `(${this.$date.ago(value)})`
+          return this.$date.ago(value)
         }
+      },
+      visibleAgo() {
+        return this.params.ago && this.params.value
       }
     }
   }
 </script>
 
-<style>
+<style lang="stylus">
+
 </style>
+

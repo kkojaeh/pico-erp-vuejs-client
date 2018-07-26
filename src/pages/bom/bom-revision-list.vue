@@ -43,12 +43,14 @@
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="draftedBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="draftedDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
-        <ag-grid-column field="determinedBy.name" header-name="확정자" :width="150"/>
-        <ag-grid-column field="determinedDate" header-name="확정시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="draftedBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="draftedDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="determinedBy.name" header-name="확정자" :width="120"/>
+        <ag-grid-column field="determinedDate" header-name="확정시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 
       <!-- main -->
@@ -76,8 +78,8 @@
 
 </template>
 <script>
-  import { BomModel, BomRevisionArray, BomStatusArray } from 'src/model/bom'
-  import { ItemModel } from 'src/model/item'
+  import {BomModel, BomRevisionArray, BomStatusArray} from 'src/model/bom'
+  import {ItemModel} from 'src/model/item'
 
   export default {
     props: {

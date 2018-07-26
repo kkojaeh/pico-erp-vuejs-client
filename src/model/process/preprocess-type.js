@@ -3,64 +3,65 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
 import qs from 'qs'
-import {LabelModel} from 'src/model/shared'
+import {LabelModel} from "../shared";
 import {authorizedUrl} from 'src/plugins/auth'
 import {download} from 'src/model/data'
 
-export class DepartmentImportOptions {
+export class PreprocessTypeImportOptions {
 
   overwrite = false
 
 }
 
-export class DepartmentExportOptions {
+export class PreprocessTypeExportOptions {
 
   empty = false
 
 }
 
-export class DepartmentModel extends Model {
+export class PreprocessTypeModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    return authorizedUrl(`${host}/user/import/departments/xlsx`)
+    return authorizedUrl(`${host}/process/import/process-types/xlsx`)
   }
 
   get defaults() {
     return {
-      customerManagerContact: {}
+      baseCost: 0
     }
-  }
-
-  static exportAsXlsx(options) {
-    const host = api.defaults.baseURL
-    const url = `${host}/user/export/departments/xlsx?${qs.stringify(options)}`
-    download(authorizedUrl(url))
-  }
-
-  static async get(id, cacheable) {
-    if (!id) {
-      return new DepartmentModel()
-    }
-    const response = await api.get(
-        `/user/departments/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
-    return new DepartmentModel(response.data)
-  }
-
-  static async exists(id) {
-    return await exists(api, `/user/departments/${id}`)
   }
 
   get phantom() {
     return !this.id || this.hasChanged("id")
   }
 
+  static async get(id, cacheable) {
+    if (!id) {
+      return new PreprocessTypeModel()
+    }
+    const response = await api.get(
+        `/process/preprocess-types/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new PreprocessTypeModel(response.data)
+  }
+
+  static async exists(id) {
+    return await exists(api, `/process/preprocess-types/${id}`)
+  }
+
+  static exportAsXlsx(options) {
+    const host = api.defaults.baseURL
+    const url = `${host}/process/export/process-types/xlsx?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
+  }
+
   async save() {
     if (this.phantom) {
-      const response = await api.post('/user/departments', this)
-      this.assign(response.data)
+      await api.post('/process/preprocess-types', this)
     } else {
-      await api.put(`/user/departments/${this.id}`, this)
+      await api.put(`/process/preprocess-types/${this.id}`, this)
     }
   }
 
@@ -71,9 +72,9 @@ export class DepartmentModel extends Model {
         presence: true,
         length: {minimum: 2, maximum: 50},
         format: {
-          pattern: '\\w+',
+          pattern: '(\\w|-)+',
           message: languageAliases({
-            ko: '형식이 틀립니다(영문 및 숫자 _ 만 사용가능합니다)'
+            ko: '형식이 틀립니다(영문 및 숫자 `_-` 만 사용가능합니다)'
           })[language]
         },
         exists: async (value) => {
@@ -83,27 +84,32 @@ export class DepartmentModel extends Model {
           if (!phantom) {
             return
           }
-          return await DepartmentModel.exists(value)
+          return await PreprocessTypeModel.exists(value)
         }
       },
       name: {
         presence: true,
         length: {minimum: 2, maximum: 50}
       },
-      managerId: {
-        presence: false
+      infoTypeId: {
+        presence: true
+      },
+      baseCost: {
+        numericality: {
+          greaterThanOrEqualTo: 0
+        }
       }
-    }
 
+    }
     return await this.$validate(constraints)
   }
 
 }
 
-export const DepartmentPaginationArray = Array.decorate(
+export const PreprocessTypePaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/user/departments?${$QS}'
+        return '/process/preprocess-types?${$QS}'
       }
 
       get axios() {
@@ -111,15 +117,15 @@ export const DepartmentPaginationArray = Array.decorate(
       }
 
       get model() {
-        return DepartmentModel
+        return PreprocessTypeModel
       }
     }
 )
 
-export const DepartmentLabelArray = Array.decorate(
+export const PreprocessTypeLabelArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/user/department-query-labels?${$QS}'
+        return '/process/preprocess-type-query-labels?${$QS}'
       }
 
       get axios() {

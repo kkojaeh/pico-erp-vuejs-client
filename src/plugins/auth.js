@@ -1,7 +1,7 @@
 import firebase from 'firebase'
 import * as _ from 'lodash'
 import store from 'src/store'
-import { Loading } from 'quasar'
+import {Loading} from 'quasar'
 import qs from 'qs'
 
 const firebaseApiKey = document.querySelector(
@@ -61,6 +61,12 @@ export async function verifyAndConfirmPasswordReset (password) {
   const actionCode = qs.parse(location.search).oobCode
   await firebaseApp.auth().verifyPasswordResetCode(actionCode)
   await firebaseApp.auth().confirmPasswordReset(actionCode, password)
+}
+
+export function authorizedUrl(url) {
+  const authorizedQs = store.getters['auth/tokenParameterName'] + '='
+      + store.getters['auth/token']
+  return url + (_.includes(url, '?') ? '&' : '?') + authorizedQs;
 }
 
 const authenticator = new Function('authentication', 'authorize',

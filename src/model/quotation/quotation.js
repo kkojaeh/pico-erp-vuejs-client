@@ -1,11 +1,9 @@
 import {SpringPaginationArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import store from 'src/store'
 import qs from 'qs'
-import {QuotationAdditionModel} from './quotation-addition'
-import {QuotationItemModel} from './quotation-item'
-import {QuotationItemAdditionModel} from './quotation-item-addition'
+import {authorizedUrl} from 'src/plugins/auth'
+import {download} from 'src/model/data'
 
 export class QuotationPrintSheetOptions {
 
@@ -100,14 +98,9 @@ export class QuotationModel extends Model {
 
   async printSheet(options) {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    const link = document.createElement('a')
-    link.href = `${host}/quotation/quotations/${this.id}/print-sheet?${qs.stringify(
-        options)}&${authQs}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const url = `${host}/quotation/quotations/${this.id}/print-sheet?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
   }
 
   async commit() {

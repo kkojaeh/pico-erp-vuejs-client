@@ -125,7 +125,8 @@ module.exports = function (ctx) {
         'QPopover',
         'QSpinner',
         'QUploader',
-        'QBtnGroup'
+        'QBtnGroup',
+        'QInnerLoading'
       ],
       directives: [
         'Ripple',

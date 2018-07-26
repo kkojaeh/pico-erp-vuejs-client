@@ -73,12 +73,14 @@
         <ag-grid-column field="position" header-name="직위/직급" :width="100"/>
         <ag-grid-column field="email" header-name="이메일" :width="200"/>
         <ag-grid-column field="departmentName" header-name="부서" :width="200"/>
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
-        <ag-grid-column field="lastModifiedBy.name" header-name="수정자" :width="150"/>
-        <ag-grid-column field="lastModifiedDate" header-name="수정시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="lastModifiedBy.name" header-name="수정자" :width="120"/>
+        <ag-grid-column field="lastModifiedDate" header-name="수정시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -126,8 +128,8 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
   import {
     DepartmentLabelArray,
     UserExportOptions,

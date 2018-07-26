@@ -1,8 +1,13 @@
-import {FetchableArray, SpringPaginationArray, SavableArray} from 'src/model/array'
+import {
+  FetchableArray,
+  SavableArray,
+  SpringPaginationArray
+} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import qs from 'qs'
-import store from 'src/store'
+import {authorizedUrl} from 'src/plugins/auth'
+import {download} from 'src/model/data'
 
 export class GroupImportOptions {
 
@@ -20,9 +25,7 @@ export class GroupModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    return `${host}/user/import/groups/xlsx?${authQs}`
+    return authorizedUrl(`${host}/user/import/groups/xlsx`)
   }
 
   get defaults() {
@@ -31,14 +34,8 @@ export class GroupModel extends Model {
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    const link = document.createElement('a')
-    link.href = `${host}/user/export/groups/xlsx?${qs.stringify(
-        options)}&${authQs}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const url = `${host}/user/export/groups/xlsx?${qs.stringify(options)}`
+    download(authorizedUrl(url))
   }
 
   static async get(id) {
@@ -55,10 +52,10 @@ export class GroupModel extends Model {
   }
 
   async save() {
-    if(this.phantom) {
+    if (this.phantom) {
       const response = await api.post('/user/groups', this)
       this.assign(response.data)
-    }else{
+    } else {
       await api.put(`/user/groups/${this.id}`, this)
     }
   }
@@ -122,7 +119,7 @@ export class GroupRoleModel extends Model {
 
 export class GroupUserModel extends Model {
 
-  get phantom(){
+  get phantom() {
     return this.hasChanged("userId")
   }
 
@@ -163,15 +160,15 @@ export const GroupRoleArray = Array.decorate(
         })
       }
 
-      isSaveTarget(element){
+      isSaveTarget(element) {
         return element.hasChanged('granted')
       }
 
-      async saveElement(element){
+      async saveElement(element) {
         return await element.granted ? element.grant() : element.revoke()
       }
 
-      applyEach(element){
+      applyEach(element) {
         element.groupId = this.group.id
       }
 
@@ -204,15 +201,15 @@ export const GroupUserArray = Array.decorate(
         })
       }
 
-      async saveElement(element){
+      async saveElement(element) {
         return await element.add()
       }
 
-      async removeElement(element){
+      async removeElement(element) {
         return await element.remove()
       }
 
-      applyEach(element){
+      applyEach(element) {
         element.groupId = this.group.id
       }
 

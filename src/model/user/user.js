@@ -1,9 +1,14 @@
-import {FetchableArray, SpringPaginationArray, SavableArray} from 'src/model/array'
+import {
+  FetchableArray,
+  SavableArray,
+  SpringPaginationArray
+} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
-import store from 'src/store'
 import qs from 'qs'
+import {authorizedUrl} from 'src/plugins/auth'
+import {download} from 'src/model/data'
 
 export class UserImportOptions {
 
@@ -21,9 +26,7 @@ export class UserModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    return `${host}/user/import/users/xlsx?${authQs}`
+    return authorizedUrl(`${host}/user/import/users/xlsx`)
   }
 
   get defaults() {
@@ -34,14 +37,8 @@ export class UserModel extends Model {
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const authQs = store.getters['auth/tokenParameterName'] + '='
-        + store.getters['auth/token']
-    const link = document.createElement('a')
-    link.href = `${host}/user/export/users/xlsx?${qs.stringify(
-        options)}&${authQs}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const url = `${host}/user/export/users/xlsx?${qs.stringify(options)}`
+    download(authorizedUrl(url))
   }
 
   static async get(id, cacheable) {
@@ -62,10 +59,10 @@ export class UserModel extends Model {
   }
 
   async save() {
-    if(this.phantom){
+    if (this.phantom) {
       const response = api.post('/user/users', this)
       this.assign(response.data)
-    }else{
+    } else {
       await api.put(`/user/users/${this.id}`, this)
     }
   }
@@ -140,7 +137,6 @@ export const UserPaginationArray = Array.decorate(
     }
 )
 
-
 export const UserRoleArray = Array.decorate(
     SavableArray,
     class extends FetchableArray {
@@ -166,15 +162,16 @@ export const UserRoleArray = Array.decorate(
           userId: this.user.id || ' '
         })
       }
-      async saveElement(element){
+
+      async saveElement(element) {
         return await element.granted ? element.grant() : element.revoke()
       }
 
-      isSaveTarget(element){
+      isSaveTarget(element) {
         return element.hasChanged('granted')
       }
 
-      applyEach(element){
+      applyEach(element) {
         element.userId = this.user.id
       }
     }

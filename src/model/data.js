@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { date } from 'quasar'
+import {date} from 'quasar'
 
 const iso8601RegExp = /^(\d{4})-(\d\d)-(\d\d)([T ](\d\d):(\d\d):(\d\d)(\.\d+)?(Z|([+-])(\d\d)(:(\d\d))?)?)?$/
 const booleanRegExp = /^(true|false)$/
@@ -157,4 +157,12 @@ export class AddressSelector {
       })
     })
   }
+}
+
+export function download(url) {
+  const link = document.createElement('a')
+  link.href = url
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }

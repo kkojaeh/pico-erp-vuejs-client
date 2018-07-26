@@ -68,7 +68,7 @@
         연락처
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="addContact"/>
-          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selectedContact"
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.contact"
                  @click="removeContact"/>
         </div>
       </q-card-title>
@@ -130,7 +130,7 @@
         주소지
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="addAddress"/>
-          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selectedAddress"
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.address"
                  @click="removeAddress"/>
         </div>
       </q-card-title>
@@ -237,8 +237,10 @@
         contacts: new CompanyContactArray(),
         addresses: new CompanyAddressArray(),
         enabled: true,
-        selectedContact: null,
-        selectedAddress: null
+        selected: {
+          contact: null,
+          address: null
+        }
       }
     },
     mounted() {
@@ -253,18 +255,21 @@
         this.addresses = new CompanyAddressArray(this.model)
       },
       async show() {
-        this.model = await CompanyModel.get(this.id)
-        this.contacts = new CompanyContactArray(this.model)
-        this.addresses = new CompanyAddressArray(this.model)
-        await this.addresses.query()
-        await this.contacts.query()
+        const model = await CompanyModel.get(this.id)
+        const contacts = new CompanyContactArray(model)
+        const addresses = new CompanyAddressArray(model)
+        await addresses.query()
+        await contacts.query()
+        this.model = model
+        this.contacts = contacts
+        this.addresses = addresses
       },
       onContactSelectionChanged(event) {
-        this.selectedContact = event.api.getSelectedRows()[0]
+        this.selected.contact = event.api.getSelectedRows()[0]
       },
 
       onAddressSelectionChanged(event) {
-        this.selectedAddress = event.api.getSelectedRows()[0]
+        this.selected.address = event.api.getSelectedRows()[0]
       },
 
       async onAddressSearch(data) {
@@ -308,10 +313,10 @@
       },
 
       async removeContact() {
-        const name = this.selectedContact.contact.name || '이름 없음'
+        const name = this.selected.contact.contact.name || '이름 없음'
         const ok = await this.$alert.confirm(`'${name}' 의 연락처를 삭제 하시겠습니까?`)
         if (ok) {
-          this.contacts.remove(this.selectedContact)
+          this.contacts.remove(this.selected.contact)
         }
       },
 
@@ -320,10 +325,10 @@
       },
 
       async removeAddress() {
-        const name = this.selectedAddress.name || '이름 없음'
+        const name = this.selected.address.name || '이름 없음'
         const ok = await this.$alert.confirm(`'${name}' 의 주소지를 삭제 하시겠습니까?`)
         if (ok) {
-          this.addresses.remove(this.selectedAddress)
+          this.addresses.remove(this.selected.address)
         }
       }
     },

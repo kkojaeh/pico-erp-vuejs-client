@@ -61,9 +61,10 @@
                           query:$route.query
                         }"/>
         <ag-grid-column field="code" header-name="코드" :width="100"/>
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 
       <!-- main -->
@@ -89,10 +90,10 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
-  import { UserLabelArray } from 'src/model/user'
-  import { ItemCategoryHierarchyArray } from 'src/model/item'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
+  import {UserLabelArray} from 'src/model/user'
+  import {ItemCategoryHierarchyArray} from 'src/model/item'
 
   export default {
     data () {

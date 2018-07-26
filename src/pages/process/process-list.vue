@@ -24,6 +24,7 @@
       <ag-grid ref="grid"
                class="col-grow"
                row-selection="single"
+               enable-server-side-sorting
                enable-col-resize
                enable-sorting
                :row-data="array">
@@ -41,9 +42,10 @@
                         :cell-renderer-params="{array:difficultyLabels, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="managerName" header-name="담당자" :width="150"/>
 
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="150"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -117,15 +119,15 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { UserLabelArray } from 'src/model/user'
+  import {DataAdjuster} from 'src/model/data'
+  import {UserLabelArray} from 'src/model/user'
   import {
     ProcessDifficultyArray,
     ProcessPaginationArray,
     ProcessStatusArray,
     ProcessTypeLabelArray
   } from 'src/model/process'
-  import { ItemLabelArray } from 'src/model/item'
+  import {ItemLabelArray} from 'src/model/item'
 
   export default {
     authorized: {

@@ -36,12 +36,13 @@
                         :cell-renderer-params="{path:'/project/show/${id}', query:$route.query}"/>
 
         <ag-grid-column field="customerName" header-name="고객사명" :width="150"/>
-        <ag-grid-column field="managerName" header-name="담당자명" :width="150"/>
+        <ag-grid-column field="managerName" header-name="담당자명" :width="120"/>
 
-        <ag-grid-column field="customerManagerName" header-name="고객사 담당자명" :width="150"/>
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="customerManagerName" header-name="고객사 담당자명" :width="120"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -113,11 +114,11 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
-  import { CompanyLabelArray } from 'src/model/company'
-  import { UserLabelArray } from 'src/model/user'
-  import { ProjectPaginationArray } from 'src/model/project'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
+  import {CompanyLabelArray} from 'src/model/company'
+  import {UserLabelArray} from 'src/model/user'
+  import {ProjectPaginationArray} from 'src/model/project'
 
   export default {
     data () {

@@ -1,4 +1,4 @@
-import { wrapModal } from './default'
+import {wrapModal} from './default'
 
 let meta = {
   title: '공정 관리',
@@ -7,6 +7,11 @@ let meta = {
 
 let typeMeta = {
   title: '공정 유형 관리',
+  authorize: 'hasRole(\'PROCESS_TYPE_MANAGER\')'
+}
+
+let preTypeMeta = {
+  title: '사전 공정 유형 관리',
   authorize: 'hasRole(\'PROCESS_TYPE_MANAGER\')'
 }
 
@@ -59,6 +64,41 @@ export default [{
       }
     }),
     meta: typeMeta,
+    props: (route) => {
+      return {
+        id: route.params.id,
+        action: 'show',
+        closable: true
+      }
+    }
+  }]
+}, {
+  name: 'preprocess-type-list',
+  path: '/preprocess-type',
+  component: () => import('pages/process/preprocess-type-list'),
+  meta: preTypeMeta,
+  children: [{
+    name: 'preprocess-type-form-create',
+    path: 'create',
+    component: () => wrapModal(import('pages/process/preprocess-type-form'), {
+      onModalHide() {
+        this.$router.push({path: '/preprocess-type', query: this.$route.query})
+      }
+    }),
+    meta: preTypeMeta,
+    props: {
+      action: 'create',
+      closable: true
+    }
+  }, {
+    name: 'preprocess-type-form-show',
+    path: 'show/:id',
+    component: () => wrapModal(import('pages/process/preprocess-type-form'), {
+      onModalHide() {
+        this.$router.push({path: '/preprocess-type', query: this.$route.query})
+      }
+    }),
+    meta: preTypeMeta,
     props: (route) => {
       return {
         id: route.params.id,

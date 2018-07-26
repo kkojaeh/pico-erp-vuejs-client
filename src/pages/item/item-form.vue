@@ -221,7 +221,7 @@
                v-if="$authorized.itemManager"
                @click="_onDeactivateClick">비활성화
         </q-btn>
-        <router-link :to="`/process/show/${processModel.id}`" v-show="!!processModel.id"
+        <router-link :to="`/process/show/${processModel.id}`" v-show="!processModel.phantom"
                      v-if="$authorized.processManager">
           <q-btn flat icon="settings_applications">공정</q-btn>
         </router-link>
@@ -247,9 +247,9 @@
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
-  import { ProcessModel } from 'src/model/process'
-  import { CompanyLabelArray, CompanyModel } from 'src/model/company'
-  import { UnitLabelArray } from 'src/model/shared'
+  import {ProcessModel} from 'src/model/process'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {UnitLabelArray} from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {

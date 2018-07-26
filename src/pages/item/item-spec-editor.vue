@@ -24,7 +24,7 @@
         <q-toolbar-title>
         </q-toolbar-title>
 
-        <q-btn flat icon="save" @click="onSaveClick()">저장</q-btn>
+        <q-btn flat v-show="editable" icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -33,7 +33,7 @@
 
 </template>
 <script>
-  import { ItemModel, ItemSpecModel } from 'src/model/item'
+  import {ItemModel, ItemSpecModel} from 'src/model/item'
   import 'json-editor'
   import * as _ from 'lodash'
 
@@ -48,31 +48,35 @@
       closable: {
         type: Boolean,
         default: false
+      },
+      editable: {
+        type: Boolean,
+        default: true
       }
     },
     authorized: {
       'itemManager': 'hasRole(\'ITEM_MANAGER\')',
       'bomManager': 'hasRole(\'BOM_MANAGER\')'
     },
-    data () {
+    data() {
       return {
         model: new ItemModel(),
         metadata: {}
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
-    beforeDestroy () {
+    beforeDestroy() {
       if (this.editor) {
         this.editor.destroy()
         this.editor = null
       }
     },
     methods: {
-      initEditor () {
+      initEditor() {
         if (this.editor) {
           this.editor.destroy()
         }
@@ -90,18 +94,23 @@
           no_additional_properties: true
         })
         this.editor.setValue(this.model.variables)
+        if (this.editable) {
+          this.editor.enable();
+        } else {
+          this.editor.disable();
+        }
       },
-      async create () {
+      async create() {
         this.metadata = await ItemModel.getSpecMetadata(this.itemId)
         this.model = await ItemSpecModel.create(this.itemId)
         this.initEditor()
       },
-      async show () {
+      async show() {
         this.metadata = await ItemModel.getSpecMetadata(this.itemId)
         this.model = await ItemSpecModel.get(this.id)
         this.initEditor()
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let errors = this.editor.validate()
         if (!errors.length) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -116,7 +125,7 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         this.model.variables = _.defaultsDeep(this.editor.getValue(), this.model.variables)
         await this.model.save()
         this.$emit('saved', this.model)

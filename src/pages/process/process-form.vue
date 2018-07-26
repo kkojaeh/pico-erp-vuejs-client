@@ -86,8 +86,24 @@
           </c-autocomplete-select>
         </q-field>
 
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        설명 및 관련 파일
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="row gutter-md">
+
         <q-field icon="fa-comment" helper="공정 설명을 입력하세요"
-                 class="col-xs-12 col-md-12 col-xl-12">
+                 class="col-xs-12 col-md-10 col-xl-8"
+                 :error="!!model.$errors.description"
+                 :error-label="model.$errors.description">
           <c-html-editor v-model="model.description" :readonly="!isModifiable"></c-html-editor>
         </q-field>
 
@@ -139,8 +155,8 @@
     ProcessTypeLabelArray,
     ProcessTypeModel
   } from 'src/model/process'
-  import { ItemModel } from 'src/model/item'
-  import { UserLabelArray, UserModel } from 'src/model/user'
+  import {ItemModel} from 'src/model/item'
+  import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
 

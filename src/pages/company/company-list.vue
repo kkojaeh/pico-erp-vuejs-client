@@ -45,6 +45,10 @@
                         cell-renderer-framework="ag-grid-checkbox-renderer"/>
         <ag-grid-column field="outsourcing" header-name="외주사" :width="80"
                         cell-renderer-framework="ag-grid-checkbox-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 
       <!-- main -->
@@ -91,9 +95,9 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
-  import { CompanyPaginationArray } from 'src/model/company'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
+  import {CompanyPaginationArray} from 'src/model/company'
 
   export default {
     data () {

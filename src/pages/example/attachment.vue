@@ -4,7 +4,7 @@
       <i class="on-left">save</i>
       저장
     </button>
-    <button class="primary set" @click="attachmentId = 'b4fcb314-c24d-43c9-bc9c-c5c91d27e2b2'">
+    <button class="primary set" @click="attachmentId = 'e0fe262d-f0fe-4aba-82b0-0bb1e85fafb5'">
       <i class="on-left">search</i>
       set value
     </button>

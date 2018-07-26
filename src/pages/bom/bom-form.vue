@@ -52,7 +52,7 @@
           <ag-grid-column field="item.code" header-name="코드" :width="150"
                           cell-renderer-framework="ag-grid-router-link-renderer"
                           :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
-          <ag-grid-column field="processId" header-name="공정" :width="180"
+          <ag-grid-column field="processId" header-name="공정" :width="220"
                           cell-renderer-framework="bom-process-cell-renderer"
                           :cell-renderer-params="{editHandler: editProcess, removeHandler: removeProcess}"/>
           <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
@@ -130,8 +130,12 @@
 
     <q-modal ref="itemSpecEditorModal" content-classes="column">
       <item-spec-editor ref="itemSpecEditor" :item-id="selected.itemId"
+                        :editable="selected.modifiable"
                         :id="selected.itemSpecId"></item-spec-editor>
     </q-modal>
+
+    <q-inner-loading :visible="loading">
+    </q-inner-loading>
 
   </q-page>
 
@@ -170,13 +174,15 @@
         selected: new BomModel({isNull: true}),
         statusLabels: new BomStatusArray(),
         unitLabels: new UnitLabelArray(),
-        detailedUnitCost: false
+        detailedUnitCost: false,
+        loading: false
       }
     },
     mounted() {
       this.statusLabels.fetch()
       this.unitLabels.fetch()
       this.$nextTick(() => this.show())
+      window.loading = this.$q.loading
     },
     methods: {
       quantityCellRenderer(params) {
@@ -271,9 +277,16 @@
         if (valid) {
           const ok = await this.$alert.confirm('다음 버전으로 진행 하시겠습니까?')
           if (ok) {
+            this.loading = true
             await this.selected.nextRevision()
-            this.$alert.positive('버전이 변경 되었습니다')
-            this.load()
+            if (this.selected == this.model) {
+              this.$alert.positive('버전이 변경 되었습니다')
+              this.$router.push({path: `/bom/${this.model.itemId}/${this.model.id}`})
+            } else {
+              await this.load()
+              this.$alert.positive('버전이 변경 되었습니다')
+            }
+            this.loading = false
           }
         } else {
           this.$alert.warning(this.selected.$errors.nextRevision)
@@ -286,8 +299,8 @@
           const ok = await this.$alert.confirm('확정을 진행 하시겠습니까?')
           if (ok) {
             await this.selected.determine()
+            await this.load()
             this.$alert.positive('확정 되었습니다')
-            this.load()
           }
         } else {
           this.$alert.warning(this.selected.$errors.determine)

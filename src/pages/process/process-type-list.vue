@@ -70,12 +70,16 @@
                         :cell-renderer-params="{path:'/process-type/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
         <ag-grid-column field="infoTypeName" header-name="분류" :width="150"/>
+
         <ag-grid-column field="baseUnitCost" header-name="기준단가" :width="100"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0.00', words:true}"
                         :cell-style="{textAlign: 'right'}"/>
 
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="150"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 

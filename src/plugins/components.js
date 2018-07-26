@@ -1,5 +1,5 @@
-import Quasar, { Notify, QModal } from 'quasar'
-import { language, languageAliases } from 'src/i18n'
+import Quasar, {Notify, QModal} from 'quasar'
+import {language, languageAliases} from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
 // import 'ag-grid/dist/styles/ag-theme-balham.css'
@@ -27,6 +27,8 @@ import AgGridDatetimeRenderer
   from 'src/components/ag-grid/ag-grid-datetime-renderer.vue'
 import AgGridRouterLinkRenderer
   from 'src/components/ag-grid/ag-grid-router-link-renderer.vue'
+import AgGridNumberRenderer
+  from 'src/components/ag-grid/ag-grid-number-renderer.vue'
 import AgGridIconRenderer
   from 'src/components/ag-grid/ag-grid-icon-renderer.vue'
 import AgGridCleaveRenderer
@@ -56,6 +58,7 @@ import 'imports-loader?jQuery=jquery!trumbowyg/dist/plugins/table/trumbowyg.tabl
 import 'trumbowyg/dist/ui/trumbowyg.css'
 import 'trumbowyg/dist/plugins/table/ui/trumbowyg.table.css'
 import svgIcons from 'trumbowyg/dist/ui/icons.svg'
+
 $.trumbowyg.svgPath = svgIcons
 
 const lang = language
@@ -102,5 +105,7 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-icon-renderer', AgGridIconRenderer)
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
+  Vue.component('ag-grid-number-renderer', AgGridNumberRenderer)
+
 
 }

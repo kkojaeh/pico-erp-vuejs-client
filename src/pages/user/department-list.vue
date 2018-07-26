@@ -70,10 +70,11 @@
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/department/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
-        <ag-grid-column field="managerName" header-name="관리자명" :width="150"/>
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="managerName" header-name="관리자명" :width="120"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -115,8 +116,8 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
   import {
     DepartmentExportOptions,
     DepartmentImportOptions,

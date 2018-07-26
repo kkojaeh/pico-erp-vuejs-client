@@ -40,12 +40,14 @@
                         :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="projectName" header-name="프로젝트" :width="170"/>
         <ag-grid-column field="customerName" header-name="고객사" :width="170"/>
-        <ag-grid-column field="managerName" header-name="담당자" :width="170"/>
-        <ag-grid-column field="committedDate" header-name="제출시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
-        <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
-        <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+        <ag-grid-column field="managerName" header-name="담당자" :width="120"/>
+        <ag-grid-column field="committedDate" header-name="제출시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
+        <ag-grid-column field="createdDate" header-name="생성시간" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -172,16 +174,16 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
+  import {DataAdjuster} from 'src/model/data'
   import {
     QuotationExpiryPolicyArray,
     QuotationPaginationArray,
     QuotationStatusArray
   } from 'src/model/quotation'
 
-  import { CompanyLabelArray } from 'src/model/company'
-  import { ProjectLabelArray } from 'src/model/project'
-  import { UserLabelArray } from 'src/model/user'
+  import {CompanyLabelArray} from 'src/model/company'
+  import {ProjectLabelArray} from 'src/model/project'
+  import {UserLabelArray} from 'src/model/user'
 
   export default {
     data () {
