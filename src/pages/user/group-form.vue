@@ -36,9 +36,10 @@
       <q-tab default slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
       <q-tab slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
       <!-- Targets -->
-      <q-tab-pane name="tab-1" class="column no-border" style="height:400px;">
+      <q-tab-pane name="tab-1" class="row">
         <ag-grid ref="roleGrid" class="col"
-                 row-selection="multiple"
+                 row-selection="single"
+                 :grid-auto-height="true"
                  enable-col-resize
                  enable-sorting
                  :row-data="roleArray">
@@ -51,9 +52,8 @@
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
       </q-tab-pane>
-      <q-tab-pane name="tab-2" class="column no-border"
-                  style="height:400px;">
-        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="row">
+      <q-tab-pane name="tab-2" class="column">
+        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="col-auto">
           <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUserId"
                                  :options="userLabels"
                                  label-field="label" value-field="value"
@@ -64,8 +64,9 @@
             </template>
           </c-autocomplete-select>
         </q-field>
-        <ag-grid ref="userGrid" class="col"
-                 row-selection="multiple"
+        <ag-grid ref="userGrid" class="col-auto"
+                 row-selection="single"
+                 :grid-auto-height="true"
                  enable-col-resize
                  enable-sorting
                  :row-data="userArray">
@@ -163,7 +164,10 @@
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              this.$closeOverlay()
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
+              }
             }
           }
         } else {
@@ -184,7 +188,7 @@
         if (ok) {
           this.userArray.remove(user)
         }
-      },
+      }
     },
     computed: {
       phantom() {
@@ -194,7 +198,6 @@
     watch: {
       'groupUserId': async function (to) {
         if (to) {
-          console.log('groupUserId')
           const user = await UserModel.get(to, true)
           const groupUser = new GroupUserModel()
           groupUser.userId = user.id

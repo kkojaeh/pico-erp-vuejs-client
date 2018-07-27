@@ -57,7 +57,8 @@
           <c-autocomplete-select float-label="공정 유형" v-model="model.typeId"
                                  :label="typeModel.name" :options="processTypeLabels"
                                  label-field="label" value-field="value"
-                                 @search="onProcessTypeSearch">
+                                 @search="onProcessTypeSearch" :readonly="typeFixed"
+                                 :hide-underline="typeFixed">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
               {{option.stamp}} - {{option.subLabel}}
@@ -86,8 +87,38 @@
           </c-autocomplete-select>
         </q-field>
 
+        <q-field icon="check" helper="견적의 상태 입니다"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-select float-label="상태" v-model="model.status" readonly hide-underline
+                    :options="statusLabels"></q-select>
+        </q-field>
+
       </q-card-main>
 
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        사전 공정
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="column">
+        <ag-grid ref="userGrid" class="col-auto"
+                 :grid-auto-height="true"
+                 enable-col-resize
+                 enable-sorting
+                 :row-data="preprocesses">
+
+          <ag-grid-column field="name" header-name="이름" :width="300"/>
+          <ag-grid-column field="chargeCost" header-name="기준단가" :width="100"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          :cell-style="{textAlign: 'right'}"/>
+        </ag-grid>
+      </q-card-main>
     </q-card>
 
     <q-card class="col-12" flat>
@@ -140,6 +171,7 @@
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
+        <q-btn v-if="canCompletePlan" flat icon="save" @click="onCompletePlan()">가확정</q-btn>
         <q-btn v-if="isModifiable" flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
@@ -152,8 +184,10 @@
   import {
     ProcessDifficultyArray,
     ProcessModel,
+    ProcessStatusArray,
     ProcessTypeLabelArray,
-    ProcessTypeModel
+    ProcessTypeModel,
+    ProcessPreprocessArray
   } from 'src/model/process'
   import {ItemModel} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
@@ -179,7 +213,7 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new ProcessModel(),
         itemModel: new ItemModel(),
@@ -187,75 +221,118 @@
         managerModel: new UserModel(),
         processTypeLabels: new ProcessTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
-        userLabels: new UserLabelArray()
+        statusLabels: new ProcessStatusArray(),
+        userLabels: new UserLabelArray(),
+        preprocesses: new ProcessPreprocessArray()
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
       this.processTypeLabels.query()
       this.difficultyLabels.fetch()
+      this.statusLabels.fetch()
       this.userLabels.query()
     },
     methods: {
-      async onProcessTypeSearch (keyword, done) {
+      async onProcessTypeSearch(keyword, done) {
         await this.processTypeLabels.query(keyword)
         done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
       },
-      async create () {
+      async create() {
         this.itemModel = await ItemModel.get(this.itemId)
         this.model = new ProcessModel()
         this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
       },
-      async show () {
-        this.model = await ProcessModel.get(this.id)
+      async load(id) {
+        this.model = await ProcessModel.get(id)
         this.itemModel = await ItemModel.get(this.model.itemId)
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
         this.managerModel = await UserModel.get(this.model.managerId)
+        const preprocesses = new ProcessPreprocessArray(this.model)
+        await preprocesses.query()
+        this.preprocesses = preprocesses
       },
-      async onSaveClick () {
+      async show() {
+        this.load(this.id)
+      },
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
             await this.save()
+            this.$emit('saved', this.model)
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              this.$closeOverlay()
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
+              } else {
+                this.load(this.model.id)
+              }
             }
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         const attachment = this.$refs.attachment
         await attachment.save()
         await this.model.save()
-        this.$emit('saved', this.model)
       },
 
-      rename () {
+      rename() {
         const typeName = this.typeModel.name || 'N/A'
         const itemName = this.itemModel.name
         this.model.name = `[${typeName}] ${itemName}`
+      },
+
+      async onCompletePlan() {
+        let valid = await this.model.validateCompletePlan()
+        if (valid) {
+          const ok = await this.$alert.confirm('가확정 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            await this.model.completePlan()
+            this.$emit('saved', this.model)
+            this.$alert.positive('가확정 되었습니다')
+            if (this.closable) {
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
+              } else {
+                this.load(this.model.id)
+              }
+            }
+          }
+        } else {
+          this.$alert.warning('입력이 유효하지 않습니다')
+        }
       }
     },
     computed: {
-      isModifiable () {
+      isModifiable() {
         return this.$authorized.processManager && !this.model.deleted
       },
-      isCommentable () {
+      isCommentable() {
         return !this.model.deleted
       },
       phantom() {
         return this.model.phantom
+      },
+      canCompletePlan() {
+        return this.model.canCompletePlan
+      },
+      typeFixed() {
+        return this.model.typeFixed
       }
     },
     watch: {
@@ -265,10 +342,10 @@
       'model.managerId': async function (to) {
         this.managerModel = await UserModel.get(to, true)
       },
-      'itemModel' () {
+      'itemModel'() {
         this.rename()
       },
-      'typeModel' () {
+      'typeModel'() {
         this.rename()
       }
 

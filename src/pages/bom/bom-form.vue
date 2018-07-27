@@ -145,10 +145,8 @@
   import {ProcessModel} from 'src/model/process'
   import {UnitLabelArray} from 'src/model/shared'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import ItemForm from 'src/pages/item/item-form.vue'
   import ItemSelector from 'src/pages/item/item-selector.vue'
   import ProcessForm from 'src/pages/process/process-form.vue'
-  import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
 
@@ -378,7 +376,6 @@
             form.$off('saved')
           })
           form.$once('saved', async (processModel) => {
-            modal.hide()
             data.processId = processModel.id
             if (creating) {
               await data.save()

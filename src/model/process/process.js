@@ -1,6 +1,7 @@
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {SpringPaginationArray} from '../array'
+import {language, languageAliases} from "../../i18n";
 
 export class ProcessModel extends Model {
 
@@ -11,6 +12,7 @@ export class ProcessModel extends Model {
 
   get defaults() {
     return {
+      status: 'DRAFT',
       difficulty: 'NORMAL'
     }
   }
@@ -54,8 +56,39 @@ export class ProcessModel extends Model {
     }
   }
 
+  get canCompletePlan() {
+    return !this.phantom && this.status == 'DRAFT'
+  }
+
+  get typeFixed() {
+    return this.status != 'DRAFT'
+  }
+
   async delete() {
     await api.delete(`/process/processes/${this.id}`)
+  }
+
+  async completePlan() {
+    await api.put(`/process/processes/${this.id}/complete-plan`, {})
+  }
+
+  async validateCompletePlan() {
+    return await this.$validate({
+      'completePlan': {
+        'function': () => {
+          const errors = []
+          if (this.status !== 'DRAFT') {
+            const error = languageAliases({
+              ko: '작성중이 아닙니다'
+            })[language]
+            errors.push(error)
+          }
+          return errors
+        }
+      }
+    })
+
+    return await this.validate()
   }
 
   async validate() {

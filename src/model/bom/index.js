@@ -185,6 +185,12 @@ export class BomModel extends Model {
             })[language]
             errors.push(error)
           }
+          if (this.process && !this.process.planned) {
+            const error = languageAliases({
+              ko: '작성중인 공정이 존재합니다 최소 가확정 상태가 필요합니다'
+            })[language]
+            errors.push(error)
+          }
           return errors
         }
       }

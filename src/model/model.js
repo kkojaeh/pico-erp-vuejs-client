@@ -64,6 +64,8 @@ export class Model {
 
   assign(data) {
     _.assign(this, data)
+    _.keys(this).forEach((key) => {
+    })
   }
 }
 

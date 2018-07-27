@@ -1,4 +1,8 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {
+  FetchableArray,
+  SavableArray,
+  SpringPaginationArray
+} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {authorizedUrl} from 'src/plugins/auth'
@@ -65,6 +69,21 @@ export class ProcessTypeModel extends Model {
 
   get phantom() {
     return !this.id || this.hasChanged("id")
+  }
+
+  async addPreprocessType(preprocessType) {
+    return await api.post(`/process/process-types/${this.id}/preprocess-types`,
+        {
+          preprocessTypeId: preprocessType.id
+        })
+  }
+
+  async removePreprocessType(preprocessType) {
+    return await api.delete(
+        `/process/process-types/${this.id}/preprocess-types/${preprocessType.id}`,
+        {
+          preprocessTypeId: preprocessType.id
+        })
   }
 
   async save() {
@@ -158,5 +177,32 @@ export const ProcessTypeLabelArray = Array.decorate(
           query: keyword || ''
         })
       }
+    }
+)
+
+export const ProcessTypePreprocessTypeArray = Array.decorate(
+    SavableArray,
+    class {
+
+      initialize(processType) {
+        this.processType = processType
+      }
+
+      isSaveTarget(element) {
+        return element.added
+      }
+
+      isRemoveTarget(element) {
+        return !element.added
+      }
+
+      async saveElement(element) {
+        return await this.processType.addPreprocessType(element)
+      }
+
+      async removeElement(element) {
+        return await this.processType.removePreprocessType(element)
+      }
+
     }
 )

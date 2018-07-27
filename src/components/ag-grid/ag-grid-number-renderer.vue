@@ -10,7 +10,7 @@
     computed: {
       value() {
         const value = this.params.value
-        if (!value) {
+        if (isNaN(value)) {
           return
         }
         const format = this.params.format || 'General'
@@ -18,7 +18,7 @@
       },
       words() {
         const value = this.params.value
-        if (!value) {
+        if (isNaN(value)) {
           return
         }
         if (this.params.words) {

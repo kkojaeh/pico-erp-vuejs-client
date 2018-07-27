@@ -189,11 +189,11 @@ export class SavableArray extends ArrayDecorator{
   remove(element) {
     const index = this.indexOf(element)
     if (index > -1) {
-      element = this.splice(index, 1)
+      element = this.splice(index, 1)[0]
     } else {
       throw new Error('not found element')
     }
-    if (this.isRemoveTarget(element.phantom)) {
+    if (this.isRemoveTarget(element)) {
       this[removedSymbol].push(element)
     }
     return element

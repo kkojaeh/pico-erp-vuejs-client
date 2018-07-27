@@ -264,41 +264,55 @@
                               :cell-style="{textAlign: 'center'}"/>
               <ag-grid-column field="quantity" header-name="수량" :width="100"
                               :cell-style="{textAlign: 'right'}"
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0', words:true}"
                               :editable="isModifiable" cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ type: 'number' }"/>
               <ag-grid-column field="originalUnitPrice" header-name="단가" :width="100"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="directMaterialUnitPrice" header-name="직접 재료비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="indirectMaterialUnitPrice" header-name="간접 재료비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="directLaborUnitPrice" header-name="직접 노무비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :hide="!detailedItemUnitPrice"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="indirectLaborUnitPrice" header-name="간접 노무비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :hide="!detailedItemUnitPrice"
                               :width="100" :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="indirectExpensesUnitPrice" header-name="간접경비"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :width="100" :cell-style="{textAlign: 'right'}"
                               :hide="!detailedItemUnitPrice"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="discountRate" header-name="할인율" :width="100"
                               :cell-style="{textAlign: 'right'}" :editable="isModifiable"
                               cell-editor-framework="ag-grid-input-editor"
@@ -308,17 +322,21 @@
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
                               :hide="!detailedItemUnitPrice"/>
               <ag-grid-column field="discountedAmount" header-name="금액(할인후)" :width="100"
                               header-class="quotation-detailed-price"
                               cell-class="quotation-detailed-price"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
                               :hide="!detailedItemUnitPrice"/>
               <ag-grid-column field="finalizedAmount" header-name="금액" :width="100"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
 
 
               <ag-grid-column field="remark" header-name="비고" :width="200"
@@ -424,16 +442,22 @@
                               :cell-style="{textAlign: 'right'}"
                               :editable="isModifiable" cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ type: 'number', align:'right' }"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="unitPrice" header-name="단가" :width="100"
                               :editable="isModifiable"
                               :cell-style="{textAlign: 'right'}"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ type: 'number', decimals: 2, align:'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="amount" header-name="금액" :width="100"
                               :cell-style="{textAlign: 'right'}"
-                              :tooltip="tooltipNumberToWords"/>
+                              cell-renderer-framework="ag-grid-number-renderer"
+                              :cell-renderer-params="{format:'#,##0.00', words:true}"
+              />
               <ag-grid-column field="remark" header-name="비고" :width="200"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 50 }"
@@ -574,9 +598,6 @@
       onAdditionSelectionChanged(event) {
         this.selected.addition = event.api.getSelectedRows()[0]
       },
-      tooltipNumberToWords(params) {
-        return this.$number.words(params.value)
-      },
       createCellRenderer(additionalField) {
         return function (params) {
           const addition = _.get(params.data, additionalField)
@@ -661,17 +682,13 @@
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              if (this.phantom) {
-                const ok = await this.$alert.confirm('현재 화면을 닫으시겠습니까?')
-                if (ok) {
-                  this.$closeOverlay()
-                } else {
-                  this.$router.push({
-                    path: `/quotation/show/${this.model.id}`, query: this.$route.query
-                  })
-                }
-              } else {
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
                 this.$closeOverlay()
+              } else if (this.phantom) {
+                this.$router.push({
+                  path: `/quotation/show/${this.model.id}`, query: this.$route.query
+                })
               }
             }
           }
@@ -796,7 +813,10 @@
                 await this.load()
                 await this.printSheet()
               } else {
-                this.$closeOverlay()
+                const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+                if (close) {
+                  this.$closeOverlay()
+                }
               }
             }
           }
@@ -811,7 +831,10 @@
           await this.model.cancel()
           this.$alert.positive('취소 되었습니다')
           if (this.closable) {
-            this.$closeOverlay()
+            const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+            if (close) {
+              this.$closeOverlay()
+            }
           }
         }
       },

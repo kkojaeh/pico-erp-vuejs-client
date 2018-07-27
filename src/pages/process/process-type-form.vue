@@ -52,6 +52,45 @@
 
     </q-card>
 
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        사전 공정 유형 정보
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="column">
+        <q-field icon="search" helper="추가할 사전 공정 유형의 이름을 입력하고 선택하세요" class="col-auto">
+          <c-autocomplete-select ref="preprocessType" float-label="사전 공정" v-model="preprocessTypeId"
+                                 :options="preprocessTypeLabels"
+                                 label-field="label" value-field="value"
+                                 @search="onPreprocessTypeSearch">
+            <template slot="option" slot-scope="option">
+              {{option.label}}<br>
+              {{option.stamp}} - {{option.subLabel}}
+            </template>
+          </c-autocomplete-select>
+        </q-field>
+        <ag-grid ref="userGrid" class="col-auto"
+                 :grid-auto-height="true"
+                 enable-col-resize
+                 enable-sorting
+                 :row-data="preprocessTypes">
+
+          <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
+                          cell-renderer-framework="ag-grid-icon-renderer"
+                          :cell-renderer-params="{handler:onPreprocessTypeRemove, icon:'fa-ban', link:true}"/>
+          <ag-grid-column field="id" header-name="아이디" :width="150"/>
+          <ag-grid-column field="name" header-name="이름" :width="200"/>
+          <ag-grid-column field="baseCost" header-name="기준단가" :width="100"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          :cell-style="{textAlign: 'right'}"/>
+        </ag-grid>
+      </q-card-main>
+    </q-card>
+
     <q-card class="col-xs-12 col-md-6 col-xl-6" flat>
 
       <q-card-title>
@@ -219,7 +258,10 @@
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
     ProcessTypeModel,
-    ProcessInfoTypeModel
+    ProcessInfoTypeModel,
+    PreprocessTypeModel,
+    PreprocessTypeLabelArray,
+    ProcessTypePreprocessTypeArray
   } from 'src/model/process'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import * as _ from 'lodash'
@@ -243,7 +285,10 @@
         model: new ProcessTypeModel(),
         infoTypeLabels: new ProcessInfoTypeLabelArray(),
         difficultyLabels: new ProcessDifficultyArray(),
-        infoTypeModel: new ProcessInfoTypeModel()
+        infoTypeModel: new ProcessInfoTypeModel(),
+        preprocessTypes: new ProcessTypePreprocessTypeArray(),
+        preprocessTypeLabels: new PreprocessTypeLabelArray(),
+        preprocessTypeId: null
       }
     },
     mounted () {
@@ -252,21 +297,36 @@
       }
       this.infoTypeLabels.query()
       this.difficultyLabels.fetch()
+      this.preprocessTypeLabels.query()
     },
     methods: {
       difficultyLabel (value) {
         const label = this.difficultyLabels.find(data => data.value == value)
         return label ? label.label : ''
       },
+      async onPreprocessTypeSearch(keyword, done) {
+        await this.preprocessTypeLabels.query(keyword)
+        done()
+      },
       async onProcessInfoTypeSearch (keyword, done) {
         await this.infoTypeLabels.query(keyword)
         done()
+      },
+      async onPreprocessTypeRemove(preprocessType) {
+        const ok = await this.$alert.confirm('해당 사전 공정 유형을 삭제 하시겠습니까?')
+        if (ok) {
+          this.preprocessTypes.remove(preprocessType)
+        }
       },
       async create () {
         this.model = new ProcessTypeModel()
       },
       async show () {
-        this.model = await ProcessTypeModel.get(this.id)
+        const model = await ProcessTypeModel.get(this.id)
+        const preprocessTypes = new ProcessTypePreprocessTypeArray(model)
+        model.preprocessTypes.forEach(preprocessType => preprocessTypes.push(preprocessType))
+        this.model = model
+        this.preprocessTypes = preprocessTypes
       },
       async onSaveClick () {
         let valid = await this.model.validate()
@@ -276,7 +336,10 @@
             await this.save()
             this.$alert.positive('저장 되었습니다')
             if (this.closable) {
-              this.$closeOverlay()
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
+              }
             }
           }
         } else {
@@ -285,6 +348,7 @@
       },
       async save () {
         await this.model.save()
+        await this.preprocessTypes.save()
       }
     },
     computed: {
@@ -302,6 +366,15 @@
     watch: {
       'model.infoTypeId': async function (to) {
         this.infoTypeModel = await ProcessInfoTypeModel.get(to, true)
+      },
+      'preprocessTypeId': async function (to) {
+        if (to) {
+          const preprocessType = await PreprocessTypeModel.get(to, true)
+          preprocessType.added = true
+          this.preprocessTypes.push(preprocessType)
+          this.preprocessTypeId = null
+          this.$refs.preprocessType.focus()
+        }
       }
     },
     components: {
