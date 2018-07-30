@@ -144,15 +144,13 @@
   import {BomModel, BomStatusArray} from 'src/model/bom'
   import {ProcessModel} from 'src/model/process'
   import {UnitLabelArray} from 'src/model/shared'
+  import ItemForm from 'src/pages/item/item-form.vue'
+  import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import ItemSelector from 'src/pages/item/item-selector.vue'
   import ProcessForm from 'src/pages/process/process-form.vue'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
-
-  const itemSymbol = Symbol('item')
-  const itemSpecSymbol = Symbol('item-spec')
-  const processSymbol = Symbol('process')
 
   export default {
     props: {

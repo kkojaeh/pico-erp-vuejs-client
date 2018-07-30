@@ -33,10 +33,11 @@
 </template>
 
 <script type="text/javascript">
-  import { Dialog } from 'quasar'
-  import { mapGetters } from 'vuex'
-  import { Model } from 'src/model/model'
+  import {Dialog} from 'quasar'
+  import {mapGetters} from 'vuex'
+  import {Model} from 'src/model/model'
   import validate from 'validate.js'
+  import * as _ from 'lodash'
 
   class SignInModel extends Model {
     async validate () {
@@ -91,7 +92,7 @@
             await this.$auth.init()
             const lastAccessed = this.lastAccessed
             if (this.$route.path !== lastAccessed.path && lastAccessed.path !== '/') {
-              this.$router.push(lastAccessed)
+              this.$router.push(_.assign({}, lastAccessed))
             } else {
               this.$router.push('/')
             }

@@ -184,10 +184,10 @@
   import {
     ProcessDifficultyArray,
     ProcessModel,
+    ProcessPreprocessArray,
     ProcessStatusArray,
     ProcessTypeLabelArray,
-    ProcessTypeModel,
-    ProcessPreprocessArray
+    ProcessTypeModel
   } from 'src/model/process'
   import {ItemModel} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
@@ -249,6 +249,7 @@
         this.model = new ProcessModel()
         this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
+        this.preprocesses = new ProcessPreprocessArray(this.model)
       },
       async load(id) {
         this.model = await ProcessModel.get(id)

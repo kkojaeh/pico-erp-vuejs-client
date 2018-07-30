@@ -96,11 +96,19 @@ export class QuotationModel extends Model {
     return await this.validate()
   }
 
+  async validatePrepare() {
+    return await this.validate()
+  }
+
   async printSheet(options) {
     const host = api.defaults.baseURL
     const url = `${host}/quotation/quotations/${this.id}/print-sheet?${qs.stringify(
         options)}`
     download(authorizedUrl(url))
+  }
+
+  async prepare() {
+    await api.put(`/quotation/quotations/${this.id}/prepare`, {})
   }
 
   async commit() {

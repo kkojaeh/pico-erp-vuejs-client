@@ -163,7 +163,9 @@
           <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
           <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
           <ag-grid-column field="unitPrice" header-name="단가" :width="150"
-                          :cell-style="{textAlign: 'right'}"/>
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"/>
           <ag-grid-column field="createdDate" header-name="생성일" :width="200"
                           cell-renderer-framework="ag-grid-datetime-renderer"/>
           <ag-grid-column field="expirationDate" header-name="만료예정" :width="200"
@@ -208,9 +210,13 @@
           <ag-grid-column field="name" header-name="이름" :width="200"
                           :editable="isChargeEditable"/>
           <ag-grid-column field="unitPrice" header-name="단가" :width="150"
-                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"/>
           <ag-grid-column field="quantity" header-name="수량" :width="100"
-                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"/>
+                          :cell-style="{textAlign: 'right'}" :editable="isChargeEditable"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"/>
           <ag-grid-column field="createdDate" header-name="생성일" :width="200"
                           cell-renderer-framework="ag-grid-datetime-renderer"/>
           <ag-grid-column field="charged" header-name="청구여부" :width="90" suppress-sorting

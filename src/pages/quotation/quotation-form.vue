@@ -477,6 +477,8 @@
           <q-toggle v-model="detailedItemUnitPrice" label="상세 단가"/>
         </q-toolbar-title>
         <q-btn flat icon="send" @click="onCommit()" v-show="model.committable" label="제출"></q-btn>
+        <q-btn flat icon="send" @click="onPrepare()" v-show="model.preparable"
+               label="품목 확정"></q-btn>
 
         <q-btn flat icon="skip_next" @click="onNextDraft()" v-show="model.nextDraftable"
                label="재견적"></q-btn>
@@ -496,7 +498,7 @@
       <item-selector ref="itemSelector"></item-selector>
     </q-modal>
 
-    <q-modal ref="bomFormModal" maximized>
+    <q-modal ref="bomFormModal">
       <bom-form ref="bomForm" closable></bom-form>
     </q-modal>
 
@@ -654,10 +656,10 @@
         this.additionArray = new QuotationAdditionArray(this.model)
       },
       async show() {
-        this.load()
+        this.load(this.id)
       },
-      async load() {
-        const model = await QuotationModel.get(this.id)
+      async load(id) {
+        const model = await QuotationModel.get(id)
         const itemArray = new QuotationItemArray(model)
         const itemAdditionArray = new QuotationItemAdditionArray(model)
         const additionArray = new QuotationAdditionArray(model)
@@ -772,7 +774,6 @@
       async onAddItemAddition() {
         const model = new QuotationItemAdditionModel()
         this.itemAdditionArray.push(model)
-        //this.load()
       },
 
       async onRemoveItemAddition() {
@@ -780,14 +781,12 @@
         if (ok) {
           this.itemAdditionArray.remove(this.selected.itemAddition)
           this.selected.itemAddition = null
-          //await this.load()
         }
       },
 
       async onAddAddition() {
         const model = new QuotationAdditionModel()
         this.additionArray.push(model)
-        //this.load()
       },
 
       async onRemoveAddition() {
@@ -795,7 +794,6 @@
         if (ok) {
           this.additionArray.remove(this.selected.addition)
           this.selected.addition = null
-          //await this.load()
         }
       },
 
@@ -807,17 +805,43 @@
             await this.save()
             await this.model.commit()
             this.$alert.positive('제출 되었습니다')
-            if (this.closable) {
-              const ok = await this.$alert.confirm('출력 하시겠습니까?')
-              if (ok) {
-                await this.load()
-                await this.printSheet()
+            const ok = await this.$alert.confirm('출력 하시겠습니까?')
+            if (ok) {
+              await this.load(this.model.id)
+              await this.printSheet()
+            } else if (this.closable) {
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
               } else {
-                const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-                if (close) {
-                  this.$closeOverlay()
-                }
+                await this.load(this.model.id)
               }
+            } else {
+              await this.load(this.model.id)
+            }
+          }
+        } else {
+          this.$alert.warning('입력이 유효하지 않습니다')
+        }
+      },
+
+      async onPrepare() {
+        let valid = await this.model.validatePrepare()
+        if (valid) {
+          const ok = await this.$alert.confirm('품목을 확정 하시겠습니까?')
+          if (ok) {
+            await this.save()
+            await this.model.prepare()
+            this.$alert.positive('품목이 확정 되었습니다')
+            if (this.closable) {
+              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+              if (close) {
+                this.$closeOverlay()
+              } else {
+                await this.load(this.model.id)
+              }
+            } else {
+              await this.load(this.model.id)
             }
           }
         } else {
@@ -834,7 +858,11 @@
             const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
             if (close) {
               this.$closeOverlay()
+            } else {
+              await this.load(this.model.id)
             }
+          } else {
+            await this.load(this.model.id)
           }
         }
       },
