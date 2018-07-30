@@ -3,13 +3,11 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
 import {LabelModel} from 'src/model/shared'
-import {uuid} from "../model";
 
 export class CompanyModel extends Model {
 
   constructor(data) {
     super(data)
-    this.id = this.id || uuid()
   }
 
   get defaults() {
