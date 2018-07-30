@@ -184,11 +184,13 @@
 
       <q-card-title>
         비용
+        <!--
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="onAddCharge"/>
           <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.charge"
                  @click="onRemoveCharge"/>
         </div>
+        -->
       </q-card-title>
 
       <q-card-separator/>

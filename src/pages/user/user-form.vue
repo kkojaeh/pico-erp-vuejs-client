@@ -168,10 +168,13 @@
         this.roleArray = new UserRoleArray(this.model)
         await this.roleArray.query()
       },
-      async show() {
-        this.model = await UserModel.get(this.id)
+      async load(id) {
+        this.model = await UserModel.get(id)
         this.roleArray = new UserRoleArray(this.model)
         await this.roleArray.query()
+      },
+      async show() {
+        await this.load(this.id)
       },
       async _onDepartmentSearch(keyword, done) {
         await this.departmentLabels.query(keyword)
@@ -188,8 +191,10 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
+                return
               }
             }
+            this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
