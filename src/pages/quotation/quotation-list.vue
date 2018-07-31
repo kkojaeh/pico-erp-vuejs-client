@@ -51,36 +51,6 @@
 
       </ag-grid>
 
-      <!--
-       int revision;
-
-  String name;
-
-  ProjectId projectId;
-
-  String projectName;
-
-  CompanyId customerId;
-
-  String customerName;
-
-  UserId managerId;
-
-  String managerName;
-
-  OffsetDateTime committedDate;
-
-  QuotationStatusKind status;
-
-  Auditor createdBy;
-
-  OffsetDateTime createdDate;
-
-  Auditor lastModifiedBy;
-
-  OffsetDateTime lastModifiedDate;
-      -->
-
       <!-- main -->
 
       <!-- filters -->
@@ -204,7 +174,7 @@
           managerName: null,
           startCreatedDate: null,
           endCreatedDate: null,
-          statuses: ['DRAFT', 'COMMITTED', 'IN_NEGOTIATION']
+          statuses: ['DRAFT', 'COMMITTED', 'IN_NEGOTIATION', 'PREPARED']
         },
         dataAdjuster: null
       }
