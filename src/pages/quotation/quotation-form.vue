@@ -807,17 +807,15 @@
             const ok = await this.$alert.confirm('출력 하시겠습니까?')
             if (ok) {
               await this.load(this.model.id)
-              await this.printSheet()
+              await this.onPrintSheet()
             } else if (this.closable) {
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
-              } else {
-                await this.load(this.model.id)
+                return
               }
-            } else {
-              await this.load(this.model.id)
             }
+            await this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -836,12 +834,10 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
-              } else {
-                await this.load(this.model.id)
+                return
               }
-            } else {
-              await this.load(this.model.id)
             }
+            await this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -857,12 +853,10 @@
             const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
             if (close) {
               this.$closeOverlay()
-            } else {
-              await this.load(this.model.id)
+              return
             }
-          } else {
-            await this.load(this.model.id)
           }
+          await this.load(this.model.id)
         }
       },
 

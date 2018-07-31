@@ -279,10 +279,10 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
-              } else {
-                this.load(this.model.id)
+                return
               }
             }
+            this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -313,10 +313,10 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
-              } else {
-                this.load(this.model.id)
+                return
               }
             }
+            this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
