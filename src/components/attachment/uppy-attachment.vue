@@ -21,7 +21,7 @@
 <script>
   import * as _ from 'lodash'
   import Uppy from 'src/components/uppy/uppy.vue'
-  import { AttachmentFileModel } from './attachment-model'
+  import {AttachmentFileModel} from './attachment-model'
   import Viewer from 'viewerjs/dist/viewer'
   import Plyr from 'plyr'
   import 'plyr/dist/plyr.css'
@@ -190,7 +190,7 @@
         this.plyr.play()
       },
       openImage (file) {
-        const viewer = new Viewer(document.body, {
+        const viewer = new Viewer(this.$el, {
           zIndex: 10000,
           url () {
             return file.remote
