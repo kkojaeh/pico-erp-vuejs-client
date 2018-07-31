@@ -13,6 +13,7 @@
   import {api} from 'src/plugins/axios'
   import * as _ from 'lodash'
   import store from 'src/store'
+  import {Loading} from 'quasar'
 
   class DefaultAttachmentModel extends AttachmentModel {
 
@@ -157,7 +158,12 @@
     },
     methods: {
       async save() {
-        return await this.$refs.attachment.save()
+        Loading.show({
+          delay: 0
+        })
+        const result = await this.$refs.attachment.save()
+        Loading.hide()
+        return result
       }
     },
     mounted() {
