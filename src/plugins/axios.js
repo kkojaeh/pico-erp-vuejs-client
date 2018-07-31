@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as _ from 'lodash'
-import { Loading, Notify } from 'quasar'
-import { signOut } from './auth'
+import {Loading, Notify} from 'quasar'
+import {signOut} from './auth'
 import store from 'src/store'
 import Router from 'src/router'
 import Vue from 'vue'
@@ -62,6 +62,7 @@ const authExpiredHandler = _.debounce(() => {
     detail: '다시 로그인 하세요'
   })
   setTimeout(() => {
+    store.commit('route/lastAccessed', _.assign({}, Router.currentRoute))
     signOut().then(() => {
       Router.push('/sign-in')
     })
