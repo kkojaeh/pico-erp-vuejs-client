@@ -211,6 +211,10 @@
       closable: {
         type: Boolean,
         default: false
+      },
+      closeConfirmed: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -271,7 +275,7 @@
             await this.save()
             this.$emit('saved', this.model)
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
+            if (this.closable && !this.closeConfirmed) {
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
@@ -305,7 +309,7 @@
             await this.model.completePlan()
             this.$emit('saved', this.model)
             this.$alert.positive('가확정 되었습니다')
-            if (this.closable) {
+            if (this.closable && !this.closeConfirmed) {
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()

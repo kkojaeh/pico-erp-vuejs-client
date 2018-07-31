@@ -74,7 +74,7 @@
                           :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.total" header-name="단가" :width="100"
                           :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.total')"
-                          :cell-style="{textAlign: 'right'}" :tooltip="tooltipNumberToWords"/>
+                          :cell-style="{textAlign: 'right'}"/>
 
           <ag-grid-column field="estimatedAccumulatedUnitCost.directMaterial" header-name="재료비(직접)"
                           :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directMaterial')"
@@ -116,12 +116,12 @@
     </q-page-sticky>
 
     <q-modal ref="itemFormModal">
-      <item-form ref="itemForm" action="create" closable></item-form>
+      <item-form ref="itemForm" action="create" closable close-confirmed></item-form>
     </q-modal>
 
     <q-modal ref="processFormModal">
       <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId"
-                    closable></process-form>
+                    closable close-confirmed></process-form>
     </q-modal>
 
     <q-modal ref="itemSelectorModal" content-classes="column">
@@ -151,6 +151,7 @@
   import ProcessForm from 'src/pages/process/process-form.vue'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
+  import SSF from 'ssf'
 
   export default {
     props: {
@@ -202,9 +203,6 @@
       bomNameRenderer(params) {
         return `${params.value}<sub class="bom-name-sub">[${params.data.revision}]</sub>`
       },
-      tooltipNumberToWords(params) {
-        return this.$number.words(params.value)
-      },
       tooltipReversedQuantity(params) {
         return `역수량 : ${(1 / params.value).toFixed(5)} (${(1 / params.data.quantityPerRoot).toFixed(
             5)})`
@@ -212,10 +210,11 @@
       createCellRenderer(additionalField) {
         return function (params) {
           const addition = _.get(params.data, additionalField)
+          const formatted = SSF.format('#,##0', params.value)
           if (addition == null || addition == undefined) {
-            return params.value
+            return formatted
           }
-          return `${params.value} (${addition})`
+          return `${formatted} (${addition})`
         }
       },
       getNodeChildDetails(data) {
