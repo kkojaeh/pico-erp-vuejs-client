@@ -13,6 +13,16 @@
 
       <q-card-main class="row gutter-md">
 
+        <q-field icon="account_circle" helper="품목 이름을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
+                 :error="!!model.$errors.name"
+                 :error-label="model.$errors.name">
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
+            <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify
+                   flat></q-btn>
+          </q-input>
+        </q-field>
+
         <q-field icon="perm_identity"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input :value="model.code" float-label="코드" readonly hide-underline>
@@ -33,16 +43,6 @@
                  :error-label="model.$errors.type">
           <q-select float-label="유형" v-model="model.type"
                     :options="typeLabels"></q-select>
-        </q-field>
-
-        <q-field icon="account_circle" helper="품목 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.name"
-                 :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
-            <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify
-                   flat></q-btn>
-          </q-input>
         </q-field>
 
         <q-field icon="fa-tag" helper="품목 분류를 선택하세요"

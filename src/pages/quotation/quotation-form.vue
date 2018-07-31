@@ -227,6 +227,9 @@
               </q-btn-dropdown>
               <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItem"
                      :disabled="!selected.item" v-show="isModifiable"/>
+              <q-btn flat color="secondary" label="BOM" icon="fa-sitemap" @click="onOpenBom"
+                     :disabled="!selected.item"/>
+
             </div>
           </q-card-title>
 
@@ -343,11 +346,6 @@
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 50 }"
                               :editable="isModifiable"/>
-
-              <ag-grid-column field="@type" header-name="BOM" :width="80"
-                              cell-renderer-framework="ag-grid-icon-renderer"
-                              :cell-renderer-params="{ icon: 'fa-sitemap', link: true, handler: onOpenBomClicked}"/>
-
 
             </ag-grid>
 
@@ -579,7 +577,8 @@
       }
     },
     methods: {
-      onOpenBomClicked(data) {
+      onOpenBom() {
+        const data = this.selected.item
         const modal = this.$refs.bomFormModal
         const form = this.$refs.bomForm
         modal.show()
