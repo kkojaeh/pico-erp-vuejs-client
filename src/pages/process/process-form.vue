@@ -87,17 +87,37 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="check" helper="견적의 상태 입니다"
+        <q-field icon="check" helper="공정의 상태 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status" readonly hide-underline
                     :options="statusLabels"></q-select>
+        </q-field>
+
+        <q-field icon="monetization_on" helper="자동 산출된 단가를 조정할 금액을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.adjustCost"
+                 :error-label="model.$errors.adjustCost">
+          <q-input type="number" float-label="단가 조정" v-model="model.adjustCost" align="right"/>
+          <q-tooltip>
+            {{$number.words(model.adjustCost)}}
+          </q-tooltip>
+        </q-field>
+
+        <q-field icon="description" helper="단가를 조정한 이유를 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-4"
+                 :error="!!model.$errors.adjustCostReason"
+                 :error-label="model.$errors.adjustCostReason"
+                 :count="200">
+          <q-input type="textarea" v-model="model.adjustCostReason" float-label="단가 조정 사유"
+                   rows="5"
+                   max-length="200"/>
         </q-field>
 
       </q-card-main>
 
     </q-card>
 
-    <q-card class="col-12" flat>
+    <q-card class="col-xs-12 col-md-6 col-lg-6 col-xl-6" flat>
 
       <q-card-title>
         사전 공정
@@ -118,6 +138,20 @@
                           :cell-renderer-params="{format:'#,##0.00', words:true}"
                           :cell-style="{textAlign: 'right'}"/>
         </ag-grid>
+      </q-card-main>
+    </q-card>
+
+    <q-card class="col-xs-12 col-md-6 col-lg-6 col-xl-6" flat>
+
+      <q-card-title>
+        단가
+      </q-card-title>
+
+      <q-card-separator/>
+
+      <q-card-main class="row gutter-md">
+        <div ref="estimatedCostChartContainer">
+        </div>
       </q-card-main>
     </q-card>
 
@@ -193,6 +227,20 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
+  import Highcharts from 'highcharts'
+
+  const estimatedCostTypes = [
+    'directLabor',
+    'indirectLabor',
+    'indirectMaterial',
+    'indirectExpenses'
+  ]
+  const estimatedCostNames = {
+    'directLabor': '직접 노무비',
+    'indirectLabor': '간접 노무비',
+    'indirectMaterial': '간접 재료비',
+    'indirectExpenses': '간접 경비'
+  }
 
   export default {
     authorized: {
@@ -240,6 +288,53 @@
       this.userLabels.query()
     },
     methods: {
+      createEstimatedCostChart() {
+
+        const sum = estimatedCostTypes
+        .map(type => this.model.estimatedCost[type])
+        .reduce((acc, value) => {
+          return acc + value
+        }, 0)
+        const series = estimatedCostTypes
+        .map(type => {
+          return {
+            name: estimatedCostNames[type],
+            y: this.model.estimatedCost[type]
+          }
+        })
+
+        Highcharts.chart(this.$refs.estimatedCostChartContainer, {
+          chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+          },
+          title: {
+            text: `추정 단가 ${sum}`
+          },
+          tooltip: {
+            pointFormat: '<b>{point.percentage:.1f}%</b>'
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b> {point.y}',
+                style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+              }
+            }
+          },
+          series: [{
+            colorByPoint: true,
+            data: series
+          }]
+        })
+      },
       async onProcessTypeSearch(keyword, done) {
         await this.processTypeLabels.query(keyword)
         done()
@@ -254,6 +349,7 @@
         this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
         this.preprocesses = new ProcessPreprocessArray(this.model)
+        this.createEstimatedCostChart()
       },
       async load(id) {
         this.model = await ProcessModel.get(id)
@@ -263,6 +359,7 @@
         const preprocesses = new ProcessPreprocessArray(this.model)
         await preprocesses.query()
         this.preprocesses = preprocesses
+        this.createEstimatedCostChart()
       },
       async show() {
         this.load(this.id)

@@ -586,8 +586,10 @@
         modal.$once('hide', async () => {
           form.$off('saved')
           await data.fetchReference()
-          const model = await QuotationModel.get(this.id)
-          this.model.committable = model.committable
+          if (!this.model.phantom) {
+            const model = await QuotationModel.get(this.id)
+            this.model.committable = model.committable
+          }
         })
       },
       onItemSelectionChanged(event) {
@@ -686,12 +688,15 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
+                return
               } else if (this.phantom) {
                 this.$router.push({
                   path: `/quotation/show/${this.model.id}`, query: this.$route.query
                 })
+                return
               }
             }
+            this.load(this.model.id)
           }
         } else {
           this.$redrawGrids()

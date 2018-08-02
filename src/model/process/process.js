@@ -13,7 +13,14 @@ export class ProcessModel extends Model {
   get defaults() {
     return {
       status: 'DRAFT',
-      difficulty: 'NORMAL'
+      difficulty: 'NORMAL',
+      adjustCost: 0,
+      estimatedCost: {
+        directLabor: 0,
+        indirectLabor: 0,
+        indirectMaterial: 0,
+        indirectExpenses: 0
+      }
     }
   }
 
@@ -102,6 +109,23 @@ export class ProcessModel extends Model {
       },
       typeId: {
         presence: true
+      },
+      adjustCost: {
+        presence: true,
+        numericality: true
+      },
+      adjustCostReason: {
+        length: {maximum: 200},
+        'function': () => {
+          const errors = []
+          if (this.adjustCost !== 0 && !this.adjustCostReason) {
+            const error = languageAliases({
+              ko: '비용이 조정되 었습니다 사유를 입력하세요'
+            })[language]
+            errors.push(error)
+          }
+          return errors
+        }
       }
     }
 

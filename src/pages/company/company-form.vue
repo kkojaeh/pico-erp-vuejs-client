@@ -254,8 +254,8 @@
         this.contacts = new CompanyContactArray(this.model)
         this.addresses = new CompanyAddressArray(this.model)
       },
-      async show() {
-        const model = await CompanyModel.get(this.id)
+      async load(id) {
+        const model = await CompanyModel.get(id)
         const contacts = new CompanyContactArray(model)
         const addresses = new CompanyAddressArray(model)
         await addresses.query()
@@ -263,6 +263,9 @@
         this.model = model
         this.contacts = contacts
         this.addresses = addresses
+      },
+      async show() {
+        this.load(this.id)
       },
       onContactSelectionChanged(event) {
         this.selected.contact = event.api.getSelectedRows()[0]
@@ -297,8 +300,10 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
+                return
               }
             }
+            this.load(this.model.id)
           }
         } else {
           this.$redrawGrids()
