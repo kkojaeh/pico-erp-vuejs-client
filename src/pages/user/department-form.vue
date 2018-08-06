@@ -53,11 +53,9 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
+        <q-btn flat color="tertiary" icon="fa-history"
+               @click="$showAudit(`/audit/department/${model.id}`)"
                v-show="!phantom" label="이력">
-          <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" :url="`/audit/department/${model.id}`"></audit-viewer>
-          </q-modal>
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
       </q-toolbar>
@@ -69,7 +67,6 @@
 </template>
 <script>
   import {DepartmentModel, UserLabelArray, UserModel} from 'src/model/user'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
     props: {
@@ -141,7 +138,6 @@
       }
     },
     components: {
-      AuditViewer
     }
   }
 </script>

@@ -487,20 +487,6 @@
       </q-toolbar>
     </q-page-sticky>
 
-    <q-modal ref="itemFormModal">
-      <item-form ref="itemForm" action="create" closable
-                 :predefined="{customerId: model.customerId}"></item-form>
-    </q-modal>
-
-    <q-modal ref="itemSelectorModal" content-classes="column">
-      <item-selector ref="itemSelector"></item-selector>
-    </q-modal>
-
-    <q-modal ref="bomFormModal">
-      <bom-form ref="bomForm" closable></bom-form>
-    </q-modal>
-
-
   </q-page>
 
 </template>
@@ -521,11 +507,7 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {BomModel} from 'src/model/bom'
   import {CompanyModel} from 'src/model/company'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import ItemSelector from 'src/pages/item/item-selector.vue'
-  import ItemForm from 'src/pages/item/item-form.vue'
-  import BomForm from 'src/pages/bom/bom-form.vue'
   import QuotationBomRenderer from './quotation-bom-renderer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import * as _ from 'lodash'
@@ -577,20 +559,17 @@
       }
     },
     methods: {
-      onOpenBom() {
-        const data = this.selected.item
-        const modal = this.$refs.bomFormModal
-        const form = this.$refs.bomForm
-        modal.show()
-        form.show(data.bom.id)
-        modal.$once('hide', async () => {
-          form.$off('saved')
-          await data.fetchReference()
+      async onOpenBom() {
+        const item = this.selected.item
+        const bomId = item.bom.id
+        const changed = await this.$showBom(bomId)
+        if (changed) {
           if (!this.model.phantom) {
             const model = await QuotationModel.get(this.id)
             this.model.committable = model.committable
           }
-        })
+        }
+        await item.fetchReference()
       },
       onItemSelectionChanged(event) {
         this.selected.item = event.api.getSelectedRows()[0]
@@ -715,45 +694,32 @@
       /**
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
-      onAddItemByNew() {
-        const modal = this.$refs.itemFormModal
-        const form = this.$refs.itemForm
-        modal.show()
-        modal.$once('hide', () => {
-          form.$off('saved')
-        })
-        form.create()
-        form.$once('saved', async (itemModel) => {
-          modal.hide()
+      async onAddItemByNew() {
+        const itemModel = await this.$createItem({customerId: this.model.customerId})
+        if (itemModel) {
           const bom = await BomModel.createByItemId(itemModel.id)
-          this.addItem(bom)
-        })
+          await this.addItem(bom)
+        }
       },
 
-      onAddItemBySelect() {
-
-        const modal = this.$refs.itemSelectorModal
-        const selector = this.$refs.itemSelector
-        modal.show()
-        modal.$once('hide', () => {
-          selector.$off('selected')
-        })
-        selector.$once('selected', async (itemModels) => {
-          modal.hide()
-          await Promise.all(
-              itemModels.map(async (itemModel) => {
-                const itemId = itemModel.id
-                const exists = await BomModel.existsByItemId(itemId)
-                let bom
-                if (exists) {
-                  bom = await BomModel.getByItemId(itemId)
-                } else {
-                  bom = await BomModel.createByItemId(itemModel.id)
-                }
-                this.addItem(bom)
-              })
-          )
-        })
+      async onAddItemBySelect() {
+        const itemModels = await this.$selectItem()
+        if (!itemModels) {
+          return
+        }
+        await Promise.all(
+            itemModels.map(async (itemModel) => {
+              const itemId = itemModel.id
+              const exists = await BomModel.existsByItemId(itemId)
+              let bom
+              if (exists) {
+                bom = await BomModel.getByItemId(itemId)
+              } else {
+                bom = await BomModel.createByItemId(itemModel.id)
+              }
+              await this.addItem(bom)
+            })
+        )
       },
 
       async addItem(bom) {
@@ -922,12 +888,8 @@
       }
     },
     components: {
-      AuditViewer,
-      ItemSelector,
-      ItemForm,
       CommentList,
-      QuotationBomRenderer,
-      BomForm
+      QuotationBomRenderer
     }
 
   }

@@ -52,6 +52,10 @@
       editable: {
         type: Boolean,
         default: true
+      },
+      closeConfirmed: {
+        type: Boolean,
+        default: false
       }
     },
     authorized: {
@@ -106,8 +110,8 @@
         this.initEditor()
       },
       async show() {
-        this.metadata = await ItemModel.getSpecMetadata(this.itemId)
         this.model = await ItemSpecModel.get(this.id)
+        this.metadata = await ItemModel.getSpecMetadata(this.model.itemId)
         this.initEditor()
       },
       async onSaveClick() {
@@ -117,7 +121,7 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
+            if (this.closable && !this.closeConfirmed) {
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()

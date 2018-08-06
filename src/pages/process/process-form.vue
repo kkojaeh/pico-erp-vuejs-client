@@ -225,7 +225,6 @@
   } from 'src/model/process'
   import {ItemModel} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import Highcharts from 'highcharts'
 
@@ -289,7 +288,9 @@
     },
     methods: {
       createEstimatedCostChart() {
-
+        if (!this.$refs.estimatedCostChartContainer) {
+          return
+        }
         const sum = estimatedCostTypes
         .map(type => this.model.estimatedCost[type])
         .reduce((acc, value) => {
@@ -453,7 +454,6 @@
 
     },
     components: {
-      AuditViewer,
       CommentList
     }
   }

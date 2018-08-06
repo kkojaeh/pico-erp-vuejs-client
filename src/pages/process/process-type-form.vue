@@ -239,11 +239,9 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!phantom">이력
-          <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" :url="`/audit/process-type/${model.id}`"></audit-viewer>
-          </q-modal>
+        <q-btn flat color="tertiary" icon="fa-history"
+               @click="$showAudit(`/audit/process-type/${model.id}`)"
+               v-show="!phantom" label="이력">
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
@@ -255,17 +253,15 @@
 </template>
 <script>
   import {
+    PreprocessTypeLabelArray,
+    PreprocessTypeModel,
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
-    ProcessTypeModel,
     ProcessInfoTypeModel,
-    PreprocessTypeModel,
-    PreprocessTypeLabelArray,
+    ProcessTypeModel,
     ProcessTypePreprocessTypeArray
   } from 'src/model/process'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
   import * as _ from 'lodash'
-  import QItemSeparator from "quasar-framework/src/components/list/QItemSeparator";
 
   export default {
     props: {
@@ -378,8 +374,6 @@
       }
     },
     components: {
-      QItemSeparator,
-      AuditViewer
     }
   }
 </script>

@@ -207,19 +207,17 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history" @click="$refs.auditModal.show()"
-               v-show="!phantom" v-if="$authorized.itemManager">이력
-          <q-modal ref="auditModal" @show="$refs.auditViewer.load()">
-            <audit-viewer ref="auditViewer" :url="`/audit/item/${model.id}`"></audit-viewer>
-          </q-modal>
+        <q-btn flat color="tertiary" icon="fa-history"
+               @click="$showAudit(`/audit/item/${model.id}`)"
+               v-show="!phantom" v-if="$authorized.itemManager" label="이력">
         </q-btn>
         <q-btn flat icon="play_arrow" v-show="!phantom && model.isActivatable"
                v-if="$authorized.itemManager"
-               @click="_onActivateClick">활성화
+               @click="onActivate">활성화
         </q-btn>
         <q-btn flat icon="pause" v-show="!phantom && model.isDeactivatable"
                v-if="$authorized.itemManager"
-               @click="_onDeactivateClick">비활성화
+               @click="onDeactivate">비활성화
         </q-btn>
         <router-link :to="`/process/show/${processModel.id}`" v-show="!processModel.phantom"
                      v-if="$authorized.processManager">
@@ -250,7 +248,6 @@
   import {ProcessModel} from 'src/model/process'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UnitLabelArray} from 'src/model/shared'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
 
   export default {
     props: {
@@ -347,7 +344,7 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async _onActivateClick () {
+      async onActivate() {
         const ok = await this.$alert.confirm('활성화 하시겠습니까?')
         if (ok) {
           await this.model.activate()
@@ -355,7 +352,7 @@
           this.show()
         }
       },
-      async _onDeactivateClick () {
+      async onDeactivate() {
         const ok = await this.$alert.confirm('비활성화 하시겠습니까?')
         if (ok) {
           await this.model.deactivate()
@@ -388,7 +385,6 @@
       }
     },
     components: {
-      AuditViewer
     }
   }
 </script>

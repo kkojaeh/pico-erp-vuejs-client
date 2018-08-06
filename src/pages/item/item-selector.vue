@@ -124,15 +124,15 @@
 
 </template>
 <script>
-  import { DataAdjuster } from 'src/model/data'
-  import { mapGetters } from 'vuex'
+  import {DataAdjuster} from 'src/model/data'
+  import {mapGetters} from 'vuex'
   import {
     ItemCategoryLabelArray,
     ItemPaginationArray,
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
-  import { CompanyLabelArray } from 'src/model/company'
+  import {CompanyLabelArray} from 'src/model/company'
 
   export default {
     props: {

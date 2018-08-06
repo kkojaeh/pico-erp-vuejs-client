@@ -84,6 +84,18 @@ plugins.push(pluginRaven)
 import pluginAggrid from 'src/plugins/ag-grid'
 plugins.push(pluginAggrid)
 
+import pluginItem from 'src/plugins/item'
+plugins.push(pluginItem)
+
+import pluginBom from 'src/plugins/bom'
+plugins.push(pluginBom)
+
+import pluginAudit from 'src/plugins/audit'
+plugins.push(pluginAudit)
+
+import pluginProcess from 'src/plugins/process'
+plugins.push(pluginProcess)
+
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 
 

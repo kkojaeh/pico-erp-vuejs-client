@@ -6,24 +6,24 @@
       <q-toolbar>
         <q-toolbar-title>
         </q-toolbar-title>
-        <q-btn flat icon="check" @click="_onDetermineClick" v-if="isDeterminable">확정</q-btn>
-        <q-btn flat icon="autorenew" @click="_onNextRevisionClick" v-if="isNextDraftable">새버전
+        <q-btn flat icon="check" @click="onDetermine" v-if="isDeterminable">확정</q-btn>
+        <q-btn flat icon="autorenew" @click="onNextRevision" v-if="isNextDraftable">새버전
         </q-btn>
         <q-btn-dropdown label="추가" flat icon="add" :disabled="!isSelectedAddable">
           <!-- dropdown content -->
           <q-list link>
-            <q-item @click.native="addBomBySelect" v-close-overlay>
+            <q-item @click.native="onAddBomBySelect" v-close-overlay>
               <q-item-side left icon="add"></q-item-side>
               <q-item-main label="기존 품목"></q-item-main>
             </q-item>
-            <q-item @click.native="addBomByNew" v-close-overlay>
+            <q-item @click.native="onAddBomByNew" v-close-overlay>
               <q-item-side left icon="add"></q-item-side>
               <q-item-main label="신규 품목"></q-item-main>
             </q-item>
           </q-list>
         </q-btn-dropdown>
         <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
-               @click="removeMaterial()"></q-btn>
+               @click="onRemoveMaterial()"></q-btn>
       </q-toolbar>
 
       <q-card-separator/>
@@ -54,10 +54,10 @@
                           :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
           <ag-grid-column field="processId" header-name="공정" :width="220"
                           cell-renderer-framework="bom-process-cell-renderer"
-                          :cell-renderer-params="{editHandler: editProcess, removeHandler: removeProcess}"/>
+                          :cell-renderer-params="{editHandler: onEditProcess, removeHandler: onRemoveProcess}"/>
           <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
                           cell-renderer-framework="bom-item-spec-cell-renderer"
-                          :cell-renderer-params="{editHandler: editItemSpec}"/>
+                          :cell-renderer-params="{editHandler: onEditItemSpec}"/>
           <ag-grid-column field="item.unit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
@@ -115,24 +115,28 @@
       </q-toolbar>
     </q-page-sticky>
 
-    <q-modal ref="itemFormModal">
+    <!--<q-modal ref="itemFormModal">
       <item-form ref="itemForm" action="create" closable close-confirmed></item-form>
-    </q-modal>
+    </q-modal>-->
 
-    <q-modal ref="processFormModal">
-      <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId"
-                    closable close-confirmed></process-form>
-    </q-modal>
+    <!--
+        <q-modal ref="processFormModal">
+          <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId"
+                        closable close-confirmed></process-form>
+        </q-modal>
+    -->
 
-    <q-modal ref="itemSelectorModal" content-classes="column">
+    <!--<q-modal ref="itemSelectorModal" content-classes="column">
       <item-selector ref="itemSelector" class="col-grow"></item-selector>
-    </q-modal>
+    </q-modal>-->
 
+    <!--
     <q-modal ref="itemSpecEditorModal" content-classes="column">
       <item-spec-editor ref="itemSpecEditor" :item-id="selected.itemId"
                         :editable="selected.modifiable"
                         :id="selected.itemSpecId"></item-spec-editor>
     </q-modal>
+    -->
 
     <q-inner-loading :visible="loading">
     </q-inner-loading>
@@ -144,11 +148,8 @@
   import {BomModel, BomStatusArray} from 'src/model/bom'
   import {ProcessModel} from 'src/model/process'
   import {UnitLabelArray} from 'src/model/shared'
-  import ItemForm from 'src/pages/item/item-form.vue'
-  import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
-  import AuditViewer from 'src/pages/audit/audit-viewer.vue'
-  import ItemSelector from 'src/pages/item/item-selector.vue'
-  import ProcessForm from 'src/pages/process/process-form.vue'
+  // import ItemForm from 'src/pages/item/item-form.vue'
+  // import ItemSelector from 'src/pages/item/item-selector.vue'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
   import SSF from 'ssf'
@@ -179,7 +180,6 @@
       this.statusLabels.fetch()
       this.unitLabels.fetch()
       this.$nextTick(() => this.show())
-      window.loading = this.$q.loading
     },
     methods: {
       quantityCellRenderer(params) {
@@ -264,10 +264,12 @@
               candidate = node
             }
           })
-          candidate.setSelected(true)
+          if (candidate) {
+            candidate.setSelected(true)
+          }
         })
       },
-      async _onNextRevisionClick() {
+      async onNextRevision() {
         let valid = await this.selected.validateNextRevision()
         if (valid) {
           const ok = await this.$alert.confirm('다음 버전으로 진행 하시겠습니까?')
@@ -288,7 +290,7 @@
         }
       },
 
-      async _onDetermineClick() {
+      async onDetermine() {
         let valid = await this.selected.validateDetermine()
         if (valid) {
           const ok = await this.$alert.confirm('확정을 진행 하시겠습니까?')
@@ -302,7 +304,7 @@
         }
       },
 
-      async removeMaterial() {
+      async onRemoveMaterial() {
         const ok = await this.$alert.confirm('상위 품목에서 해당 자재를 삭제하시겠습니까?')
         if (ok) {
           await this.selected.parent.removeMaterial(this.selected)
@@ -313,76 +315,58 @@
       /**
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
-      addBomByNew() {
+      async onAddBomByNew() {
         const selected = this.selected
-        const modal = this.$refs.itemFormModal
-        const form = this.$refs.itemForm
-        modal.show()
-        form.create()
-        modal.$once('hide', () => {
-          form.$off('saved')
-        })
-        form.$once('saved', async (itemModel) => {
-          modal.hide()
+        const itemModel = await this.$createItem({customerId: this.model.customerId})
+        if (itemModel) {
           const material = await BomModel.createByItemId(itemModel.id)
           await selected.addMaterial(material)
           this.load()
-        })
+        }
       },
 
-      addBomBySelect() {
+      async onAddBomBySelect() {
         const selected = this.selected
-        const modal = this.$refs.itemSelectorModal
-        const selector = this.$refs.itemSelector
-        modal.show()
-        modal.$once('hide', () => {
-          selector.$off('selected')
-        })
-        selector.$once('selected', async (itemModels) => {
-          modal.hide()
-          await Promise.all(
-              itemModels.map(async (itemModel) => {
-                const itemId = itemModel.id
-                const exists = await BomModel.existsByItemId(itemId)
-                let material
-                if (exists) {
-                  material = await BomModel.getByItemId(itemId)
-                } else {
-                  material = await BomModel.createByItemId(itemModel.id)
-                }
-                await selected.addMaterial(material)
-              })
-          )
-          await this.load()
-        })
+        const itemModels = await this.$selectItem()
+        if (!itemModels) {
+          return
+        }
+        await Promise.all(
+            itemModels.map(async (itemModel) => {
+              const itemId = itemModel.id
+              const exists = await BomModel.existsByItemId(itemId)
+              let material
+              if (exists) {
+                material = await BomModel.getByItemId(itemId)
+              } else {
+                material = await BomModel.createByItemId(itemModel.id)
+              }
+              await selected.addMaterial(material)
+            })
+        )
+        await this.load()
       },
 
-      editProcess(data) {
-        const modal = this.$refs.processFormModal
-        const form = this.$refs.processForm
-        const creating = !data.processId
+      async onEditProcess(data) {
         this.selected = data
-        this.$nextTick(() => {
-          modal.show()
-          if (creating) {
-            form.create()
-          } else {
-            form.show()
-          }
-          modal.$once('hide', () => {
-            form.$off('saved')
-          })
-          form.$once('saved', async (processModel) => {
-            data.processId = processModel.id
-            if (creating) {
-              await data.save()
-            }
+        if (data.processId) {
+          const changed = await this.$showProcess(data.processId)
+          if (changed) {
             await this.load()
+          }
+        } else {
+          const created = await this.$createProcess({
+            itemId: data.itemId
           })
-        })
+          if (created) {
+            data.processId = created.id
+            await data.save()
+            await this.load()
+          }
+        }
       },
 
-      async removeProcess(data) {
+      async onRemoveProcess(data) {
         if (!data.processId) {
           this.$alert.warning('삭제할 공정이 없습니다')
         }
@@ -394,28 +378,28 @@
         }
       },
 
-      editItemSpec(data) {
+      async onEditItemSpec(data) {
         const modal = this.$refs.itemSpecEditorModal
         const form = this.$refs.itemSpecEditor
         this.selected = data
-        this.$nextTick(() => {
-          modal.show()
-          if (data.itemSpecId) {
-            form.show()
-          } else {
-            form.create()
-          }
-          modal.$once('hide', () => {
-            form.$off('saved')
+        if (data.itemSpecId) {
+          const changed = await this.$showItemSpec(data.itemSpecId, {
+            editable: data.modifiable
           })
-          form.$once('saved', async (itemSpecModel) => {
-            modal.hide()
-            data.itemSpecId = itemSpecModel.id
+          if (changed) {
+            await this.load()
+          }
+        } else {
+          const created = await this.$createItemSpec({
+            itemId: data.itemId
+          })
+          if (created) {
+            data.itemSpecId = created.id
             const parent = data.parent
             await parent.changeMaterial(data)
             await this.load()
-          })
-        })
+          }
+        }
       }
 
     },
@@ -440,11 +424,6 @@
       }
     },
     components: {
-      ItemSelector,
-      ItemForm,
-      ItemSpecEditor,
-      ProcessForm,
-      AuditViewer,
       BomProcessCellRenderer,
       BomItemSpecCellRenderer
     }

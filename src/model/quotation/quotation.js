@@ -24,6 +24,7 @@ export class QuotationModel extends Model {
     return {
       modifiable: true,
       status: 'DRAFT',
+      expiryPolicy: 'IN_YEAR',
       customerManagerContact: {
         name: null,
         email: null,
