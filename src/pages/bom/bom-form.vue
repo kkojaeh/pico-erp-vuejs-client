@@ -327,7 +327,7 @@
 
       async onAddBomBySelect() {
         const selected = this.selected
-        const itemModels = await this.$selectItem()
+        const itemModels = await this.$selectItem({})
         if (!itemModels) {
           return
         }

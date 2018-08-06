@@ -3,7 +3,7 @@ import ItemSelector from 'src/pages/item/item-selector.vue'
 import ItemForm from 'src/pages/item/item-form.vue'
 import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
 
-function select() {
+function select(options) {
   const parent = this
   return new Promise(async (resolve, reject) => {
     const node = document.createElement('div')
@@ -32,6 +32,9 @@ function select() {
           }
         }, [
           h(ItemSelector, {
+            props: {
+              multiple: !!options.multiple
+            },
             on: {
               selected: (itemModels) => finish(itemModels)
             }

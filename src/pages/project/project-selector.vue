@@ -1,24 +1,12 @@
 <template>
-  <q-page class="column fit">
-    <!-- child -->
-
-    <router-view></router-view>
-
-    <!-- child -->
-
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
+  <q-page class="column">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
+                 prevent-route filter-opened prevent-query-string>
 
       <!-- action -->
 
       <div slot="action">
-        <q-btn flat icon="arrow_drop_down">
-          <q-popover>
-            <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
-          </q-popover>
-        </q-btn>
-        <router-link :to="{ path: '/project/create', query: $route.query}">
-          <q-btn flat icon="add" label="생성"></q-btn>
-        </router-link>
+        <q-item-tile label>프로젝트 검색</q-item-tile>
       </div>
 
       <!-- action -->
@@ -26,11 +14,13 @@
       <!-- main -->
       <ag-grid ref="grid"
                class="col-grow"
-               row-selection="single"
+               :row-selection="rowSelection"
                enable-server-side-sorting
                enable-col-resize
                enable-sorting
+               @selection-changed="onGridSelectionChanged"
                :row-data="array">
+        <ag-grid-column :checkbox-selection="true" :width="60"/>
         <ag-grid-column field="name" header-name="이름" :width="200"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/project/show/${id}', query:$route.query}"/>
@@ -104,7 +94,6 @@
                  :after="[{ icon:'search', handler:onItemSearch}, { icon:'clear', condition: !!filters.itemId, handler:onItemClear}]"/>
       </q-field>
 
-
       <!-- filters -->
 
       <!-- filter -->
@@ -120,18 +109,31 @@
       <!-- filter -->
 
     </c-list-view>
+
+    <q-toolbar>
+      <q-btn flat icon="arrow_back" v-close-overlay>이전</q-btn>
+      <q-toolbar-title>
+      </q-toolbar-title>
+      <q-btn flat icon="check" @click="onSelected" :disabled="!selectable">선택</q-btn>
+    </q-toolbar>
   </q-page>
 
 </template>
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
-  import {CompanyLabelArray} from 'src/model/company'
-  import {UserLabelArray} from 'src/model/user'
   import {ProjectPaginationArray} from 'src/model/project'
+  import {UserLabelArray} from 'src/model/user'
+  import {CompanyLabelArray} from 'src/model/company'
 
   export default {
-    data () {
+    props: {
+      multiple: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
       return {
         array: new ProjectPaginationArray(),
         companyLabels: new CompanyLabelArray(),
@@ -149,18 +151,19 @@
           itemCode: null,
           itemName: null
         },
+        selectable: false,
         dataAdjuster: null
       }
     },
     watch: {
       'filters': {
         deep: true,
-        handler () {
+        handler() {
           this.dataAdjuster.adjust()
         }
       }
     },
-    mounted () {
+    mounted() {
       this.companyLabels.query()
       this.userLabels.query()
       this.dataAdjuster = new DataAdjuster(this.filters, {
@@ -175,16 +178,20 @@
       })
     },
     methods: {
-      retrieve () {
+      retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onCustomerSearch (keyword, done) {
+      async onCustomerSearch(keyword, done) {
         await this.companyLabels.query(keyword)
         done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabels.query(keyword)
         done()
+      },
+      async onGridSelectionChanged(event) {
+        const selected = event.api.getSelectedRows()
+        this.selectable = selected.length > 0
       },
       async onItemSearch() {
         const itemModels = await this.$selectItem({})
@@ -202,7 +209,33 @@
         this.filters.itemName = null
         this.filters.itemId = null
       },
+      onSelected() {
+        const selected = this.$refs.grid.api.getSelectedRows()
+        if (selected.length) {
+          this.$emit('selected', selected)
+        } else {
+          this.$alert.warning('선택한 프로젝트가 없습니다')
+        }
+      }
     },
-    computed: {}
+    computed: {
+      rowSelection() {
+        return this.multiple ? 'multiple' : 'single'
+      },
+      statusesLabel() {
+        return this.filters.statuses.map(
+            value => this.statusLabels.find(status => status.value == value))
+        .filter(data => data)
+        .map(data => data.label)
+        .join(', ')
+      },
+      typesLabel() {
+        return this.filters.types.map(
+            value => this.typeLabels.find(status => status.value == value))
+        .filter(data => data)
+        .map(data => data.label)
+        .join(', ')
+      }
+    }
   }
 </script>

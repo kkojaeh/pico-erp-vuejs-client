@@ -20,7 +20,8 @@
                enable-sorting
                @selection-changed="onGridSelectionChanged"
                :row-data="array">
-        <ag-grid-column :checkbox-selection="true" field="code" header-name="코드" :width="170"/>
+        <ag-grid-column :checkbox-selection="true" :width="60"/>
+        <ag-grid-column field="code" header-name="코드" :width="120"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
         <ag-grid-column field="name" header-name="이름" :width="300"/>
         <ag-grid-column field="customerName" header-name="고객사" :width="150"/>
@@ -35,7 +36,8 @@
 
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
         <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
-                        cell-renderer-framework="ag-grid-datetime-renderer"/>
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
 
       </ag-grid>
 
@@ -118,7 +120,7 @@
       <q-btn flat icon="arrow_back" v-close-overlay>이전</q-btn>
       <q-toolbar-title>
       </q-toolbar-title>
-      <q-btn flat icon="check" @click="_onSelectedClick" :disabled="!selectable">선택</q-btn>
+      <q-btn flat icon="check" @click="onSelected" :disabled="!selectable">선택</q-btn>
     </q-toolbar>
   </q-page>
 
@@ -193,7 +195,7 @@
         const selected = event.api.getSelectedRows()
         this.selectable = selected.length > 0
       },
-      _onSelectedClick () {
+      onSelected() {
         const selected = this.$refs.grid.api.getSelectedRows()
         if (selected.length) {
           this.$emit('selected', selected)

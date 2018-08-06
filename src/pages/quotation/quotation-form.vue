@@ -703,7 +703,7 @@
       },
 
       async onAddItemBySelect() {
-        const itemModels = await this.$selectItem()
+        const itemModels = await this.$selectItem({})
         if (!itemModels) {
           return
         }
