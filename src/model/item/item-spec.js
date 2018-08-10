@@ -1,5 +1,5 @@
-import { exists, Model } from 'src/model/model'
-import { api } from 'src/plugins/axios'
+import {exists, Model, uuid} from 'src/model/model'
+import {api} from 'src/plugins/axios'
 
 export class ItemSpecModel extends Model {
 
@@ -20,6 +20,7 @@ export class ItemSpecModel extends Model {
 
   static async create (itemId) {
     const response = await api.post(`/item/specs`, {
+      id: uuid(),
       itemId: itemId
     })
     return new ItemSpecModel(response.data)

@@ -1,9 +1,6 @@
-import {FetchableArray, SavableArray,
-  ValidatableArray} from 'src/model/array'
+import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
-import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
-import {ProjectSaleItemModel} from "./project-sale-item";
 
 export class ProjectChargeModel extends Model {
 
@@ -46,14 +43,12 @@ export class ProjectChargeModel extends Model {
   */
 
   async save() {
-    const projectId = this.project.id
     if (this.phantom) {
-      this.id = uuid()
       const response = await api.post(
-          `/project/projects/${projectId}/charges`, this)
+          `/project/projects/${this.projectId}/charges`, this)
       this.assign(response.data)
     } else {
-      await api.put(`/project/projects/${projectId}/charges/${this.id}`,
+      await api.put(`/project/projects/${this.projectId}/charges/${this.id}`,
           this)
     }
   }
@@ -82,7 +77,7 @@ export class ProjectChargeModel extends Model {
 
   async delete() {
     await api.delete(
-        `/project/projects/${projectId}/charges/${this.id}`, {})
+        `/project/projects/${this.projectId}/charges/${this.id}`, {})
   }
 }
 

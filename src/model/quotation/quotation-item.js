@@ -1,12 +1,16 @@
 import {Model, uuid} from 'src/model/model'
 import {BomModel} from 'src/model/bom'
 import {api} from 'src/plugins/axios'
-import {FetchableArray, SavableArray,
-  ValidatableArray} from "src/model/array";
+import {FetchableArray, SavableArray, ValidatableArray} from "src/model/array";
 
 const bomSymbol = Symbol('bom')
 
 export class QuotationItemModel extends Model {
+
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
 
   get defaults() {
     return {
@@ -19,7 +23,7 @@ export class QuotationItemModel extends Model {
   }
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async validate() {
@@ -61,7 +65,6 @@ export class QuotationItemModel extends Model {
 
   async save() {
     if (this.phantom) {
-      this.id = uuid()
       const response = await api.post(
           `/quotation/quotations/${this.quotationId}/items`, this)
       this.assign(response.data)

@@ -51,12 +51,11 @@ export class QuotationModel extends Model {
   }
 
   get phantom() {
-    return !this.id || this.hasChanged("id")
+    return this.hasChanged("id")
   }
 
   async save() {
     if (this.phantom) {
-      this.id = uuid()
       const response = await api.post('/quotation/quotations', this)
       this.assign(response.data)
     } else {

@@ -5,7 +5,7 @@ import {ItemModel} from "src/model/item";
 
 const itemSymbol = Symbol('item')
 
-export class ProjectSaleItemModel extends Model {
+export class OrderAcceptanceItemModel extends Model {
 
   constructor(data) {
     super(data)
@@ -14,7 +14,8 @@ export class ProjectSaleItemModel extends Model {
 
   get defaults() {
     return {
-      unitPrice: 0
+      unitPrice: 0,
+      quantity: 0
     }
   }
 
@@ -26,48 +27,52 @@ export class ProjectSaleItemModel extends Model {
     return this[itemSymbol]
   }
 
-  async fetchReference() {
-    this[itemSymbol] = await ItemModel.get(this.itemId, true)
+  get phantom() {
+    return this.hasChanged("id")
   }
 
   /*
-
     static async get(id, cacheable) {
       if (!id) {
         return new ProjectModel()
       }
       const response = await api.get(
-          `/project/projects/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+          `/order-acceptance/order-acceptances/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
       return new ProjectModel(response.data)
     }
 
     static async exists(id) {
-      return await exists(api, `/project/projects/${id}`)
+      return await exists(api, `/order-acceptance/order-acceptances/${id}`)
     }
   */
 
-  get phantom() {
-    return this.hasChanged("id")
+  async fetchReference() {
+    this[itemSymbol] = await ItemModel.get(this.itemId, true)
   }
 
   async save() {
+    const orderAcceptanceId = this.orderAcceptanceId
     if (this.phantom) {
       const response = await api.post(
-          `/project/projects/${this.projectId}/sale-items`, this)
+          `/order-acceptance/order-acceptances/${orderAcceptanceId}/items`,
+          this)
       this.assign(response.data)
     } else {
-      await api.put(`/project/projects/${this.projectId}/sale-items/${this.id}`,
+      await api.put(
+          `/order-acceptance/order-acceptances/${orderAcceptanceId}/items/${this.id}`,
           this)
     }
   }
 
   async validate() {
     let constraints = {
-      name: {
-        presence: true,
-        length: {minimum: 2, maximum: 50}
-      },
       unitPrice: {
+        presence: true,
+        numericality: {
+          greaterThan: 0
+        }
+      },
+      quantity: {
         presence: true,
         numericality: {
           greaterThan: 0
@@ -83,16 +88,17 @@ export class ProjectSaleItemModel extends Model {
 
   async delete() {
     await api.delete(
-        `/project/projects/${this.projectId}/sale-items/${this.id}`, {})
+        `/order-acceptance/order-acceptances/${this.orderAcceptanceId}/items/${this.id}`,
+        {})
   }
 }
 
-export const ProjectSaleItemArray = Array.decorate(
+export const OrderAcceptanceItemArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/project/projects/${projectId}/sale-items'
+        return '/order-acceptance/order-acceptances/${orderAcceptanceId}/items'
       }
 
       get axios() {
@@ -100,23 +106,24 @@ export const ProjectSaleItemArray = Array.decorate(
       }
 
       get model() {
-        return ProjectSaleItemModel
+        return OrderAcceptanceItemModel
       }
 
-      initialize(project) {
+      initialize(orderAcceptance) {
         super.initialize()
-        this.project = project
+        this.orderAcceptance = orderAcceptance
       }
 
       async query() {
         await this.fetch({
-          projectId: this.project.id
+          orderAcceptanceId: this.orderAcceptance.id
         })
-        await Promise.all(this.map(async (element) => await element.fetchReference()))
+        await Promise.all(
+            this.map(async (element) => await element.fetchReference()))
       }
 
-      applyEach(element){
-        element.projectId = this.project.id
+      applyEach(element) {
+        element.orderAcceptanceId = this.orderAcceptance.id
       }
 
     }

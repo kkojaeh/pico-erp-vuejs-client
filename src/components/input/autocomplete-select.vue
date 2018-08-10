@@ -20,10 +20,11 @@
   >
     <v-select ref="input" v-model="model" :options="options"
               :label="labelField"
-              :disabled="disable || readonly"
+              :disabled="disable"
+              :searchable="!readonly"
               :placeholder="placeholder"
               :clearable="false"
-              class="col"
+              class="col autocomplete-select-vue-select"
               @search="_onSelectSearch"
               @search:blur="__onBlur"
               @search:focus="__onFocus"
@@ -200,3 +201,7 @@
     }
   }
 </script>
+<style lang="stylus">
+  .autocomplete-select-vue-select.unsearchable
+    pointer-events: none
+</style>

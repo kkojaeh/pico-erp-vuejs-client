@@ -6,6 +6,11 @@ import * as _ from 'lodash'
 
 export class ItemModel extends Model {
 
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
+
   get defaults() {
     return {
       status: 'DRAFT',
@@ -49,12 +54,11 @@ export class ItemModel extends Model {
   }
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async save() {
     if(this.phantom) {
-      this.id = uuid()
       const response = await api.post('/item/items', this)
       this.assign(response.data)
     }else{

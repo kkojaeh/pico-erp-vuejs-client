@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { Notify } from 'quasar'
-import { authenticate } from 'src/plugins/auth'
+import {Notify} from 'quasar'
+import {authenticate} from 'src/plugins/auth'
 
 import store from '../store'
 
@@ -13,6 +13,7 @@ import quotationRoutes from './quotation'
 import processRoutes from './process'
 import itemRoutes from './item'
 import bomRoutes from './bom'
+import orderAcceptanceRoutes from './order-acceptance'
 
 Vue.use(VueRouter)
 
@@ -57,6 +58,7 @@ const Router = new VueRouter({
         ...processRoutes,
         ...itemRoutes,
         ...bomRoutes,
+        ...orderAcceptanceRoutes,
         ...exampleRoutes
       ]
     },

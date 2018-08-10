@@ -4,6 +4,11 @@ import {api} from 'src/plugins/axios'
 
 export class CompanyAddressModel extends Model {
 
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
+
   get defaults() {
     return {
       enabled: true,
@@ -31,12 +36,11 @@ export class CompanyAddressModel extends Model {
   }
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async save() {
     if (this.phantom) {
-      this.id = uuid()
       const response = await api.post('/company/addresses', this)
       this.assign(response.data)
     } else {

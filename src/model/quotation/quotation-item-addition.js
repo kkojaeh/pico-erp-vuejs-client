@@ -1,10 +1,13 @@
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {FetchableArray, SavableArray, ValidatableArray} from "../array";
-import {QuotationAdditionModel} from "./quotation-addition";
-
 
 export class QuotationItemAdditionModel extends Model {
+
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
 
   get defaults() {
     return {
@@ -14,12 +17,11 @@ export class QuotationItemAdditionModel extends Model {
   }
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async save() {
     if (this.phantom) {
-      this.id = uuid()
       const response = await api.post(`/quotation/quotations/${this.quotationId}/item-additions`, this)
       this.assign(response.data)
     }else {

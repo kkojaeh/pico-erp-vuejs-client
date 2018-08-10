@@ -6,6 +6,11 @@ import {LabelModel} from 'src/model/shared'
 
 export class ItemCategoryModel extends Model {
 
+  constructor(data) {
+    super(data)
+    this.id = this.id || uuid()
+  }
+
   get defaults() {
     return {}
   }
@@ -24,12 +29,11 @@ export class ItemCategoryModel extends Model {
   }
 
   get phantom() {
-    return !this.id
+    return this.hasChanged("id")
   }
 
   async save() {
     if(this.phantom) {
-      this.id = uuid()
       const response = await api.post('/item/categories', this)
       this.assign(response.data)
     }else{

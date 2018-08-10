@@ -167,9 +167,11 @@
                           cell-renderer-framework="ag-grid-number-renderer"
                           :cell-renderer-params="{format:'#,##0.00', words:true}"/>
           <ag-grid-column field="createdDate" header-name="생성일" :width="200"
-                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-renderer-params="{ago:true}"/>
           <ag-grid-column field="expirationDate" header-name="만료예정" :width="200"
-                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-renderer-params="{ago:true}"/>
           <ag-grid-column field="expired" header-name="만료여부" :width="90" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"/>
 
@@ -205,8 +207,7 @@
                  :editable="true"
                  suppress-no-rows-overlay
                  @selection-changed="onChargeSelectionChanged"
-                 :row-data="chargeArray"
-        >
+                 :row-data="chargeArray">
 
           <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
           <ag-grid-column field="name" header-name="이름" :width="200"
@@ -220,15 +221,18 @@
                           cell-renderer-framework="ag-grid-number-renderer"
                           :cell-renderer-params="{format:'#,##0.00', words:true}"/>
           <ag-grid-column field="createdDate" header-name="생성일" :width="200"
-                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-renderer-params="{ago:true}"/>
           <ag-grid-column field="charged" header-name="청구여부" :width="90" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"/>
           <ag-grid-column field="chargedDate" header-name="청구일" :width="200"
-                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-renderer-params="{ago:true}"/>
           <ag-grid-column field="paid" header-name="결제여부" :width="90" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"/>
           <ag-grid-column field="paidDate" header-name="결제일" :width="200"
-                          cell-renderer-framework="ag-grid-datetime-renderer"/>
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-renderer-params="{ago:true}"/>
 
         </ag-grid>
 
@@ -299,10 +303,6 @@
       </q-toolbar>
     </q-page-sticky>
 
-    <q-modal ref="itemSelectorModal" content-classes="column">
-      <item-selector ref="itemSelector"></item-selector>
-    </q-modal>
-
   </q-page>
 
 </template>
@@ -323,7 +323,6 @@
   } from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import CommentList from 'src/pages/comment/comment-list.vue'
-  import ItemSelector from 'src/pages/item/item-selector.vue'
 
   export default {
     props: {
@@ -438,22 +437,17 @@
       },
 
       async onAddSaleItem() {
-        const modal = this.$refs.itemSelectorModal
-        const selector = this.$refs.itemSelector
-        modal.show()
-        modal.$once('hide', () => {
-          selector.$off('selected')
-        })
-        selector.$once('selected', async (itemModels) => {
-          modal.hide()
-          itemModels.map(async (itemModel) => {
-            const itemId = itemModel.id
-            const saleItem = new ProjectSaleItemModel({
-              itemId: itemId
-            })
-            saleItem.fetchReference()
-            this.saleItemArray.push(saleItem)
+        const itemModels = await this.$selectItem({})
+        if (!itemModels) {
+          return
+        }
+        itemModels.map(async (itemModel) => {
+          const itemId = itemModel.id
+          const saleItem = new ProjectSaleItemModel({
+            itemId: itemId
           })
+          saleItem.fetchReference()
+          this.saleItemArray.push(saleItem)
         })
       },
 
@@ -505,8 +499,7 @@
       }
     },
     components: {
-      CommentList,
-      ItemSelector
+      CommentList
     }
   }
 </script>

@@ -10,30 +10,41 @@
 import './quasar'
 
 import Vue from 'vue'
-Vue.config.productionTip = false
-
-
 import 'quasar-extras/roboto-font'
 
 import 'quasar-extras/material-icons'
 
 import 'quasar-extras/fontawesome'
 
-
-
-
 import 'quasar-app-styl'
 
-
 import 'src/css/app.styl'
-
 
 import App from 'src/App'
 
 import router from 'src/router'
 
 import store from 'src/store'
+import pluginAxios from 'src/plugins/axios'
+import pluginAlert from 'src/plugins/alert'
+import pluginAuth from 'src/plugins/auth'
+import pluginComponents from 'src/plugins/components'
+import pluginValidate from 'src/plugins/validate'
+import pluginNumber from 'src/plugins/number'
+import pluginDate from 'src/plugins/date'
+import pluginCloseoverlay from 'src/plugins/close-overlay'
+import pluginClipboard from 'src/plugins/clipboard'
+import pluginIntro from 'src/plugins/intro'
+import pluginGoogleanalytics from 'src/plugins/google-analytics'
+import pluginRaven from 'src/plugins/raven'
+import pluginAggrid from 'src/plugins/ag-grid'
+import pluginItem from 'src/plugins/item'
+import pluginBom from 'src/plugins/bom'
+import pluginAudit from 'src/plugins/audit'
+import pluginProcess from 'src/plugins/process'
+import pluginProject from 'src/plugins/project'
 
+Vue.config.productionTip = false
 
 const app = {
   el: '#q-app',
@@ -45,56 +56,41 @@ store,
 
 const plugins = []
 
-import pluginAxios from 'src/plugins/axios'
 plugins.push(pluginAxios)
 
-import pluginAlert from 'src/plugins/alert'
 plugins.push(pluginAlert)
 
-import pluginAuth from 'src/plugins/auth'
 plugins.push(pluginAuth)
 
-import pluginComponents from 'src/plugins/components'
 plugins.push(pluginComponents)
 
-import pluginValidate from 'src/plugins/validate'
 plugins.push(pluginValidate)
 
-import pluginNumber from 'src/plugins/number'
 plugins.push(pluginNumber)
 
-import pluginDate from 'src/plugins/date'
 plugins.push(pluginDate)
 
-import pluginCloseoverlay from 'src/plugins/close-overlay'
 plugins.push(pluginCloseoverlay)
 
-import pluginClipboard from 'src/plugins/clipboard'
 plugins.push(pluginClipboard)
 
-import pluginIntro from 'src/plugins/intro'
 plugins.push(pluginIntro)
 
-import pluginGoogleanalytics from 'src/plugins/google-analytics'
 plugins.push(pluginGoogleanalytics)
 
-import pluginRaven from 'src/plugins/raven'
 plugins.push(pluginRaven)
 
-import pluginAggrid from 'src/plugins/ag-grid'
 plugins.push(pluginAggrid)
 
-import pluginItem from 'src/plugins/item'
 plugins.push(pluginItem)
 
-import pluginBom from 'src/plugins/bom'
 plugins.push(pluginBom)
 
-import pluginAudit from 'src/plugins/audit'
 plugins.push(pluginAudit)
 
-import pluginProcess from 'src/plugins/process'
 plugins.push(pluginProcess)
+
+plugins.push(pluginProject)
 
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 
