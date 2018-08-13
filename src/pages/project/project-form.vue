@@ -44,24 +44,8 @@
         고객 정보
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="고객사 연락처 불러오기" icon="contacts"
-                 @click="onLoadContactByCompanyContact"
-                 :disabled="!model.customerId" v-show="!companyContact.selecting"/>
-          <q-field helper="담당자를 선택하세요"
-                   v-show="companyContact.selecting">
-            <c-autocomplete-select v-model="companyContact.id"
-                                   class="col-xs-12 col-md-6 col-xl-6"
-                                   ref="companyContactSelector"
-                                   float-label="담당자 이름"
-                                   :options="companyContactLabels"
-                                   label-field="label" value-field="value"
-                                   @search="onCompanyContactSearch"
-                                   @blur="companyContact.selecting = false">
-              <template slot="option" slot-scope="option">
-                {{option.label}}<br>
-                {{option.stamp}} - {{option.subLabel}}
-              </template>
-            </c-autocomplete-select>
-          </q-field>
+                 @click="onCompanyContactLoad"
+                 :disabled="!model.customerId"/>
         </div>
       </q-card-title>
 
@@ -315,12 +299,7 @@
     ProjectSaleItemArray,
     ProjectSaleItemModel
   } from 'src/model/project'
-  import {
-    CompanyContactLabelArray,
-    CompanyContactModel,
-    CompanyLabelArray,
-    CompanyModel
-  } from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import CommentList from 'src/pages/comment/comment-list.vue'
 
@@ -344,18 +323,13 @@
         userLabels: new UserLabelArray(),
         managerModel: new UserModel(),
         customerModel: new CompanyModel(),
-        companyContactLabels: new CompanyContactLabelArray(),
         saleItemArray: new ProjectSaleItemArray(),
         chargeArray: new ProjectChargeArray(),
         enabled: true,
         selected: {
           saleItem: null,
           charge: null
-        },
-        companyContact: {
-          id: null,
-          selecting: false
-        },
+        }
       }
     },
     mounted() {
@@ -377,12 +351,6 @@
         await this.userLabels.query(keyword)
         done()
       },
-
-      async onCompanyContactSearch(keyword, done) {
-        await this.companyContactLabels.query(this.model.customerId, keyword)
-        done()
-      },
-
       onSaleItemSelectionChanged(event) {
         this.selected.saleItem = event.api.getSelectedRows()[0]
       },
@@ -428,12 +396,17 @@
         await this.model.save()
       },
 
-      async onLoadContactByCompanyContact() {
-        await this.companyContactLabels.query(this.model.customerId)
-        this.companyContact.selecting = true
-        this.$nextTick(() => {
-          this.$refs.companyContactSelector.focus()
-        })
+      async onCompanyContactLoad() {
+        const contacts = await this.$selectCompanyContact(this.model.customerId, {multiple: false})
+        if (contacts && contacts.length) {
+          const model = this.model
+          const companyContact = contacts[0]
+          model.customerManagerContact.name = companyContact.contact.name
+          model.customerManagerContact.email = companyContact.contact.email
+          model.customerManagerContact.faxNumber = companyContact.contact.faxNumber
+          model.customerManagerContact.mobilePhoneNumber = companyContact.contact.mobilePhoneNumber
+          model.customerManagerContact.telephoneNumber = companyContact.contact.telephoneNumber
+        }
       },
 
       async onAddSaleItem() {
@@ -482,20 +455,6 @@
       },
       'model.customerId': async function (to) {
         this.customerModel = await CompanyModel.get(to, true)
-      },
-      'companyContact.id': async function (to) {
-        if (to) {
-          const model = this.model
-          const companyContact = await CompanyContactModel.get(to, true)
-
-          model.customerManagerContact.name = companyContact.contact.name
-          model.customerManagerContact.email = companyContact.contact.email
-          model.customerManagerContact.faxNumber = companyContact.contact.faxNumber
-          model.customerManagerContact.mobilePhoneNumber = companyContact.contact.mobilePhoneNumber
-          model.customerManagerContact.telephoneNumber = companyContact.contact.telephoneNumber
-          this.companyContact.id = null
-          this.companyContact.selecting = false
-        }
       }
     },
     components: {

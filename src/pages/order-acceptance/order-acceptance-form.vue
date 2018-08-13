@@ -132,24 +132,9 @@
         인수 정보
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="인수사 주소 불러오기" icon="location_on"
-                 @click="onLoadAddressByCompanyAddress"
-                 :disabled="!model.receiverId" v-show="!companyAddress.selecting"/>
-          <q-field helper="주소를 선택하세요"
-                   v-show="companyAddress.selecting">
-            <c-autocomplete-select v-model="companyAddress.id"
-                                   class="col-xs-12 col-md-6 col-xl-6"
-                                   ref="companyAddressSelector"
-                                   float-label="주소 이름"
-                                   :options="companyAddressLabels"
-                                   label-field="label" value-field="value"
-                                   @search="onCompanyAddressSearch"
-                                   @blur="companyAddress.selecting = false">
-              <template slot="option" slot-scope="option">
-                {{option.label}}<br>
-                {{option.stamp}} - {{option.subLabel}}
-              </template>
-            </c-autocomplete-select>
-          </q-field>
+                 v-if="modifiable"
+                 @click="onCompanyAddressLoad"
+                 :disabled="!model.receiverId"/>
         </div>
       </q-card-title>
 
@@ -276,12 +261,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {
-    CompanyAddressLabelArray,
-    CompanyAddressModel,
-    CompanyLabelArray,
-    CompanyModel
-  } from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
     OrderAcceptanceItemArray,
@@ -316,19 +296,10 @@
         customerModel: new CompanyModel(),
         purchaserModel: new CompanyModel(),
         receiverModel: new CompanyModel(),
-        companyAddressLabels: new CompanyAddressLabelArray(),
         statusLabels: new OrderAcceptanceStatusArray(),
         enabled: true,
         selected: {
           item: null
-        },
-        companyAddress: {
-          id: null,
-          selecting: false
-        },
-        projectSaleItem: {
-          id: null,
-          selecting: false
         }
       }
     },
@@ -358,11 +329,6 @@
         await this.userLabels.query(keyword)
         done()
       },
-      async onCompanyAddressSearch(keyword, done) {
-        await this.companyAddressLabels.query(this.model.receiverId, keyword)
-        done()
-      },
-
       async onProjectSearch(keyword, done) {
         await this.projectLabels.query(keyword)
         done()
@@ -428,12 +394,18 @@
         }
       },
 
-      async onLoadAddressByCompanyAddress() {
-        await this.companyAddressLabels.query(this.model.receiverId)
-        this.companyAddress.selecting = true
-        this.$nextTick(() => {
-          this.$refs.companyAddressSelector.focus()
-        })
+      async onCompanyAddressLoad() {
+        const addresses = await this.$selectCompanyAddress(this.model.receiverId, {multiple: false})
+
+        if (addresses && addresses.length) {
+          const model = this.model
+          const companyAddress = addresses[0]
+          model.deliveryAddress.postalCode = companyAddress.address.postalCode
+          model.deliveryAddress.street = companyAddress.address.street
+          model.deliveryAddress.detail = companyAddress.address.detail
+          model.deliveryMobilePhoneNumber = companyAddress.mobilePhoneNumber
+          model.deliveryTelephoneNumber = companyAddress.telephoneNumber
+        }
       },
 
       async onAddItem() {
@@ -484,19 +456,6 @@
         this.model.customerId = this.projectModel.customerId
         this.customerModel = await CompanyModel.get(this.model.customerId, true)
 
-      },
-      'companyAddress.id': async function (to) {
-        if (to) {
-          const model = this.model
-          const companyAddress = await CompanyAddressModel.get(to, true)
-          model.deliveryAddress.postalCode = companyAddress.address.postalCode
-          model.deliveryAddress.street = companyAddress.address.street
-          model.deliveryAddress.detail = companyAddress.address.detail
-          model.deliveryMobilePhoneNumber = companyAddress.mobilePhoneNumber
-          model.deliveryTelephoneNumber = companyAddress.telephoneNumber
-          this.companyAddress.id = null
-          this.companyAddress.selecting = false
-        }
       }
     },
     components: {

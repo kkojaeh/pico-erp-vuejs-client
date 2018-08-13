@@ -30,7 +30,8 @@ module.exports = function (ctx) {
       'bom',
       'audit',
       'process',
-      'project'
+      'project',
+      'company'
     ],
     css: [
       'app.styl'
