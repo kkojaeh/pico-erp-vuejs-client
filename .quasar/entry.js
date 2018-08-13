@@ -43,6 +43,7 @@ import pluginBom from 'src/plugins/bom'
 import pluginAudit from 'src/plugins/audit'
 import pluginProcess from 'src/plugins/process'
 import pluginProject from 'src/plugins/project'
+import pluginCompany from 'src/plugins/company'
 
 Vue.config.productionTip = false
 
@@ -91,6 +92,8 @@ plugins.push(pluginAudit)
 plugins.push(pluginProcess)
 
 plugins.push(pluginProject)
+
+plugins.push(pluginCompany)
 
 plugins.forEach(plugin => plugin({ app, router, store, Vue }))
 
