@@ -1,4 +1,4 @@
-import Quasar, {Notify, QModal} from 'quasar'
+import Quasar, {Notify, QDatetime, QModal} from 'quasar'
 import {language, languageAliases} from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
@@ -37,10 +37,14 @@ import AgGridPhoneNumberRenderer
   from 'src/components/ag-grid/ag-grid-phone-number-renderer.vue'
 import AgGridPhoneNumberEditor
   from 'src/components/ag-grid/ag-grid-phone-number-editor.vue'
+import AgGridDatetimeEditor
+  from 'src/components/ag-grid/ag-grid-datetime-editor.vue'
 
 import AgGridArrayLabelRenderer
   from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
+import DhtmlxGantt from 'src/components/dhtmlx/dhtmlx-gantt'
+import DhtmlxScheduler from 'src/components/dhtmlx/dhtmlx-scheduler'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
@@ -72,11 +76,21 @@ moment.locale(languageAliases({
 
 const appVersion = document.querySelector('meta[name=app-version]').content
 
-
-// horizontal scroll 이 안되는 문제 수정
-const preventScroll = QModal.mixins.find(mixin => !!mixin.methods.__preventScroll)
-preventScroll.methods.__preventScroll = () => {}
+// FIX: horizontal scroll 이 안되는 문제 수정
+const preventScroll = QModal.mixins.find(
+    mixin => !!mixin.methods.__preventScroll)
+preventScroll.methods.__preventScroll = () => {
+}
 //__preventScroll
+
+// FIX: datetime 컴포넌트 hide 호출시 $refs.popup 존재하지 않아 오류 발생 수정
+const dateTimeHide = QDatetime.methods.hide
+QDatetime.methods.hide = function () {
+  if (this.$refs.popup) {
+    dateTimeHide.call(this)
+  }
+}
+
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
 
@@ -106,6 +120,8 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
   Vue.component('ag-grid-number-renderer', AgGridNumberRenderer)
-
+  Vue.component('dhtmlx-gantt', DhtmlxGantt)
+  Vue.component('dhtmlx-scheduler', DhtmlxScheduler)
+  Vue.component('ag-grid-datetime-editor', AgGridDatetimeEditor)
 
 }

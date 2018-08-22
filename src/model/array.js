@@ -40,7 +40,21 @@ class ArrayDecorator {
 const fetchedSymbol = Symbol('fetched')
 const fetchingSymbol = Symbol('fetching')
 
-export class FetchableArray extends ArrayDecorator{
+export class CollectionArray extends ArrayDecorator {
+  clear() {
+    this.splice(0, this.length)
+  }
+
+  remove(element) {
+    const index = this.indexOf(element)
+    if (index > -1) {
+      return this.splice(index, 1)
+    }
+    throw new Error('not found element')
+  }
+}
+
+export class FetchableArray extends CollectionArray {
 
   get axis() {
     throw new Error('not implemented')
@@ -81,12 +95,11 @@ export class FetchableArray extends ArrayDecorator{
     let parsed = this.parse(result)
     if (parsed) {
       if (this.model) {
-        parsed = parsed.map((o) => new this.model(o))
+        parsed = parsed.map(o => new this.model(o))
       }
       try {
         this.splice.apply(this, [0, this.length].concat(parsed))
-      }catch(e){
-        debugger
+      } catch (e) {
       }
     }
     this.fetching = false
@@ -106,29 +119,18 @@ export class FetchableArray extends ArrayDecorator{
     return response.data
   }
 
-  clear() {
-    this.splice(0, this.length)
-  }
-
-  remove(element) {
-    const index = this.indexOf(element)
-    if (index > -1) {
-      return this.splice(index, 1)
-    }
-    throw new Error('not found element')
-  }
-
 }
 
-export class ValidatableArray extends ArrayDecorator{
+export class ValidatableArray extends ArrayDecorator {
 
-  applyEach(element){}
+  applyEach(element) {
+  }
 
-  isValidateTarget(element){
+  isValidateTarget(element) {
     return element.phantom || element.hasChanged()
   }
 
-  async validateElement(element){
+  async validateElement(element) {
     return await element.validate()
   }
 
@@ -146,32 +148,34 @@ export class ValidatableArray extends ArrayDecorator{
 
 const removedSymbol = Symbol('removed')
 
-export class SavableArray extends ArrayDecorator{
+export class SavableArray extends ArrayDecorator {
 
   initialize() {
     this[removedSymbol] = []
   }
 
-  applyEach(element){  }
+  applyEach(element) {
+  }
 
-  isSaveTarget(element){
+  isSaveTarget(element) {
     return element.phantom || element.hasChanged()
   }
 
-  isRemoveTarget(element){
+  isRemoveTarget(element) {
     return !element.phantom
   }
 
-  async saveElement(element){
+  async saveElement(element) {
     return await element.save()
   }
 
-  async removeElement(element){
+  async removeElement(element) {
     return await element.delete()
   }
 
-  hasChanged(){
-    return this.filter(this.isSaveTarget.bind(this)).length + this[removedSymbol].length > 0
+  hasChanged() {
+    return this.filter(this.isSaveTarget.bind(this)).length
+        + this[removedSymbol].length > 0
   }
 
   async save() {

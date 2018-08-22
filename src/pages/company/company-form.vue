@@ -282,7 +282,7 @@
       },
 
       async onSaveClick() {
-        let valid = ![
+        const valid = ![
           await this.model.validate(),
           await this.contacts.validate(),
           await this.addresses.validate()

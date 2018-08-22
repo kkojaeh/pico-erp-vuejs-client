@@ -14,6 +14,7 @@ import processRoutes from './process'
 import itemRoutes from './item'
 import bomRoutes from './bom'
 import orderAcceptanceRoutes from './order-acceptance'
+import workDayRoutes from './work-day'
 
 Vue.use(VueRouter)
 
@@ -59,7 +60,8 @@ const Router = new VueRouter({
         ...itemRoutes,
         ...bomRoutes,
         ...orderAcceptanceRoutes,
-        ...exampleRoutes
+        ...exampleRoutes,
+        ...workDayRoutes
       ]
     },
     {

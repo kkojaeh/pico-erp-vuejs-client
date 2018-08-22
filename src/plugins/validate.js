@@ -1,6 +1,7 @@
 import validate from 'validate.js'
-import { PhoneNumberUtil } from 'google-libphonenumber'
+import {PhoneNumberUtil} from 'google-libphonenumber'
 import message from 'src/i18n/Validation.js'
+import * as _ from 'lodash'
 
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
@@ -22,7 +23,7 @@ export default ({app, router, Vue}) => {
   }
 
   validate.validators.exists = async function (value, options, key,
-    attributes) {
+      attributes) {
     let result = await options
     if (result) {
       return validate.validators.exists.message
@@ -35,6 +36,21 @@ export default ({app, router, Vue}) => {
     }
     return options
   }
+
+  validate.extend(validate.validators.datetime, {
+    parse(value, options) {
+      if (_.isFunction(options.parse)) {
+        return options.parse(value, options)
+      }
+      return value
+    },
+    format(value, options) {
+      if (_.isFunction(options.format)) {
+        return options.format(value, options)
+      }
+      return value
+    }
+  })
 
   message()
 }

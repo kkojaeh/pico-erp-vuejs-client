@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { language, languageAliases } from './index'
+import {language, languageAliases} from './index'
 import validate from 'validate.js'
 
 const exports = {}
@@ -45,6 +45,10 @@ exports.ko = () => {
   validate.validators.numericality.notEven = '짝수가 되야 합니다'
   validate.validators.exists.message = '이미 존재합니다'
   validate.validators.phoneNumber.message = '전화번호 형식이 아닙니다'
+  validate.validators.date.tooEarly = '%{date} 이전 시간이 아닙니다'
+  validate.validators.date.tooLate = '%{date} 이후 시간이 아닙니다'
+  validate.validators.datetime.tooEarly = '%{date} 보다 이전 시간 입니다'
+  validate.validators.datetime.tooLate = '%{date} 보다 이후 시간 입니다'
 }
 
 export default languageAliases(exports)[language]
