@@ -1,4 +1,4 @@
-import Quasar, {Notify, QDatetime, QModal} from 'quasar'
+import Quasar, {Notify, prevent, QField} from 'quasar'
 import {language, languageAliases} from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
@@ -76,20 +76,14 @@ moment.locale(languageAliases({
 
 const appVersion = document.querySelector('meta[name=app-version]').content
 
-// FIX: horizontal scroll 이 안되는 문제 수정
-const preventScroll = QModal.mixins.find(
-    mixin => !!mixin.methods.__preventScroll)
-preventScroll.methods.__preventScroll = () => {
-}
-//__preventScroll
-
-// FIX: datetime 컴포넌트 hide 호출시 $refs.popup 존재하지 않아 오류 발생 수정
-const dateTimeHide = QDatetime.methods.hide
-QDatetime.methods.hide = function () {
-  if (this.$refs.popup) {
-    dateTimeHide.call(this)
+// FIX: v0.17.9 버전 오류(이미 수정되어 다음 버전 부터 삭제)
+QField.mixins.push({
+  mounted() {
+    const content = this.$el.querySelector('.q-field-content')
+    content.className = content.className.replace('ellipsis', '')
   }
-}
+})
+
 
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {

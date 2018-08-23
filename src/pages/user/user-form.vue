@@ -41,7 +41,7 @@
           <q-input v-model="model.position" float-label="직위/직급"/>
         </q-field>
 
-        <q-field icon="fa-sitemap" helper="사용자의 부서를 선택하세요"
+        <q-field icon="fas fa-sitemap" helper="사용자의 부서를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
@@ -56,7 +56,7 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="fa-mobile" helper="핸드폰 번호를 입력하세요"
+        <q-field icon="fas fa-mobile" helper="핸드폰 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
@@ -116,7 +116,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/user/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

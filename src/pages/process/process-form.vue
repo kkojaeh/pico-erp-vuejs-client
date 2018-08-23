@@ -13,6 +13,7 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input v-model="itemModel.code" float-label="품목 코드" readonly hide-underline>
             <q-btn icon="content_copy" v-clipboard:copy="itemModel.code" v-clipboard-notify
+                   slot="after"
                    flat></q-btn>
           </q-input>
 
@@ -22,6 +23,7 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input v-model="itemModel.name" float-label="품목 이름" readonly hide-underline>
             <q-btn icon="content_copy" v-clipboard:copy="itemModel.name" v-clipboard-notify
+                   slot="after"
                    flat></q-btn>
           </q-input>
         </q-field>
@@ -66,7 +68,7 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="fa-comment" helper="공정 난이도를 지정하세요"
+        <q-field icon="fas fa-comment" helper="공정 난이도를 지정하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="난이도" v-model="model.difficulty"
                     :options="difficultyLabels"></q-select>
@@ -165,7 +167,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-comment" helper="공정 설명을 입력하세요"
+        <q-field icon="fas fa-comment" helper="공정 설명을 입력하세요"
                  class="col-xs-12 col-md-10 col-xl-8"
                  :error="!!model.$errors.description"
                  :error-label="model.$errors.description">

@@ -69,7 +69,7 @@
 
           <q-card-main class="row gutter-md">
 
-            <q-field icon="fa-building" helper="프로젝트를 선택하세요"
+            <q-field icon="fas fa-building" helper="프로젝트를 선택하세요"
                      class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                      :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
 
@@ -84,7 +84,7 @@
               </c-autocomplete-select>
             </q-field>
 
-            <q-field icon="fa-building" helper="견적 대상 고객사 입니다"
+            <q-field icon="fas fa-building" helper="견적 대상 고객사 입니다"
                      class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-input float-label="고객사" v-model="customerModel.name"
                        readonly hide-underline>
@@ -119,7 +119,7 @@
                        class="ime-mode-disabled" readonly hide-underline/>
             </q-field>
 
-            <q-field icon="fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
+            <q-field icon="fas fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
                      class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <c-phone-number-input v-model="projectModel.customerManagerContact.mobilePhoneNumber"
                                     float-label="고객 담당자 핸드폰 번호"
@@ -133,7 +133,7 @@
                                     class="ime-mode-disabled" readonly hide-underline/>
             </q-field>
 
-            <q-field icon="fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
+            <q-field icon="fas fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
                      class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <c-phone-number-input v-model="projectModel.customerManagerContact.faxNumber"
                                     float-label="고객 담당자 FAX 번호"
@@ -227,7 +227,7 @@
               </q-btn-dropdown>
               <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItem"
                      :disabled="!selected.item" v-show="isModifiable"/>
-              <q-btn flat color="secondary" label="BOM" icon="fa-sitemap" @click="onOpenBom"
+              <q-btn flat color="secondary" label="BOM" icon="fas fa-sitemap" @click="onOpenBom"
                      :disabled="!selected.item"/>
 
             </div>

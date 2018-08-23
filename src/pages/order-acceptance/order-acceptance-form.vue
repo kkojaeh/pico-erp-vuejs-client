@@ -13,7 +13,7 @@
       <q-card-main class="row gutter-md">
 
 
-        <q-field icon="fa-building" helper="프로젝트를 선택하세요"
+        <q-field icon="fas fa-building" helper="프로젝트를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
 
@@ -57,7 +57,7 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="fa-building" helper="프로젝트의 고객사 입니다"
+        <q-field icon="fas fa-building" helper="프로젝트의 고객사 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
@@ -88,7 +88,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-building" helper="발주사를 선택하세요"
+        <q-field icon="fas fa-building" helper="발주사를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.purchaserId"
                  :error-label="model.$errors.purchaserId">
@@ -110,13 +110,13 @@
           <q-input v-model="model.purchaseOrderNumber" float-label="발주번호(PO 번호)"/>
         </q-field>
 
-        <q-field icon="fa-calendar" helper="주문일을 입력하세요"
+        <q-field icon="fas fa-calendar" helper="주문일을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-datetime float-label="주문일" v-model="model.orderedDate"
                       type="date"/>
         </q-field>
 
-        <q-field icon="fa-calendar" helper="만기일을 입력하세요"
+        <q-field icon="fas fa-calendar" helper="만기일을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-datetime float-label="만기일자" v-model="model.dueDate"
                       type="date"/>
@@ -143,7 +143,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-building" helper="인수사를 선택하세요"
+        <q-field icon="fas fa-building" helper="인수사를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.receiverId"
                  :error-label="model.$errors.receiverId">
@@ -159,7 +159,7 @@
         </q-field>
 
 
-        <q-field icon="fa-mobile" helper="인수지에서 연락할 핸드폰 번호를 입력하세요"
+        <q-field icon="fas fa-mobile" helper="인수지에서 연락할 핸드폰 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.deliveryMobilePhoneNumber"
                  :error-label="model.$errors.deliveryMobilePhoneNumber">
@@ -177,7 +177,7 @@
                                 class="ime-mode-disabled"/>
         </q-field>
 
-        <q-field icon="fa-map-marker" helper="인수지의 주소를 입력하세요"
+        <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-6 col-xl-6">
           <c-address-input v-model="model.deliveryAddress"/>
         </q-field>
@@ -244,7 +244,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/project/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

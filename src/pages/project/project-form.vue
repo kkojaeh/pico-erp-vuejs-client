@@ -54,7 +54,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-building" helper="고객사를 선택하세요"
+        <q-field icon="fas fa-building" helper="고객사를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
@@ -86,7 +86,7 @@
                    class="ime-mode-disabled"/>
         </q-field>
 
-        <q-field icon="fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
+        <q-field icon="fas fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
@@ -104,7 +104,7 @@
                                 class="ime-mode-disabled"/>
         </q-field>
 
-        <q-field icon="fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
+        <q-field icon="fas fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.faxNumber"
                  :error-label="model.$errors.faxNumber">
@@ -236,7 +236,7 @@
       <q-card-main class="row gutter-md">
 
 
-        <q-field icon="fa-comment" helper="프로젝트 설명을 입력하세요"
+        <q-field icon="fas fa-comment" helper="프로젝트 설명을 입력하세요"
                  class="col-xs-12 col-md-10 col-xl-8">
           <c-html-editor v-model="model.description"></c-html-editor>
         </q-field>
@@ -279,7 +279,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/project/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

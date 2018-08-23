@@ -22,7 +22,7 @@
     <q-item-separator v-if="array.length"/>
     <q-item :disabled="!subject" v-show="!readonly">
       <q-item-main>
-        <q-field icon="fa-reply" class="col-12" helper="남기실 글을 입력하세요"
+        <q-field icon="fas fa-reply" class="col-12" helper="남기실 글을 입력하세요"
                  :error="!!model.$errors.comment"
                  :error-label="model.$errors.comment"
                  :count="200">
@@ -39,10 +39,10 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { date } from 'quasar'
-  import { CommentArray, CommentModel } from 'src/model/comment'
-  import { UserLabelArray } from 'src/model/user'
+  import {mapGetters} from 'vuex'
+  import {date} from 'quasar'
+  import {CommentArray, CommentModel} from 'src/model/comment'
+  import {UserLabelArray} from 'src/model/user'
   import Tribute from 'tributejs'
   import 'tributejs/dist/tribute.css'
 

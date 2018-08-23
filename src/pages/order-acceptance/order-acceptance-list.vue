@@ -64,7 +64,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="프로젝트를 선택하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="프로젝트를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="프로젝트" v-model="filters.projectId"
@@ -78,7 +78,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="고객사, 발주사, 인수사에 지정된 회사를 선택하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="고객사, 발주사, 인수사에 지정된 회사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="관련회사" v-model="filters.relatedCompanyId"
@@ -106,27 +106,27 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="주문 접수의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-building" helper="주문 접수의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
                   :options="statusLabels" multiple></q-select>
       </q-field>
 
 
-      <q-field slot="filter" icon="fa-calendar" helper="만기일 범위(부터)를 입력하세요"
+      <q-field slot="filter" icon="fas fa-calendar" helper="만기일 범위(부터)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime suffix="~" float-label="만기일 ~부터" v-model="filters.startDueDate"
                     type="date"/>
         <!--filters.startDueDate-->
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar" helper="만기일 범위(까지)를 입력하세요"
+      <q-field slot="filter" icon="fas fa-calendar" helper="만기일 범위(까지)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime prefix="~" float-label="만기일 ~까지" v-model="filters.endDueDate"
                     type="date"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar" helper="품목을 선택하세요"
+      <q-field slot="filter" icon="fas fa-calendar" helper="품목을 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-input :prefix="filters.itemCode" float-label="품목" :value="filters.itemName" clearable
                  readonly

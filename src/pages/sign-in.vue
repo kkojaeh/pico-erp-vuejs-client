@@ -15,7 +15,7 @@
           <q-input ref="email" v-model="form.email" type="email" float-label="이메일"
                    clearable @keyup.enter="signIn()"/>
         </q-field>
-        <q-field icon="fa-unlock-alt" helper="패스워드를 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
+        <q-field icon="fas fa-unlock-alt" helper="패스워드를 입력하세요" class="col-xs-11 col-md-4 col-xl-3"
                  :error="!!form.$errors.password"
                  :error-label="form.$errors.password">
           <q-input ref="password" v-model="form.password" type="password" float-label="패스워드"

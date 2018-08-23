@@ -40,7 +40,7 @@
           <q-input v-model="model.email" float-label="이메일" type="email" readonly hide-underline/>
         </q-field>
 
-        <q-field icon="fa-sitemap"
+        <q-field icon="fas fa-sitemap"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
@@ -55,7 +55,7 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="fa-mobile"
+        <q-field icon="fas fa-mobile"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
@@ -80,8 +80,8 @@
 
 </template>
 <script>
-  import { mapGetters } from 'vuex'
-  import { DepartmentLabelArray, DepartmentModel, MyModel } from 'src/model/user'
+  import {mapGetters} from 'vuex'
+  import {DepartmentLabelArray, DepartmentModel, MyModel} from 'src/model/user'
 
   export default {
     props: {
