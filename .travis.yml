@@ -14,7 +14,7 @@ cache:
     - node_modules # NPM packages
 
 before_install:
-  - npm install -g quasar-cli@0.15.14
+  - npm install -g quasar-cli@0.17.11
 #  - npm install -g cordova@^7.1.0
 #  - npm install -g ios-deploy --unsafe-perm=true --allow-root
 #  - pod setup

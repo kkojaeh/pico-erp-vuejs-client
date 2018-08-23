@@ -64,7 +64,7 @@
     "eslint-plugin-html": "^4.0.3",
     "firebase-tools": "^4.2.0",
     "imports-loader": "^0.8.0",
-    "quasar-cli": "^0.15.14"
+    "quasar-cli": "^0.17.11"
   },
   "engines": {
     "node": ">= 8.9.0",
