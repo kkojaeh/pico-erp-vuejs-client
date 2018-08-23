@@ -75,7 +75,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="프로젝트를 선택하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="프로젝트를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="프로젝트" v-model="filters.projectId"
@@ -89,7 +89,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="고객사를 선택하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="고객사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
@@ -103,19 +103,19 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-building" helper="견적의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
                   :options="statusLabels" multiple></q-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(부터)를 입력하세요"
+      <q-field slot="filter" icon="fas fa-calendar" helper="생성일 범위(부터)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime suffix="~" float-label="생성일 ~부터" v-model="filters.startCreatedDate"
                     type="date"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-calendar" helper="생성일 범위(까지)를 입력하세요"
+      <q-field slot="filter" icon="fas fa-calendar" helper="생성일 범위(까지)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime prefix="~" float-label="생성일 ~까지" v-model="filters.endCreatedDate"
                     type="date"/>

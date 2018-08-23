@@ -94,7 +94,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-sitemap" helper="사용자의 부서를 선택하세요"
+      <q-field slot="filter" icon="fas fa-sitemap" helper="사용자의 부서를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <c-autocomplete-select float-label="부서" v-model="filters.departmentId"
                                :label.sync="filters.departmentName" :options="departmentLabels"

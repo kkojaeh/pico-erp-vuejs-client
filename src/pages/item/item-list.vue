@@ -68,20 +68,20 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-comment" helper="품목의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-comment" helper="품목의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
                   :options="statusLabels" multiple chips></q-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-comment" helper="품목의 유형을 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-comment" helper="품목의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="유형" v-model="filters.types"
                   :options="typeLabels" multiple chips></q-select>
       </q-field>
 
 
-      <q-field slot="filter" icon="fa-building" helper="고객사를 선택하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="고객사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
@@ -95,7 +95,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fa-tag" helper="품목 분류를 선택하세요"
+      <q-field slot="filter" icon="fas fa-tag" helper="품목 분류를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.categoryId"

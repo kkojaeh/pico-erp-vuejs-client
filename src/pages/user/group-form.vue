@@ -73,7 +73,7 @@
 
           <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:onUserRemove, icon:'fa-ban', link:true}"/>
+                          :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"/>
           <ag-grid-column field="userId" header-name="아이디" :width="200"/>
           <ag-grid-column field="userName" header-name="이름" :width="250"/>
         </ag-grid>
@@ -89,7 +89,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/group/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

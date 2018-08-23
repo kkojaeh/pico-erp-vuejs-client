@@ -49,7 +49,7 @@
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
         </q-field>
 
-        <q-field icon="fa-building" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
+        <q-field icon="fas fa-building" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-4">
           <div class="row justify-between">
             <q-checkbox label="공급사" v-model="model.supplier"/>
@@ -193,7 +193,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/company/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

@@ -80,7 +80,7 @@
 
           <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:onPreprocessTypeRemove, icon:'fa-ban', link:true}"/>
+                          :cell-renderer-params="{handler:onPreprocessTypeRemove, icon:'fas fa-ban', link:true}"/>
           <ag-grid-column field="id" header-name="아이디" :width="150"/>
           <ag-grid-column field="name" header-name="이름" :width="200"/>
           <ag-grid-column field="baseCost" header-name="기준단가" :width="100"
@@ -239,7 +239,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/process-type/${model.id}`)"
                v-show="!phantom" label="이력">
         </q-btn>

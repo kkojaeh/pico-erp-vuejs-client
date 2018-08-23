@@ -61,7 +61,7 @@
                  @keyup.enter="retrieve()"/>
       </q-field>
 
-      <q-field slot="filter" icon="fa-building" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-building" helper="업체의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-5 col-xl-4">
         <div class="row justify-between">
           <q-checkbox class="col" label="공급사" v-model="filters.supplier"/>

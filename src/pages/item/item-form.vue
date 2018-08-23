@@ -18,7 +18,7 @@
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
-            <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify
+            <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify slot="after"
                    flat></q-btn>
           </q-input>
         </q-field>
@@ -26,18 +26,18 @@
         <q-field icon="perm_identity"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-input :value="model.code" float-label="코드" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
+            <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify slot="after"
                    flat></q-btn>
           </q-input>
         </q-field>
 
-        <q-field icon="fa-comment" helper="품목의 상태를 선택하세요"
+        <q-field icon="fas fa-comment" helper="품목의 상태를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status"
                     :options="statusLabels" readonly hide-underline></q-select>
         </q-field>
 
-        <q-field icon="fa-comment" helper="품목의 유형을 선택하세요"
+        <q-field icon="fas fa-comment" helper="품목의 유형을 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.type"
                  :error-label="model.$errors.type">
@@ -45,7 +45,7 @@
                     :options="typeLabels"></q-select>
         </q-field>
 
-        <q-field icon="fa-tag" helper="품목 분류를 선택하세요"
+        <q-field icon="fas fa-tag" helper="품목 분류를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.categoryId"
                  :error-label="model.$errors.categoryId">
@@ -108,7 +108,7 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fa-building" helper="고객사를 선택하세요"
+        <q-field icon="fas fa-building" helper="고객사를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
@@ -129,6 +129,7 @@
                  :error-label="model.$errors.externalCode">
           <q-input v-model="model.externalCode" float-label="외부 코드" class="ime-mode-disabled">
             <q-btn icon="content_copy" v-clipboard:copy="model.externalCode" v-clipboard-notify
+                   slot="after"
                    flat></q-btn>
           </q-input>
         </q-field>
@@ -207,7 +208,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fa-history"
+        <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/item/${model.id}`)"
                v-show="!phantom" v-if="$authorized.itemManager" label="이력">
         </q-btn>
