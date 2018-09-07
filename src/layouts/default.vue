@@ -60,8 +60,8 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-  import { QLayoutFooter, QToolbar } from 'quasar'
+  import {mapGetters} from 'vuex'
+  import {QLayoutFooter, QToolbar} from 'quasar'
   import Router from 'src/router'
 
   /*
@@ -96,7 +96,7 @@
       _onResize (size) {
         const el = this.$el
         let bottom = 0
-        el.querySelectorAll('.fixed-bottom').forEach(e => {
+        Array.from(el.querySelectorAll('.fixed-bottom')).forEach(e => {
           bottom += e.offsetHeight
         })
         this.paddingBottom = bottom
