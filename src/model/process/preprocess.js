@@ -88,8 +88,8 @@ export const ProcessPreprocessArray = Array.decorate(
         this.process = process
       }
 
-      async query() {
-        return await this.fetch({
+      async fetch() {
+        return await super.fetch({
           processId: this.process.id
         })
       }

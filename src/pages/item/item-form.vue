@@ -34,7 +34,7 @@
         <q-field icon="fas fa-comment" helper="품목의 상태를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status"
-                    :options="statusLabels" readonly hide-underline></q-select>
+                    :options="statusLabelArray" readonly hide-underline></q-select>
         </q-field>
 
         <q-field icon="fas fa-comment" helper="품목의 유형을 선택하세요"
@@ -42,7 +42,7 @@
                  :error="!!model.$errors.type"
                  :error-label="model.$errors.type">
           <q-select float-label="유형" v-model="model.type"
-                    :options="typeLabels"></q-select>
+                    :options="typeLabelArray"></q-select>
         </q-field>
 
         <q-field icon="fas fa-tag" helper="품목 분류를 선택하세요"
@@ -51,7 +51,7 @@
                  :error-label="model.$errors.categoryId">
 
           <c-autocomplete-select float-label="분류" v-model="model.categoryId"
-                                 :label="categoryModel.name" :options="categoryLabels"
+                                 :label="categoryModel.name" :options="categoryLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onCategorySearch">
             <template slot="option" slot-scope="option">
@@ -66,7 +66,7 @@
                  :error="!!model.$errors.unit"
                  :error-label="model.$errors.unit">
           <q-select float-label="단위" v-model="model.unit"
-                    :options="unitLabels" filter autofocus-filter></q-select>
+                    :options="unitLabelArray" filter autofocus-filter></q-select>
         </q-field>
 
         <q-field icon="monetization_on" helper="구매 가능 여부를 체크하세요(구매시 노출여부가 달라 집니다)"
@@ -113,7 +113,7 @@
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
-                                 :label="customerModel.name" :options="companyLabels"
+                                 :label="customerModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onCustomerSearch">
             <template slot="option" slot-scope="option">
@@ -155,7 +155,7 @@
                  :error-label="model.$errors.specTypeId">
 
           <c-autocomplete-select float-label="스펙 유형" v-model="model.specTypeId"
-                                 :label.sync="specTypeModel.name" :options="specTypeLabels"
+                                 :label.sync="specTypeModel.name" :options="specTypeLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onSpecTypeSearch">
             <template slot="option" slot-scope="option">
@@ -279,12 +279,12 @@
     data () {
       return {
         model: new ItemModel(),
-        companyLabels: new CompanyLabelArray(),
-        statusLabels: new ItemStatusArray(),
-        typeLabels: new ItemTypeArray(),
-        categoryLabels: new ItemCategoryLabelArray(),
-        specTypeLabels: new ItemSpecTypeLabelArray(),
-        unitLabels: new UnitLabelArray(),
+        companyLabelArray: new CompanyLabelArray(),
+        statusLabelArray: new ItemStatusArray(),
+        typeLabelArray: new ItemTypeArray(),
+        categoryLabelArray: new ItemCategoryLabelArray(),
+        specTypeLabelArray: new ItemSpecTypeLabelArray(),
+        unitLabelArray: new UnitLabelArray(),
         categoryModel: new ItemCategoryModel(),
         customerModel: new CompanyModel(),
         specTypeModel: new ItemSpecTypeModel(),
@@ -292,27 +292,27 @@
       }
     },
     mounted () {
-      this.unitLabels.fetch()
-      this.statusLabels.fetch()
-      this.typeLabels.fetch()
-      this.categoryLabels.query()
-      this.specTypeLabels.query()
-      this.companyLabels.query()
+      this.unitLabelArray.fetch()
+      this.statusLabelArray.fetch()
+      this.typeLabelArray.fetch()
+      this.categoryLabelArray.fetch()
+      this.specTypeLabelArray.fetch()
+      this.companyLabelArray.fetch()
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
     methods: {
       async onCustomerSearch (keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onCategorySearch (keyword, done) {
-        await this.categoryLabels.query(keyword)
+        await this.categoryLabelArray.fetch(keyword)
         done()
       },
       async onSpecTypeSearch (keyword, done) {
-        await this.specTypeLabels.query(keyword)
+        await this.specTypeLabelArray.fetch(keyword)
         done()
       },
       async create () {

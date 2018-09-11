@@ -34,8 +34,8 @@ export const ItemSpecTypeLabelArray = Array.decorate(
         return LabelModel
       }
 
-      async query(keyword) {
-        return await this.fetch({
+      async fetch(keyword) {
+        return await super.fetch({
           query: keyword || ''
         })
       }

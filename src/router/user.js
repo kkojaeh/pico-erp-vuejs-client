@@ -1,4 +1,4 @@
-import { wrapModal } from './default'
+import {wrapModal} from './default'
 
 const userMeta = {
   title: '사용자 관리',
@@ -22,12 +22,12 @@ const meMeta = {
 export default [{
   name: 'user-list',
   path: '/user',
-  component: () => import('pages/user/user-list'),
+  component: () => import('src/pages/user/user-list'),
   meta: userMeta,
   children: [{
     name: 'user-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/user/user-form'), {
+    component: () => wrapModal(import('src/pages/user/user-form'), {
       onModalHide () {
         this.$router.push({path: '/user', query: this.$route.query})
       }
@@ -40,7 +40,7 @@ export default [{
   }, {
     name: 'user-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/user/user-form'), {
+    component: () => wrapModal(import('src/pages/user/user-form'), {
       onModalHide () {
         this.$router.push({path: '/user', query: this.$route.query})
       }
@@ -57,12 +57,12 @@ export default [{
 }, {
   name: 'group-list',
   path: '/group',
-  component: () => import('pages/user/group-list'),
+  component: () => import('src/pages/user/group-list'),
   meta: groupMeta,
   children: [{
     name: 'group-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/user/group-form'), {
+    component: () => wrapModal(import('src/pages/user/group-form'), {
       onModalHide () {
         this.$router.push({path: '/group', query: this.$route.query})
       }
@@ -75,7 +75,7 @@ export default [{
   }, {
     name: 'group-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/user/group-form'), {
+    component: () => wrapModal(import('src/pages/user/group-form'), {
       onModalHide () {
         this.$router.push({path: '/group', query: this.$route.query})
       }
@@ -92,12 +92,12 @@ export default [{
 }, {
   name: 'department-list',
   path: '/department',
-  component: () => import('pages/user/department-list'),
+  component: () => import('src/pages/user/department-list'),
   meta: departmentMeta,
   children: [{
     name: 'department-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/user/department-form'), {
+    component: () => wrapModal(import('src/pages/user/department-form'), {
       onModalHide () {
         this.$router.push({path: '/department', query: this.$route.query})
       }
@@ -110,7 +110,7 @@ export default [{
   }, {
     name: 'department-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/user/department-form'), {
+    component: () => wrapModal(import('src/pages/user/department-form'), {
       onModalHide () {
         this.$router.push({path: '/department', query: this.$route.query})
       }
@@ -127,6 +127,6 @@ export default [{
 }, {
   name: 'my-form',
   path: '/my',
-  component: () => import('pages/user/my-form'),
+  component: () => import('src/pages/user/my-form'),
   meta: meMeta
 }]

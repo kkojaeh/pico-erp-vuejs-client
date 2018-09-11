@@ -1,4 +1,4 @@
-import { wrapModal } from './default'
+import {wrapModal} from './default'
 
 let meta = {
   title: '회사 관리',
@@ -8,12 +8,12 @@ let meta = {
 export default [{
   name: 'company-list',
   path: '/company',
-  component: () => import('pages/company/company-list'),
+  component: () => import('src/pages/company/company-list'),
   meta,
   children: [{
     name: 'company-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/company/company-form'), {
+    component: () => wrapModal(import('src/pages/company/company-form'), {
       onModalHide () {
         this.$router.push({path: '/company', query: this.$route.query})
       }
@@ -26,7 +26,7 @@ export default [{
   }, {
     name: 'company-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/company/company-form'), {
+    component: () => wrapModal(import('src/pages/company/company-form'), {
       onModalHide () {
         this.$router.push({path: '/company', query: this.$route.query})
       }

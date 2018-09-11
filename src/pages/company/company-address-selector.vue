@@ -106,7 +106,7 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       const company = await CompanyModel.get(this.companyId, true)
       this.array = new CompanyAddressArray(company)
-      await this.array.query()
+      await this.array.fetch()
       this.array.filter(element => element.enabled)
     },
     methods: {

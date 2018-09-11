@@ -109,8 +109,8 @@ export const CompanyContactArray = Array.decorate(
         this.company = company
       }
 
-      async query() {
-        return await this.fetch({
+      async fetch() {
+        return await super.fetch({
           companyId: this.company.id
         })
       }
@@ -132,8 +132,8 @@ export const CompanyContactLabelArray = Array.decorate(
         return api
       }
 
-      async query(companyId, keyword) {
-        return await this.fetch({
+      async fetch(companyId, keyword) {
+        return await super.fetch({
           companyId: companyId,
           query: keyword || ''
         })

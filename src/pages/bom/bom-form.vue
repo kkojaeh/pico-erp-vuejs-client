@@ -61,7 +61,7 @@
           <ag-grid-column field="item.unit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
-                          :cell-renderer-params="{array:unitLabels, valueField:'value', labelField: 'label'}"/>
+                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
           <ag-grid-column field="quantity" header-name="수량" :width="80"
                           :editable="isQuantityEditable"
                           cell-editor-framework="ag-grid-input-editor"
@@ -71,7 +71,7 @@
           <ag-grid-column field="status" header-name="상태" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
-                          :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+                          :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.total" header-name="단가" :width="100"
                           :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.total')"
                           :cell-style="{textAlign: 'right'}"/>
@@ -170,15 +170,15 @@
         array: [],
         model: new BomModel(),
         selected: new BomModel({isNull: true}),
-        statusLabels: new BomStatusArray(),
-        unitLabels: new UnitLabelArray(),
+        statusLabelArray: new BomStatusArray(),
+        unitLabelArray: new UnitLabelArray(),
         detailedUnitCost: false,
         loading: false
       }
     },
     mounted() {
-      this.statusLabels.fetch()
-      this.unitLabels.fetch()
+      this.statusLabelArray.fetch()
+      this.unitLabelArray.fetch()
       this.$nextTick(() => this.show())
     },
     methods: {

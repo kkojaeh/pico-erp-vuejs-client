@@ -97,7 +97,7 @@
       <q-field slot="filter" icon="fas fa-sitemap" helper="사용자의 부서를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
         <c-autocomplete-select float-label="부서" v-model="filters.departmentId"
-                               :label.sync="filters.departmentName" :options="departmentLabels"
+                               :label.sync="filters.departmentName" :options="departmentLabelArray"
                                label-field="label" value-field="value"
                                @search="_onDepartmentSearch">
           <template slot="option" slot-scope="option">
@@ -148,7 +148,7 @@
     data () {
       return {
         array: new UserPaginationArray(),
-        departmentLabels: new DepartmentLabelArray(),
+        departmentLabelArray: new DepartmentLabelArray(),
         filters: {
           name: null,
           enabled: true,
@@ -165,14 +165,14 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {
         enabled: Boolean
       })
-      this.departmentLabels.query()
+      this.departmentLabelArray.fetch()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
       },
       async _onDepartmentSearch (keyword, done) {
-        await this.departmentLabels.query(keyword)
+        await this.departmentLabelArray.fetch(keyword)
         done()
       },
       async importByXlsx () {

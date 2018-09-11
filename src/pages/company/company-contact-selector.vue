@@ -105,7 +105,7 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       const company = await CompanyModel.get(this.companyId, true)
       this.array = new CompanyContactArray(company)
-      this.array.query()
+      this.array.fetch()
     },
     methods: {
       retrieve() {

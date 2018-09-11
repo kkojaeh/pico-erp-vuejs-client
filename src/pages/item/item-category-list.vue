@@ -99,7 +99,7 @@
     data () {
       return {
         array: new ItemCategoryHierarchyArray(),
-        userLabels: new UserLabelArray(),
+        userLabelArray: new UserLabelArray(),
         filters: {
           keyword: null
         },
@@ -118,14 +118,14 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.userLabels.query()
+      this.userLabelArray.fetch()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
       },
       async onManagerSearch (keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       getNodeChildDetails (data) {

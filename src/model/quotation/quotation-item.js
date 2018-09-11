@@ -102,8 +102,8 @@ export const QuotationItemArray = Array.decorate(
         this.quotation = quotation
       }
 
-      async query() {
-        await this.fetch({
+      async fetch() {
+        await super.fetch({
           quotationId: this.quotation.id
         })
         await Promise.all(this.map(async (element) => await element.fetchReference()))

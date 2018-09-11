@@ -281,7 +281,7 @@
       async retrieve(date) {
         const begin = moment(date).date(1);
         const end = moment(begin).add(1, 'months').add(-1, 'days');
-        await this.array.query(
+        await this.array.fetch(
             this.displayCategoryId,
             begin.add(-7, 'days').format('YYYY-MM-DD'),
             end.add(7, 'days').format('YYYY-MM-DD')

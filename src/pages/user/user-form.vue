@@ -46,7 +46,7 @@
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
-                                 :label="departmentModel.name" :options="departmentLabels"
+                                 :label="departmentModel.name" :options="departmentLabelArray"
                                  label-field="label" value-field="value"
                                  @search="_onDepartmentSearch">
             <template slot="option" slot-scope="option">
@@ -147,7 +147,7 @@
     data() {
       return {
         model: new UserModel(),
-        departmentLabels: new DepartmentLabelArray(),
+        departmentLabelArray: new DepartmentLabelArray(),
         departmentModel: new DepartmentModel(),
         roleArray: new UserRoleArray(),
         roleFilter: null
@@ -157,24 +157,24 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.departmentLabels.query()
+      this.departmentLabelArray.fetch()
     },
     methods: {
       async create() {
         this.model = new UserModel()
         this.roleArray = new UserRoleArray(this.model)
-        await this.roleArray.query()
+        await this.roleArray.fetch()
       },
       async load(id) {
         this.model = await UserModel.get(id)
         this.roleArray = new UserRoleArray(this.model)
-        await this.roleArray.query()
+        await this.roleArray.fetch()
       },
       async show() {
         await this.load(this.id)
       },
       async _onDepartmentSearch(keyword, done) {
-        await this.departmentLabels.query(keyword)
+        await this.departmentLabelArray.fetch(keyword)
         done()
       },
       async onSaveClick() {

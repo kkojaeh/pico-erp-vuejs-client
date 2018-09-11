@@ -31,7 +31,7 @@
                  :error="!!model.$errors.infoTypeId"
                  :error-label="model.$errors.infoTypeId">
           <c-autocomplete-select float-label="분류" v-model="model.infoTypeId"
-                                 :label="infoTypeModel.name" :options="infoTypeLabels"
+                                 :label="infoTypeModel.name" :options="infoTypeLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onProcessInfoTypeSearch">
             <template slot="option" slot-scope="option">
@@ -96,7 +96,7 @@
     data() {
       return {
         model: new PreprocessTypeModel(),
-        infoTypeLabels: new ProcessInfoTypeLabelArray(),
+        infoTypeLabelArray: new ProcessInfoTypeLabelArray(),
         infoTypeModel: new ProcessInfoTypeModel()
       }
     },
@@ -104,15 +104,15 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.infoTypeLabels.query()
+      this.infoTypeLabelArray.fetch()
     },
     methods: {
       difficultyLabel(value) {
-        const label = this.difficultyLabels.find(data => data.value == value)
+        const label = this.difficultyLabelArray.find(data => data.value == value)
         return label ? label.label : ''
       },
       async onProcessInfoTypeSearch(keyword, done) {
-        await this.infoTypeLabels.query(keyword)
+        await this.infoTypeLabelArray.fetch(keyword)
         done()
       },
       async create() {

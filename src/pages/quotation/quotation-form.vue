@@ -30,7 +30,7 @@
                      :error-label="model.$errors.managerId">
 
               <c-autocomplete-select float-label="담당자" v-model="model.managerId"
-                                     :label="managerModel.name" :options="userLabels"
+                                     :label="managerModel.name" :options="userLabelArray"
                                      label-field="label" value-field="value"
                                      @search="onManagerSearch">
                 <template slot="option" slot-scope="option">
@@ -45,13 +45,13 @@
                      :error="!!model.$errors.expiryPolicy"
                      :error-label="model.$errors.expiryPolicy">
               <q-select float-label="만료 정책" v-model="model.expiryPolicy"
-                        :options="expiryPolicyLabels"></q-select>
+                        :options="expiryPolicyLabelArray"></q-select>
             </q-field>
 
             <q-field icon="check" helper="견적의 상태 입니다"
                      class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
               <q-select float-label="상태" v-model="model.status" readonly hide-underline
-                        :options="statusLabels"></q-select>
+                        :options="statusLabelArray"></q-select>
             </q-field>
 
           </q-card-main>
@@ -74,7 +74,7 @@
                      :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
 
               <c-autocomplete-select float-label="프로젝트" v-model="model.projectId"
-                                     :label="projectModel.name" :options="projectLabels"
+                                     :label="projectModel.name" :options="projectLabelArray"
                                      label-field="label" value-field="value"
                                      @search="onProjectSearch">
                 <template slot="option" slot-scope="option">
@@ -534,10 +534,10 @@
         projectModel: new ProjectModel(),
         customerModel: new CompanyModel(),
         managerModel: new UserModel(),
-        projectLabels: new ProjectLabelArray(),
-        statusLabels: new QuotationStatusArray(),
-        userLabels: new UserLabelArray(),
-        expiryPolicyLabels: new QuotationExpiryPolicyArray(),
+        projectLabelArray: new ProjectLabelArray(),
+        statusLabelArray: new QuotationStatusArray(),
+        userLabelArray: new UserLabelArray(),
+        expiryPolicyLabelArray: new QuotationExpiryPolicyArray(),
         itemArray: new QuotationItemArray(),
         itemAdditionArray: new QuotationItemAdditionArray(),
         additionArray: new QuotationAdditionArray(),
@@ -550,10 +550,10 @@
       }
     },
     mounted() {
-      this.statusLabels.fetch()
-      this.expiryPolicyLabels.fetch()
-      this.projectLabels.query()
-      this.userLabels.query()
+      this.statusLabelArray.fetch()
+      this.expiryPolicyLabelArray.fetch()
+      this.projectLabelArray.fetch()
+      this.userLabelArray.fetch()
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
@@ -616,11 +616,11 @@
         return 48
       },
       async onProjectSearch(keyword, done) {
-        await this.projectLabels.query(keyword)
+        await this.projectLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async onCopyContactFromProjectClick() {
@@ -644,7 +644,7 @@
         const itemAdditionArray = new QuotationItemAdditionArray(model)
         const additionArray = new QuotationAdditionArray(model)
         await Promise.all(
-            [itemArray.query(), additionArray.query(), itemAdditionArray.query()])
+            [itemArray.fetch(), additionArray.fetch(), itemAdditionArray.fetch()])
         this.model = model
         this.itemArray = itemArray
         this.itemAdditionArray = itemAdditionArray

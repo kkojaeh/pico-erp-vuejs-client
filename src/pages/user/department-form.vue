@@ -31,7 +31,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label="managerModel.name" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -84,7 +84,7 @@
     data() {
       return {
         model: new DepartmentModel(),
-        userLabels: new UserLabelArray(),
+        userLabelArray: new UserLabelArray(),
         managerModel: new UserModel()
       }
     },
@@ -92,11 +92,11 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.userLabels.query()
+      this.userLabelArray.fetch()
     },
     methods: {
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async create() {

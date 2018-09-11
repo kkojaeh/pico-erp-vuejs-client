@@ -255,8 +255,8 @@
         const model = await CompanyModel.get(id)
         const contacts = new CompanyContactArray(model)
         const addresses = new CompanyAddressArray(model)
-        await addresses.query()
-        await contacts.query()
+        await addresses.fetch()
+        await contacts.fetch()
         this.model = model
         this.contacts = contacts
         this.addresses = addresses

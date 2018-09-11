@@ -18,7 +18,7 @@
                  :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
 
           <c-autocomplete-select float-label="프로젝트" v-model="model.projectId"
-                                 :label="projectModel.name" :options="projectLabels"
+                                 :label="projectModel.name" :options="projectLabelArray"
                                  label-field="label" value-field="value"
                                  :readonly="!!model.projectId" :hide-underline="!!model.projectId"
                                  @search="onProjectSearch">
@@ -39,7 +39,7 @@
         <q-field icon="check" helper="견적의 상태 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status" readonly hide-underline
-                    :options="statusLabels"></q-select>
+                    :options="statusLabelArray"></q-select>
         </q-field>
 
         <q-field icon="account_box" helper="담당자를 선택하세요"
@@ -47,7 +47,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="담당자" v-model="model.managerId"
-                                 :label="managerModel.name" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -62,7 +62,7 @@
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
-                                 :label="customerModel.name" :options="companyLabels"
+                                 :label="customerModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  hide-underline readonly
                                  @search="onCustomerSearch">
@@ -93,7 +93,7 @@
                  :error="!!model.$errors.purchaserId"
                  :error-label="model.$errors.purchaserId">
           <c-autocomplete-select float-label="발주사" v-model="model.purchaserId"
-                                 :label="purchaserModel.name" :options="companyLabels"
+                                 :label="purchaserModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onPurchaserSearch">
             <template slot="option" slot-scope="option">
@@ -148,7 +148,7 @@
                  :error="!!model.$errors.receiverId"
                  :error-label="model.$errors.receiverId">
           <c-autocomplete-select float-label="인수사" v-model="model.receiverId"
-                                 :label="receiverModel.name" :options="companyLabels"
+                                 :label="receiverModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onReceiverSearch">
             <template slot="option" slot-scope="option">
@@ -288,15 +288,15 @@
       return {
         model: new OrderAcceptanceModel(),
         itemArray: new OrderAcceptanceItemArray(),
-        companyLabels: new CompanyLabelArray(),
-        userLabels: new UserLabelArray(),
+        companyLabelArray: new CompanyLabelArray(),
+        userLabelArray: new UserLabelArray(),
         managerModel: new UserModel(),
         projectModel: new ProjectModel(),
-        projectLabels: new ProjectLabelArray(),
+        projectLabelArray: new ProjectLabelArray(),
         customerModel: new CompanyModel(),
         purchaserModel: new CompanyModel(),
         receiverModel: new CompanyModel(),
-        statusLabels: new OrderAcceptanceStatusArray(),
+        statusLabelArray: new OrderAcceptanceStatusArray(),
         enabled: true,
         selected: {
           item: null
@@ -307,30 +307,30 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.companyLabels.query()
-      this.userLabels.query()
-      this.projectLabels.query()
-      this.statusLabels.fetch()
+      this.companyLabelArray.fetch()
+      this.userLabelArray.fetch()
+      this.projectLabelArray.fetch()
+      this.statusLabelArray.fetch()
     },
     methods: {
       async onCustomerSearch(keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onPurchaserSearch(keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onReceiverSearch(keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async onProjectSearch(keyword, done) {
-        await this.projectLabels.query(keyword)
+        await this.projectLabelArray.fetch(keyword)
         done()
       },
 
@@ -349,7 +349,7 @@
       async load(id) {
         const model = await OrderAcceptanceModel.get(id)
         const itemArray = new OrderAcceptanceItemArray(model)
-        await itemArray.query()
+        await itemArray.fetch()
         this.model = model
         this.itemArray = itemArray
       },

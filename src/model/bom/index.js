@@ -246,8 +246,8 @@ export const BomRevisionArray = Array.decorate(
         return BomModel
       }
 
-      async query(itemId) {
-        return await this.fetch({
+      async fetch(itemId) {
+        return await super.fetch({
           itemId: itemId
         })
       }

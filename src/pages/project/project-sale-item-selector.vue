@@ -103,7 +103,7 @@
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       const project = await ProjectModel.get(this.projectId, true)
       this.array = new ProjectSaleItemArray(project)
-      this.array.query()
+      this.array.fetch()
     },
     methods: {
       retrieve() {

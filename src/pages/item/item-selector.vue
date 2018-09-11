@@ -29,10 +29,10 @@
         <ag-grid-column field="unit" header-name="단위" :width="90" align="center"/>
         <ag-grid-column field="type" header-name="유형" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:typeLabels, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{array:typeLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
 
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="150"/>
         <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
@@ -60,13 +60,13 @@
       <q-field slot="filter" icon="fas fa-comment" helper="품목의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
-                  :options="statusLabels" multiple chips></q-select>
+                  :options="statusLabelArray" multiple chips></q-select>
       </q-field>
 
       <q-field slot="filter" icon="fas fa-comment" helper="품목의 유형을 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="유형" v-model="filters.types"
-                  :options="typeLabels" multiple chips></q-select>
+                  :options="typeLabelArray" multiple chips></q-select>
       </q-field>
 
 
@@ -74,7 +74,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
-                               :label.sync="filters.customerName" :options="companyLabels"
+                               :label.sync="filters.customerName" :options="companyLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onCustomerSearch">
           <template slot="option" slot-scope="option">
@@ -88,7 +88,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.categoryId"
-                               :label.sync="filters.categoryName" :options="categoryLabels"
+                               :label.sync="filters.categoryName" :options="categoryLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onCategorySearch">
           <template slot="option" slot-scope="option">
@@ -146,10 +146,10 @@
     data () {
       return {
         array: new ItemPaginationArray(),
-        categoryLabels: new ItemCategoryLabelArray(),
-        statusLabels: new ItemStatusArray(),
-        typeLabels: new ItemTypeArray(),
-        companyLabels: new CompanyLabelArray(),
+        categoryLabelArray: new ItemCategoryLabelArray(),
+        statusLabelArray: new ItemStatusArray(),
+        typeLabelArray: new ItemTypeArray(),
+        companyLabelArray: new CompanyLabelArray(),
         filters: {
           name: null,
           code: null,
@@ -174,21 +174,21 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.statusLabels.fetch()
-      this.typeLabels.fetch()
-      this.categoryLabels.query()
-      this.companyLabels.query()
+      this.statusLabelArray.fetch()
+      this.typeLabelArray.fetch()
+      this.categoryLabelArray.fetch()
+      this.companyLabelArray.fetch()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
       },
       async onCustomerSearch (keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onCategorySearch (keyword, done) {
-        await this.categoryLabels.query(keyword)
+        await this.categoryLabelArray.fetch(keyword)
         done()
       },
       async onGridSelectionChanged (event) {
@@ -210,14 +210,14 @@
       },
       statusesLabel () {
         return this.filters.statuses.map(
-          value => this.statusLabels.find(status => status.value == value))
+            value => this.statusLabelArray.find(status => status.value == value))
         .filter(data => data)
         .map(data => data.label)
         .join(', ')
       },
       typesLabel () {
         return this.filters.types.map(
-          value => this.typeLabels.find(status => status.value == value))
+            value => this.typeLabelArray.find(status => status.value == value))
         .filter(data => data)
         .map(data => data.label)
         .join(', ')

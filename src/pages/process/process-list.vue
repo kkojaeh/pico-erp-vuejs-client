@@ -34,12 +34,12 @@
         <ag-grid-column field="typeName" header-name="분류" :width="150"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"
                         :cell-style="{textAlign: 'center'}"/>
         <ag-grid-column field="difficulty" header-name="난이도" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-style="{textAlign: 'center'}"
-                        :cell-renderer-params="{array:difficultyLabels, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{array:difficultyLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="managerName" header-name="담당자" :width="150"/>
 
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>
@@ -63,7 +63,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="유형" v-model="filters.processTypeId"
-                               :label.sync="filters.processTypeName" :options="typeLabels"
+                               :label.sync="filters.processTypeName" :options="typeLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onProcessTypeSearch">
           <template slot="option" slot-scope="option">
@@ -77,7 +77,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="품목" v-model="filters.itemId"
-                               :label.sync="filters.itemName" :options="itemLabels"
+                               :label.sync="filters.itemName" :options="itemLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onItemSearch">
           <template slot="option" slot-scope="option">
@@ -91,7 +91,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="담당자" v-model="filters.managerId"
-                               :label.sync="filters.managerName" :options="userLabels"
+                               :label.sync="filters.managerName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onManagerSearch">
           <template slot="option" slot-scope="option">
@@ -136,11 +136,11 @@
     data () {
       return {
         array: new ProcessPaginationArray(),
-        typeLabels: new ProcessTypeLabelArray(),
-        itemLabels: new ItemLabelArray(),
-        userLabels: new UserLabelArray(),
-        statusLabels: new ProcessStatusArray(),
-        difficultyLabels: new ProcessDifficultyArray(),
+        typeLabelArray: new ProcessTypeLabelArray(),
+        itemLabelArray: new ItemLabelArray(),
+        userLabelArray: new UserLabelArray(),
+        statusLabelArray: new ProcessStatusArray(),
+        difficultyLabelArray: new ProcessDifficultyArray(),
         filters: {
           name: null,
           processTypeId: null,
@@ -163,26 +163,26 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.typeLabels.query()
-      this.statusLabels.fetch()
-      this.difficultyLabels.fetch()
-      this.userLabels.query()
-      this.itemLabels.query()
+      this.typeLabelArray.fetch()
+      this.statusLabelArray.fetch()
+      this.difficultyLabelArray.fetch()
+      this.userLabelArray.fetch()
+      this.itemLabelArray.fetch()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
       },
       async onProcessTypeSearch (keyword, done) {
-        await this.typeLabels.query(keyword)
+        await this.typeLabelArray.fetch(keyword)
         done()
       },
       async onItemSearch (keyword, done) {
-        await this.itemLabels.query(keyword)
+        await this.itemLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch (keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
 

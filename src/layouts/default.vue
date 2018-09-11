@@ -38,13 +38,13 @@
       <q-list separator no-border link inset-delimiter>
         <!-- collapsible to hide sub-level menu entries -->
 
-        <q-collapsible v-for="menu in menus" :icon="menu.icon" :label="menu.name"
+        <q-collapsible v-for="menu in menus" :icon="menu.icon" :label="menu.label"
                        :key="menu.id"
                        v-if="menu.children && menu.children.length" opened>
           <router-link :to="child.url" v-for="child in menu.children" :key="child.id">
             <q-item>
               <q-item-side :icon="child.icon"/>
-              <q-item-main :label="child.name"/>
+              <q-item-main :label="child.label"/>
             </q-item>
           </router-link>
 

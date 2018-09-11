@@ -31,7 +31,7 @@
                  :error="!!model.$errors.infoTypeId"
                  :error-label="model.$errors.infoTypeId">
           <c-autocomplete-select float-label="분류" v-model="model.infoTypeId"
-                                 :label="infoTypeModel.name" :options="infoTypeLabels"
+                                 :label="infoTypeModel.name" :options="infoTypeLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onProcessInfoTypeSearch">
             <template slot="option" slot-scope="option">
@@ -63,7 +63,7 @@
       <q-card-main class="column">
         <q-field icon="search" helper="추가할 사전 공정 유형의 이름을 입력하고 선택하세요" class="col-auto">
           <c-autocomplete-select ref="preprocessType" float-label="사전 공정" v-model="preprocessTypeId"
-                                 :options="preprocessTypeLabels"
+                                 :options="preprocessTypeLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onPreprocessTypeSearch">
             <template slot="option" slot-scope="option">
@@ -76,7 +76,7 @@
                  :grid-auto-height="true"
                  enable-col-resize
                  enable-sorting
-                 :row-data="preprocessTypes">
+                 :row-data="preprocessTypeArray">
 
           <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
@@ -279,11 +279,11 @@
     data () {
       return {
         model: new ProcessTypeModel(),
-        infoTypeLabels: new ProcessInfoTypeLabelArray(),
-        difficultyLabels: new ProcessDifficultyArray(),
+        infoTypeLabelArray: new ProcessInfoTypeLabelArray(),
+        difficultyLabelArray: new ProcessDifficultyArray(),
         infoTypeModel: new ProcessInfoTypeModel(),
-        preprocessTypes: new ProcessTypePreprocessTypeArray(),
-        preprocessTypeLabels: new PreprocessTypeLabelArray(),
+        preprocessTypeArray: new ProcessTypePreprocessTypeArray(),
+        preprocessTypeLabelArray: new PreprocessTypeLabelArray(),
         preprocessTypeId: null
       }
     },
@@ -291,27 +291,27 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.infoTypeLabels.query()
-      this.difficultyLabels.fetch()
-      this.preprocessTypeLabels.query()
+      this.infoTypeLabelArray.fetch()
+      this.difficultyLabelArray.fetch()
+      this.preprocessTypeLabelArray.fetch()
     },
     methods: {
       difficultyLabel (value) {
-        const label = this.difficultyLabels.find(data => data.value == value)
+        const label = this.difficultyLabelArray.find(data => data.value == value)
         return label ? label.label : ''
       },
       async onPreprocessTypeSearch(keyword, done) {
-        await this.preprocessTypeLabels.query(keyword)
+        await this.preprocessTypeLabelArray.fetch(keyword)
         done()
       },
       async onProcessInfoTypeSearch (keyword, done) {
-        await this.infoTypeLabels.query(keyword)
+        await this.infoTypeLabelArray.fetch(keyword)
         done()
       },
       async onPreprocessTypeRemove(preprocessType) {
         const ok = await this.$alert.confirm('해당 사전 공정 유형을 삭제 하시겠습니까?')
         if (ok) {
-          this.preprocessTypes.remove(preprocessType)
+          this.preprocessTypeArray.remove(preprocessType)
         }
       },
       async create () {
@@ -319,10 +319,11 @@
       },
       async show () {
         const model = await ProcessTypeModel.get(this.id)
-        const preprocessTypes = new ProcessTypePreprocessTypeArray(model)
-        model.preprocessTypes.forEach(preprocessType => preprocessTypes.push(preprocessType))
+        const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
+        model.preprocessTypeArray.forEach(
+            preprocessType => preprocessTypeArray.push(preprocessType))
         this.model = model
-        this.preprocessTypes = preprocessTypes
+        this.preprocessTypeArray = preprocessTypeArray
       },
       async onSaveClick () {
         let valid = await this.model.validate()
@@ -344,7 +345,7 @@
       },
       async save () {
         await this.model.save()
-        await this.preprocessTypes.save()
+        await this.preprocessTypeArray.save()
       }
     },
     computed: {
@@ -367,7 +368,7 @@
         if (to) {
           const preprocessType = await PreprocessTypeModel.get(to, true)
           preprocessType.added = true
-          this.preprocessTypes.push(preprocessType)
+          this.preprocessTypeArray.push(preprocessType)
           this.preprocessTypeId = null
           this.$refs.preprocessType.focus()
         }

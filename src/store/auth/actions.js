@@ -1,12 +1,11 @@
-import { MyMenuArray, MyModel } from 'src/model/user'
+import {MyModel} from 'src/model/user'
+import {Menu} from 'src/model/menu'
 
 export const signIn = async (context, user) => {
   if (user) {
     let model = await MyModel.get()
-    let array = new MyMenuArray()
-    await array.fetch()
     context.commit('user', model)
-    context.commit('menus', array)
+    context.commit('menus', Menu.getAuthorized())
   } else {
     context.commit('user', null)
     context.commit('menus', [])

@@ -57,7 +57,7 @@
                  :error="!!model.$errors.typeId"
                  :error-label="model.$errors.typeId">
           <c-autocomplete-select float-label="공정 유형" v-model="model.typeId"
-                                 :label="typeModel.name" :options="processTypeLabels"
+                                 :label="typeModel.name" :options="processTypeLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onProcessTypeSearch" :readonly="typeFixed"
                                  :hide-underline="typeFixed">
@@ -71,7 +71,7 @@
         <q-field icon="fas fa-comment" helper="공정 난이도를 지정하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="난이도" v-model="model.difficulty"
-                    :options="difficultyLabels"></q-select>
+                    :options="difficultyLabelArray"></q-select>
         </q-field>
 
         <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
@@ -79,7 +79,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label="managerModel.name" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -92,7 +92,7 @@
         <q-field icon="check" helper="공정의 상태 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status" readonly hide-underline
-                    :options="statusLabels"></q-select>
+                    :options="statusLabelArray"></q-select>
         </q-field>
 
         <q-field icon="monetization_on" helper="자동 산출된 단가를 조정할 금액을 입력하세요"
@@ -132,7 +132,7 @@
                  :grid-auto-height="true"
                  enable-col-resize
                  enable-sorting
-                 :row-data="preprocesses">
+                 :row-data="preprocessArray">
 
           <ag-grid-column field="name" header-name="이름" :width="300"/>
           <ag-grid-column field="chargeCost" header-name="기준단가" :width="100"
@@ -272,21 +272,21 @@
         itemModel: new ItemModel(),
         typeModel: new ProcessTypeModel(),
         managerModel: new UserModel(),
-        processTypeLabels: new ProcessTypeLabelArray(),
-        difficultyLabels: new ProcessDifficultyArray(),
-        statusLabels: new ProcessStatusArray(),
-        userLabels: new UserLabelArray(),
-        preprocesses: new ProcessPreprocessArray()
+        processTypeLabelArray: new ProcessTypeLabelArray(),
+        difficultyLabelArray: new ProcessDifficultyArray(),
+        statusLabelArray: new ProcessStatusArray(),
+        userLabelArray: new UserLabelArray(),
+        preprocessArray: new ProcessPreprocessArray()
       }
     },
     mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.processTypeLabels.query()
-      this.difficultyLabels.fetch()
-      this.statusLabels.fetch()
-      this.userLabels.query()
+      this.processTypeLabelArray.fetch()
+      this.difficultyLabelArray.fetch()
+      this.statusLabelArray.fetch()
+      this.userLabelArray.fetch()
     },
     methods: {
       createEstimatedCostChart() {
@@ -339,11 +339,11 @@
         })
       },
       async onProcessTypeSearch(keyword, done) {
-        await this.processTypeLabels.query(keyword)
+        await this.processTypeLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async create() {
@@ -351,7 +351,7 @@
         this.model = new ProcessModel()
         this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
-        this.preprocesses = new ProcessPreprocessArray(this.model)
+        this.preprocessArray = new ProcessPreprocessArray(this.model)
         this.createEstimatedCostChart()
       },
       async load(id) {
@@ -359,9 +359,9 @@
         this.itemModel = await ItemModel.get(this.model.itemId)
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
         this.managerModel = await UserModel.get(this.model.managerId)
-        const preprocesses = new ProcessPreprocessArray(this.model)
-        await preprocesses.query()
-        this.preprocesses = preprocesses
+        const preprocessArray = new ProcessPreprocessArray(this.model)
+        await preprocessArray.fetch()
+        this.preprocessArray = preprocessArray
         this.createEstimatedCostChart()
       },
       async show() {

@@ -114,8 +114,8 @@ export const OrderAcceptanceItemArray = Array.decorate(
         this.orderAcceptance = orderAcceptance
       }
 
-      async query() {
-        await this.fetch({
+      async fetch() {
+        await super.fetch({
           orderAcceptanceId: this.orderAcceptance.id
         })
         await Promise.all(

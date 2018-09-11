@@ -45,7 +45,7 @@
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
-                                 :label="departmentModel.name" :options="departmentLabels"
+                                 :label="departmentModel.name" :options="departmentLabelArray"
                                  label-field="label" value-field="value"
                                  @search="_onDepartmentSearch" readonly hide-underline>
             <template slot="option" slot-scope="option">
@@ -93,12 +93,12 @@
     data () {
       return {
         model: new MyModel(),
-        departmentLabels: new DepartmentLabelArray(),
+        departmentLabelArray: new DepartmentLabelArray(),
         departmentModel: new DepartmentModel()
       }
     },
     mounted () {
-      this.departmentLabels.query()
+      this.departmentLabelArray.fetch()
       this.show()
     },
     methods: {
@@ -106,7 +106,7 @@
         this.model = await MyModel.get()
       },
       async _onDepartmentSearch (keyword, done) {
-        await this.departmentLabels.query(keyword)
+        await this.departmentLabelArray.fetch(keyword)
         done()
       },
       async _onResetPasswordClick () {

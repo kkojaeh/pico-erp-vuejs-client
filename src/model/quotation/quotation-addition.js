@@ -89,8 +89,8 @@ export const QuotationAdditionArray = Array.decorate(
         this.quotation = quotation
       }
 
-      async query() {
-        await this.fetch({
+      async fetch() {
+        await super.fetch({
           quotationId: this.quotation.id
         })
       }

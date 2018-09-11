@@ -42,7 +42,7 @@
                         :cell-renderer="processNameRenderer"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="draftedBy.name" header-name="생성자" :width="120"/>
         <ag-grid-column field="draftedDate" header-name="생성시간" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
@@ -92,19 +92,19 @@
       return {
         array: new BomRevisionArray(),
         filters: {},
-        statusLabels: new BomStatusArray(),
+        statusLabelArray: new BomStatusArray(),
         itemModel: new ItemModel()
       }
     },
     watch: {
       '$route' (to, from) {
-        this.array.query(this.itemId)
+        this.array.fetch(this.itemId)
       }
     },
     async mounted () {
-      this.statusLabels.fetch()
+      this.statusLabelArray.fetch()
       this.itemModel = await ItemModel.get(this.itemId)
-      this.array.query(this.itemId)
+      this.array.fetch(this.itemId)
     },
     methods: {
       processNameRenderer (params) {

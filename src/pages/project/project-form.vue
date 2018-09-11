@@ -24,7 +24,7 @@
                  :error="!!model.$errors.managerId"
                  :error-label="model.$errors.managerId">
           <c-autocomplete-select float-label="담당자" v-model="model.managerId"
-                                 :label="managerModel.name" :options="userLabels"
+                                 :label="managerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
@@ -59,7 +59,7 @@
                  :error="!!model.$errors.customerId"
                  :error-label="model.$errors.customerId">
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
-                                 :label="customerModel.name" :options="companyLabels"
+                                 :label="customerModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onCustomerSearch">
             <template slot="option" slot-scope="option">
@@ -319,8 +319,8 @@
     data() {
       return {
         model: new ProjectModel(),
-        companyLabels: new CompanyLabelArray(),
-        userLabels: new UserLabelArray(),
+        companyLabelArray: new CompanyLabelArray(),
+        userLabelArray: new UserLabelArray(),
         managerModel: new UserModel(),
         customerModel: new CompanyModel(),
         saleItemArray: new ProjectSaleItemArray(),
@@ -336,19 +336,19 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.companyLabels.query()
-      this.userLabels.query()
+      this.companyLabelArray.fetch()
+      this.userLabelArray.fetch()
     },
     methods: {
       isChargeEditable(params) {
         return params.data.phantom;
       },
       async onCustomerSearch(keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       onSaleItemSelectionChanged(event) {
@@ -367,7 +367,7 @@
         const model = await ProjectModel.get(this.id)
         const saleItemArray = new ProjectSaleItemArray(model)
         const chargeArray = new ProjectChargeArray(model)
-        await Promise.all([saleItemArray.query(), chargeArray.query()])
+        await Promise.all([saleItemArray.fetch(), chargeArray.fetch()])
         this.model = model
         this.saleItemArray = saleItemArray
         this.chargeArray = chargeArray

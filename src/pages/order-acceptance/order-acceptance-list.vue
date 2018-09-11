@@ -36,7 +36,7 @@
                         :cell-renderer-params="{path:'/order-acceptance/show/${id}', query:$route.query}"/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:statusLabels, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="projectName" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="customerName" header-name="고객사" :width="120"/>
         <ag-grid-column field="purchaserName" header-name="발주사" :width="120"/>
@@ -68,7 +68,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="프로젝트" v-model="filters.projectId"
-                               :label.sync="filters.projectName" :options="projectLabels"
+                               :label.sync="filters.projectName" :options="projectLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onProjectSearch">
           <template slot="option" slot-scope="option">
@@ -82,7 +82,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="관련회사" v-model="filters.relatedCompanyId"
-                               :label.sync="filters.relatedCompanyName" :options="companyLabels"
+                               :label.sync="filters.relatedCompanyName" :options="companyLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onRelatedCompanySearch">
           <template slot="option" slot-scope="option">
@@ -96,7 +96,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="담당자" v-model="filters.managerId"
-                               :label.sync="filters.managerName" :options="userLabels"
+                               :label.sync="filters.managerName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onManagerSearch">
           <template slot="option" slot-scope="option">
@@ -109,7 +109,7 @@
       <q-field slot="filter" icon="fas fa-building" helper="주문 접수의 상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
-                  :options="statusLabels" multiple></q-select>
+                  :options="statusLabelArray" multiple></q-select>
       </q-field>
 
 
@@ -176,10 +176,10 @@
     data() {
       return {
         array: new OrderAcceptancePaginationArray(),
-        companyLabels: new CompanyLabelArray(),
-        userLabels: new UserLabelArray(),
-        projectLabels: new ProjectLabelArray(),
-        statusLabels: new OrderAcceptanceStatusArray(),
+        companyLabelArray: new CompanyLabelArray(),
+        userLabelArray: new UserLabelArray(),
+        projectLabelArray: new ProjectLabelArray(),
+        statusLabelArray: new OrderAcceptanceStatusArray(),
         filters: {
           name: null,
           relatedCompanyId: null,
@@ -205,10 +205,10 @@
       }
     },
     mounted() {
-      this.statusLabels.fetch()
-      this.companyLabels.query()
-      this.userLabels.query()
-      this.projectLabels.query()
+      this.statusLabelArray.fetch()
+      this.companyLabelArray.fetch()
+      this.userLabelArray.fetch()
+      this.projectLabelArray.fetch()
       this.dataAdjuster = new DataAdjuster(this.filters, {
         startDueDate: {
           type: Date,
@@ -225,15 +225,15 @@
         this.$refs.listView.retrieve()
       },
       async onRelatedCompanySearch(keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onProjectSearch(keyword, done) {
-        await this.projectLabels.query(keyword)
+        await this.projectLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async onItemSearch() {
@@ -256,7 +256,7 @@
     computed: {
       statusesLabel() {
         return this.filters.statuses.map(
-            value => this.statusLabels.find(status => status.value == value))
+            value => this.statusLabelArray.find(status => status.value == value))
         .filter(data => data)
         .map(data => data.label)
         .join(', ')

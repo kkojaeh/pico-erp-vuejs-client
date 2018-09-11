@@ -15,6 +15,7 @@ import itemRoutes from './item'
 import bomRoutes from './bom'
 import orderAcceptanceRoutes from './order-acceptance'
 import workDayRoutes from './work-day'
+import facilityRoutes from './facility'
 
 Vue.use(VueRouter)
 
@@ -40,12 +41,12 @@ const Router = new VueRouter({
   routes: [
     {
       path: '/',
-      component: () => import('layouts/default'),
+      component: () => import('src/layouts/default'),
       children: [
         {
           name: 'index',
           path: '',
-          component: () => import('pages/index'),
+          component: () => import('src/pages/index'),
           meta: {
             title: 'Index',
             authorize: 'isAuthenticated()',
@@ -61,7 +62,8 @@ const Router = new VueRouter({
         ...bomRoutes,
         ...orderAcceptanceRoutes,
         ...exampleRoutes,
-        ...workDayRoutes
+        ...workDayRoutes,
+        ...facilityRoutes
       ]
     },
     {
@@ -85,7 +87,7 @@ const Router = new VueRouter({
     { // Always leave this as last one
       name: '404',
       path: '*',
-      component: () => import('pages/404')
+      component: () => import('src/pages/404')
     }
   ]
 

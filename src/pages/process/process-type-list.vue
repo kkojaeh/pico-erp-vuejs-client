@@ -97,7 +97,8 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="분류" v-model="filters.processInfoTypeId"
-                               :label.sync="filters.processInfoTypeName" :options="infoTypeLabels"
+                               :label.sync="filters.processInfoTypeName"
+                               :options="infoTypeLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onProcessInfoTypeSearch">
           <template slot="option" slot-scope="option">
@@ -135,7 +136,7 @@
     data() {
       return {
         array: new ProcessTypePaginationArray(),
-        infoTypeLabels: new ProcessInfoTypeLabelArray(),
+        infoTypeLabelArray: new ProcessInfoTypeLabelArray(),
         filters: {
           name: null,
           processInfoTypeId: null,
@@ -157,14 +158,14 @@
     },
     mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.infoTypeLabels.query()
+      this.infoTypeLabelArray.fetch()
     },
     methods: {
       retrieve() {
         this.$refs.listView.retrieve()
       },
       async onProcessInfoTypeSearch(keyword, done) {
-        await this.infoTypeLabels.query(keyword)
+        await this.infoTypeLabelArray.fetch(keyword)
         done()
       },
       async importByXlsx() {

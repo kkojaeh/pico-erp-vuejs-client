@@ -1,18 +1,5 @@
-import {FetchableArray} from 'src/model/array'
 import {Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-
-export const MyMenuArray = Array.decorate(
-    class extends FetchableArray {
-      get url() {
-        return '/user/me/menus'
-      }
-
-      get axios() {
-        return api
-      }
-    }
-)
 
 export class MyModel extends Model {
 

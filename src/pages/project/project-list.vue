@@ -60,7 +60,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="고객사" v-model="filters.customerId"
-                               :label.sync="filters.customerName" :options="companyLabels"
+                               :label.sync="filters.customerName" :options="companyLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onCustomerSearch">
           <template slot="option" slot-scope="option">
@@ -74,7 +74,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="담당자" v-model="filters.managerId"
-                               :label.sync="filters.managerName" :options="userLabels"
+                               :label.sync="filters.managerName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onManagerSearch">
           <template slot="option" slot-scope="option">
@@ -134,8 +134,8 @@
     data () {
       return {
         array: new ProjectPaginationArray(),
-        companyLabels: new CompanyLabelArray(),
-        userLabels: new UserLabelArray(),
+        companyLabelArray: new CompanyLabelArray(),
+        userLabelArray: new UserLabelArray(),
         filters: {
           name: null,
           customerId: null,
@@ -161,8 +161,8 @@
       }
     },
     mounted () {
-      this.companyLabels.query()
-      this.userLabels.query()
+      this.companyLabelArray.fetch()
+      this.userLabelArray.fetch()
       this.dataAdjuster = new DataAdjuster(this.filters, {
         startCreatedDate: {
           type: Date,
@@ -179,11 +179,11 @@
         this.$refs.listView.retrieve()
       },
       async onCustomerSearch (keyword, done) {
-        await this.companyLabels.query(keyword)
+        await this.companyLabelArray.fetch(keyword)
         done()
       },
       async onManagerSearch (keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async onItemSearch() {

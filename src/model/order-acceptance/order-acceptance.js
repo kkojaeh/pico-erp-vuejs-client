@@ -168,8 +168,8 @@ export const OrderAcceptanceLabelArray = Array.decorate(
         return LabelModel
       }
 
-      async query(keyword) {
-        return this.fetch({
+      async fetch(keyword) {
+        return super.fetch({
           query: keyword || ''
         })
       }

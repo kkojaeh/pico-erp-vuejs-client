@@ -22,18 +22,18 @@
       return {
         options: new QuotationStatusCountPerMonthAggregateOptions(),
         array: new QuotationStatusCountPerMonthAggregateArray(),
-        statusLabels: new QuotationStatusArray(),
+        statusLabelArray: new QuotationStatusArray(),
       }
     },
     async mounted () {
-      await this.statusLabels.fetch()
+      await this.statusLabelArray.fetch()
       await this.array.fetch(this.options)
       this.array.sort(function (a, b) {
         return a.yearMonth - b.yearMonth
       })
       this.array.forEach(item => {
         item.monthName = moment(item.yearMonth, 'YYYYMM').format('MMM')
-        item.statusName = this.statusLabels.find(status => status.value == item.status).label
+        item.statusName = this.statusLabelArray.find(status => status.value == item.status).label
       })
       this.createChart()
     },
@@ -50,7 +50,7 @@
         }
       },
       createChart () {
-        const series = this.statusLabels.map(status => {
+        const series = this.statusLabelArray.map(status => {
           const data = this.array.filter(item => item.status == status.value)
           .map(item => item.count)
           return {

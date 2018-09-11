@@ -55,7 +55,7 @@
       <q-tab-pane name="tab-2" class="column">
         <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="col-auto">
           <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUserId"
-                                 :options="userLabels"
+                                 :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  @search="onUserSearch">
             <template slot="option" slot-scope="option">
@@ -129,7 +129,7 @@
         model: new GroupModel(),
         roleArray: new GroupRoleArray(),
         userArray: new GroupUserArray(),
-        userLabels: new UserLabelArray(),
+        userLabelArray: new UserLabelArray(),
         groupUserId: null
       }
     },
@@ -143,15 +143,15 @@
         this.model = new GroupModel()
         this.roleArray = new GroupRoleArray(this.model)
         this.userArray = new GroupUserArray(this.model)
-        await this.roleArray.query()
-        await this.userArray.query()
+        await this.roleArray.fetch()
+        await this.userArray.fetch()
       },
       async show() {
         this.model = await GroupModel.get(this.id)
         this.roleArray = new GroupRoleArray(this.model)
         this.userArray = new GroupUserArray(this.model)
-        await this.roleArray.query()
-        await this.userArray.query()
+        await this.roleArray.fetch()
+        await this.userArray.fetch()
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -177,7 +177,7 @@
         await this.userArray.save()
       },
       async onUserSearch(keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async onUserRemove(user) {

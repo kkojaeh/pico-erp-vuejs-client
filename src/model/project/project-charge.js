@@ -102,8 +102,8 @@ export const ProjectChargeArray = Array.decorate(
         this.project = project
       }
 
-      async query() {
-        await this.fetch({
+      async fetch() {
+        await super.fetch({
           projectId: this.project.id
         })
       }

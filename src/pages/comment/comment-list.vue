@@ -70,7 +70,7 @@
         page: 1,
         model: new CommentModel(),
         array: new CommentArray(),
-        userLabels: new UserLabelArray()
+        userLabelArray: new UserLabelArray()
       }
     },
     methods: {
@@ -128,8 +128,8 @@
     mounted () {
       this.tribute = new Tribute({
         values: async (keyword, done) => {
-          await this.userLabels.query(keyword)
-          done(this.userLabels)
+          await this.userLabelArray.fetch(keyword)
+          done(this.userLabelArray)
         },
         lookup: (item) => {
           return item.label

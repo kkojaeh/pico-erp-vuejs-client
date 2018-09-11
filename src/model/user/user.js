@@ -157,8 +157,8 @@ export const UserRoleArray = Array.decorate(
         this.user = user
       }
 
-      async query() {
-        return await this.fetch({
+      async fetch() {
+        return await super.fetch({
           userId: this.user.id || ' '
         })
       }
@@ -191,8 +191,8 @@ export const UserLabelArray = Array.decorate(
         return LabelModel
       }
 
-      async query(keyword) {
-        return await this.fetch({
+      async fetch(keyword) {
+        return await super.fetch({
           query: keyword || ''
         })
       }

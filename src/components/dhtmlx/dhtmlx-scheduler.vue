@@ -22,8 +22,6 @@
   const initialConfig = _.cloneDeep(scheduler.config)
   const initialTemplates = _.cloneDeep(scheduler.templates)
 
-  console.log(initialTemplates)
-
   export default {
     name: 'dhtmlx-scheduler',
     props: {

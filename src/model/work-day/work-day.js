@@ -111,8 +111,8 @@ export const WorkDayArray = Array.decorate(
         return WorkDayModel
       }
 
-      async query(categoryId, begin, end) {
-        return await this.fetch({
+      async fetch(categoryId, begin, end) {
+        return await super.fetch({
           categoryId: categoryId,
           begin: begin,
           end: end

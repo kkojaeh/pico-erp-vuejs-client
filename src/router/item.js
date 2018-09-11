@@ -1,4 +1,4 @@
-import { wrapModal } from './default'
+import {wrapModal} from './default'
 
 let itemMeta = {
   title: '품목 관리',
@@ -13,12 +13,12 @@ let categoryMeta = {
 export default [{
   name: 'item-category-list',
   path: '/item-category',
-  component: () => import('pages/item/item-category-list'),
+  component: () => import('src/pages/item/item-category-list'),
   meta: categoryMeta,
   children: [{
     name: 'item-category-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form'), {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -32,7 +32,7 @@ export default [{
   }, {
     name: 'item-category-form-create-by-parent',
     path: 'create/:parentId',
-    component: () => wrapModal(import('pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form'), {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -48,7 +48,7 @@ export default [{
   }, {
     name: 'item-category-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form'), {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -65,12 +65,12 @@ export default [{
 }, {
   name: 'item-list',
   path: '/item',
-  component: () => import('pages/item/item-list'),
+  component: () => import('src/pages/item/item-list'),
   meta: itemMeta,
   children: [{
     name: 'item-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/item/item-form'), {
+    component: () => wrapModal(import('src/pages/item/item-form'), {
       onModalHide () {
         this.$router.push({path: '/item', query: this.$route.query})
       }
@@ -83,7 +83,7 @@ export default [{
   }, {
     name: 'item-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/item/item-form'), {
+    component: () => wrapModal(import('src/pages/item/item-form'), {
       onModalHide () {
         this.$router.push({path: '/item', query: this.$route.query})
       }

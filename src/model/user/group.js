@@ -154,8 +154,8 @@ export const GroupRoleArray = Array.decorate(
         this.group = group
       }
 
-      async query() {
-        return await this.fetch({
+      async fetch() {
+        return await super.fetch({
           groupId: this.group.id || ' '
         })
       }
@@ -195,8 +195,8 @@ export const GroupUserArray = Array.decorate(
         this.group = group
       }
 
-      async query() {
-        return await this.fetch({
+      async fetch() {
+        return await super.fetch({
           groupId: this.group.id || ' '
         })
       }

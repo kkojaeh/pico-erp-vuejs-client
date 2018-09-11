@@ -1,4 +1,4 @@
-import { wrapModal } from './default'
+import {wrapModal} from './default'
 
 let meta = {
   title: '프로젝트 관리',
@@ -8,12 +8,12 @@ let meta = {
 export default [{
   name: 'project-list',
   path: '/project',
-  component: () => import('pages/project/project-list'),
+  component: () => import('src/pages/project/project-list'),
   meta,
   children: [{
     name: 'project-form-create',
     path: 'create',
-    component: () => wrapModal(import('pages/project/project-form'), {
+    component: () => wrapModal(import('src/pages/project/project-form'), {
       onModalHide () {
         this.$router.push({path: '/project', query: this.$route.query})
       }
@@ -26,7 +26,7 @@ export default [{
   }, {
     name: 'project-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('pages/project/project-form'), {
+    component: () => wrapModal(import('src/pages/project/project-form'), {
       onModalHide () {
         this.$router.push({path: '/project', query: this.$route.query})
       }

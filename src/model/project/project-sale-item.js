@@ -108,8 +108,8 @@ export const ProjectSaleItemArray = Array.decorate(
         this.project = project
       }
 
-      async query() {
-        await this.fetch({
+      async fetch() {
+        await super.fetch({
           projectId: this.project.id
         })
         await Promise.all(this.map(async (element) => await element.fetchReference()))

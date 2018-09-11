@@ -77,12 +77,12 @@ moment.locale(languageAliases({
 const appVersion = document.querySelector('meta[name=app-version]').content
 
 // FIX: v0.17.9 버전 오류(이미 수정되어 다음 버전 부터 삭제)
-QField.mixins.push({
+/*QField.mixins.push({
   mounted() {
     const content = this.$el.querySelector('.q-field-content')
     content.className = content.className.replace('ellipsis', '')
   }
-})
+})*/
 
 
 // leave the export, even if you don't use it

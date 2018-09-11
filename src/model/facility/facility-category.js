@@ -3,7 +3,7 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
 
-export class ProcessInfoTypeModel extends Model {
+export class FacilityCategoryModel extends Model {
 
   get defaults() {
     return {}
@@ -11,24 +11,24 @@ export class ProcessInfoTypeModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new ProcessInfoTypeModel()
+      return new FacilityCategoryModel()
     }
     const response = await api.get(
-        `/process/process-info-types/${id}${cacheable ? '' : '?cb='
+        `/facility/categories/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
-    return new ProcessInfoTypeModel(response.data)
+    return new FacilityCategoryModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/process/process-info-types/${id}`)
+    return await exists(api, `/facility/categories/${id}`)
   }
 
 }
 
-export const ProcessInfoTypeLabelArray = Array.decorate(
+export const FacilityCategoryLabelArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/process/process-info-type-query-labels?${$QS}'
+        return '/facility/facility-category-labels?${$QS}'
       }
 
       get axios() {

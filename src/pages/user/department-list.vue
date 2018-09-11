@@ -92,7 +92,7 @@
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="관리자" v-model="filters.managerId"
-                               :label.sync="filters.managerName" :options="userLabels"
+                               :label.sync="filters.managerName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onManagerSearch">
           <template slot="option" slot-scope="option">
@@ -131,7 +131,7 @@
     data () {
       return {
         array: new DepartmentPaginationArray(),
-        userLabels: new UserLabelArray(),
+        userLabelArray: new UserLabelArray(),
         filters: {
           name: null,
           managerId: null,
@@ -153,14 +153,14 @@
     },
     mounted () {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.userLabels.query()
+      this.userLabelArray.fetch()
     },
     methods: {
       retrieve () {
         this.$refs.listView.retrieve()
       },
       async onManagerSearch (keyword, done) {
-        await this.userLabels.query(keyword)
+        await this.userLabelArray.fetch(keyword)
         done()
       },
       async importByXlsx () {
