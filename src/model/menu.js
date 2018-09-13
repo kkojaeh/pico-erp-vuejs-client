@@ -41,7 +41,7 @@ const menu = [
         authorize: 'hasAnyRole(\'COMPANY_MANAGER\')'
       },
       {
-        icon: 'fas fa-building',
+        icon: 'fas fa-cogs',
         label: languageAliases({
           ko: '설비 관리'
         })[language],
@@ -142,7 +142,7 @@ const menu = [
           ko: '공정 관리'
         })[language],
         url: '/process',
-        authorize: 'hasAnyRole(\'PROCESS_MANAGEMENT\')'
+        authorize: 'hasAnyRole(\'PROCESS_MANAGER\')'
       }
     ]
   }
