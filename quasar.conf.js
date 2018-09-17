@@ -76,7 +76,7 @@ module.exports = function (ctx) {
             e => e instanceof webpack.DefinePlugin)
         const env = definePlugin.definitions['process.env']
         for (const name in env) {
-          if (name == "ANSI_RED") {
+          if (name.startsWith('ANSI_')) {
             delete env[name]
           }
         }
