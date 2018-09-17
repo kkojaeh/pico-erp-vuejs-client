@@ -76,7 +76,7 @@ module.exports = function (ctx) {
             e => e instanceof webpack.DefinePlugin)
         const env = definePlugin.definitions['process.env']
         for (const name in env) {
-          if (name.startsWith('TRAVIS_') || name == "__CF_USER_TEXT_ENCODING") {
+          if (name == "ANSI_RED") {
             delete env[name]
           }
         }
