@@ -72,9 +72,9 @@ module.exports = function (ctx) {
       // useNotifier: false,
       extendWebpack (cfg) {
 
-        const definePluigin = cfg.plugins.find(
+        const definePlugin = cfg.plugins.find(
             e => e instanceof webpack.DefinePlugin)
-        const env = definePluigin.definitions['process.env']
+        const env = definePlugin.definitions['process.env']
         for (const name in env) {
           if (name.startsWith('TRAVIS_')) {
             delete env[name]
