@@ -51,7 +51,7 @@ before_script:
     fi
 
 script:
-  - quasar build
+- quasar build -d
   #- cd cordova
   # - install plugins etc.
   #- cordova prepare
