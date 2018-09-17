@@ -1,5 +1,6 @@
 // Configuration for your app
 var fs = require('fs');
+var webpack = require('webpack');
 
 
 
@@ -70,6 +71,15 @@ module.exports = function (ctx) {
       // extractCSS: false,
       // useNotifier: false,
       extendWebpack (cfg) {
+
+        const definePluigin = cfg.plugins.find(
+            e => e instanceof webpack.DefinePlugin)
+        const env = definePluigin.definitions['process.env']
+        for (const name in env) {
+          if (name.startsWith('TRAVIS_')) {
+            delete env[name]
+          }
+        }
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
