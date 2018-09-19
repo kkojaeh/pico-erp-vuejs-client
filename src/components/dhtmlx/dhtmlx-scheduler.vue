@@ -46,6 +46,10 @@
       displayDate: {
         type: Date,
         default: () => new Date()
+      },
+      view: {
+        type: String,
+        default: 'month'
       }
     },
 
@@ -54,7 +58,7 @@
       _.forIn(this.config, (value, key) => scheduler.config[key] = value)
       _.forIn(initialTemplates, (value, key) => scheduler.templates[key] = value)
       _.forIn(this.templates, (value, key) => scheduler.templates[key] = value)
-      scheduler.init(this.$refs.scheduler, this.displayDate, 'month')
+      scheduler.init(this.$refs.scheduler, this.displayDate, this.view)
       this.eventKeys = {}
       this.eventKeys.onViewChange = scheduler.attachEvent("onViewChange", this.onViewChange);
       this.eventKeys.onEmptyClick = scheduler.attachEvent("onEmptyClick", this.onEmptyClick);
@@ -71,7 +75,7 @@
 
     watch: {
       'displayDate'() {
-        scheduler.updateView(this.displayDate, 'month')
+        scheduler.updateView(this.displayDate, this.view)
       }
     },
 
