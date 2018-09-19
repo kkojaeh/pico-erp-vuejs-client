@@ -81,11 +81,8 @@
     methods: {
       processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
-          if (!this._grid) {
-            this.setGrid(this.findGrid())
-          }
-          this._grid.invalidateColumnDefinitions()
-
+          const revision = this.$el.getAttribute("__ag-grid-column_revision__")
+          this.$el.setAttribute("__ag-grid-column_revision__", revision + 1)
         }
       },
       getChildren() {
@@ -101,29 +98,14 @@
           delete colDef.children
         }
         return colDef
-      },
-      setGrid(grid) {
-        this._grid = grid
-        this.getChildren().forEach((column) => column.componentInstance.setGrid(grid))
-      },
-      findGrid() {
-        let parent = this.$parent
-        while (parent) {
-          if (parent.isAgGrid) {
-            break
-          } else {
-            parent = parent.$parent
-          }
-        }
-        return parent
       }
     },
     watch: watchedProperties,
     mounted() {
       this._initialised = true
+      this.$el.setAttribute("__ag-grid-column_revision__", 1)
     },
     destroyed() {
-      this._grid = null
     }
   }
 </script>

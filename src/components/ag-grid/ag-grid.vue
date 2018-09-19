@@ -1,7 +1,9 @@
 <template>
   <div class="row ag-grid-wrapper">
     <div ref="position" :class="wrapperClasses" class="col-grow"></div>
-    <slot></slot>
+    <div hidden ref="slot">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -211,7 +213,6 @@
       let gridOptions = ComponentUtil.copyAttributesToGridOptions(this.gridOptions, this)
 
       gridOptions.columnDefs = this.getColumns().map((column) => {
-        column.componentInstance.setGrid(this)
         return column.componentInstance.getColumnDefinition()
       })
       this._gridParams = {
@@ -232,6 +233,13 @@
       this.$on('cell-mouse-out', this.onGridCellMouseOut)
       window.addEventListener('keydown', this.onWindowKeydowned)
       window.addEventListener('keyup', this.onWindowKeyuped)
+      this.observer = new MutationObserver(this.invalidateColumnDefinitions)
+      .observe(this.$refs.slot, {
+        childList: true,
+        attributes: true,
+        subtree: true,
+        characterData: true
+      })
     },
     watch: watchedProperties,
     computed: {
@@ -261,6 +269,8 @@
           this._tooltip.dispose()
           this._tooltip = null
         }
+        this.observer.disconnect()
+        this.observer = null
       }
     }
   }
