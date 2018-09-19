@@ -1,7 +1,8 @@
-import Quasar from 'quasar'
+//import {i18n} from 'quasar'
+import Vue from 'vue'
 import * as _ from 'lodash'
 
-export const language = Quasar.i18n.getLocale()
+export const language = Vue.prototype.$q.i18n.getLocale()
 
 const mapped = {
   'ko': ['ko-kr']

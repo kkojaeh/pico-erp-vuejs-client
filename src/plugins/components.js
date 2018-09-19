@@ -1,4 +1,4 @@
-import Quasar, {Notify, prevent, QField} from 'quasar'
+import Vue from 'vue'
 import {language, languageAliases} from 'src/i18n'
 import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
@@ -65,25 +65,18 @@ import svgIcons from 'trumbowyg/dist/ui/icons.svg'
 
 $.trumbowyg.svgPath = svgIcons
 
-const lang = language
+const quasarLanguage = languageAliases({
+  'ko': 'ko-kr'
+})[language]
 
-import(`quasar-framework/i18n/${lang}`).then(data => {
-  Quasar.i18n.set(data.default)
+import(`quasar-framework/i18n/${quasarLanguage}`).then(data => {
+  Vue.prototype.$q.i18n.set(data.default)
 })
 moment.locale(languageAliases({
   'ko': 'ko'
 })[language])
 
 const appVersion = document.querySelector('meta[name=app-version]').content
-
-// FIX: v0.17.9 버전 오류(이미 수정되어 다음 버전 부터 삭제)
-/*QField.mixins.push({
-  mounted() {
-    const content = this.$el.querySelector('.q-field-content')
-    content.className = content.className.replace('ellipsis', '')
-  }
-})*/
-
 
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
