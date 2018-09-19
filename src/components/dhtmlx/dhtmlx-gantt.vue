@@ -46,6 +46,12 @@
     destroyed() {
       //컴파일로 인한 재 초기화시 에러를 발생시켜 주석 처리
       //gantt.destructor()
+    },
+
+    computed: {
+      gantt() {
+        return gantt
+      }
     }
 
   }
