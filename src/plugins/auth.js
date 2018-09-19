@@ -1,4 +1,5 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import * as _ from 'lodash'
 import store from 'src/store'
 import {Loading} from 'quasar'
