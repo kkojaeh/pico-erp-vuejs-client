@@ -2,7 +2,7 @@
   "name": "pico-erp-vuejs-client",
   "productName": "pico-erp",
   "cordovaId": "pico.erp.client.vuejs",
-  "version": "1.0.12",
+  "version": "1.1.1",
   "description": "pico-erp vuejs client",
   "author": "system@kd-ace.co.kr",
   "private": true,
