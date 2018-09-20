@@ -234,7 +234,7 @@
       window.addEventListener('keydown', this.onWindowKeydowned)
       window.addEventListener('keyup', this.onWindowKeyuped)
       this.observer = new MutationObserver(this.invalidateColumnDefinitions)
-      .observe(this.$refs.slot, {
+      this.observer.observe(this.$refs.slot, {
         childList: true,
         attributes: true,
         subtree: true,
@@ -352,9 +352,14 @@
       font-size: 12px
       padding-left: 8px
       padding-right: 8px
+    .ag-header-cell-resize
+      right: -8px;
     .ag-cell:not(.ag-cell-focus)
       border-right: dotted 1px #e0e0e0
+    .ag-header-group-cell
+      border-right: dotted 1px #e0e0e0
     .ag-header-cell
+      border-right: dotted 1px #e0e0e0
       padding-right: 5px
       font-size: 11px
     .ag-cell-editable::before
