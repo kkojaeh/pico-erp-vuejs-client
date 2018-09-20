@@ -3,9 +3,9 @@ import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import * as _ from 'lodash'
 import moment from 'moment'
-import {WorkTimeArray} from './work-time'
+import {WorkScheduleTimeArray} from './work-schedule-time'
 
-export class WorkDayGenerateOptions {
+export class WorkScheduleGenerateOptions {
 
   begin = new Date()
 
@@ -13,12 +13,12 @@ export class WorkDayGenerateOptions {
 
 }
 
-export class WorkDayModel extends Model {
+export class WorkScheduleModel extends Model {
 
   constructor(data) {
     super(data)
     this.id = this.id || uuid()
-    this.times = new WorkTimeArray(this, this.times)
+    this.times = new WorkScheduleTimeArray(this, this.times)
   }
 
   get defaults() {
@@ -36,7 +36,7 @@ export class WorkDayModel extends Model {
   }
 
   static async generate(options) {
-    await api.post('/work-day/generate-work-days', {
+    await api.post('/work-schedule/generate-work-schedules', {
       begin: moment(options.begin).format('YYYY-MM-DD'),
       end: moment(options.end).format('YYYY-MM-DD')
     })
@@ -44,15 +44,16 @@ export class WorkDayModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new WorkDayModel()
+      return new WorkScheduleModel()
     }
     const response = await api.get(
-        `/work-day/work-days/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
-    return new WorkDayModel(response.data)
+        `/work-schedule/work-schedules/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new WorkScheduleModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/work-day/work-days/${id}`)
+    return await exists(api, `/work-schedule/work-schedules/${id}`)
   }
 
   async save() {
@@ -64,10 +65,10 @@ export class WorkDayModel extends Model {
       }
     })
     if (this.phantom) {
-      const response = await api.post(`/work-day/work-days`, data)
+      const response = await api.post(`/work-schedule/work-schedules`, data)
       this.assign(response.data)
     } else {
-      await api.put(`/work-day/work-days/${this.id}`, data)
+      await api.put(`/work-schedule/work-schedules/${this.id}`, data)
     }
   }
 
@@ -97,10 +98,10 @@ export class WorkDayModel extends Model {
 
 }
 
-export const WorkDayArray = Array.decorate(
+export const WorkScheduleArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/work-day/work-days?${$QS}'
+        return '/work-schedule/work-schedules?${$QS}'
       }
 
       get axios() {
@@ -108,7 +109,7 @@ export const WorkDayArray = Array.decorate(
       }
 
       get model() {
-        return WorkDayModel
+        return WorkScheduleModel
       }
 
       async fetch(categoryId, begin, end) {

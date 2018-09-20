@@ -124,12 +124,11 @@
   import moment from 'moment'
   import {mapGetters} from 'vuex'
   import {
-    WorkDayArray,
-    WorkDayCategoryArray,
-    WorkDayGenerateOptions,
-    WorkDayModel,
-    WorkTimeModel
-  } from 'src/model/work-day'
+    WorkScheduleArray,
+    WorkScheduleCategoryArray,
+    WorkScheduleGenerateOptions,
+    WorkScheduleModel
+  } from 'src/model/work-schedule'
 
   export default {
     props: {
@@ -145,15 +144,15 @@
     },
     data() {
       return {
-        array: new WorkDayArray(),
+        array: new WorkScheduleArray(),
         displayDate: new Date(),
-        categoryArray: new WorkDayCategoryArray(),
+        categoryArray: new WorkScheduleCategoryArray(),
         displayCategoryId: this.categoryId,
         generating: false,
-        generateOptions: new WorkDayGenerateOptions(),
+        generateOptions: new WorkScheduleGenerateOptions(),
         editing: false,
         selected: {
-          workDay: new WorkDayModel(),
+          workDay: new WorkScheduleModel(),
           workTime: null
         },
         dates: {},
@@ -199,7 +198,7 @@
         return value;
       },
       async generate() {
-        await WorkDayModel.generate(this.generateOptions)
+        await WorkScheduleModel.generate(this.generateOptions)
         this.refresh()
       },
       async refresh() {
@@ -209,7 +208,7 @@
       },
       async onTimeSelectionChanged(event) {
         const model = event.api.getSelectedRows()[0]
-        this.selected.workTime = await WorkDayModel.get(model.id, false)
+        this.selected.workTime = await WorkScheduleModel.get(model.id, false)
       },
       onAddWorkTime() {
         this.selected.workDay.times.push(new WorkTimeModel())
@@ -241,16 +240,16 @@
             const end = moment(time.end).format('HH:mm')
             return `${begin} ~ ${end}`
           }).join('<br>')
-          return `<span class="dhx_month_head_name">${name}</span>`
-              + `<span class="dhx_month_head_times">${times}</span>`
-              + `<span class="dhx_month_head_day">${date.getDate()}</span>`
+          return `<div class="dhx_month_head_name">${name}</div>`
+              + `<div class="dhx_month_head_times">${times}</div>`
+              + `<div class="dhx_month_head_day">${date.getDate()}</div>`
         } else {
-          return `<span class="dhx_month_head_day">${date.getDate()}</span>`
+          return `<div class="dhx_month_head_day">${date.getDate()}</div>`
         }
       },
       go(date) {
         this.$router.push(
-            `/work-day/${this.displayCategoryId}/${date.getFullYear()}/${date.getMonth() + 1}`)
+            `/work-schedule/${this.displayCategoryId}/${date.getFullYear()}/${date.getMonth() + 1}`)
       },
       onViewChange({newMode, newDate}) {
         this.go(newDate)
@@ -345,7 +344,7 @@
     .dhx_month_head_name
       float: left
       margin-left: 10px
-      min-width: 50%
+      min-width: calc(100% - 30px)
       height: 20px
       text-align: left
 

@@ -6,8 +6,6 @@
     ".js"
   ],
   "excludeFiles": [
-    "src/main.js",
-    "src/router.js"
   ],
   "jsDoc": {
     "enforceExistence": false

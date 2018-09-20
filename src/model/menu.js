@@ -53,8 +53,8 @@ const menu = [
         label: languageAliases({
           ko: '작업일 관리'
         })[language],
-        url: '/work-day',
-        authorize: 'hasAnyRole(\'WORK_DAY_MANAGER\')'
+        url: '/work-schedule',
+        authorize: 'hasAnyRole(\'WORK_SCHEDULE_MANAGER\')'
       }
     ]
   },

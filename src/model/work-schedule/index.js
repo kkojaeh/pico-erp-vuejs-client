@@ -1,14 +1,14 @@
-export * from './work-day'
-export * from './work-time'
+export * from './work-schedule'
+export * from './work-schedule-time'
 
 import {api} from 'src/plugins/axios'
 import {FetchableArray} from 'src/model/array'
 import {LabelModel} from 'src/model/shared'
 
-export const WorkDayCategoryArray = Array.decorate(
+export const WorkScheduleCategoryArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/work-day/category-labels'
+        return '/work-schedule/category-labels'
       }
 
       get axios() {

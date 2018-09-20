@@ -14,7 +14,7 @@ import processRoutes from './process'
 import itemRoutes from './item'
 import bomRoutes from './bom'
 import orderAcceptanceRoutes from './order-acceptance'
-import workDayRoutes from './work-day'
+import workDayRoutes from './work-schedule'
 import facilityRoutes from './facility'
 
 Vue.use(VueRouter)

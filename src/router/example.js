@@ -19,4 +19,9 @@ export default [{
   path: '/example/gantt',
   component: () => import('src/pages/example/gantt.vue'),
   meta: exampleMeta
+}, {
+  name: 'example-scheduler',
+  path: '/example/scheduler',
+  component: () => import('src/pages/example/scheduler.vue'),
+  meta: exampleMeta
 }]

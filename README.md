@@ -51,7 +51,7 @@ $ quasar lint
 - [ ] Quasar i18n
 
 ## 모델
-- [ ] Pagination collection
+- [x] Pagination collection
 - [x] Spring Rest Integration(Page, Sort)
 
 ## 목록
@@ -59,7 +59,7 @@ $ quasar lint
 - [x] 페이징 쿼리스트링 화
 - [x] 소트 쿼리스트링 화
 - [x] 모델(콜렉션)과 그리드 연계
-- [ ] 조회조건 Responsive 반영
+- [x] 조회조건 Responsive 반영
 
 # Release
 

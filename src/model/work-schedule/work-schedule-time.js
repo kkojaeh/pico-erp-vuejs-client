@@ -5,7 +5,7 @@ import {language, languageAliases} from 'src/i18n'
 
 const timeProperties = ['begin', 'end']
 
-export class WorkTimeModel extends Model {
+export class WorkScheduleTimeModel extends Model {
 
   constructor(data) {
     super(data)
@@ -65,14 +65,14 @@ export class WorkTimeModel extends Model {
 
 }
 
-export const WorkTimeArray = Array.decorate(
+export const WorkScheduleTimeArray = Array.decorate(
     CollectionArray,
     class extends ValidatableArray {
       initialize(workDay, times) {
         super.initialize()
         this.workDay = workDay
         if (times) {
-          const models = times.map(o => new WorkTimeModel(o))
+          const models = times.map(o => new WorkScheduleTimeModel(o))
           this.splice.apply(this, [0, this.length].concat(models))
         }
       }
