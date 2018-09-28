@@ -38,6 +38,56 @@
 
     </q-card>
 
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        공정 유형
+        <span slot="subtitle">해당 설비에서 진행할 수 있는 공정 유형입니다</span>
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddProcessType"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.processType"
+                 @click="onRemoveProcessType"/>
+        </div>
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row">
+
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="true"
+                 suppress-no-rows-overlay
+                 @selection-changed="onProcessTypeSelectionChanged"
+                 :row-data="processTypeArray">
+
+          <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
+          <ag-grid-column field="processType.id" header-name="아이디" :width="150"/>
+          <ag-grid-column field="processType.name" header-name="이름" :width="200"/>
+          <ag-grid-column field="speedVariationRate" header-name="속도 증감율" :width="100"
+                          :editable="modifiable"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'0.00%', words:false}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number',decimals: 2, prefix:'+', suffix:'%', align:'right', getValue: percentGetValue, setValue: percentSetValue }"
+                          :cell-style="{textAlign: 'right'}"/>
+          <ag-grid-column field="defectiveVariationRate" header-name="불량 증감율" :width="100"
+                          :editable="modifiable"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'0.00%', words:false}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number',decimals: 2, prefix:'+', suffix:'%', align:'right', getValue: percentGetValue, setValue: percentSetValue }"
+                          :cell-style="{textAlign: 'right'}"/>
+
+        </ag-grid>
+
+      </q-card-main>
+
+    </q-card>
+
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
@@ -55,8 +105,11 @@
   import {
     FacilityCategoryLabelArray,
     FacilityCategoryModel,
-    FacilityModel
+    FacilityModel,
+    FacilityProcessTypeArray,
+    FacilityProcessTypeModel
   } from 'src/model/facility'
+  import Big from 'big.js'
 
   export default {
     authorized: {
@@ -85,7 +138,11 @@
       return {
         model: new FacilityModel(),
         categoryModel: new FacilityCategoryModel(),
-        categoryLabelArray: new FacilityCategoryLabelArray()
+        categoryLabelArray: new FacilityCategoryLabelArray(),
+        processTypeArray: new FacilityProcessTypeArray(),
+        selected: {
+          processType: null
+        }
       }
     },
     mounted() {
@@ -95,17 +152,51 @@
       this.categoryLabelArray.fetch()
     },
     methods: {
+      percentGetValue(value) {
+        return Number(new Big(value).times(100).round(2))
+      },
+      percentSetValue(value) {
+        return Number(new Big(value).div(100))
+      },
+      async onAddProcessType() {
+        const processTypes = await this.$selectProcessType({multiple: false})
+        if (processTypes && processTypes.length) {
+          const processType = processTypes[0]
+          const model = new FacilityProcessTypeModel({
+            processTypeId: processType.id
+          })
+          await model.fetchReference()
+          this.processTypeArray.push(model)
+        }
+      },
+      async onRemoveProcessType() {
+        const ok = await this.$alert.confirm('삭제 하시겠습니까?')
+        if (ok) {
+          this.processTypeArray.remove(this.selected.processType)
+          this.selected.processType = null
+        }
+      },
+      onProcessTypeSelectionChanged(event) {
+        this.selected.processType = event.api.getSelectedRows()[0]
+      },
       async create() {
         this.model = new FacilityModel()
+        this.processTypeArray = new FacilityProcessTypeArray(this.model)
       },
       async load(id) {
         this.model = await FacilityModel.get(id)
+        const processTypeArray = new FacilityProcessTypeArray(this.model)
+        await processTypeArray.fetch()
+        this.processTypeArray = processTypeArray
       },
       async show() {
         this.load(this.id)
       },
       async onSave() {
-        let valid = await this.model.validate()
+        let valid = ![
+          await this.model.validate(),
+          await this.processTypeArray.validate()
+        ].includes(false)
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
@@ -122,11 +213,13 @@
             this.load(this.model.id)
           }
         } else {
+          this.$redrawGrids()
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
       async save() {
         await this.model.save()
+        await this.processTypeArray.save()
       }
     },
     computed: {

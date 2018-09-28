@@ -1,9 +1,9 @@
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 
-
 export const UnitLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/shared/unit-labels'

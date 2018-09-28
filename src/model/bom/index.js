@@ -1,4 +1,4 @@
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
@@ -217,6 +217,7 @@ export class BomModel extends Model {
 }
 
 export const BomChildArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/bom/boms/${id}/materials'
@@ -233,6 +234,7 @@ export const BomChildArray = Array.decorate(
 )
 
 export const BomRevisionArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/bom/revisions?${$QS}'
@@ -255,6 +257,7 @@ export const BomRevisionArray = Array.decorate(
 )
 
 export const BomStatusArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/bom/bom-status-labels'

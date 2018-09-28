@@ -1,4 +1,4 @@
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import * as _ from 'lodash'
@@ -99,6 +99,7 @@ export class WorkScheduleModel extends Model {
 }
 
 export const WorkScheduleArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/work-schedule/work-schedules?${$QS}'

@@ -54,7 +54,7 @@ export class CollectionArray extends ArrayDecorator {
   }
 }
 
-export class FetchableArray extends CollectionArray {
+export class FetchableArray extends ArrayDecorator {
 
   get axis() {
     throw new Error('not implemented')

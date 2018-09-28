@@ -1,4 +1,8 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {
+  CollectionArray,
+  FetchableArray,
+  SpringPaginationArray
+} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
@@ -118,6 +122,7 @@ export const CompanyPaginationArray = Array.decorate(
 )
 
 export const CompanyLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/company/company-query-labels?${$QS}'

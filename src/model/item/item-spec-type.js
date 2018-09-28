@@ -1,4 +1,4 @@
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {exists, Model} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
@@ -21,6 +21,7 @@ export class ItemSpecTypeModel extends Model {
 }
 
 export const ItemSpecTypeLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/item/spec-type-query-labels?${$QS}'

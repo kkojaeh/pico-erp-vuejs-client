@@ -1,4 +1,9 @@
-import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
+import {
+  CollectionArray,
+  FetchableArray,
+  SavableArray,
+  ValidatableArray
+} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 
@@ -89,6 +94,7 @@ export class CompanyAddressModel extends Model {
 }
 
 export const CompanyAddressArray = Array.decorate(
+    CollectionArray,
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
@@ -123,6 +129,7 @@ export const CompanyAddressArray = Array.decorate(
 )
 
 export const CompanyAddressLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/company/address-query-labels?${$QS}'

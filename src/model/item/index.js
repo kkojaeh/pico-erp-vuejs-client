@@ -4,10 +4,11 @@ export * from './item-spec-type'
 export * from './item-category'
 
 import {api} from 'src/plugins/axios'
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {LabelModel} from 'src/model/shared'
 
 export const ItemTypeArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/item/item-type-labels'
@@ -24,6 +25,7 @@ export const ItemTypeArray = Array.decorate(
 )
 
 export const ItemStatusArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/item/item-status-labels'

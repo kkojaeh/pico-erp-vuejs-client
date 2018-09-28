@@ -1,4 +1,4 @@
-import {FetchableArray} from 'src/model/array'
+import {CollectionArray, FetchableArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
@@ -65,6 +65,7 @@ export class ItemCategoryModel extends Model {
 }
 
 export const ItemCategoryHierarchyArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/item/categories'
@@ -81,6 +82,7 @@ export const ItemCategoryHierarchyArray = Array.decorate(
 )
 
 export const ItemCategoryLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/item/category-query-labels?${$QS}'

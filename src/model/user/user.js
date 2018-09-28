@@ -1,4 +1,5 @@
 import {
+  CollectionArray,
   FetchableArray,
   SavableArray,
   SpringPaginationArray
@@ -138,6 +139,7 @@ export const UserPaginationArray = Array.decorate(
 )
 
 export const UserRoleArray = Array.decorate(
+    CollectionArray,
     SavableArray,
     class extends FetchableArray {
       get url() {
@@ -178,6 +180,7 @@ export const UserRoleArray = Array.decorate(
 )
 
 export const UserLabelArray = Array.decorate(
+    CollectionArray,
     class extends FetchableArray {
       get url() {
         return '/user/user-query-labels?${$QS}'

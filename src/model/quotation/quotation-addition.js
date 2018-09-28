@@ -1,6 +1,11 @@
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {FetchableArray, SavableArray, ValidatableArray} from "src/model/array";
+import {
+  CollectionArray,
+  FetchableArray,
+  SavableArray,
+  ValidatableArray
+} from "src/model/array";
 
 export class QuotationAdditionModel extends Model {
 
@@ -69,6 +74,7 @@ export class QuotationAdditionModel extends Model {
 }
 
 export const QuotationAdditionArray = Array.decorate(
+    CollectionArray,
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {

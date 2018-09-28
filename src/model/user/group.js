@@ -1,4 +1,5 @@
 import {
+  CollectionArray,
   FetchableArray,
   SavableArray,
   SpringPaginationArray
@@ -135,6 +136,7 @@ export class GroupUserModel extends Model {
 }
 
 export const GroupRoleArray = Array.decorate(
+    CollectionArray,
     SavableArray,
     class extends FetchableArray {
       get url() {
@@ -176,6 +178,7 @@ export const GroupRoleArray = Array.decorate(
 )
 
 export const GroupUserArray = Array.decorate(
+    CollectionArray,
     SavableArray,
     class extends FetchableArray {
       get url() {
