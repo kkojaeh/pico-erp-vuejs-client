@@ -623,12 +623,6 @@
         await this.userLabelArray.fetch(keyword)
         done()
       },
-      async onCopyContactFromProjectClick() {
-        const ok = await this.$alert.confirm('프로젝트의 고객 담당자 정보를 불러 오시겠습니까?')
-        if (ok) {
-          _.assign(this.model.customerManagerContact, this.projectModel.customerManagerContact)
-        }
-      },
       async create() {
         this.model = new QuotationModel()
         this.itemArray = new QuotationItemArray(this.model)

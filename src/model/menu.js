@@ -55,6 +55,14 @@ const menu = [
         })[language],
         url: '/work-schedule',
         authorize: 'hasAnyRole(\'WORK_SCHEDULE_MANAGER\')'
+      },
+      {
+        icon: 'fas fa-industry',
+        label: languageAliases({
+          ko: '창고 장소 관리'
+        })[language],
+        url: '/warehouse-location',
+        authorize: 'hasAnyRole(\'WAREHOUSE_MANAGER\')'
       }
     ]
   },

@@ -16,6 +16,7 @@ import bomRoutes from './bom'
 import orderAcceptanceRoutes from './order-acceptance'
 import workDayRoutes from './work-schedule'
 import facilityRoutes from './facility'
+import warehouseRoutes from './warehouse'
 
 Vue.use(VueRouter)
 
@@ -63,7 +64,8 @@ const Router = new VueRouter({
         ...orderAcceptanceRoutes,
         ...exampleRoutes,
         ...workDayRoutes,
-        ...facilityRoutes
+        ...facilityRoutes,
+        ...warehouseRoutes
       ]
     },
     {
