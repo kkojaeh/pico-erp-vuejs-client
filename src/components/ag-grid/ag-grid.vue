@@ -16,8 +16,6 @@
   import lzutf8 from 'lzutf8'
   import Tooltip from 'tooltip.js'
 
-  let count = 0
-
   const predefined = {}
   const watchedProperties = {}
   const props = {
@@ -87,8 +85,9 @@
                       && column.componentInstance.getColumnDefinition)
               .map((column) => column.componentInstance.getColumnDefinition())
           )
-          if(focused){
-            this.api.setFocusedCell(focused.rowIndex, focused.column.getColId(), focused.floating)
+          if (focused) {
+            this.api.focusedCellController.setFocusedCell(focused.rowIndex,
+                focused.column.getColId(), focused.floating, false)
           }
         }
       },
@@ -105,7 +104,6 @@
       },
       onGridNewColumnsLoaded(event) {
         if (this.autoSizeColumnsToFit) {
-          console.log('sizeColumnsToFit')
           this.api.sizeColumnsToFit()
         }
       },
@@ -199,7 +197,6 @@
         this._keyActingCell = null
         window.removeEventListener('copy', this.onWindowCopy)
       }
-
 
     },
     created() {
