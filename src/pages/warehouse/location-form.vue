@@ -2,8 +2,6 @@
   <q-page class="column fit">
 
     <q-toolbar>
-      <q-btn flat icon="search" label="검색">
-      </q-btn>
     </q-toolbar>
 
     <q-card class="col-grow column" flat>
