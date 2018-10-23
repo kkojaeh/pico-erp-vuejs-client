@@ -92,20 +92,22 @@
         }
       },
 
+      sizeColumnsToFit() {
+        if (this.autoSizeColumnsToFit && (this.$el.clientHeight + this.$el.clientWidth > 0)) {
+          this.api.sizeColumnsToFit()
+        }
+      },
+
       getColumns() {
         return (this.$slots.default || [])
         .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition)
       },
 
       onGridSizeChanged(event) {
-        if (this.autoSizeColumnsToFit) {
-          this.api.sizeColumnsToFit()
-        }
+        this.sizeColumnsToFit()
       },
       onGridNewColumnsLoaded(event) {
-        if (this.autoSizeColumnsToFit) {
-          this.api.sizeColumnsToFit()
-        }
+        this.sizeColumnsToFit()
       },
       onGridCellEditingStarted(event) {
         this._editing = true
@@ -198,11 +200,13 @@
         window.removeEventListener('copy', this.onWindowCopy)
       }
 
-    },
+    }
+    ,
     created() {
       this.invalidateColumnDefinitions = _.debounce(this.invalidateColumnDefinitions, 500)
-      this.onGridSizeChanged = _.debounce(this.onGridSizeChanged, 200)
-    },
+      this.sizeColumnsToFit = _.debounce(this.sizeColumnsToFit, 200)
+    }
+    ,
     mounted() {
       this.gridOptions = {}
       let frameworkComponentWrapper = new VueFrameworkComponentWrapper(this)
@@ -237,23 +241,28 @@
         subtree: true,
         characterData: true
       })
-    },
+    }
+    ,
     watch: watchedProperties,
-    computed: {
-      api() {
-        if (this.gridOptions) {
-          return this.gridOptions.api
+    computed:
+        {
+          api() {
+            if (this.gridOptions) {
+              return this.gridOptions.api
+            }
+          }
+          ,
+          columnApi() {
+            return this.gridOptions.columnApi
+          }
+          ,
+          wrapperClasses() {
+            const classes = []
+            classes.push(`ag-theme-${this.theme}`)
+            return classes
+          }
         }
-      },
-      columnApi() {
-        return this.gridOptions.columnApi
-      },
-      wrapperClasses() {
-        const classes = []
-        classes.push(`ag-theme-${this.theme}`)
-        return classes
-      }
-    },
+    ,
     destroyed() {
       if (this._initialised) {
         this.gridOptions.api.destroy()
