@@ -81,6 +81,9 @@
     methods: {
       processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
+          if (_.isEqual(val, oldVal)) {
+            return
+          }
           const revision = this.$el.getAttribute("__ag-grid-column_revision__")
           this.$el.setAttribute("__ag-grid-column_revision__", revision + 1)
         }
