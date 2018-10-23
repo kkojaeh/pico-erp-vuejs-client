@@ -11,7 +11,9 @@ export class WarehouseRackModel extends Model {
   }
 
   get defaults() {
-    return {}
+    return {
+      type: 'rack'
+    }
   }
 
   get phantom() {

@@ -11,7 +11,9 @@ export class WarehouseBayModel extends Model {
   }
 
   get defaults() {
-    return {}
+    return {
+      type: 'bay'
+    }
   }
 
   get phantom() {

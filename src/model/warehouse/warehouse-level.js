@@ -11,7 +11,9 @@ export class WarehouseLevelModel extends Model {
   }
 
   get defaults() {
-    return {}
+    return {
+      type: 'level'
+    }
   }
 
   get phantom() {

@@ -4,7 +4,7 @@ import {api} from 'src/plugins/axios'
 import * as _ from 'lodash'
 import {language, languageAliases} from "../../i18n";
 
-export class WarehouseZoneModel extends Model {
+export class WarehouseStationModel extends Model {
 
   constructor(data) {
     super(data)
@@ -13,7 +13,7 @@ export class WarehouseZoneModel extends Model {
 
   get defaults() {
     return {
-      type: 'zone'
+      type: 'station'
     }
   }
 
@@ -23,43 +23,47 @@ export class WarehouseZoneModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new WarehouseZoneModel()
+      return new WarehouseStationModel()
     }
     const response = await api.get(
-        `/warehouse/location/zones/${id}${cacheable ? '' : '?cb='
+        `/warehouse/location/stations/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
-    return new WarehouseZoneModel(response.data)
+    return new WarehouseStationModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/warehouse/location/zones/${id}`)
+    return await exists(api, `/warehouse/location/stations/${id}`)
   }
 
   async save() {
     const data = _.assign({}, this)
     if (this.phantom) {
-      const response = await api.post(`/warehouse/location/zones`, data)
+      const response = await api.post(`/warehouse/location/stations`, data)
       this.assign(response.data)
     } else {
-      await api.put(`/warehouse/location/zones/${this.id}`, data)
+      await api.put(`/warehouse/location/stations/${this.id}`, data)
     }
   }
 
   async delete() {
-    await api.delete(`/warehouse/location/zones/${this.id}`, this)
+    await api.delete(`/warehouse/location/stations/${this.id}`, this)
   }
 
   async validate() {
     let constraints = {
+      name: {
+        presence: true,
+        length: {minimum: 2, maximum: 50}
+      },
       code: {
         presence: true,
         format: {
-          pattern: "[A-Z]+",
+          pattern: "[A-Z0-9]+",
           message: languageAliases({
-            ko: '대문자 알파벳만 가능합니다'
+            ko: '대문자 알파벳과 숫자만 가능합니다'
           })[language]
         },
-        length: {minimum: 1, maximum: 1}
+        length: {minimum: 2, maximum: 2}
       }
     }
     return await this.$validate(constraints)
@@ -67,11 +71,11 @@ export class WarehouseZoneModel extends Model {
 
 }
 
-export const WarehouseZoneArray = Array.decorate(
+export const WarehouseStationArray = Array.decorate(
     CollectionArray,
     class extends FetchableArray {
       get url() {
-        return '/warehouse/location/sites/${siteId}/zones'
+        return '/warehouse/location/sites/${siteId}/stations'
       }
 
       get axios() {
@@ -79,7 +83,7 @@ export const WarehouseZoneArray = Array.decorate(
       }
 
       get model() {
-        return WarehouseZoneModel
+        return WarehouseStationModel
       }
 
       initialize(site) {
