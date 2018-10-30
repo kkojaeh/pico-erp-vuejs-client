@@ -51,7 +51,7 @@
                           }"/>
           <ag-grid-column field="item.code" header-name="코드" :width="150"
                           cell-renderer-framework="ag-grid-router-link-renderer"
-                          :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
+                          :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: bomAdditionalFieldRenderer}"/>
           <ag-grid-column field="processId" header-name="공정" :width="220"
                           cell-renderer-framework="bom-process-cell-renderer"
                           :cell-renderer-params="{editHandler: onEditProcess, removeHandler: onRemoveProcess}"/>
@@ -73,29 +73,29 @@
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.total" header-name="단가" :width="100"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.total')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :cell-style="{textAlign: 'right'}"/>
 
           <ag-grid-column field="estimatedAccumulatedUnitCost.directMaterial" header-name="재료비(직접)"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directMaterial')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
                           header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.indirectMaterial"
                           header-name="재료비(간접)"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectMaterial')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
                           header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.directLabor" header-name="노무비(직접)"
                           :width="100"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.directLabor')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
                           header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.indirectLabor" header-name="노무비(간접)"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectLabor')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
                           header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
           <ag-grid-column field="estimatedAccumulatedUnitCost.indirectExpenses" header-name="간접경비"
-                          :cell-renderer="createCellRenderer('estimatedIsolatedUnitCost.indirectExpenses')"
+                          :cell-renderer="bomAdditionalFieldRenderer"
                           :width="100" :cell-style="{textAlign: 'right'}" :hide="!detailedUnitCost"
                           header-class="bom-detailed-price" cell-class="bom-detailed-price"/>
           <ag-grid-column field="determinedBy.name" header-name="확정자" :width="100"/>
@@ -154,6 +154,16 @@
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
   import SSF from 'ssf'
 
+  const additionalFields = {
+    'item.code': 'item.externalCode',
+    'estimatedAccumulatedUnitCost.total': 'estimatedIsolatedUnitCost.total',
+    'estimatedAccumulatedUnitCost.directMaterial': 'estimatedIsolatedUnitCost.directMaterial',
+    'estimatedAccumulatedUnitCost.indirectMaterial': 'estimatedIsolatedUnitCost.indirectMaterial',
+    'estimatedAccumulatedUnitCost.directLabor': 'estimatedIsolatedUnitCost.directLabor',
+    'estimatedAccumulatedUnitCost.indirectLabor': 'estimatedIsolatedUnitCost.indirectLabor',
+    'estimatedAccumulatedUnitCost.indirectExpenses': 'estimatedIsolatedUnitCost.indirectExpenses'
+  }
+
   export default {
     props: {
       bomId: {
@@ -207,15 +217,15 @@
         return `역수량 : ${(1 / params.value).toFixed(5)} (${(1 / params.data.quantityPerRoot).toFixed(
             5)})`
       },
-      createCellRenderer(additionalField) {
-        return function (params) {
-          const addition = _.get(params.data, additionalField)
-          const formatted = SSF.format('#,##0', params.value)
-          if (addition == null || addition == undefined) {
-            return formatted
-          }
-          return `${formatted} (${addition})`
+
+      bomAdditionalFieldRenderer(params) {
+        const additionalField = additionalFields[params.colDef.field]
+        const addition = _.get(params.data, additionalField)
+        const formatted = SSF.format('#,##0', params.value)
+        if (addition == null || addition == undefined) {
+          return formatted
         }
+        return `${formatted} (${addition})`
       },
       getNodeChildDetails(data) {
         const children = data.children
