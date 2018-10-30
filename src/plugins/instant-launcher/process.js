@@ -2,8 +2,10 @@ import Vue from 'vue'
 import ProcessForm from 'src/pages/process/process-form.vue'
 
 import ProcessTypeSelector from 'src/pages/process/process-type-selector.vue'
+import PreprocessTypeSelector
+  from 'src/pages/process/preprocess-type-selector.vue'
 
-function show(id) {
+function showProcess(id) {
   const parent = this
   return new Promise(async (resolve, reject) => {
     const node = document.createElement('div')
@@ -49,7 +51,7 @@ function show(id) {
   })
 }
 
-function create(options) {
+function createProcess(options) {
   const parent = this
   return new Promise(async (resolve, reject) => {
     const node = document.createElement('div')
@@ -95,7 +97,7 @@ function create(options) {
   })
 }
 
-function selectType(options) {
+function selectProcessType(options) {
   const parent = this
   return new Promise(async (resolve, reject) => {
     const node = document.createElement('div')
@@ -137,8 +139,53 @@ function selectType(options) {
   })
 }
 
+function selectPreprocessType(options) {
+  const parent = this
+  return new Promise(async (resolve, reject) => {
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    const finish = (selected) => {
+      resolve(selected)
+      vm.$destroy()
+      vm.$el.remove()
+    }
+    const vm = new Vue({
+      el: node,
+      parent: parent,
+      mounted() {
+        this.$nextTick(() => {
+          this.$refs.modal.show()
+        })
+      },
+      render(h) {
+        return h('q-modal', {
+          'ref': 'modal',
+          props: {
+            'content-classes': 'column'
+          },
+          on: {
+            hide: () => finish()
+          }
+        }, [
+          h(PreprocessTypeSelector, {
+            props: {
+              multiple: !!options.multiple
+            },
+            on: {
+              selected: (preProcessTypes) => finish(preProcessTypes)
+            }
+          })
+        ])
+      }
+    })
+  })
+}
+
+PreprocessTypeSelector
+
 export default ({app, router, Vue}) => {
-  Vue.prototype.$showProcess = show
-  Vue.prototype.$createProcess = create
-  Vue.prototype.$selectProcessType = selectType
+  Vue.prototype.$showProcess = showProcess
+  Vue.prototype.$createProcess = createProcess
+  Vue.prototype.$selectProcessType = selectProcessType
+  Vue.prototype.$selectPreprocessType = selectPreprocessType
 }

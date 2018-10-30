@@ -56,12 +56,17 @@
 
       <q-card-title>
         사전 공정 유형 정보
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddPreprocess"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemovePreprocess"
+                 :disabled="!selected.preprocessType"/>
+        </div>
       </q-card-title>
 
       <q-card-separator/>
 
       <q-card-main class="column">
-        <q-field icon="search" helper="추가할 사전 공정 유형의 이름을 입력하고 선택하세요" class="col-auto">
+        <!--<q-field icon="search" helper="추가할 사전 공정 유형의 이름을 입력하고 선택하세요" class="col-auto">
           <c-autocomplete-select ref="preprocessType" float-label="사전 공정" v-model="preprocessTypeId"
                                  :options="preprocessTypeLabelArray"
                                  label-field="label" value-field="value"
@@ -71,16 +76,16 @@
               {{option.stamp}} - {{option.subLabel}}
             </template>
           </c-autocomplete-select>
-        </q-field>
+        </q-field>-->
         <ag-grid ref="userGrid" class="col-auto"
                  :grid-auto-height="true"
+                 row-selection="single"
                  enable-col-resize
                  enable-sorting
-                 :row-data="preprocessTypeArray">
+                 :row-data="preprocessTypeArray"
+                 @selection-changed="onPreprocessTypeSelectionChanged">
 
-          <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
-                          cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:onPreprocessTypeRemove, icon:'fas fa-ban', link:true}"/>
+          <ag-grid-column :checkbox-selection="true" :width="60"/>
           <ag-grid-column field="id" header-name="아이디" :width="150"/>
           <ag-grid-column field="name" header-name="이름" :width="200"/>
           <ag-grid-column field="baseCost" header-name="기준단가" :width="100"
@@ -253,7 +258,6 @@
 </template>
 <script>
   import {
-    PreprocessTypeLabelArray,
     PreprocessTypeModel,
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
@@ -276,56 +280,72 @@
         default: false
       }
     },
-    data () {
+    data() {
       return {
         model: new ProcessTypeModel(),
         infoTypeLabelArray: new ProcessInfoTypeLabelArray(),
         difficultyLabelArray: new ProcessDifficultyArray(),
         infoTypeModel: new ProcessInfoTypeModel(),
         preprocessTypeArray: new ProcessTypePreprocessTypeArray(),
-        preprocessTypeLabelArray: new PreprocessTypeLabelArray(),
-        preprocessTypeId: null
+        selected: {
+          preprocessType: null
+        }
       }
     },
-    mounted () {
+    mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
       this.infoTypeLabelArray.fetch()
       this.difficultyLabelArray.fetch()
-      this.preprocessTypeLabelArray.fetch()
     },
     methods: {
-      difficultyLabel (value) {
+      async onAddPreprocess() {
+        const preprocessTypes = await this.$selectPreprocessType({multiple: true});
+        if (preprocessTypes && preprocessTypes.length) {
+          preprocessTypes.forEach(preprocessType => {
+            preprocessType.added = true
+            this.preprocessTypeArray.push(preprocessType)
+          })
+        }
+      },
+      onPreprocessTypeSelectionChanged(event) {
+        this.selected.preprocessType = event.api.getSelectedRows()[0]
+      },
+      difficultyLabel(value) {
         const label = this.difficultyLabelArray.find(data => data.value == value)
         return label ? label.label : ''
       },
-      async onPreprocessTypeSearch(keyword, done) {
+      /*async onPreprocessTypeSearch(keyword, done) {
         await this.preprocessTypeLabelArray.fetch(keyword)
         done()
-      },
-      async onProcessInfoTypeSearch (keyword, done) {
+      },*/
+      async onProcessInfoTypeSearch(keyword, done) {
         await this.infoTypeLabelArray.fetch(keyword)
         done()
       },
-      async onPreprocessTypeRemove(preprocessType) {
+      async onRemovePreprocess() {
+        const preprocessType = this.selected.preprocessType
         const ok = await this.$alert.confirm('해당 사전 공정 유형을 삭제 하시겠습니까?')
         if (ok) {
           this.preprocessTypeArray.remove(preprocessType)
         }
       },
-      async create () {
+      async create() {
         this.model = new ProcessTypeModel()
       },
-      async show () {
-        const model = await ProcessTypeModel.get(this.id)
+      async load(id) {
+        const model = await ProcessTypeModel.get(id)
         const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
-        model.preprocessTypeArray.forEach(
-            preprocessType => preprocessTypeArray.push(preprocessType))
+        model.preprocessTypes.forEach(
+            preprocessType => preprocessTypeArray.push(new PreprocessTypeModel(preprocessType)))
         this.model = model
         this.preprocessTypeArray = preprocessTypeArray
       },
-      async onSaveClick () {
+      async show() {
+        await this.load(this.id)
+      },
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -336,20 +356,22 @@
               const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
               if (close) {
                 this.$closeOverlay()
+                return
               }
             }
+            this.load(this.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
-      async save () {
+      async save() {
         await this.model.save()
         await this.preprocessTypeArray.save()
       }
     },
     computed: {
-      totalCostRate () {
+      totalCostRate() {
         let sum = 0
         _.forIn(this.model.costRates, (value, key) => {
           sum += value
@@ -363,18 +385,8 @@
     watch: {
       'model.infoTypeId': async function (to) {
         this.infoTypeModel = await ProcessInfoTypeModel.get(to, true)
-      },
-      'preprocessTypeId': async function (to) {
-        if (to) {
-          const preprocessType = await PreprocessTypeModel.get(to, true)
-          preprocessType.added = true
-          this.preprocessTypeArray.push(preprocessType)
-          this.preprocessTypeId = null
-          this.$refs.preprocessType.focus()
-        }
       }
     },
-    components: {
-    }
+    components: {}
   }
 </script>

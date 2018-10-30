@@ -59,17 +59,7 @@ import pRaven from 'src/plugins/raven'
 
 import pAggrid from 'src/plugins/ag-grid'
 
-import pItem from 'src/plugins/item'
-
-import pBom from 'src/plugins/bom'
-
-import pAudit from 'src/plugins/audit'
-
-import pProcess from 'src/plugins/process'
-
-import pProject from 'src/plugins/project'
-
-import pCompany from 'src/plugins/company'
+import pInstantlauncher from 'src/plugins/instant-launcher'
 
 
 
@@ -96,7 +86,7 @@ const { app, store, router } = createApp()
 
 
 
-;[pAxios,pAlert,pAuth,pComponents,pValidate,pNumber,pDate,pCloseoverlay,pClipboard,pIntro,pGoogleanalytics,pRaven,pAggrid,pItem,pBom,pAudit,pProcess,pProject,pCompany].forEach(plugin => {
+;[pAxios,pAlert,pAuth,pComponents,pValidate,pNumber,pDate,pCloseoverlay,pClipboard,pIntro,pGoogleanalytics,pRaven,pAggrid,pInstantlauncher].forEach(plugin => {
   plugin({
     app,
     router,
