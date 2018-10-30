@@ -180,13 +180,16 @@ export class SavableArray extends ArrayDecorator {
 
   async save() {
     this.forEach(this.applyEach.bind(this))
-    await Promise.all(
-        this.filter(this.isSaveTarget.bind(this))
-        .map(this.saveElement.bind(this))
-    )
-    await Promise.all(
-        this[removedSymbol].map(this.removeElement.bind(this))
-    )
+    const saveTargets = this.filter(this.isSaveTarget.bind(this))
+    for (let i = 0; i < saveTargets.length; i++) {
+      const target = saveTargets[i]
+      await this.saveElement(target)
+    }
+    const removeTargets = this[removedSymbol]
+    for (let i = 0; i < removeTargets.length; i++) {
+      const target = removeTargets[i]
+      await this.removeElement(target)
+    }
     this[removedSymbol] = []
   }
 
