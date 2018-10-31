@@ -76,12 +76,12 @@
           <q-checkbox label="구매가능" v-model="model.purchasable"/>
         </q-field>
 
-        <q-field icon="monetization_on" helper="판매 가능 여부를 체크하세요(판매시 노출여부가 달라 집니다)"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.sellable"
-                 :error-label="model.$errors.sellable">
-          <q-checkbox label="판매가능" v-model="model.sellable"/>
-        </q-field>
+        <!--        <q-field icon="monetization_on" helper="판매 가능 여부"
+                         class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                         :error="!!model.$errors.salable"
+                         :error-label="model.$errors.salable">
+                  <q-checkbox label="판매가능" v-model="model.salable" readonly hide-underline/>
+                </q-field>-->
 
         <q-field icon="monetization_on" helper="공정 비용을 제외한 금액(구매/외주 기준 금액, 직접 재료비)"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"

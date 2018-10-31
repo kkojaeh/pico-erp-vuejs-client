@@ -24,7 +24,7 @@
         <q-toolbar-title>
         </q-toolbar-title>
 
-        <q-btn flat v-show="editable" icon="save" @click="onSaveClick()">저장</q-btn>
+        <q-btn flat v-show="modifiable" icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -98,7 +98,7 @@
           no_additional_properties: true
         })
         this.editor.setValue(this.model.variables)
-        if (this.editable) {
+        if (this.modifiable) {
           this.editor.enable();
         } else {
           this.editor.disable();
@@ -138,7 +138,11 @@
         this.$emit('saved', this.model)
       }
     },
-    computed: {},
+    computed: {
+      modifiable() {
+        return this.editable && !this.model.locked
+      }
+    },
     components: {}
   }
 </script>

@@ -8,6 +8,13 @@ import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
 import * as _ from 'lodash'
 
+const propertyOrders = {
+  'width': 1,
+  'height': 2,
+  'grammage': 3,
+  'incisionCount': 4
+}
+
 export class ItemModel extends Model {
 
   constructor(data) {
@@ -18,7 +25,8 @@ export class ItemModel extends Model {
   get defaults() {
     return {
       status: 'DRAFT',
-      baseUnitCost: 0
+      baseUnitCost: 0,
+      purchasable: false
     }
   }
 
@@ -47,7 +55,11 @@ export class ItemModel extends Model {
     const numbers = ['integer']
     const response = await api.get(`item/items/${id}/spec-metadata`)
     const data = response.data
+    console.log(data.properties)
     _.forIn(data.properties, (value, key) => {
+      if (propertyOrders[key]) {
+        value.propertyOrder = propertyOrders[key]
+      }
       if (numbers.includes(value.type)) {
         if (_.isArray(value.enum)) {
           value.enum = value.enum.map(Number)
@@ -106,9 +118,6 @@ export class ItemModel extends Model {
         presence: false
       },
       purchasable: {
-        presence: true
-      },
-      sellable: {
         presence: true
       },
       baseUnitCost: {

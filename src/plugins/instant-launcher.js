@@ -15,5 +15,10 @@ export default (context) => {
   item(context)
   process(context)
   project(context)
+  context.Vue.prototype.$await = function (miliseconds) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, miliseconds)
+    })
+  }
   // something to do
 }

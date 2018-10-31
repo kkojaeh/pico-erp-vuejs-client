@@ -1,6 +1,6 @@
 <template>
   <div class="row items-center fit bom-process-cell-renderer">
-    <div class="col-grow bom-process-cell-renderer-label">{{label}}</div>
+    <div class="bom-process-cell-renderer-label">{{label}}</div>
     <q-btn icon="add_circle" flat v-show="isAddable" @click="edit"></q-btn>
     <q-btn icon="settings" flat v-show="isLinkable" @click="edit"></q-btn>
     <q-btn icon="remove_circle" flat v-show="isRemovable" @click="remove"></q-btn>

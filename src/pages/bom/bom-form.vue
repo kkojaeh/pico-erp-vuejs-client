@@ -4,6 +4,7 @@
     <q-card class="col-12" flat>
 
       <q-toolbar>
+        <q-btn flat icon="refresh" @click="onRefresh">Refresh</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <q-btn flat icon="check" @click="onDetermine" v-if="isDeterminable">확정</q-btn>
@@ -115,29 +116,6 @@
       </q-toolbar>
     </q-page-sticky>
 
-    <!--<q-modal ref="itemFormModal">
-      <item-form ref="itemForm" action="create" closable close-confirmed></item-form>
-    </q-modal>-->
-
-    <!--
-        <q-modal ref="processFormModal">
-          <process-form ref="processForm" :id="selected.processId" :item-id="selected.itemId"
-                        closable close-confirmed></process-form>
-        </q-modal>
-    -->
-
-    <!--<q-modal ref="itemSelectorModal" content-classes="column">
-      <item-selector ref="itemSelector" class="col-grow"></item-selector>
-    </q-modal>-->
-
-    <!--
-    <q-modal ref="itemSpecEditorModal" content-classes="column">
-      <item-spec-editor ref="itemSpecEditor" :item-id="selected.itemId"
-                        :editable="selected.modifiable"
-                        :id="selected.itemSpecId"></item-spec-editor>
-    </q-modal>
-    -->
-
     <q-inner-loading :visible="loading">
     </q-inner-loading>
 
@@ -164,9 +142,11 @@
     'estimatedAccumulatedUnitCost.indirectExpenses': 'estimatedIsolatedUnitCost.indirectExpenses'
   }
 
+  window.SSF = SSF
+
   export default {
     props: {
-      bomId: {
+      id: {
         type: String
       },
       closable: {
@@ -176,7 +156,6 @@
     },
     data() {
       return {
-        id: null,
         array: [],
         model: new BomModel(),
         selected: new BomModel({isNull: true}),
@@ -192,6 +171,9 @@
       this.$nextTick(() => this.show())
     },
     methods: {
+      async onRefresh() {
+        await this.refresh()
+      },
       quantityCellRenderer(params) {
         const value = params.value
         return `${value} <sub>(${params.data.quantityPerRoot})</sub>`
@@ -221,11 +203,10 @@
       bomAdditionalFieldRenderer(params) {
         const additionalField = additionalFields[params.colDef.field]
         const addition = _.get(params.data, additionalField)
-        const formatted = SSF.format('#,##0', params.value)
         if (addition == null || addition == undefined) {
-          return formatted
+          return params.value
         }
-        return `${formatted} (${addition})`
+        return `${params.value} (${addition})`
       },
       getNodeChildDetails(data) {
         const children = data.children
@@ -251,16 +232,16 @@
           event.node.setSelected(true, true)
         }
       },
-      async show(id) {
-        this.id = id || this.bomId
-        if (this.id) {
-          this.load()
-        }
+      async show() {
+        this.load(this.id)
       },
-      async load() {
+      async refresh() {
+        await this.load(this.id)
+      },
+      async load(id) {
         const grid = this.$refs.grid
         const selectedId = this.selected.id
-        this.model = await BomModel.get(this.id)
+        this.model = await BomModel.get(id)
         await this.model.fetchChildren(true, true)
         this.array = [this.model]
         // 첫행 선택
@@ -286,12 +267,15 @@
           if (ok) {
             this.loading = true
             await this.selected.nextRevision()
+            await this.$await(1000)
             if (this.selected == this.model) {
-              this.$alert.positive('버전이 변경 되었습니다')
-              this.$router.push({path: `/bom/${this.model.itemId}/${this.model.id}`})
+              this.$router.replace({path: `/bom/${this.model.itemId}/${this.model.id}`})
+              await this.$await(1000)
+              await this.refresh()
+              await this.$alert.positive('버전이 변경 되었습니다')
             } else {
-              await this.load()
-              this.$alert.positive('버전이 변경 되었습니다')
+              await this.refresh()
+              await this.$alert.positive('버전이 변경 되었습니다')
             }
             this.loading = false
           }
@@ -306,7 +290,7 @@
           const ok = await this.$alert.confirm('확정을 진행 하시겠습니까?')
           if (ok) {
             await this.selected.determine()
-            await this.load()
+            await this.refresh()
             this.$alert.positive('확정 되었습니다')
           }
         } else {
@@ -319,7 +303,7 @@
         if (ok) {
           await this.selected.parent.removeMaterial(this.selected)
           this.$alert.positive('자재가 삭제 되었습니다')
-          this.load()
+          await this.refresh()
         }
       },
       /**
@@ -331,7 +315,7 @@
         if (itemModel) {
           const material = await BomModel.createByItemId(itemModel.id)
           await selected.addMaterial(material)
-          this.load()
+          await this.refresh()
         }
       },
 
@@ -354,7 +338,7 @@
               await selected.addMaterial(material)
             })
         )
-        await this.load()
+        await this.refresh()
       },
 
       async onEditProcess(data) {
@@ -362,7 +346,7 @@
         if (data.processId) {
           const changed = await this.$showProcess(data.processId)
           if (changed) {
-            await this.load()
+            await this.refresh()
           }
         } else {
           const created = await this.$createProcess({
@@ -371,7 +355,7 @@
           if (created) {
             data.processId = created.id
             await data.save()
-            await this.load()
+            await this.refresh()
           }
         }
       },
@@ -384,20 +368,19 @@
         if (ok) {
           const process = await ProcessModel.get(data.processId)
           await process.delete()
-          await this.load()
+          await this.refresh()
         }
       },
 
       async onEditItemSpec(data) {
-        const modal = this.$refs.itemSpecEditorModal
-        const form = this.$refs.itemSpecEditor
         this.selected = data
         if (data.itemSpecId) {
           const changed = await this.$showItemSpec(data.itemSpecId, {
-            editable: data.modifiable
+            editable: true
           })
           if (changed) {
-            await this.load()
+            await this.$await(1000)
+            await this.refresh()
           }
         } else {
           const created = await this.$createItemSpec({
@@ -407,7 +390,8 @@
             data.itemSpecId = created.id
             const parent = data.parent
             await parent.changeMaterial(data)
-            await this.load()
+            await this.$await(1000)
+            await this.refresh()
           }
         }
       }

@@ -17,7 +17,7 @@ function show(id) {
       mounted() {
         this.$nextTick(() => {
           this.$refs.modal.show()
-          this.$refs.form.show(id)
+          this.$refs.form.show()
         })
       },
       render(h) {
@@ -33,6 +33,7 @@ function show(id) {
           h(BomForm, {
             'ref': 'form',
             props: {
+              id: id,
               closable: true
             },
             on: {
