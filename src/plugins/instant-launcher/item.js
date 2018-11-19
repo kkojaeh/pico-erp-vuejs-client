@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import ItemSelector from 'src/pages/item/item-selector.vue'
+import ItemLotSelector from 'src/pages/item/item-lot-selector.vue'
 import ItemForm from 'src/pages/item/item-form.vue'
 import ItemSpecEditor from 'src/pages/item/item-spec-editor.vue'
 
@@ -84,6 +85,49 @@ function create(options) {
             },
             on: {
               saved: (itemModel) => finish(itemModel)
+            }
+          })
+        ])
+      }
+    })
+  })
+}
+
+function selectLot(options) {
+  const parent = this
+  return new Promise(async (resolve, reject) => {
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    const finish = (selected) => {
+      resolve(selected)
+      vm.$destroy()
+      vm.$el.remove()
+    }
+    const vm = new Vue({
+      el: node,
+      parent: parent,
+      mounted() {
+        this.$nextTick(() => {
+          this.$refs.modal.show()
+        })
+      },
+      render(h) {
+        return h('q-modal', {
+          'ref': 'modal',
+          props: {
+            'content-classes': 'column'
+          },
+          on: {
+            hide: () => finish()
+          }
+        }, [
+          h(ItemLotSelector, {
+            props: {
+              itemId: options.itemId,
+              multiple: !!options.multiple
+            },
+            on: {
+              selected: (models) => finish(models)
             }
           })
         ])
@@ -191,4 +235,5 @@ export default ({app, router, Vue}) => {
   Vue.prototype.$createItem = create
   Vue.prototype.$showItemSpec = showSpec
   Vue.prototype.$createItemSpec = createSpec
+  Vue.prototype.$selectItemLot = selectLot
 }

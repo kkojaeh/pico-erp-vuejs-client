@@ -88,8 +88,8 @@
 
         <q-field icon="fas fa-mobile" helper="고객 담당자 핸드폰 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.mobilePhoneNumber"
-                 :error-label="model.$errors.mobilePhoneNumber">
+                 :error="!!model.$errors.customerManagerContact.mobilePhoneNumber"
+                 :error-label="model.$errors.customerManagerContact.mobilePhoneNumber">
           <c-phone-number-input v-model="model.customerManagerContact.mobilePhoneNumber"
                                 float-label="고객 담당자 핸드폰 번호"
                                 class="ime-mode-disabled"/>
@@ -97,8 +97,8 @@
 
         <q-field icon="phone" helper="고객 담당자 전화 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.telephoneNumber"
-                 :error-label="model.$errors.telephoneNumber">
+                 :error="!!model.$errors.customerManagerContact.telephoneNumber"
+                 :error-label="model.$errors.customerManagerContact.telephoneNumber">
           <c-phone-number-input v-model="model.customerManagerContact.telephoneNumber"
                                 float-label="고객 담당자 전화번호"
                                 class="ime-mode-disabled"/>
@@ -106,8 +106,8 @@
 
         <q-field icon="fas fa-fax" helper="고객 담당자 FAX 번호를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.faxNumber"
-                 :error-label="model.$errors.faxNumber">
+                 :error="!!model.$errors.customerManagerContact.faxNumber"
+                 :error-label="model.$errors.customerManagerContact.faxNumber">
           <c-phone-number-input v-model="model.customerManagerContact.faxNumber"
                                 float-label="고객 담당자 FAX 번호"
                                 class="ime-mode-disabled"/>

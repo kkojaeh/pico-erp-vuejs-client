@@ -180,17 +180,17 @@
         this.page = value
         this.array.page = value
       },
-      retrieve (force = false) {
+      async retrieve(force = false) {
         if (this.pagination) {
           this.page = 1
         }
         this.filtersVisible = false
         if (this.preventQueryString) {
-          this._fetch()
+          await this._fetch()
         } else {
           this.filtersQueryString = this._toQs(this.filters)
           if (force) {
-            this._fetch()
+            await this._fetch()
           }
         }
       },

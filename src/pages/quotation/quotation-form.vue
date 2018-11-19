@@ -258,7 +258,7 @@
                               :cell-renderer-params="{suppressCount: true}"/>
               <ag-grid-column field="bom.item.code" header-name="코드" :width="150"
                               cell-renderer-framework="ag-grid-router-link-renderer"
-                              :cell-renderer-params="{path:'/item/show/${bom.item.id}', innerRenderer: createCellRenderer('item.externalCode')}"/>
+                              :cell-renderer-params="{path:'/item/show/${bom.item.id}', innerRenderer: bomItemCodeCellRenderer}"/>
               <ag-grid-column field="description" header-name="설명" :width="200"
                               cell-editor-framework="ag-grid-input-editor"
                               :cell-editor-params="{ maxlength: 200 }"
@@ -580,14 +580,12 @@
       onAdditionSelectionChanged(event) {
         this.selected.addition = event.api.getSelectedRows()[0]
       },
-      createCellRenderer(additionalField) {
-        return function (params) {
-          const addition = _.get(params.data, additionalField)
-          if (addition == null || addition == undefined) {
-            return params.value
-          }
-          return `${params.value} (${addition})`
+      bomItemCodeCellRenderer(params) {
+        const externalCode = _.get(params.data, 'item.externalCode')
+        if (externalCode == null || externalCode == undefined) {
+          return params.value
         }
+        return `${params.value} (${externalCode})`
       },
       percentGetValue(value) {
         return Number(new Big(value).times(100).round(2))

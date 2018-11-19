@@ -2,6 +2,7 @@ export * from './item'
 export * from './item-spec'
 export * from './item-spec-type'
 export * from './item-category'
+export * from './item-lot'
 
 import {api} from 'src/plugins/axios'
 import {CollectionArray, FetchableArray} from 'src/model/array'

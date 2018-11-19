@@ -3,6 +3,7 @@ import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import * as _ from 'lodash'
 import {language, languageAliases} from "../../i18n";
+import {LabelModel} from "../shared";
 
 export class WarehouseStationModel extends Model {
 
@@ -69,6 +70,12 @@ export class WarehouseStationModel extends Model {
     return await this.$validate(constraints)
   }
 
+  get label() {
+    if (this.code) {
+      return `[${this.code}]${this.name}`
+    }
+  }
+
 }
 
 export const WarehouseStationArray = Array.decorate(
@@ -97,5 +104,28 @@ export const WarehouseStationArray = Array.decorate(
         })
       }
 
+    }
+)
+
+export const WarehouseStationLabelArray = Array.decorate(
+    CollectionArray,
+    class extends FetchableArray {
+      get url() {
+        return '/warehouse/location/station-query-labels?${$QS}'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return LabelModel
+      }
+
+      async fetch(keyword) {
+        return await super.fetch({
+          query: keyword || ''
+        })
+      }
     }
 )

@@ -24,6 +24,12 @@ export class CompanyModel extends Model {
     }
   }
 
+  static async owner() {
+    const response = await api.get(
+        `/company/owner`)
+    return new CompanyModel(response.data)
+  }
+
   static async get(id, cacheable) {
     if (!id) {
       return new CompanyModel()

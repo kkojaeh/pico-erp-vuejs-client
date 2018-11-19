@@ -1,5 +1,5 @@
 import {language, languageAliases} from 'src/i18n'
-import {authenticate} from "../plugins/auth";
+import {authenticate} from "src/plugins/auth";
 
 const menu = [
   {
@@ -154,6 +154,25 @@ const menu = [
       }
     ]
   }
+  /*
+  ,
+  {
+    icon: 'fas fa-industry',
+    label: languageAliases({
+      ko: '창고'
+    })[language],
+    children: [
+      {
+        icon: 'compare_arrows',
+        label: languageAliases({
+          ko: '입/출고 요청'
+        })[language],
+        url: '/warehouse-transaction-request',
+        authorize: 'hasAnyRole(\'WAREHOUSE_MANAGER\', \'WAREHOUSE_TRANSACTION_REQUESTER\')'
+      }
+    ]
+  }
+  */
 ]
 
 export class Menu {

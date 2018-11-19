@@ -1,5 +1,5 @@
 import {MyModel} from 'src/model/user'
-import {Menu} from 'src/model/menu'
+import {Menu} from 'src/menu'
 
 export const signIn = async (context, user) => {
   if (user) {
