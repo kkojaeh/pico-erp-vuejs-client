@@ -6,7 +6,7 @@ let meta = {
 export default [{
   name: 'work-schedule-calendar',
   path: '/work-schedule/:categoryId/:year/:month',
-  component: () => import('src/pages/work-schedule/work-schedule-calendar'),
+  component: () => import('src/pages/work-schedule/work-schedule-calendar.vue'),
   meta,
   props: (route) => {
     return {
@@ -18,7 +18,7 @@ export default [{
 }, {
   name: 'work-schedule-calendar-no-date',
   path: '/work-schedule',
-  component: () => import('src/pages/work-schedule/work-schedule-calendar'),
+  component: () => import('src/pages/work-schedule/work-schedule-calendar.vue'),
   meta,
   props: (route) => {
     return {}

@@ -27,6 +27,7 @@ export class ProcessTypeModel extends Model {
 
   get defaults() {
     return {
+      lossRate: 0,
       costRates: {
         directLabor: 0.25,
         indirectLabor: 0.25,
@@ -122,6 +123,13 @@ export class ProcessTypeModel extends Model {
       },
       infoTypeId: {
         presence: true
+      },
+      lossRate: {
+        presence: true,
+        numericality: {
+          greaterThanOrEqualTo: 0,
+          lessThan: 1
+        }
       },
       costRates: {
         'function': () => {

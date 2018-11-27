@@ -4,7 +4,8 @@ import 'ag-grid/dist/styles/ag-grid.css'
 import 'ag-grid/dist/styles/ag-theme-material.css'
 // import 'ag-grid/dist/styles/ag-theme-balham.css'
 import 'viewerjs/dist/viewer.min.css'
-
+import Highcharts from 'highcharts'
+import gantt from 'highcharts/modules/gantt';
 import AgGrid from 'src/components/ag-grid/ag-grid.vue'
 import AgGridColumn from 'src/components/ag-grid/ag-grid-column.vue'
 import ListFilterLabel from 'src/components/list/list-filter-label.vue'
@@ -43,8 +44,6 @@ import AgGridDatetimeEditor
 import AgGridArrayLabelRenderer
   from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
-import DhtmlxGantt from 'src/components/dhtmlx/dhtmlx-gantt'
-import DhtmlxScheduler from 'src/components/dhtmlx/dhtmlx-scheduler'
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
@@ -62,6 +61,8 @@ import 'imports-loader?jQuery=jquery!trumbowyg/dist/plugins/table/trumbowyg.tabl
 import 'trumbowyg/dist/ui/trumbowyg.css'
 import 'trumbowyg/dist/plugins/table/ui/trumbowyg.table.css'
 import svgIcons from 'trumbowyg/dist/ui/icons.svg'
+
+gantt(Highcharts)
 
 $.trumbowyg.svgPath = svgIcons
 
@@ -107,8 +108,6 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-array-label-renderer', AgGridArrayLabelRenderer)
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
   Vue.component('ag-grid-number-renderer', AgGridNumberRenderer)
-  Vue.component('dhtmlx-gantt', DhtmlxGantt)
-  Vue.component('dhtmlx-scheduler', DhtmlxScheduler)
   Vue.component('ag-grid-datetime-editor', AgGridDatetimeEditor)
 
 }

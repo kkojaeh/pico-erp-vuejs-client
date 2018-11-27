@@ -1,10 +1,25 @@
 <template>
   <q-page class="column fit">
-    <dhtmlx-scheduler ref="scheduler" :templates="schedulerTemplates" :display-date="displayDate"
-                      :config="schedulerConfig"
-                      class="col-grow" @view-change="onViewChange" @empty-click="onEmptyClick"
-    />
-
+    <q-toolbar>
+      <q-toolbar-title>
+        {{year}} / {{month}}
+      </q-toolbar-title>
+      <q-btn-group outline>
+        <q-btn outline label="<<" @click="move(-12)"/>
+        <q-btn outline label="<" @click="move(-1)"/>
+        <q-btn outline label="Today" @click="moveNow()"/>
+        <q-btn outline label=">" @click="move(1)"/>
+        <q-btn outline label=">>" @click="move(12)"/>
+      </q-btn-group>
+    </q-toolbar>
+    <div class="col-grow column">
+      <kl-calendar class="col-grow work-schedule-calendar"
+                   :week-title="weekTitle"
+                   :render-title="renderTitle"
+                   :render-content="renderContent"
+                   :default-date="displayDate"
+                   @date-click="onDateClick"/>
+    </div>
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_drop_down">
@@ -31,7 +46,7 @@
             </q-btn>
           </q-popover>
         </q-btn>
-        <q-select float-label="유형" v-model="displayCategoryId"
+        <q-select v-model="displayCategoryId"
                   :options="categoryArray" dark></q-select>
         <q-toolbar-title>
         </q-toolbar-title>
@@ -129,6 +144,7 @@
     WorkScheduleGenerateOptions,
     WorkScheduleModel
   } from 'src/model/work-schedule'
+  import Calendar from 'himmas-vue-calendar'
 
   export default {
     props: {
@@ -156,16 +172,7 @@
           workTime: null
         },
         dates: {},
-        schedulerConfig: {
-          dblclick_create: false,
-          details_on_create: false,
-          details_on_dblclick: false
-        },
-        schedulerTemplates: {
-          month_day: this.monthDayTemplate,
-          month_date_class: this.monthDateClassTemplate,
-          month_scale_date: this.monthScaleDateTemplate
-        }
+        weekTitle: ['일', '월', '화', '수', '목', '금', '토']
       }
     },
     async mounted() {
@@ -185,6 +192,57 @@
       this.refresh()
     },
     methods: {
+      renderTitle(h, year, month) {
+        return
+      },
+      renderContent(h, data) {
+        const {
+          date, isToday, isWeekend, isOtherMonthDay, year, day, month,
+          renderYear, renderMonth, lunar, weekDay, festival, term
+        } = data
+        const workDay = this.dates[moment(date).format('YYYY-MM-DD')] || {times: []}
+        const name = workDay.name || '일반날'
+        const isHoliday = workDay.holiday
+        const times = workDay.times.map(time => {
+          const begin = moment(time.begin).format('HH:mm')
+          const end = moment(time.end).format('HH:mm')
+          return `${begin} ~ ${end}`
+        })
+        return h('div', {
+          class: {
+            'date-box': true,
+            'today': isToday,
+            'weekend': isWeekend,
+            'holiday': isHoliday,
+            'other-month': isOtherMonthDay
+          }
+        }, [
+          h('div', {
+            class: {
+              'default-info': true,
+              'row': true,
+              'justify-between': true
+            }
+          }, [
+            h('div', {
+              class: {
+                'day-of-month-info': true,
+                'col': true
+              }
+            }, day), h('div', {
+              class: {
+                'name-info': true,
+                'col': true
+              }
+            }, name)
+          ]),
+          h('div', {
+            class: {
+              'times-info': true
+            }
+          }, times.map(time => h('div', {}, time)))
+        ])
+      },
       monthScaleDateTemplate(date) {
         const scheduler = this.$refs.scheduler.scheduler
         const formatter = scheduler.date.date_to_str(scheduler.config.week_date)
@@ -217,44 +275,18 @@
         this.selected.workDay.times.remove(this.selected.workTime)
         this.selected.workTime = null
       },
-      monthDateClassTemplate(date) {
-        const workDay = this.dates[moment(date).format('YYYY-MM-DD')]
-        const cls = []
-        if (workDay && workDay.holiday) {
-          cls.push('dthmlx-scheduler-holiday')
-        }
-        if (date.getDay() == 0) {
-          cls.push("dthmlx-scheduler-sunday")
-        }
-        if (date.getDay() == 6) {
-          cls.push("dthmlx-scheduler-saturday")
-        }
-        return cls.join(' ')
+
+      move(step) {
+        this.go(moment(this.displayDate).add(step, 'months').toDate())
       },
-      monthDayTemplate(date) {
-        const workDay = this.dates[moment(date).format('YYYY-MM-DD')]
-        if (workDay) {
-          const name = workDay.name ? workDay.name : ''
-          const times = workDay.times.map(time => {
-            const begin = moment(time.begin).format('HH:mm')
-            const end = moment(time.end).format('HH:mm')
-            return `${begin} ~ ${end}`
-          }).join('<br>')
-          return `<div class="dhx_month_head_name">${name}</div>`
-              + `<div class="dhx_month_head_times">${times}</div>`
-              + `<div class="dhx_month_head_day">${date.getDate()}</div>`
-        } else {
-          return `<div class="dhx_month_head_day">${date.getDate()}</div>`
-        }
+      moveNow() {
+        this.go(new Date())
       },
       go(date) {
         this.$router.push(
             `/work-schedule/${this.displayCategoryId}/${date.getFullYear()}/${date.getMonth() + 1}`)
       },
-      onViewChange({newMode, newDate}) {
-        this.go(newDate)
-      },
-      onEmptyClick({date, e}) {
+      onDateClick({date}) {
         const workDay = this.dates[moment(date).format('YYYY-MM-DD')]
         if (workDay) {
           this.selected.workDay = workDay
@@ -290,7 +322,6 @@
       }
     },
     computed: {
-      ...mapGetters([])
     },
 
     watch: {
@@ -311,11 +342,57 @@
       }
     },
 
-    components: {}
+    components: {
+      'kl-calendar': Calendar
+    }
   }
 </script>
 <style lang="stylus">
-  .dhtmlx-scheduler-container
+  .work-schedule-calendar
+    .title-box
+      font-size: 20px
+    .kl-calendar_body-week-title // 요일 표시
+      :nth-child(7) // 토요일
+        color: #6495ed
+      :nth-child(1) // 일요일
+        color: #ff4500
+    .date-box
+      position: absolute
+      width: 100%
+      height: 100%
+      display: flex
+      flex-direction: column
+      box-sizing: border-box
+      .default-info
+        padding: 5px
+        .day-of-month-info
+          text-align: left
+          font-size: 14px
+          font-weight: bold
+        .name-info
+          text-align: right
+          font-size: 12px
+    .times-info
+      text-align: center
+      font-size: 11px
+
+    .date-box.today
+      background: #fb0
+      color: #fff
+
+    .date-box.today .name-info
+      color: #fff
+
+    .weekend
+      background: #ff450011
+
+    .date-box.other-month .day-of-month-info, .date-box.other-month .name-info
+      color: #999
+
+    .date-box:hover
+      border: 3px solid #fb0
+
+  /*.dhtmlx-scheduler-container
     .dthmlx-scheduler-saturday .dhx_month_head_day
       color: cornflowerblue
     .dthmlx-scheduler-sunday .dhx_month_head_day
@@ -357,7 +434,7 @@
       .dhx_scale_saturday
         color: #6495ed
       .dhx_scale_sunday
-        color: #ff4500
+        color: #ff4500*/
 
 
 </style>

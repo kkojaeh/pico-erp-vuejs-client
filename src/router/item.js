@@ -13,12 +13,13 @@ let categoryMeta = {
 export default [{
   name: 'item-category-list',
   path: '/item-category',
-  component: () => import('src/pages/item/item-category-list'),
+  component: () => import('src/pages/item/item-category-list.vue'),
   meta: categoryMeta,
   children: [{
     name: 'item-category-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
+        {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -32,7 +33,8 @@ export default [{
   }, {
     name: 'item-category-form-create-by-parent',
     path: 'create/:parentId',
-    component: () => wrapModal(import('src/pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
+        {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -48,7 +50,8 @@ export default [{
   }, {
     name: 'item-category-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/item/item-category-form'), {
+    component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
+        {
       onModalHide () {
         this.$router.push({path: '/item-category', query: this.$route.query})
       }
@@ -65,7 +68,7 @@ export default [{
 }, {
   name: 'item-list',
   path: '/item',
-  component: () => import('src/pages/item/item-list'),
+  component: () => import('src/pages/item/item-list.vue'),
   meta: itemMeta,
   children: [{
     name: 'item-form-create',
@@ -83,7 +86,7 @@ export default [{
   }, {
     name: 'item-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/item/item-form'), {
+    component: () => wrapModal(import('src/pages/item/item-form.vue'), {
       onModalHide () {
         this.$router.push({path: '/item', query: this.$route.query})
       }

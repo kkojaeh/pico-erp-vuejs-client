@@ -8,7 +8,7 @@ const transactionRequest = {
 export default [{
   name: 'warehouse-location-form',
   path: '/warehouse-location',
-  component: () => import('src/pages/warehouse/location-form'),
+  component: () => import('src/pages/warehouse/location-form.vue'),
   meta: {
     title: '창고 장소 관리',
     authorize: 'hasAnyRole(\'WAREHOUSE_MANAGER\')'
@@ -19,7 +19,7 @@ export default [{
 }, {
   name: 'warehouse-transaction-request-list',
   path: '/warehouse-transaction-request',
-  component: () => import('src/pages/warehouse/transaction-request-list'),
+  component: () => import('src/pages/warehouse/transaction-request-list.vue'),
   meta: transactionRequest,
   props: (route) => {
     return {}
@@ -27,7 +27,7 @@ export default [{
   children: [{
     path: 'create',
     component: () => wrapModal(
-        import('src/pages/warehouse/transaction-request-form'), {
+        import('src/pages/warehouse/transaction-request-form.vue'), {
           onModalHide() {
             this.$router.push({
               path: '/warehouse-transaction-request',
@@ -43,7 +43,7 @@ export default [{
   }, {
     path: 'show/:id',
     component: () => wrapModal(
-        import('src/pages/warehouse/transaction-request-form'), {
+        import('src/pages/warehouse/transaction-request-form.vue'), {
           onModalHide() {
             this.$router.push({
               path: '/warehouse-transaction-request',

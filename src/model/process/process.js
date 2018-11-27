@@ -14,6 +14,7 @@ export class ProcessModel extends Model {
     return {
       status: 'DRAFT',
       difficulty: 'NORMAL',
+      lossRate: 0,
       adjustCost: 0,
       estimatedCost: {
         directLabor: 0,
@@ -113,6 +114,13 @@ export class ProcessModel extends Model {
       adjustCost: {
         presence: true,
         numericality: true
+      },
+      lossRate: {
+        presence: true,
+        numericality: {
+          greaterThanOrEqualTo: 0,
+          lessThan: 1
+        }
       },
       adjustCostReason: {
         length: {maximum: 200},

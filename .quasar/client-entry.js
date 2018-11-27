@@ -72,7 +72,6 @@ import pInstantlauncher from 'src/plugins/instant-launcher'
 
 
 Vue.config.devtools = true
-Vue.config.performance = true
 Vue.config.productionTip = false
 
 

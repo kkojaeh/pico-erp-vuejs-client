@@ -18,12 +18,12 @@ let preTypeMeta = {
 export default [{
   name: 'process-list',
   path: '/process',
-  component: () => import('src/pages/process/process-list'),
+  component: () => import('src/pages/process/process-list.vue'),
   meta: meta,
   children: [{
     name: 'process-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/process/process-form'), {
+    component: () => wrapModal(import('src/pages/process/process-form.vue'), {
       onModalHide () {
         this.$router.push({path: '/process', query: this.$route.query})
       }
@@ -40,12 +40,13 @@ export default [{
 }, {
   name: 'process-type-list',
   path: '/process-type',
-  component: () => import('src/pages/process/process-type-list'),
+  component: () => import('src/pages/process/process-type-list.vue'),
   meta: typeMeta,
   children: [{
     name: 'process-type-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/process/process-type-form'), {
+    component: () => wrapModal(
+        import('src/pages/process/process-type-form.vue'), {
       onModalHide () {
         this.$router.push({path: '/process-type', query: this.$route.query})
       }
@@ -58,7 +59,8 @@ export default [{
   }, {
     name: 'process-type-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/process/process-type-form'), {
+    component: () => wrapModal(
+        import('src/pages/process/process-type-form.vue'), {
       onModalHide () {
         this.$router.push({path: '/process-type', query: this.$route.query})
       }
@@ -75,12 +77,13 @@ export default [{
 }, {
   name: 'preprocess-type-list',
   path: '/preprocess-type',
-  component: () => import('src/pages/process/preprocess-type-list'),
+  component: () => import('src/pages/process/preprocess-type-list.vue'),
   meta: preTypeMeta,
   children: [{
     name: 'preprocess-type-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/process/preprocess-type-form'),
+    component: () => wrapModal(
+        import('src/pages/process/preprocess-type-form.vue'),
         {
       onModalHide() {
         this.$router.push({path: '/preprocess-type', query: this.$route.query})
@@ -94,7 +97,8 @@ export default [{
   }, {
     name: 'preprocess-type-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/process/preprocess-type-form'),
+    component: () => wrapModal(
+        import('src/pages/process/preprocess-type-form.vue'),
         {
       onModalHide() {
         this.$router.push({path: '/preprocess-type', query: this.$route.query})

@@ -9,12 +9,13 @@ let meta = {
 export default [{
   name: 'quotation-list',
   path: '/quotation',
-  component: () => import('src/pages/quotation/quotation-list'),
+  component: () => import('src/pages/quotation/quotation-list.vue'),
   meta,
   children: [{
     name: 'quotation-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/quotation/quotation-form'), {
+    component: () => wrapModal(import('src/pages/quotation/quotation-form.vue'),
+        {
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }
@@ -27,7 +28,8 @@ export default [{
   }, {
     name: 'quotation-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/quotation/quotation-form'), {
+    component: () => wrapModal(import('src/pages/quotation/quotation-form.vue'),
+        {
       onModalHide () {
         this.$router.push({path: '/quotation', query: this.$route.query})
       }

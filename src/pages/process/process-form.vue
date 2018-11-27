@@ -74,6 +74,14 @@
                     :options="difficultyLabelArray"></q-select>
         </q-field>
 
+        <q-field icon="error" helper="공정유형의 손실률 입니다"
+                 :error="!!model.$errors.lossRate"
+                 :error-label="model.$errors.lossRate"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-input type="number" v-model="lossRatePercentage" float-label="손실률" align="right"
+                   suffix="%" :decimals="2"/>
+        </q-field>
+
         <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.managerId"
@@ -227,6 +235,7 @@
   } from 'src/model/process'
   import {ItemModel} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
+  import Big from 'big.js'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import Highcharts from 'highcharts'
 
@@ -438,7 +447,15 @@
       },
       typeFixed() {
         return this.model.typeFixed
-      }
+      },
+      lossRatePercentage: {
+        get() {
+          return Number(new Big(this.model.lossRate).times(100))
+        },
+        set(value) {
+          this.model.lossRate = Number(new Big(value).div(100))
+        }
+      },
     },
     watch: {
       'model.typeId': async function (to) {

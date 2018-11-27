@@ -8,7 +8,7 @@ let meta = {
 export default [{
   name: 'bom-revision-list',
   path: '/bom/:itemId',
-  component: () => import('src/pages/bom/bom-revision-list'),
+  component: () => import('src/pages/bom/bom-revision-list.vue'),
   meta,
   props: (route) => {
     return {
@@ -18,7 +18,7 @@ export default [{
   children: [{
     name: 'bom-form',
     path: ':id',
-    component: () => wrapModal(import('src/pages/bom/bom-form'), {
+    component: () => wrapModal(import('src/pages/bom/bom-form.vue'), {
       onModalHide () {
         const itemId = this.$route.params.itemId
         this.$router.push(`/bom/${itemId}`)

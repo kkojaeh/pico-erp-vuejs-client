@@ -48,6 +48,14 @@
           <q-input type="number" v-model="model.baseUnitCost" float-label="기준 단가" align="right"/>
         </q-field>
 
+        <q-field icon="error" helper="공정유형의 손실률 입니다"
+                 :error="!!model.$errors.lossRate"
+                 :error-label="model.$errors.lossRate"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-input type="number" v-model="lossRatePercentage" float-label="손실률" align="right"
+                   suffix="%" :decimals="2"/>
+        </q-field>
+
       </q-card-main>
 
     </q-card>
@@ -265,6 +273,7 @@
     ProcessTypeModel,
     ProcessTypePreprocessTypeArray
   } from 'src/model/process'
+  import Big from 'big.js'
   import * as _ from 'lodash'
 
   export default {
@@ -371,6 +380,14 @@
       }
     },
     computed: {
+      lossRatePercentage: {
+        get() {
+          return Number(new Big(this.model.lossRate).times(100))
+        },
+        set(value) {
+          this.model.lossRate = Number(new Big(value).div(100))
+        }
+      },
       totalCostRate() {
         let sum = 0
         _.forIn(this.model.costRates, (value, key) => {

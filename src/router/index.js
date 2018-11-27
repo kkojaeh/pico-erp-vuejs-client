@@ -71,7 +71,7 @@ const Router = new VueRouter({
     {
       name: 'sign-in',
       path: '/sign-in',
-      component: () => import('src/pages/sign-in'),
+      component: () => import('src/pages/sign-in.vue'),
       meta: {
         title: '로그인',
         authorize: 'permitAll'
@@ -80,7 +80,7 @@ const Router = new VueRouter({
     {
       name: 'email',
       path: '/email',
-      component: () => import('src/pages/email'),
+      component: () => import('src/pages/email.vue'),
       meta: {
         authorize: 'permitAll'
       }
@@ -89,7 +89,7 @@ const Router = new VueRouter({
     { // Always leave this as last one
       name: '404',
       path: '*',
-      component: () => import('src/pages/404')
+      component: () => import('src/pages/404.vue')
     }
   ]
 

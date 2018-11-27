@@ -13,8 +13,6 @@
     QuotationStatusCountPerMonthAggregateOptions
   } from 'src/model/quotation'
   import moment from 'moment'
-  //import Exporting from 'highcharts/modules/exporting';
-  //Exporting(Highcharts);
 
   export default {
     props: {},

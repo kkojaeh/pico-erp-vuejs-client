@@ -1,7 +1,6 @@
 <template>
   <q-page class="column fit">
-    <dhtmlx-gantt class="col-grow" :tasks="tasks" :config="config"
-                  :templates="templates"></dhtmlx-gantt>
+
   </q-page>
 </template>
 

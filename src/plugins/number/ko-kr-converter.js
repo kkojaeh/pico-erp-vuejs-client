@@ -1,5 +1,3 @@
-import numberToText from 'number-to-text'
-
 const baseNames = ['천', '백', '십', '']
 const levelNames = ['', '만', '억', '조',
   '경', '해', '자', '양',
@@ -9,7 +7,8 @@ const levelNames = ['', '만', '억', '조',
 const decimals = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
 const delimiterChar = ' '
 
-export default class KoKrConverter extends numberToText.Converter {
+class KoKrConverter {
+
   convertToText (value, options) {
     if (value === undefined || value === null || value === '') {
       return ''
@@ -31,7 +30,7 @@ export default class KoKrConverter extends numberToText.Converter {
     }
     if (signIndex > -1) {
       value = value.substring(++signIndex, value.length)
-      result = '(마이너스) '
+      result = '(-) '
     } else {
       result = ''
     }
@@ -86,3 +85,5 @@ export default class KoKrConverter extends numberToText.Converter {
     return result.trim() + postFix
   }
 }
+
+export default new KoKrConverter()

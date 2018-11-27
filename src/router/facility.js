@@ -8,7 +8,7 @@ let meta = {
 export default [{
   name: 'facility-list',
   path: '/facility',
-  component: () => import('src/pages/facility/facility-list'),
+  component: () => import('src/pages/facility/facility-list.vue'),
   meta,
   props: (route) => {
     return {}
@@ -16,7 +16,7 @@ export default [{
   children: [{
     name: 'facility-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/facility/facility-form'), {
+    component: () => wrapModal(import('src/pages/facility/facility-form.vue'), {
       onModalHide() {
         this.$router.push({path: '/facility', query: this.$route.query})
       }
@@ -31,7 +31,7 @@ export default [{
   }, {
     name: 'facility-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/facility/facility-form'), {
+    component: () => wrapModal(import('src/pages/facility/facility-form.vue'), {
       onModalHide() {
         this.$router.push({path: '/facility', query: this.$route.query})
       }
