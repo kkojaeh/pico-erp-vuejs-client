@@ -293,15 +293,6 @@
       }
     },
     methods: {
-      async onAddPreprocess() {
-        //const preprocessTypes = await this.$selectPreprocessType({multiple: true});
-        if (preprocessTypes && preprocessTypes.length) {
-          preprocessTypes.forEach(preprocessType => {
-            preprocessType.added = true
-            this.preprocessTypeArray.push(preprocessType)
-          })
-        }
-      },
       difficultyLabel(value) {
         const label = this.difficultyLabelArray.find(data => data.value == value)
         return label ? label.label : ''
@@ -311,15 +302,15 @@
         await this.infoTypeLabelArray.fetch(keyword)
         done()
       },
-      async onRemovePreprocess() {
-        const preprocessType = this.selected.preprocessType
-        const ok = await this.$alert.confirm('해당 사전 공정 유형을 삭제 하시겠습니까?')
-        if (ok) {
-          this.preprocessTypeArray.remove(preprocessType)
-        }
-      },
       async create() {
-        this.model = new ProcessTypeModel()
+        const model = new ProcessTypeModel()
+        const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
+        const preprocessTypes = new PreprocessTypeArray()
+        await preprocessTypes.fetch()
+        preprocessTypes.forEach(preprocessType => preprocessType.selected = false)
+        preprocessTypeArray.push(...preprocessTypes)
+        this.model = model
+        this.preprocessTypeArray = preprocessTypeArray
       },
       async load(id) {
         const model = await ProcessTypeModel.get(id)

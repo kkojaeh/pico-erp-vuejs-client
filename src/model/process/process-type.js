@@ -101,11 +101,11 @@ export class ProcessTypeModel extends Model {
     const constraints = {
       id: {
         presence: true,
-        length: {minimum: 2, maximum: 50},
+        length: {minimum: 1, maximum: 5},
         format: {
-          pattern: '(\\w|-)+',
+          pattern: '[A-Z0-9]{1,5}',
           message: languageAliases({
-            ko: '형식이 틀립니다(영문 및 숫자 `_-` 만 사용가능합니다)'
+            ko: '형식이 틀립니다(영문 대문자/숫자 조합 1~5 글자입니다)'
           })[language]
         },
         exists: async (value) => {
