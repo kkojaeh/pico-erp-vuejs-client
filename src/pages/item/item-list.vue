@@ -4,7 +4,8 @@
     <router-view></router-view>
 
     <!-- child -->
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
+                 @fetched="onFetched">
 
       <!-- action -->
 
@@ -35,8 +36,8 @@
                         :cell-renderer-params="{path:'/item/show/${id}', query:$route.query}"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
         <ag-grid-column field="name" header-name="이름" :width="300"/>
-        <ag-grid-column field="customerName" header-name="고객사" :width="150"/>
-        <ag-grid-column field="categoryPath" header-name="분류" :width="250"/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="150"/>
+        <ag-grid-column field="category.path" header-name="분류" :width="250"/>
         <ag-grid-column field="unit" header-name="단위" :width="90" align="center"/>
         <ag-grid-column field="type" header-name="유형" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
@@ -135,11 +136,12 @@
   import {mapGetters} from 'vuex'
   import {
     ItemCategoryLabelArray,
+    ItemCategoryModel,
     ItemPaginationArray,
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
-  import {CompanyLabelArray} from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
 
   export default {
     authorized: {
@@ -191,6 +193,15 @@
       async onCategorySearch (keyword, done) {
         await this.categoryLabelArray.fetch(keyword)
         done()
+      },
+      async onFetched() {
+        await Promise.all(
+            this.array.map(async (e) => {
+              e.customer = await CompanyModel.get(e.customerId, true)
+              e.category = await ItemCategoryModel.get(e.categoryId, true)
+            })
+        )
+        this.$redrawGrids()
       }
     },
     computed: {
