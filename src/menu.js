@@ -131,14 +131,6 @@ const menu = [
       {
         icon: 'library_books',
         label: languageAliases({
-          ko: '사전공정 유형 관리'
-        })[language],
-        url: '/preprocess-type',
-        authorize: 'hasAnyRole(\'PROCESS_TYPE_MANAGER\')'
-      },
-      {
-        icon: 'library_books',
-        label: languageAliases({
           ko: '공정 유형 관리'
         })[language],
         url: '/process-type',

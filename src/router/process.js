@@ -10,11 +10,6 @@ let typeMeta = {
   authorize: 'hasRole(\'PROCESS_TYPE_MANAGER\')'
 }
 
-let preTypeMeta = {
-  title: '사전 공정 유형 관리',
-  authorize: 'hasRole(\'PROCESS_TYPE_MANAGER\')'
-}
-
 export default [{
   name: 'process-list',
   path: '/process',
@@ -66,45 +61,6 @@ export default [{
       }
     }),
     meta: typeMeta,
-    props: (route) => {
-      return {
-        id: route.params.id,
-        action: 'show',
-        closable: true
-      }
-    }
-  }]
-}, {
-  name: 'preprocess-type-list',
-  path: '/preprocess-type',
-  component: () => import('src/pages/process/preprocess-type-list.vue'),
-  meta: preTypeMeta,
-  children: [{
-    name: 'preprocess-type-form-create',
-    path: 'create',
-    component: () => wrapModal(
-        import('src/pages/process/preprocess-type-form.vue'),
-        {
-      onModalHide() {
-        this.$router.push({path: '/preprocess-type', query: this.$route.query})
-      }
-    }),
-    meta: preTypeMeta,
-    props: {
-      action: 'create',
-      closable: true
-    }
-  }, {
-    name: 'preprocess-type-form-show',
-    path: 'show/:id',
-    component: () => wrapModal(
-        import('src/pages/process/preprocess-type-form.vue'),
-        {
-      onModalHide() {
-        this.$router.push({path: '/preprocess-type', query: this.$route.query})
-      }
-    }),
-    meta: preTypeMeta,
     props: (route) => {
       return {
         id: route.params.id,

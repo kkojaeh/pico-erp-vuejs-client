@@ -4,7 +4,7 @@
     <q-card class="col-12" flat>
 
       <q-toolbar>
-        <q-btn flat icon="refresh" @click="onRefresh">Refresh</q-btn>
+        <q-btn flat icon="refresh" @click="onRefresh">새로고침</q-btn>
         <q-toolbar-title>
         </q-toolbar-title>
         <q-btn flat icon="check" @click="onDetermine" v-if="isDeterminable">확정</q-btn>
@@ -268,15 +268,13 @@
             this.loading = true
             await this.selected.nextRevision()
             await this.$await(1000)
-            if (this.selected == this.model) {
-              this.$router.replace({path: `/bom/${this.model.itemId}/${this.model.id}`})
-              await this.$await(1000)
-              await this.refresh()
-              await this.$alert.positive('버전이 변경 되었습니다')
-            } else {
-              await this.refresh()
-              await this.$alert.positive('버전이 변경 되었습니다')
+            if (this.selected != this.model) {
+              this.model = await BomModel.getByItemId(this.model.itemId, this.model.revision + 1)
             }
+            this.$router.replace({path: `/bom/${this.model.itemId}/${this.model.id}`})
+            await this.$await(1000)
+            await this.refresh()
+            await this.$alert.positive('버전이 변경 되었습니다')
             this.loading = false
           }
         } else {

@@ -44,11 +44,9 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="account_circle" helper="공정 이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.name"
-                 :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active" readonly
+        <q-field icon="account_circle" helper="공정의 이름 입니다"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-input v-model="name" float-label="이름" class="ime-mode-active" readonly
                    hide-underline/>
         </q-field>
 
@@ -62,8 +60,7 @@
                                  @search="onProcessTypeSearch" :readonly="typeFixed"
                                  :hide-underline="typeFixed">
             <template slot="option" slot-scope="option">
-              {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
+              {{option.label}}
             </template>
           </c-autocomplete-select>
         </q-field>
@@ -403,12 +400,6 @@
         await this.model.save()
       },
 
-      rename() {
-        const typeName = this.typeModel.name || 'N/A'
-        const itemName = this.itemModel.name
-        this.model.name = `[${typeName}] ${itemName}`
-      },
-
       async onCompletePlan() {
         let valid = await this.model.validateCompletePlan()
         if (valid) {
@@ -448,6 +439,14 @@
       typeFixed() {
         return this.model.typeFixed
       },
+      name() {
+        if (this.model.name) {
+          return this.model.name
+        }
+        const typeName = this.typeModel.name || 'N/A'
+        const itemCode = this.itemModel.code
+        return `${typeName} [${itemCode}]`
+      },
       lossRatePercentage: {
         get() {
           return Number(new Big(this.model.lossRate).times(100))
@@ -460,6 +459,9 @@
     watch: {
       'model.typeId': async function (to) {
         this.typeModel = await ProcessTypeModel.get(to, true)
+        if (!this.typeFixed) {
+          this.model.lossRate = this.typeModel.lossRate
+        }
       },
       'model.managerId': async function (to) {
         this.managerModel = await UserModel.get(to, true)

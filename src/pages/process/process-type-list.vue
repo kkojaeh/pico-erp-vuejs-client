@@ -69,8 +69,6 @@
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/process-type/show/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="200"/>
-        <ag-grid-column field="infoTypeName" header-name="분류" :width="150"/>
-
         <ag-grid-column field="baseUnitCost" header-name="기준단가" :width="100"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0.00', words:true}"
@@ -96,8 +94,8 @@
       <q-field slot="filter" icon="account_box" helper="분류를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
-        <c-autocomplete-select float-label="분류" v-model="filters.processInfoTypeId"
-                               :label.sync="filters.processInfoTypeName"
+        <c-autocomplete-select float-label="분류" v-model="filters.infoTypeId"
+                               :label.sync="filters.infoTypeName"
                                :options="infoTypeLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onProcessInfoTypeSearch">
@@ -113,8 +111,8 @@
       <!-- filter -->
 
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.processInfoTypeId"
-                           :print-value="filters.processInfoTypeName" label="분류"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.infoTypeId"
+                           :print-value="filters.infoTypeName" label="분류"/>
       <!-- filter -->
 
     </c-list-view>
@@ -139,8 +137,8 @@
         infoTypeLabelArray: new ProcessInfoTypeLabelArray(),
         filters: {
           name: null,
-          processInfoTypeId: null,
-          processInfoTypeName: null
+          infoTypeId: null,
+          infoTypeName: null
         },
         exportOptions: new ProcessTypeExportOptions(),
         importOptions: new ProcessTypeImportOptions(),

@@ -60,41 +60,25 @@
 
     </q-card>
 
-    <q-card class="col-12" flat>
+    <q-card class="col-xs-12 col-md-4 col-xl-4" flat>
 
       <q-card-title>
         사전 공정 유형 정보
-        <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddPreprocess"/>
-          <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemovePreprocess"
-                 :disabled="!selected.preprocessType"/>
-        </div>
       </q-card-title>
 
       <q-card-separator/>
 
       <q-card-main class="column">
-        <!--<q-field icon="search" helper="추가할 사전 공정 유형의 이름을 입력하고 선택하세요" class="col-auto">
-          <c-autocomplete-select ref="preprocessType" float-label="사전 공정" v-model="preprocessTypeId"
-                                 :options="preprocessTypeLabelArray"
-                                 label-field="label" value-field="value"
-                                 @search="onPreprocessTypeSearch">
-            <template slot="option" slot-scope="option">
-              {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
-            </template>
-          </c-autocomplete-select>
-        </q-field>-->
-        <ag-grid ref="userGrid" class="col-auto"
+        <ag-grid class="col-auto"
                  :grid-auto-height="true"
                  row-selection="single"
                  enable-col-resize
                  enable-sorting
-                 :row-data="preprocessTypeArray"
-                 @selection-changed="onPreprocessTypeSelectionChanged">
-
-          <ag-grid-column :checkbox-selection="true" :width="60"/>
-          <ag-grid-column field="id" header-name="아이디" :width="150"/>
+                 :row-data="preprocessTypeArray">
+          <ag-grid-column field="selected" header-name="사용" :width="120" suppress-sorting
+                          cell-renderer-framework="ag-grid-checkbox-renderer"
+                          cell-editor-framework="ag-grid-checkbox-editor"
+                          :editable="true"/>
           <ag-grid-column field="name" header-name="이름" :width="200"/>
           <ag-grid-column field="baseCost" header-name="기준단가" :width="100"
                           cell-renderer-framework="ag-grid-number-renderer"
@@ -104,7 +88,7 @@
       </q-card-main>
     </q-card>
 
-    <q-card class="col-xs-12 col-md-6 col-xl-6" flat>
+    <q-card class="col-xs-12 col-md-4 col-xl-4" flat>
 
       <q-card-title>
         공정 단가 구성 비율
@@ -196,7 +180,7 @@
       </q-card-main>
     </q-card>
 
-    <q-card class="col-xs-12 col-md-6 col-xl-6" flat>
+    <q-card class="col-xs-12 col-md-4 col-xl-4" flat>
 
       <q-card-title>
         난이도별 단가 반영률
@@ -266,12 +250,12 @@
 </template>
 <script>
   import {
-    PreprocessTypeModel,
+    PreprocessTypeArray,
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
     ProcessInfoTypeModel,
     ProcessTypeModel,
-    ProcessTypePreprocessTypeArray
+    ProcessTypePreprocessTypeArray,
   } from 'src/model/process'
   import Big from 'big.js'
   import * as _ from 'lodash'
@@ -296,21 +280,21 @@
         difficultyLabelArray: new ProcessDifficultyArray(),
         infoTypeModel: new ProcessInfoTypeModel(),
         preprocessTypeArray: new ProcessTypePreprocessTypeArray(),
-        selected: {
-          preprocessType: null
-        }
+        selected: {}
       }
     },
-    mounted() {
+    async mounted() {
+      await Promise.all([
+        await this.infoTypeLabelArray.fetch(),
+        await this.difficultyLabelArray.fetch()
+      ])
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.infoTypeLabelArray.fetch()
-      this.difficultyLabelArray.fetch()
     },
     methods: {
       async onAddPreprocess() {
-        const preprocessTypes = await this.$selectPreprocessType({multiple: true});
+        //const preprocessTypes = await this.$selectPreprocessType({multiple: true});
         if (preprocessTypes && preprocessTypes.length) {
           preprocessTypes.forEach(preprocessType => {
             preprocessType.added = true
@@ -318,17 +302,11 @@
           })
         }
       },
-      onPreprocessTypeSelectionChanged(event) {
-        this.selected.preprocessType = event.api.getSelectedRows()[0]
-      },
       difficultyLabel(value) {
         const label = this.difficultyLabelArray.find(data => data.value == value)
         return label ? label.label : ''
       },
-      /*async onPreprocessTypeSearch(keyword, done) {
-        await this.preprocessTypeLabelArray.fetch(keyword)
-        done()
-      },*/
+
       async onProcessInfoTypeSearch(keyword, done) {
         await this.infoTypeLabelArray.fetch(keyword)
         done()
@@ -346,8 +324,14 @@
       async load(id) {
         const model = await ProcessTypeModel.get(id)
         const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
-        model.preprocessTypes.forEach(
-            preprocessType => preprocessTypeArray.push(new PreprocessTypeModel(preprocessType)))
+        const preprocessTypes = new PreprocessTypeArray()
+        await preprocessTypes.fetch()
+        const selected = model.preprocessTypes.map(preprocessType => preprocessType.id)
+        preprocessTypes.forEach(preprocessType => {
+          preprocessType.selected = selected.includes(preprocessType.id)
+          preprocessType.snapshot()
+        })
+        preprocessTypeArray.push(...preprocessTypes)
         this.model = model
         this.preprocessTypeArray = preprocessTypeArray
       },

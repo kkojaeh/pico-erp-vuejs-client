@@ -39,7 +39,8 @@ export class ProcessTypeModel extends Model {
         {'difficulty': 'NORMAL', 'description': '', 'costRate': 1.00},
         {'difficulty': 'HARD', 'description': '', 'costRate': 1.10},
         {'difficulty': 'VERY_HARD', 'description': '', 'costRate': 1.20}
-      ]
+      ],
+      preprocessTypes: []
     }
   }
 
@@ -197,19 +198,12 @@ export const ProcessTypePreprocessTypeArray = Array.decorate(
       }
 
       isSaveTarget(element) {
-        return element.added
-      }
-
-      isRemoveTarget(element) {
-        return !element.added
+        return element.hasChanged('selected')
       }
 
       async saveElement(element) {
-        return await this.processType.addPreprocessType(element)
-      }
-
-      async removeElement(element) {
-        return await this.processType.removePreprocessType(element)
+        return await element.selected ? this.processType.addPreprocessType(
+            element) : this.processType.removePreprocessType(element)
       }
 
     }
