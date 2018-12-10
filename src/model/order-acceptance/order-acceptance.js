@@ -1,6 +1,5 @@
-import {FetchableArray, SpringPaginationArray} from 'src/model/array'
+import {SpringPaginationArray} from 'src/model/array'
 import {exists, Model, uuid} from 'src/model/model'
-import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
 import {date} from 'quasar'
 import {language, languageAliases} from "../../i18n";
@@ -150,28 +149,6 @@ export const OrderAcceptancePaginationArray = Array.decorate(
 
       get model() {
         return OrderAcceptanceModel
-      }
-    }
-)
-
-export const OrderAcceptanceLabelArray = Array.decorate(
-    class extends FetchableArray {
-      get url() {
-        return '/order-acceptance/order-acceptance-query-labels?${$QS}'
-      }
-
-      get axios() {
-        return api
-      }
-
-      get model() {
-        return LabelModel
-      }
-
-      async fetch(keyword) {
-        return super.fetch({
-          query: keyword || ''
-        })
       }
     }
 )

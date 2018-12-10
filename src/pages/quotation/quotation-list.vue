@@ -6,7 +6,8 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
+                 @fetched="onFetched">
 
       <!-- action -->
 
@@ -38,9 +39,9 @@
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="projectName" header-name="프로젝트" :width="170"/>
-        <ag-grid-column field="customerName" header-name="고객사" :width="170"/>
-        <ag-grid-column field="managerName" header-name="담당자" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트" :width="170"/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="170"/>
+        <ag-grid-column field="manager.name" header-name="담당자" :width="120"/>
         <ag-grid-column field="committedDate" header-name="제출시간" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
@@ -151,9 +152,9 @@
     QuotationStatusArray
   } from 'src/model/quotation'
 
-  import {CompanyLabelArray} from 'src/model/company'
-  import {ProjectLabelArray} from 'src/model/project'
-  import {UserLabelArray} from 'src/model/user'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
+  import {UserLabelArray, UserModel} from 'src/model/user'
 
   export default {
     data () {
@@ -211,6 +212,16 @@
       async onManagerSearch (keyword, done) {
         await this.userLabelArray.fetch(keyword)
         done()
+      },
+      async onFetched() {
+        await Promise.all(
+            this.array.map(async (e) => {
+              e.customer = await CompanyModel.get(e.customerId, true)
+              e.project = await ProjectModel.get(e.projectId, true)
+              e.manager = await UserModel.get(e.managerId, true)
+            })
+        )
+        this.$redrawGrids()
       }
     },
     computed: {

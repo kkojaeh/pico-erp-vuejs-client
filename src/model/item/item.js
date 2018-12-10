@@ -6,7 +6,6 @@ import {
 import {exists, Model, uuid} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
-import * as _ from 'lodash'
 
 const propertyOrders = {
   'width': 1,
@@ -49,24 +48,6 @@ export class ItemModel extends Model {
 
   static async exists(id) {
     return await exists(api, `/item/items/${id}`)
-  }
-
-  static async getSpecMetadata(id) {
-    const numbers = ['integer']
-    const response = await api.get(`item/items/${id}/spec-metadata`)
-    const data = response.data
-    console.log(data.properties)
-    _.forIn(data.properties, (value, key) => {
-      if (propertyOrders[key]) {
-        value.propertyOrder = propertyOrders[key]
-      }
-      if (numbers.includes(value.type)) {
-        if (_.isArray(value.enum)) {
-          value.enum = value.enum.map(Number)
-        }
-      }
-    })
-    return data
   }
 
   get phantom() {

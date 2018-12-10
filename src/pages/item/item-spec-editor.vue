@@ -33,7 +33,7 @@
 
 </template>
 <script>
-  import {ItemModel, ItemSpecModel} from 'src/model/item'
+  import {ItemModel, ItemSpecModel, ItemSpecTypeModel} from 'src/model/item'
   import 'json-editor'
   import * as _ from 'lodash'
 
@@ -105,13 +105,19 @@
         }
       },
       async create() {
-        this.metadata = await ItemModel.getSpecMetadata(this.itemId)
+        const item = await ItemModel.get(this.itemId)
+        const specTypeId = item.specTypeId
+        const specType = await ItemSpecTypeModel.get(specTypeId)
+        this.metadata = JSON.parse(metadata)
         this.model = await ItemSpecModel.create(this.itemId)
         this.initEditor()
       },
       async show() {
         this.model = await ItemSpecModel.get(this.id)
-        this.metadata = await ItemModel.getSpecMetadata(this.model.itemId)
+        const item = await ItemModel.get(this.model.itemId)
+        const specTypeId = item.specTypeId
+        const specType = await ItemSpecTypeModel.get(specTypeId)
+        this.metadata = JSON.parse(specType.metadata)
         this.initEditor()
       },
       async onSaveClick() {

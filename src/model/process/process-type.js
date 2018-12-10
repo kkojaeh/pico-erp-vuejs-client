@@ -34,12 +34,12 @@ export class ProcessTypeModel extends Model {
         indirectMaterial: 0.25,
         indirectExpenses: 0.25
       },
-      difficultyGrades: [
-        {'difficulty': 'EASY', 'description': '', 'costRate': 0.95},
-        {'difficulty': 'NORMAL', 'description': '', 'costRate': 1.00},
-        {'difficulty': 'HARD', 'description': '', 'costRate': 1.10},
-        {'difficulty': 'VERY_HARD', 'description': '', 'costRate': 1.20}
-      ],
+      difficulties: {
+        'EASY': {'description': '', 'costRate': 0.95},
+        'NORMAL': {'description': '', 'costRate': 1.00},
+        'HARD': {'description': '', 'costRate': 1.10},
+        'VERY_HARD': {'description': '', 'costRate': 1.20}
+      },
       preprocessTypes: []
     }
   }

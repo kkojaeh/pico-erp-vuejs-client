@@ -196,13 +196,13 @@
               <div style="padding-right: 10px;">단가 반영률: 난이도에 따른 단가 변동을 의미합니다</div>
             </q-list-header>
             <q-item-separator/>
-            <q-item v-for="grade in model.difficultyGrades" :key="grade.difficulty">
+            <q-item v-for="(grade, difficulty) in model.difficulties" :key="difficulty">
               <q-item-main>
                 <q-item-tile>
-                  {{difficultyLabel(grade.difficulty)}}
+                  {{difficultyLabel(difficulty)}}
                 </q-item-tile>
                 <q-field class="col-12"
-                         :helper="`'${difficultyLabel(grade.difficulty)}' 의 단가 반영률을 지정하세요`">
+                         :helper="`'${difficultyLabel(difficulty)}' 의 단가 반영률을 지정하세요`">
                   <q-slider
                       v-model="grade.costRate"
                       label-always
@@ -214,7 +214,7 @@
                   />
                 </q-field>
                 <q-field class="col-12"
-                         :helper="`'${difficultyLabel(grade.difficulty)}' 의 난이도 선정 기준을 입력하세요`"
+                         :helper="`'${difficultyLabel(difficulty)}' 의 난이도 선정 기준을 입력하세요`"
                          :count="200">
                   <q-input type="textarea" v-model="grade.description"
                            rows="2"
