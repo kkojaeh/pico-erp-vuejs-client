@@ -27,7 +27,7 @@ export class UserModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    return authorizedUrl(`${host}/user/import/users/xlsx`)
+    return authorizedUrl(`${host}/user/xlsx/users`)
   }
 
   get defaults() {
@@ -38,7 +38,7 @@ export class UserModel extends Model {
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const url = `${host}/user/export/users/xlsx?${qs.stringify(options)}`
+    const url = `${host}/user/xlsx/users?${qs.stringify(options)}`
     download(authorizedUrl(url))
   }
 

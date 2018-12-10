@@ -59,12 +59,12 @@ export class ProcessTypeModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    return authorizedUrl(`${host}/process/import/process-types/xlsx`)
+    return authorizedUrl(`${host}/process/xlsx/process-types`)
   }
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const url = `${host}/process/export/process-types/xlsx?${qs.stringify(
+    const url = `${host}/process/xlsx/process-types?${qs.stringify(
         options)}`
     download(authorizedUrl(url))
   }

@@ -6,12 +6,27 @@ import {
 import {exists, Model, uuid} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
+import {authorizedUrl} from "../../plugins/auth";
+import qs from "qs";
+import {download} from "../data";
 
 const propertyOrders = {
   'width': 1,
   'height': 2,
   'grammage': 3,
   'incisionCount': 4
+}
+
+export class ItemImportOptions {
+
+  overwrite = false
+
+}
+
+export class ItemExportOptions {
+
+  empty = false
+
 }
 
 export class ItemModel extends Model {
@@ -48,6 +63,18 @@ export class ItemModel extends Model {
 
   static async exists(id) {
     return await exists(api, `/item/items/${id}`)
+  }
+
+  static get importByXlsxUrl() {
+    const host = api.defaults.baseURL
+    return authorizedUrl(`${host}/item/xlsx/items`)
+  }
+
+  static exportAsXlsx(options) {
+    const host = api.defaults.baseURL
+    const url = `${host}/item/xlsx/items?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
   }
 
   get phantom() {

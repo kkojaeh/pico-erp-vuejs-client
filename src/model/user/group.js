@@ -26,7 +26,7 @@ export class GroupModel extends Model {
 
   static get importByXlsxUrl() {
     const host = api.defaults.baseURL
-    return authorizedUrl(`${host}/user/import/groups/xlsx`)
+    return authorizedUrl(`${host}/user/xlsx/groups`)
   }
 
   get defaults() {
@@ -35,7 +35,7 @@ export class GroupModel extends Model {
 
   static exportAsXlsx(options) {
     const host = api.defaults.baseURL
-    const url = `${host}/user/export/groups/xlsx?${qs.stringify(options)}`
+    const url = `${host}/user/xlsx/groups?${qs.stringify(options)}`
     download(authorizedUrl(url))
   }
 

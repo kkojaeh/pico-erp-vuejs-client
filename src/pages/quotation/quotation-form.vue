@@ -10,6 +10,10 @@
 
           <q-card-title>
             견적 정보
+            <span slot="right" v-if="!!model.code">{{model.code}}
+              <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
+                     flat></q-btn>
+            </span>
           </q-card-title>
 
           <q-card-separator/>

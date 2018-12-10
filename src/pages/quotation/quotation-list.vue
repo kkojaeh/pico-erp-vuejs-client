@@ -32,9 +32,10 @@
                enable-col-resize
                enable-sorting
                :row-data="array">
-        <ag-grid-column field="name" header-name="이름" :width="230"
+        <ag-grid-column field="code" header-name="코드" :width="90"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/quotation/show/${id}', query:$route.query}"/>
+        <ag-grid-column field="name" header-name="이름" :width="230"/>
         <ag-grid-column field="revision" header-name="버전" :width="90"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
@@ -55,6 +56,12 @@
       <!-- main -->
 
       <!-- filters -->
+
+      <q-field slot="filter" icon="account_circle" helper="코드에 포함된 글자를 입력하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-input v-model="filters.code" float-label="코드" clearable
+                 @keyup.enter="retrieve()"/>
+      </q-field>
 
       <q-field slot="filter" icon="account_circle" helper="이름에 포함된 글자를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
@@ -126,6 +133,7 @@
 
       <!-- filter -->
 
+      <c-list-filter-label slot="filter-label" v-model="filters.code" label="코드"/>
       <c-list-filter-label slot="filter-label" v-model="filters.name" label="이름"/>
       <c-list-filter-label slot="filter-label" v-model="filters.projectId"
                            :print-value="filters.projectName" label="프로젝트"/>
@@ -166,6 +174,7 @@
         projectLabelArray: new ProjectLabelArray(),
         userLabelArray: new UserLabelArray(),
         filters: {
+          code: null,
           name: null,
           projectId: null,
           projectName: null,

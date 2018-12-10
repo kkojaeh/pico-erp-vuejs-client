@@ -5,6 +5,10 @@
 
       <q-card-title>
         품목 분류 정보
+        <span slot="right" v-if="!!model.code">{{model.code}}
+            <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
+                   flat></q-btn>
+          </span>
       </q-card-title>
 
       <q-card-separator/>
@@ -15,11 +19,6 @@
         <q-field icon="chevron_right"
                  class="col-xs-12 col-md-6 col-xl-6">
           <q-input :value="path" float-label="경로" readonly hide-underline/>
-        </q-field>
-
-        <q-field icon="perm_identity"
-                 class="col-xs-12 col-md-6 col-xl-6">
-          <q-input :value="model.code" float-label="코드" readonly hide-underline/>
         </q-field>
 
         <q-field icon="account_circle" helper="품목 분류 이름을 입력하세요"

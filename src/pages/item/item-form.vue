@@ -6,6 +6,10 @@
 
       <q-card-title>
         품목 정보
+        <span slot="right" v-if="!!model.code">{{model.code}}
+            <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
+                   flat></q-btn>
+          </span>
       </q-card-title>
 
       <q-card-separator/>
@@ -19,14 +23,6 @@
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
             <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify slot="after"
-                   flat></q-btn>
-          </q-input>
-        </q-field>
-
-        <q-field icon="perm_identity"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input :value="model.code" float-label="코드" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify slot="after"
                    flat></q-btn>
           </q-input>
         </q-field>

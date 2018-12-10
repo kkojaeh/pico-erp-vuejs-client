@@ -3,6 +3,21 @@ import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
 import {LabelModel} from 'src/model/shared'
+import {authorizedUrl} from "../../plugins/auth";
+import qs from "qs";
+import {download} from "../data";
+
+export class ItemCategoryImportOptions {
+
+  overwrite = false
+
+}
+
+export class ItemCategoryExportOptions {
+
+  empty = false
+
+}
 
 export class ItemCategoryModel extends Model {
 
@@ -26,6 +41,18 @@ export class ItemCategoryModel extends Model {
 
   static async exists(id) {
     return await exists(api, `/item/categories/${id}`)
+  }
+
+  static get importByXlsxUrl() {
+    const host = api.defaults.baseURL
+    return authorizedUrl(`${host}/item/xlsx/categories`)
+  }
+
+  static exportAsXlsx(options) {
+    const host = api.defaults.baseURL
+    const url = `${host}/item/xlsx/categories?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
   }
 
   get phantom() {

@@ -15,6 +15,41 @@
         <q-btn flat icon="arrow_drop_down">
           <q-popover>
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
+            <q-btn flat icon="cloud_download" label="Export">
+              <q-popover style="width: 300px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
+                  </q-card-main>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
+            <q-btn flat icon="cloud_upload" label="Import">
+              <q-popover style="width: 300px; min-height: 500px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="importOptions.overwrite" label="덮어 쓰기"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-main>
+                    <uppy-uploader ref="importByXlsxUploader" :url="importByXlsxUrl"
+                                   :form-data="importOptions"
+                                   :allowed-content-types="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip']"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-title>
+                    <span slot="subtitle">확장자가 xlsx 인 파일만 사용 가능합니다</span>
+                  </q-card-title>
+                  <q-card-separator/>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
           </q-popover>
         </q-btn>
         <q-btn-dropdown label="생성" flat>
@@ -93,16 +128,25 @@
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
   import {UserLabelArray} from 'src/model/user'
-  import {ItemCategoryHierarchyArray} from 'src/model/item'
+  import {
+    ItemCategoryExportOptions,
+    ItemCategoryHierarchyArray,
+    ItemCategoryImportOptions,
+    ItemCategoryModel
+  } from 'src/model/item'
+  import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
-    data () {
+    data() {
       return {
         array: new ItemCategoryHierarchyArray(),
         userLabelArray: new UserLabelArray(),
         filters: {
           keyword: null
         },
+        exportOptions: new ItemCategoryExportOptions(),
+        importOptions: new ItemCategoryImportOptions(),
+        importByXlsxUrl: ItemCategoryModel.importByXlsxUrl,
         selected: null,
         dataAdjuster: null,
         lastFetchedTime: null
@@ -111,24 +155,24 @@
     watch: {
       'filters': {
         deep: true,
-        handler () {
+        handler() {
           this.dataAdjuster.adjust()
         }
       }
     },
-    mounted () {
+    mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       this.userLabelArray.fetch()
     },
     methods: {
-      retrieve () {
+      retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword, done) {
         await this.userLabelArray.fetch(keyword)
         done()
       },
-      getNodeChildDetails (data) {
+      getNodeChildDetails(data) {
         if (data.children) {
           return {
             group: true,
@@ -141,7 +185,7 @@
         }
         return null
       },
-      async onFetched (event) {
+      async onFetched(event) {
         // 10 초 이내는 서버에 요청하지 않음
         if (Date.now() - (this.lastFetchedTime) > 10000) {
           await this.array.fetch()
@@ -149,22 +193,35 @@
         }
         this.applyFilter()
       },
-      applyFilter () {
+      applyFilter() {
         const grid = this.$refs.grid
         grid.api.setQuickFilter(this.filters.keyword)
       },
-      onGridSelectionChanged (event) {
+      onGridSelectionChanged(event) {
         this.selected = event.api.getSelectedRows()[0]
       },
-      onGridRowClicked (event) {
+      onGridRowClicked(event) {
         event.node.setSelected(true)
       },
+      async importByXlsx() {
+        const uploader = this.$refs.importByXlsxUploader
+        await uploader.upload()
+        await uploader.clear()
+        this.$refs.listView.retrieve(true)
+        uploader.$closeOverlay()
+      },
+      exportAsXlsx() {
+        ItemCategoryModel.exportAsXlsx(this.exportOptions)
+      }
     },
     computed: {
-      selectedParentId () {
+      selectedParentId() {
         return this.selected ? this.selected.id : null
       }
 
+    },
+    components: {
+      'uppy-uploader': UppyUploader
     }
   }
 </script>
