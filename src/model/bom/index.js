@@ -120,10 +120,46 @@ export class BomModel extends Model {
     })
   }
 
+  get upMovable() {
+    if (!this.parent) {
+      return false
+    }
+    return this.order > 0
+  }
+
   async removeMaterial(material) {
     await api.delete(
         `/bom/boms/${this.id}/materials/${material.id}`,
         {})
+  }
+
+  get downMovable() {
+    if (!this.parent) {
+      return false
+    }
+    return this.order < this.parent.children.length - 1
+  }
+
+  async changeOrder(material, order) {
+    await api.put(`/bom/boms/${this.id}/materials/${material.id}/order`, {
+      order: order
+    })
+  }
+
+  async moveDown() {
+    const parent = this.parent
+    const order = this.order + 1
+    const previous = parent.children.find(child => child.order == order)
+    await parent.changeOrder(this, order)
+    await parent.changeOrder(previous, this.order)
+  }
+
+  async moveUp() {
+    const parent = this.parent
+    const order = this.order - 1
+    const previous = parent.children.find(child => child.order == order)
+    await parent.changeOrder(this, order)
+    await parent.changeOrder(previous, this.order)
   }
 
   isStable() {

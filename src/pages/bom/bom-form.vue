@@ -3,32 +3,6 @@
 
     <q-card class="col-12" flat>
 
-      <q-toolbar>
-        <q-btn flat icon="refresh" @click="onRefresh">새로고침</q-btn>
-        <q-toolbar-title>
-        </q-toolbar-title>
-        <q-btn flat icon="check" @click="onDetermine" v-if="isDeterminable">확정</q-btn>
-        <q-btn flat icon="autorenew" @click="onNextRevision" v-if="isNextDraftable">새버전
-        </q-btn>
-        <q-btn-dropdown label="추가" flat icon="add" :disabled="!isSelectedAddable">
-          <!-- dropdown content -->
-          <q-list link>
-            <q-item @click.native="onAddBomBySelect" v-close-overlay>
-              <q-item-side left icon="add"></q-item-side>
-              <q-item-main label="기존 품목"></q-item-main>
-            </q-item>
-            <q-item @click.native="onAddBomByNew" v-close-overlay>
-              <q-item-side left icon="add"></q-item-side>
-              <q-item-main label="신규 품목"></q-item-main>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-        <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
-               @click="onRemoveMaterial()"></q-btn>
-      </q-toolbar>
-
-      <q-card-separator/>
-
       <q-card-main class="row">
 
         <ag-grid ref="grid"
@@ -110,9 +84,34 @@
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable">이전</q-btn>
-        <q-toolbar-title>
-        </q-toolbar-title>
+        <q-btn flat icon="refresh" @click="onRefresh">새로고침</q-btn>
         <q-toggle v-model="detailedUnitCost" label="상세 단가" dark/>
+        <q-btn-dropdown label="이동" flat icon="unfold_more" v-show="isUpMovable || isDownMovable">
+          <q-btn flat icon="arrow_drop_up" :disabled="!isUpMovable" @click="onMoveUp">위로</q-btn>
+          <q-btn flat icon="arrow_drop_down" :disabled="!isDownMovable" @click="onMoveDown">아래로
+          </q-btn>
+        </q-btn-dropdown>
+        <q-toolbar-title>
+
+        </q-toolbar-title>
+        <q-btn flat icon="check" @click="onDetermine" v-if="isDeterminable">확정</q-btn>
+        <q-btn flat icon="autorenew" @click="onNextRevision" v-if="isNextDraftable">새버전
+        </q-btn>
+        <q-btn-dropdown label="추가" flat icon="add" :disabled="!isSelectedAddable">
+          <!-- dropdown content -->
+          <q-list link>
+            <q-item @click.native="onAddBomBySelect" v-close-overlay>
+              <q-item-side left icon="add"></q-item-side>
+              <q-item-main label="기존 품목"></q-item-main>
+            </q-item>
+            <q-item @click.native="onAddBomByNew" v-close-overlay>
+              <q-item-side left icon="add"></q-item-side>
+              <q-item-main label="신규 품목"></q-item-main>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn flat icon="remove" label="제거" :disabled="!isSelectedRemovable"
+               @click="onRemoveMaterial()"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -126,8 +125,6 @@
   import {BomModel, BomStatusArray} from 'src/model/bom'
   import {ProcessModel} from 'src/model/process'
   import {UnitLabelArray} from 'src/model/shared'
-  // import ItemForm from 'src/pages/item/item-form.vue'
-  // import ItemSelector from 'src/pages/item/item-selector.vue'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
   import SSF from 'ssf'
@@ -186,7 +183,7 @@
         const parent = data.parent
         data.quantity = data.quantity ? data.quantity : 1
         await parent.changeMaterial(data)
-        await this.load()
+        await this.refresh()
       },
       isQuantityEditable(params) {
         const parent = params.data.parent
@@ -392,6 +389,16 @@
             await this.refresh()
           }
         }
+      },
+
+      async onMoveUp() {
+        await this.selected.moveUp()
+        await this.refresh()
+      },
+
+      async onMoveDown() {
+        await this.selected.moveDown()
+        await this.refresh()
       }
 
     },
@@ -413,6 +420,14 @@
 
       isDeterminable() {
         return this.selected.modifiable
+      },
+
+      isUpMovable() {
+        return this.selected.upMovable
+      },
+
+      isDownMovable() {
+        return this.selected.downMovable
       }
     },
     components: {
