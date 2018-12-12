@@ -187,7 +187,7 @@
       },
       isQuantityEditable(params) {
         const parent = params.data.parent
-        return parent && parent.modifiable
+        return parent && parent.updatable
       },
       bomNameRenderer(params) {
         return `${params.value}<sub class="bom-name-sub">[${params.data.revision}]</sub>`
@@ -407,19 +407,19 @@
        * 선택 대상 삭제 여부
        */
       isSelectedRemovable() {
-        return this.selected.parent && this.selected.parent.modifiable
+        return this.selected.parent && this.selected.parent.updatable
       },
 
       isSelectedAddable() {
-        return this.selected.modifiable
+        return this.selected.updatable
       },
 
       isNextDraftable() {
-        return !this.selected.modifiable
+        return !this.selected.updatable
       },
 
       isDeterminable() {
-        return this.selected.modifiable
+        return this.selected.updatable
       },
 
       isUpMovable() {
