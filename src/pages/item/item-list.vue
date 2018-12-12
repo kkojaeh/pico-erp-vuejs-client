@@ -20,7 +20,8 @@
                     <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
                   </q-card-main>
                   <q-card-actions align="end">
-                    <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"></q-btn>
+                    <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"
+                           v-close-overlay></q-btn>
                   </q-card-actions>
                 </q-card>
               </q-popover>
@@ -43,7 +44,8 @@
                   </q-card-title>
                   <q-card-separator/>
                   <q-card-actions align="end">
-                    <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"></q-btn>
+                    <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"
+                           v-close-overlay></q-btn>
                   </q-card-actions>
                 </q-card>
               </q-popover>

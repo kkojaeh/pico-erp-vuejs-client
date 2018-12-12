@@ -7,6 +7,21 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {language, languageAliases} from 'src/i18n'
 import {LabelModel} from 'src/model/shared'
+import {authorizedUrl} from "../../plugins/auth";
+import qs from "qs";
+import {download} from "../data";
+
+export class CompanyImportOptions {
+
+  overwrite = false
+
+}
+
+export class CompanyExportOptions {
+
+  empty = false
+
+}
 
 export class CompanyModel extends Model {
 
@@ -45,6 +60,18 @@ export class CompanyModel extends Model {
 
   static async existsByRegistrationNumber(registrationNumber) {
     return exists(api, `/company/registration-numbers/${registrationNumber}`)
+  }
+
+  static get importByXlsxUrl() {
+    const host = api.defaults.baseURL
+    return authorizedUrl(`${host}/company/xlsx/companies`)
+  }
+
+  static exportAsXlsx(options) {
+    const host = api.defaults.baseURL
+    const url = `${host}/company/xlsx/companies?${qs.stringify(
+        options)}`
+    download(authorizedUrl(url))
   }
 
   get phantom() {

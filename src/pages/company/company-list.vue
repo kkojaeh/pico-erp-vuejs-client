@@ -14,6 +14,43 @@
         <q-btn flat icon="arrow_drop_down">
           <q-popover>
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
+            <q-btn flat icon="cloud_download" label="Export">
+              <q-popover style="width: 300px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="exportOptions.empty" label="템플릿 전용"/>
+                  </q-card-main>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Export" @click="exportAsXlsx()"
+                           v-close-overlay></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
+            <q-btn flat icon="cloud_upload" label="Import">
+              <q-popover style="width: 300px; min-height: 500px;">
+                <q-card flat>
+                  <q-card-main>
+                    <q-toggle v-model="importOptions.overwrite" label="덮어 쓰기"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-main>
+                    <uppy-uploader ref="importByXlsxUploader" :url="importByXlsxUrl"
+                                   :form-data="importOptions"
+                                   :allowed-content-types="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip']"/>
+                  </q-card-main>
+                  <q-card-separator/>
+                  <q-card-title>
+                    <span slot="subtitle">확장자가 xlsx 인 파일만 사용 가능합니다</span>
+                  </q-card-title>
+                  <q-card-separator/>
+                  <q-card-actions align="end">
+                    <q-btn flat icon="cloud_upload" label="Import" @click="importByXlsx()"
+                           v-close-overlay></q-btn>
+                  </q-card-actions>
+                </q-card>
+              </q-popover>
+            </q-btn>
           </q-popover>
         </q-btn>
         <router-link :to="{ path: '/company/create', query: $route.query}">
@@ -97,10 +134,16 @@
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
-  import {CompanyPaginationArray} from 'src/model/company'
+  import {
+    CompanyExportOptions,
+    CompanyImportOptions,
+    CompanyModel,
+    CompanyPaginationArray
+  } from 'src/model/company'
+  import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
-    data () {
+    data() {
       return {
         array: new CompanyPaginationArray(),
         filters: {
@@ -109,10 +152,13 @@
           customer: true,
           outsourcing: true
         },
+        exportOptions: new CompanyExportOptions(),
+        importOptions: new CompanyImportOptions(),
+        importByXlsxUrl: CompanyModel.importByXlsxUrl,
         dataAdjuster: null
       }
     },
-    mounted () {
+    mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {
         enabled: Boolean,
         supplier: Boolean,
@@ -121,8 +167,18 @@
       })
     },
     methods: {
-      retrieve () {
+      retrieve() {
         this.$refs.listView.retrieve()
+      },
+      async importByXlsx() {
+        const uploader = this.$refs.importByXlsxUploader
+        await uploader.upload()
+        await uploader.clear()
+        this.$refs.listView.retrieve(true)
+        uploader.$closeOverlay()
+      },
+      exportAsXlsx() {
+        CompanyModel.exportAsXlsx(this.exportOptions)
       }
     },
     computed: {
@@ -132,12 +188,14 @@
     watch: {
       'filters': {
         deep: true,
-        handler () {
+        handler() {
           this.dataAdjuster.adjust()
         }
       }
     },
 
-    components: {}
+    components: {
+      'uppy-uploader': UppyUploader
+    }
   }
 </script>
