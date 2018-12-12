@@ -6,7 +6,8 @@
 
     <!-- child -->
 
-    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow">
+    <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
+                 @fetched="onFetched">
 
       <!-- action -->
 
@@ -37,10 +38,10 @@
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="projectName" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="customerName" header-name="고객사" :width="120"/>
-        <ag-grid-column field="purchaserName" header-name="발주사" :width="120"/>
-        <ag-grid-column field="receiverName" header-name="인수사" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="120"/>
+        <ag-grid-column field="purchaser.name" header-name="발주사" :width="120"/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
         <ag-grid-column field="orderedDate" header-name="주문일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
@@ -164,9 +165,9 @@
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
-  import {CompanyLabelArray} from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray} from 'src/model/user'
-  import {ProjectLabelArray} from 'src/model/project'
+  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {
     OrderAcceptancePaginationArray,
     OrderAcceptanceStatusArray
@@ -252,6 +253,17 @@
         this.filters.itemName = null
         this.filters.itemId = null
       },
+      async onFetched() {
+        await Promise.all(
+            this.array.map(async (e) => {
+              e.customer = await CompanyModel.get(e.customerId, true)
+              e.receiver = await CompanyModel.get(e.receiverId, true)
+              e.purchaser = await CompanyModel.get(e.purchaserId, true)
+              e.project = await ProjectModel.get(e.projectId, true)
+            })
+        )
+        this.$redrawGrids()
+      }
     },
     computed: {
       statusesLabel() {
