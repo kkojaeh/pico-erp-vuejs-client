@@ -1,9 +1,7 @@
 <template>
   <div class="row items-center fit bom-process-cell-renderer">
     <div class="bom-process-cell-renderer-label">{{label}}</div>
-    <q-btn icon="add_circle" flat v-show="isAddable" @click="edit"></q-btn>
-    <q-btn icon="settings" flat v-show="isLinkable" @click="edit"></q-btn>
-    <q-btn icon="remove_circle" flat v-show="isRemovable" @click="remove"></q-btn>
+    <q-btn icon="open_in_new" flat v-show="openable" @click="open"></q-btn>
   </div>
 </template>
 
@@ -11,31 +9,23 @@
 
   export default {
     computed: {
-      isAddable () {
-        return !this.params.value && this.data.modifiable
-      },
-      isLinkable () {
-        return this.params.value
-      },
-      isRemovable () {
-        return this.params.value && this.data.modifiable
+      openable() {
+        if (this.params.data.updatable && this.params.data.processable) {
+          return true
+        }
+        if (this.params.data.processes && this.params.data.processes.length) {
+          return true
+        }
+        return false
       },
       label () {
-        return this.data.processId ? this.data.process.name : 'N/A'
-      },
-      data () {
-        return this.params.data
+        const label = this.params.data.processesNames
+        return label || 'N/A'
       }
     },
     methods: {
-      edit () {
-        const handler = this.params.editHandler
-        if (handler) {
-          handler(this.params.data)
-        }
-      },
-      remove () {
-        const handler = this.params.removeHandler
+      open() {
+        const handler = this.params.openHandler
         if (handler) {
           handler(this.params.data)
         }

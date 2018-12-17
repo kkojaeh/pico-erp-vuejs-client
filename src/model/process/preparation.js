@@ -2,7 +2,7 @@ import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {FetchableArray, SavableArray, ValidatableArray} from '../array'
 
-export class PreprocessModel extends Model {
+export class ProcessPreparationModel extends Model {
 
   constructor(data) {
     super(data)
@@ -22,28 +22,28 @@ export class PreprocessModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new PreprocessModel()
+      return new ProcessPreparationModel()
     }
     const response = await api.get(
-        `/process/preprocesses/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
-    return new ProcessModel(response.data)
+        `/process/preparations/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
+    return new ProcessPreparationModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/process/preprocesses/${id}`)
+    return await exists(api, `/process/preparations/${id}`)
   }
 
   async save() {
     if (this.phantom) {
-      const response = await api.post('/process/preprocesses', this)
+      const response = await api.post('/process/preparations', this)
       this.assign(response.data)
     } else {
-      await api.put(`/process/preprocesses/${this.id}`, this)
+      await api.put(`/process/preparations/${this.id}`, this)
     }
   }
 
   async delete() {
-    await api.delete(`/process/preprocesses/${this.id}`)
+    await api.delete(`/process/preparations/${this.id}`)
   }
 
   async validate() {
@@ -67,12 +67,12 @@ export class PreprocessModel extends Model {
   }
 }
 
-export const ProcessPreprocessArray = Array.decorate(
+export const ProcessPreparationArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/process/processes/${processId}/preprocesses'
+        return '/process/processes/${processId}/preparations'
       }
 
       get axios() {
@@ -80,7 +80,7 @@ export const ProcessPreprocessArray = Array.decorate(
       }
 
       get model() {
-        return PreprocessModel
+        return ProcessPreparationModel
       }
 
       initialize(process) {

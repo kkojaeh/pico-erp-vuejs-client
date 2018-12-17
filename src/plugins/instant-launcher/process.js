@@ -80,7 +80,6 @@ function createProcess(options) {
           h(ProcessForm, {
             'ref': 'form',
             props: {
-              itemId: options.itemId,
               'closable': true,
               'close-confirmed': true
             },

@@ -1,8 +1,8 @@
 export * from './process-info-type'
 export * from './process-type'
 export * from './process'
-export * from './preprocess-type'
-export * from './preprocess'
+export * from './preparation-type'
+export * from './preparation'
 
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'

@@ -3,6 +3,13 @@ import {exists, Model} from 'src/model/model'
 import {LabelModel} from 'src/model/shared'
 import {api} from 'src/plugins/axios'
 
+const propertyOrders = {
+  'width': 1,
+  'height': 2,
+  'grammage': 3,
+  'incisionCount': 4
+}
+
 export class ItemSpecTypeModel extends Model {
 
   static async get(id, cacheable) {
@@ -16,6 +23,22 @@ export class ItemSpecTypeModel extends Model {
 
   static async exists(id) {
     return await exists(api, `/item/spec-types/${id}`)
+  }
+
+  getMetadata() {
+    const numbers = ['integer']
+    const data = JSON.parse(this.metadata)
+    _.forIn(data.properties, (value, key) => {
+      if (propertyOrders[key]) {
+        value.propertyOrder = propertyOrders[key]
+      }
+      if (numbers.includes(value.type)) {
+        if (_.isArray(value.enum)) {
+          value.enum = value.enum.map(Number)
+        }
+      }
+    })
+    return data
   }
 
 }

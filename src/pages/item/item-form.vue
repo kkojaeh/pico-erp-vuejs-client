@@ -216,10 +216,6 @@
                v-if="$authorized.itemManager"
                @click="onDeactivate">비활성화
         </q-btn>
-        <router-link :to="`/process/show/${processModel.id}`" v-show="!processModel.phantom"
-                     v-if="$authorized.processManager">
-          <q-btn flat icon="settings_applications">공정</q-btn>
-        </router-link>
         <router-link :to="`/bom/${model.id}`" v-show="!phantom"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
@@ -242,7 +238,6 @@
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
-  import {ProcessModel} from 'src/model/process'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UnitLabelArray} from 'src/model/shared'
 
@@ -284,7 +279,6 @@
         categoryModel: new ItemCategoryModel(),
         customerModel: new CompanyModel(),
         specTypeModel: new ItemSpecTypeModel(),
-        processModel: new ProcessModel(),
       }
     },
     mounted () {
@@ -319,9 +313,6 @@
       },
       async show () {
         this.model = await ItemModel.get(this.id)
-        const processExists = await ProcessModel.existsByItemId(this.id)
-        this.processModel = processExists ? await ProcessModel.getByItemId(this.id, true)
-          : new ProcessModel()
       },
       async onSaveClick () {
         let valid = await this.model.validate()

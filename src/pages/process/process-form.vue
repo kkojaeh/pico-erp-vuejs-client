@@ -1,7 +1,7 @@
 <template>
   <q-page class="row layout-padding">
 
-    <q-card class="col-12" flat>
+    <!--<q-card class="col-12" flat>
 
       <q-card-title>
         품목 정보
@@ -30,7 +30,7 @@
 
       </q-card-main>
 
-    </q-card>
+    </q-card>-->
 
 
     <q-card class="col-12" flat>
@@ -79,20 +79,20 @@
                    suffix="%" :decimals="2"/>
         </q-field>
 
-        <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.managerId"
-                 :error-label="model.$errors.managerId">
-          <c-autocomplete-select float-label="관리자" v-model="model.managerId"
-                                 :label="managerModel.name" :options="userLabelArray"
-                                 label-field="label" value-field="value"
-                                 @search="onManagerSearch">
-            <template slot="option" slot-scope="option">
-              {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
-            </template>
-          </c-autocomplete-select>
-        </q-field>
+        <!--        <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
+                         class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                         :error="!!model.$errors.managerId"
+                         :error-label="model.$errors.managerId">
+                  <c-autocomplete-select float-label="관리자" v-model="model.managerId"
+                                         :label="managerModel.name" :options="userLabelArray"
+                                         label-field="label" value-field="value"
+                                         @search="onManagerSearch">
+                    <template slot="option" slot-scope="option">
+                      {{option.label}}<br>
+                      {{option.stamp}} - {{option.subLabel}}
+                    </template>
+                  </c-autocomplete-select>
+                </q-field>-->
 
         <q-field icon="check" helper="공정의 상태 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
@@ -127,7 +127,7 @@
     <q-card class="col-xs-12 col-md-6 col-lg-6 col-xl-6" flat>
 
       <q-card-title>
-        사전 공정
+        공정 준비
       </q-card-title>
 
       <q-card-separator/>
@@ -165,7 +165,7 @@
     <q-card class="col-12" flat>
 
       <q-card-title>
-        설명 및 관련 파일
+        설명
       </q-card-title>
 
       <q-card-separator/>
@@ -179,18 +179,18 @@
           <c-html-editor v-model="model.description" :readonly="!isModifiable"></c-html-editor>
         </q-field>
 
-        <q-field icon="attachment" helper="공정 관련 첨부파일 입니다"
+        <!--<q-field icon="attachment" helper="공정 관련 첨부파일 입니다"
                  class="col-xs-12 col-md-10 col-xl-8">
 
           <c-attachment ref="attachment" v-model="model.attachmentId" category="process"
                         multiple :readonly="!isModifiable"></c-attachment>
-        </q-field>
+        </q-field>-->
 
       </q-card-main>
 
     </q-card>
 
-    <q-card v-if="model.commentSubjectId" class="col-12" flat>
+    <!--<q-card v-if="model.commentSubjectId" class="col-12" flat>
 
       <q-card-title>
         댓글
@@ -205,7 +205,7 @@
 
       </q-card-main>
 
-    </q-card>
+    </q-card>-->
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
@@ -225,13 +225,12 @@
   import {
     ProcessDifficultyArray,
     ProcessModel,
-    ProcessPreprocessArray,
+    ProcessPreparationArray,
     ProcessStatusArray,
     ProcessTypeLabelArray,
     ProcessTypeModel
   } from 'src/model/process'
-  import {ItemModel} from 'src/model/item'
-  import {UserLabelArray, UserModel} from 'src/model/user'
+  import {UserLabelArray} from 'src/model/user'
   import Big from 'big.js'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import Highcharts from 'highcharts'
@@ -260,9 +259,6 @@
       id: {
         type: String
       },
-      itemId: {
-        type: String
-      },
       closable: {
         type: Boolean,
         default: false
@@ -275,14 +271,12 @@
     data() {
       return {
         model: new ProcessModel(),
-        itemModel: new ItemModel(),
         typeModel: new ProcessTypeModel(),
-        managerModel: new UserModel(),
         processTypeLabelArray: new ProcessTypeLabelArray(),
         difficultyLabelArray: new ProcessDifficultyArray(),
         statusLabelArray: new ProcessStatusArray(),
         userLabelArray: new UserLabelArray(),
-        preprocessArray: new ProcessPreprocessArray()
+        preprocessArray: new ProcessPreparationArray()
       }
     },
     mounted() {
@@ -353,19 +347,16 @@
         done()
       },
       async create() {
-        this.itemModel = await ItemModel.get(this.itemId)
         this.model = new ProcessModel()
-        this.model.itemId = this.itemModel.id
         this.typeModel = new ProcessTypeModel()
-        this.preprocessArray = new ProcessPreprocessArray(this.model)
+        this.preprocessArray = new ProcessPreparationArray(this.model)
         this.createEstimatedCostChart()
       },
       async load(id) {
         this.model = await ProcessModel.get(id)
-        this.itemModel = await ItemModel.get(this.model.itemId)
         this.typeModel = await ProcessTypeModel.get(this.model.typeId)
-        this.managerModel = await UserModel.get(this.model.managerId)
-        const preprocessArray = new ProcessPreprocessArray(this.model)
+        //this.managerModel = await UserModel.get(this.model.managerId)
+        const preprocessArray = new ProcessPreparationArray(this.model)
         await preprocessArray.fetch()
         this.preprocessArray = preprocessArray
         this.createEstimatedCostChart()
@@ -395,8 +386,8 @@
         }
       },
       async save() {
-        const attachment = this.$refs.attachment
-        await attachment.save()
+        /*const attachment = this.$refs.attachment
+        await attachment.save()*/
         await this.model.save()
       },
 
@@ -427,9 +418,9 @@
       isModifiable() {
         return this.$authorized.processManager && !this.model.deleted
       },
-      isCommentable() {
+      /*isCommentable() {
         return !this.model.deleted
-      },
+      },*/
       phantom() {
         return this.model.phantom
       },
@@ -443,9 +434,7 @@
         if (this.model.name) {
           return this.model.name
         }
-        const typeName = this.typeModel.name || 'N/A'
-        const itemCode = this.itemModel.code
-        return `${typeName} [${itemCode}]`
+        return this.typeModel.name || 'N/A'
       },
       lossRatePercentage: {
         get() {
@@ -462,17 +451,10 @@
         if (!this.typeFixed) {
           this.model.lossRate = this.typeModel.lossRate
         }
-      },
+      }/*,
       'model.managerId': async function (to) {
         this.managerModel = await UserModel.get(to, true)
-      },
-      'itemModel'() {
-        this.rename()
-      },
-      'typeModel'() {
-        this.rename()
-      }
-
+      }*/
     },
     components: {
       CommentList

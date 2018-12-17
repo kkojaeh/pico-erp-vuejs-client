@@ -108,7 +108,7 @@
         const item = await ItemModel.get(this.itemId)
         const specTypeId = item.specTypeId
         const specType = await ItemSpecTypeModel.get(specTypeId)
-        this.metadata = JSON.parse(metadata)
+        this.metadata = specType.getMetadata()
         this.model = await ItemSpecModel.create(this.itemId)
         this.initEditor()
       },
@@ -117,7 +117,7 @@
         const item = await ItemModel.get(this.model.itemId)
         const specTypeId = item.specTypeId
         const specType = await ItemSpecTypeModel.get(specTypeId)
-        this.metadata = JSON.parse(specType.metadata)
+        this.metadata = specType.getMetadata()
         this.initEditor()
       },
       async onSaveClick() {

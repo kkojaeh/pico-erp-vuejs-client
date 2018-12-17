@@ -73,16 +73,16 @@ export class ProcessTypeModel extends Model {
     return !this.id || this.hasChanged("id")
   }
 
-  async addPreprocessType(preprocessType) {
-    return await api.post(`/process/process-types/${this.id}/preprocess-types`,
+  async addPreparationType(preprocessType) {
+    return await api.post(`/process/process-types/${this.id}/preparation-types`,
         {
           preprocessTypeId: preprocessType.id
         })
   }
 
-  async removePreprocessType(preprocessType) {
+  async removePreparationType(preprocessType) {
     return await api.delete(
-        `/process/process-types/${this.id}/preprocess-types/${preprocessType.id}`,
+        `/process/process-types/${this.id}/preparation-types/${preprocessType.id}`,
         {
           preprocessTypeId: preprocessType.id
         })
@@ -202,8 +202,8 @@ export const ProcessTypePreprocessTypeArray = Array.decorate(
       }
 
       async saveElement(element) {
-        return await element.selected ? this.processType.addPreprocessType(
-            element) : this.processType.removePreprocessType(element)
+        return await element.selected ? this.processType.addPreparationType(
+            element) : this.processType.removePreparationType(element)
       }
 
     }

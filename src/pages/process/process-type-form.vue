@@ -250,10 +250,10 @@
 </template>
 <script>
   import {
-    PreprocessTypeArray,
     ProcessDifficultyArray,
     ProcessInfoTypeLabelArray,
     ProcessInfoTypeModel,
+    ProcessPreparationTypeArray,
     ProcessTypeModel,
     ProcessTypePreprocessTypeArray,
   } from 'src/model/process'
@@ -305,7 +305,7 @@
       async create() {
         const model = new ProcessTypeModel()
         const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
-        const preprocessTypes = new PreprocessTypeArray()
+        const preprocessTypes = new ProcessPreparationTypeArray()
         await preprocessTypes.fetch()
         preprocessTypes.forEach(preprocessType => preprocessType.selected = false)
         preprocessTypeArray.push(...preprocessTypes)
@@ -315,7 +315,7 @@
       async load(id) {
         const model = await ProcessTypeModel.get(id)
         const preprocessTypeArray = new ProcessTypePreprocessTypeArray(model)
-        const preprocessTypes = new PreprocessTypeArray()
+        const preprocessTypes = new ProcessPreparationTypeArray()
         await preprocessTypes.fetch()
         const selected = model.preprocessTypes.map(preprocessType => preprocessType.id)
         preprocessTypes.forEach(preprocessType => {

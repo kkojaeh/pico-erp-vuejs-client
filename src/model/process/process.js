@@ -38,7 +38,7 @@ export class ProcessModel extends Model {
     return await exists(api, `/process/processes/${id}`)
   }
 
-  static async getByItemId(itemId, cacheable) {
+  /*static async getByItemId(itemId, cacheable) {
     if (!itemId) {
       return new ProcessModel()
     }
@@ -50,7 +50,7 @@ export class ProcessModel extends Model {
   static async existsByItemId(itemId) {
     return await exists(api, `/process/items/${itemId}`)
   }
-
+*/
   get phantom() {
     return !this.id || this.hasChanged("id")
   }
@@ -101,10 +101,6 @@ export class ProcessModel extends Model {
 
   async validate() {
     let constraints = {
-      name: {
-        presence: true,
-        length: {minimum: 3, maximum: 100}
-      },
       difficulty: {
         presence: true
       },

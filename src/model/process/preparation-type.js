@@ -3,7 +3,7 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from "../shared";
 
-export class PreprocessTypeModel extends Model {
+export class ProcessPreparationTypeModel extends Model {
 
   get defaults() {
     return {
@@ -17,24 +17,24 @@ export class PreprocessTypeModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new PreprocessTypeModel()
+      return new ProcessPreparationTypeModel()
     }
     const response = await api.get(
-        `/process/preprocess-types/${id}${cacheable ? '' : '?cb='
+        `/process/preparation-types/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
-    return new PreprocessTypeModel(response.data)
+    return new ProcessPreparationTypeModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/process/preprocess-types/${id}`)
+    return await exists(api, `/process/preparation-types/${id}`)
   }
 
 }
 
-export const PreprocessTypeArray = Array.decorate(
+export const ProcessPreparationTypeArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/process/preprocess-types'
+        return '/process/preparation-types'
       }
 
       get axios() {
@@ -42,15 +42,15 @@ export const PreprocessTypeArray = Array.decorate(
       }
 
       get model() {
-        return PreprocessTypeModel
+        return ProcessPreparationTypeModel
       }
     }
 )
 
-export const PreprocessTypeLabelArray = Array.decorate(
+export const ProcessPreparationTypeLabelArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/process/preprocess-type-query-labels?${$QS}'
+        return '/process/preparation-type-query-labels?${$QS}'
       }
 
       get axios() {

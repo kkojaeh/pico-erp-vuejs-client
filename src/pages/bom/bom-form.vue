@@ -27,22 +27,22 @@
           <ag-grid-column field="item.code" header-name="코드" :width="150"
                           cell-renderer-framework="ag-grid-router-link-renderer"
                           :cell-renderer-params="{path:'/item/show/${item.id}', innerRenderer: bomAdditionalFieldRenderer}"/>
-          <ag-grid-column field="processId" header-name="공정" :width="220"
+          <ag-grid-column field="processesNames" header-name="공정" :width="220"
                           cell-renderer-framework="bom-process-cell-renderer"
-                          :cell-renderer-params="{editHandler: onEditProcess, removeHandler: onRemoveProcess}"/>
+                          :cell-renderer-params="{openHandler: onOpenProcesses}"/>
           <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
                           cell-renderer-framework="bom-item-spec-cell-renderer"
-                          :cell-renderer-params="{editHandler: onEditItemSpec}"/>
-          <ag-grid-column field="item.unit" header-name="단위" :width="80"
-                          :cell-style="{textAlign: 'center'}"
-                          cell-renderer-framework="ag-grid-array-label-renderer"
-                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+                          :cell-renderer-params="{openHandler: onOpenItemSpec}"/>
           <ag-grid-column field="quantity" header-name="수량" :width="80"
                           :editable="isQuantityEditable"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-renderer="quantityCellRenderer" :tooltip="tooltipReversedQuantity"
                           :cell-editor-params="{ type: 'number', decimals: 5, align: 'right' }"
                           :cell-style="{textAlign: 'right'}"/>
+          <ag-grid-column field="item.unit" header-name="단위" :width="80"
+                          :cell-style="{textAlign: 'center'}"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
           <ag-grid-column field="status" header-name="상태" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
@@ -123,11 +123,10 @@
 </template>
 <script>
   import {BomModel, BomStatusArray} from 'src/model/bom'
-  import {ProcessModel} from 'src/model/process'
+
   import {UnitLabelArray} from 'src/model/shared'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
-  import SSF from 'ssf'
 
   const additionalFields = {
     'item.code': 'item.externalCode',
@@ -138,8 +137,6 @@
     'estimatedAccumulatedUnitCost.indirectLabor': 'estimatedIsolatedUnitCost.indirectLabor',
     'estimatedAccumulatedUnitCost.indirectExpenses': 'estimatedIsolatedUnitCost.indirectExpenses'
   }
-
-  window.SSF = SSF
 
   export default {
     props: {
@@ -162,12 +159,15 @@
         loading: false
       }
     },
-    mounted() {
-      this.statusLabelArray.fetch()
-      this.unitLabelArray.fetch()
+    async mounted() {
+      await Promise.all([
+        this.statusLabelArray.fetch(),
+        this.unitLabelArray.fetch()
+      ])
       this.$nextTick(() => this.show())
     },
     methods: {
+
       async onRefresh() {
         await this.refresh()
       },
@@ -306,12 +306,14 @@
        */
       async onAddBomByNew() {
         const selected = this.selected
+        this.loading = true
         const itemModel = await this.$createItem({customerId: this.model.customerId})
         if (itemModel) {
           const material = await BomModel.createByItemId(itemModel.id)
           await selected.addMaterial(material)
           await this.refresh()
         }
+        this.loading = false
       },
 
       async onAddBomBySelect() {
@@ -320,6 +322,7 @@
         if (!itemModels) {
           return
         }
+        this.loading = true
         await Promise.all(
             itemModels.map(async (itemModel) => {
               const itemId = itemModel.id
@@ -334,10 +337,20 @@
             })
         )
         await this.refresh()
+        this.loading = false
       },
 
-      async onEditProcess(data) {
+      async onOpenProcesses(data) {
         this.selected = data
+        const changed = await this.$editBomProcesses({
+          bomId: this.selected.id,
+          updatable: this.selected.processable && this.selected.updatable
+        })
+        if (changed) {
+          await this.refresh()
+        }
+        /*
+        this.loading = true
         if (data.processId) {
           const changed = await this.$showProcess(data.processId)
           if (changed) {
@@ -353,22 +366,11 @@
             await this.refresh()
           }
         }
+        this.loading = false*/
       },
-
-      async onRemoveProcess(data) {
-        if (!data.processId) {
-          this.$alert.warning('삭제할 공정이 없습니다')
-        }
-        const ok = await this.$alert.confirm('공정을 삭제 하시겠습니까?')
-        if (ok) {
-          const process = await ProcessModel.get(data.processId)
-          await process.delete()
-          await this.refresh()
-        }
-      },
-
-      async onEditItemSpec(data) {
+      async onOpenItemSpec(data) {
         this.selected = data
+        this.loading = true
         if (data.itemSpecId) {
           const changed = await this.$showItemSpec(data.itemSpecId, {
             editable: true
@@ -389,6 +391,7 @@
             await this.refresh()
           }
         }
+        this.loading = false
       },
 
       async onMoveUp() {

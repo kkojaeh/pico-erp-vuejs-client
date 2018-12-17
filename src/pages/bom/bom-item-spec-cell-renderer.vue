@@ -1,19 +1,15 @@
 <template>
   <div class="row items-center fit bom-item-spec-cell-renderer">
     <div class="bom-item-spec-cell-renderer-label">{{value}}</div>
-    <q-btn icon="add_circle" flat v-show="isAddable" @click="edit"></q-btn>
-    <q-btn icon="settings" flat v-show="isLinkable" @click="edit"></q-btn>
+    <q-btn icon="open_in_new" flat v-show="openable" @click="open"></q-btn>
   </div>
 </template>
 
 <script>
   export default {
     computed: {
-      isAddable () {
-        return this.data.parent && !this.params.value && this.params.data.specifiable
-      },
-      isLinkable () {
-        return this.data.parent && this.params.value && this.params.data.specifiable
+      openable() {
+        return this.data.parent && this.params.data.specifiable
       },
       data () {
         return this.params.data
@@ -29,8 +25,8 @@
       }
     },
     methods: {
-      edit () {
-        const handler = this.params.editHandler
+      open() {
+        const handler = this.params.openHandler
         if (handler) {
           handler(this.params.data)
         }
