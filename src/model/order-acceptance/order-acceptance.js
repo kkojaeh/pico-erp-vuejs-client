@@ -45,27 +45,27 @@ export class OrderAcceptanceModel extends Model {
       return new OrderAcceptanceModel()
     }
     const response = await api.get(
-        `/order-acceptance/order-acceptances/${id}${cacheable ? '' : '?cb='
+        `/order-acceptance/acceptances/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
     return new OrderAcceptanceModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/order-acceptance/order-acceptances/${id}`)
+    return await exists(api, `/order-acceptance/acceptances/${id}`)
   }
 
   async save() {
     if (this.phantom) {
-      const response = await api.post('/order-acceptance/order-acceptances',
+      const response = await api.post('/order-acceptance/acceptances',
           this)
       this.assign(response.data)
     } else {
-      await api.put(`/order-acceptance/order-acceptances/${this.id}`, this)
+      await api.put(`/order-acceptance/acceptances/${this.id}`, this)
     }
   }
 
   async accept() {
-    await api.put(`/order-acceptance/order-acceptances/${this.id}/accept`, this)
+    await api.put(`/order-acceptance/acceptances/${this.id}/accept`, this)
   }
 
   async validateAccept() {
@@ -140,7 +140,7 @@ export class OrderAcceptanceModel extends Model {
 export const OrderAcceptancePaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/order-acceptance/order-acceptances?${$QS}'
+        return '/order-acceptance/acceptances?${$QS}'
       }
 
       get axios() {

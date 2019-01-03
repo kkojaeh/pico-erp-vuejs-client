@@ -1,6 +1,6 @@
-import { Dialog, Notify } from 'quasar'
+import {Dialog, Notify} from 'quasar'
 
-async function confirm (message, detail) {
+async function confirm(message, detail) {
   try {
     await Dialog.create({
       title: '확인',
@@ -15,7 +15,7 @@ async function confirm (message, detail) {
   }
 }
 
-function positive (message, detail) {
+function positive(message, detail) {
   Notify.create({
     icon: 'done',
     position: 'top-right',
@@ -26,7 +26,7 @@ function positive (message, detail) {
   })
 }
 
-function negative (message, detail) {
+function negative(message, detail) {
   Notify.create({
     icon: 'error',
     position: 'top-right',
@@ -37,7 +37,7 @@ function negative (message, detail) {
   })
 }
 
-function warning (message, detail) {
+function warning(message, detail) {
   Notify.create({
     icon: 'warning',
     position: 'top-right',
@@ -48,7 +48,7 @@ function warning (message, detail) {
   })
 }
 
-function info (message, detail) {
+function info(message, detail) {
   Notify.create({
     icon: 'info',
     position: 'top-right',
@@ -59,6 +59,24 @@ function info (message, detail) {
   })
 }
 
+async function prompt(message, type = "text", defaultValue = "") {
+  try {
+    const result = await Dialog.create({
+      title: '확인',
+      message,
+      prompt: {
+        model: defaultValue,
+        type: type
+      },
+      ok: true,
+      cancel: true
+    })
+    return result
+  } catch (e) {
+    return null
+  }
+}
+
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
   Vue.prototype.$alert = {
@@ -66,7 +84,8 @@ export default ({app, router, Vue}) => {
     positive,
     negative,
     warning,
-    info
+    info,
+    prompt
   }
   // something to do
 }

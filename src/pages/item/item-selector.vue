@@ -69,7 +69,6 @@
                   :options="typeLabelArray" multiple chips></q-select>
       </q-field>
 
-
       <q-field slot="filter" icon="fas fa-building" helper="고객사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
@@ -98,6 +97,16 @@
         </c-autocomplete-select>
       </q-field>
 
+      <q-field slot="filter" icon="monetization_on" helper="구매 가능 여부를 체크하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-checkbox label="구매가능" v-model="filters.purchasable"/>
+      </q-field>
+
+      <q-field slot="filter" icon="monetization_on" helper="판 가능 여부를 체크하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-checkbox label="판매가능" v-model="filters.salable"/>
+      </q-field>
+
       <!-- filters -->
 
       <!-- filter -->
@@ -112,6 +121,11 @@
                            :print-value="filters.customerName" label="고객사"/>
       <c-list-filter-label slot="filter-label" v-model="filters.categoryId"
                            :print-value="filters.categoryName" label="분류"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.purchasable" label="구매가능"
+                           true-label="가능" false-label="불가" :clear-value="null"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.salable" label="판매가능"
+                           true-label="가능" false-label="불가" :clear-value="null"/>
+
       <!-- filter -->
 
     </c-list-view>
@@ -135,12 +149,18 @@
     ItemTypeArray
   } from 'src/model/item'
   import {CompanyLabelArray} from 'src/model/company'
+  import * as _ from 'lodash'
 
   export default {
     props: {
       multiple: {
         type: Boolean,
         default: false
+      },
+      defaultFilters: {
+        type: Object,
+        default: () => {
+        }
       }
     },
     data () {
@@ -157,6 +177,8 @@
           customerName: null,
           categoryId: null,
           categoryName: null,
+          purchasable: null,
+          salable: null,
           statuses: [],
           types: []
         },
@@ -172,12 +194,15 @@
         }
       }
     },
-    mounted () {
+    async mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.statusLabelArray.fetch()
-      this.typeLabelArray.fetch()
-      this.categoryLabelArray.fetch()
-      this.companyLabelArray.fetch()
+      await Promise.all([
+        this.statusLabelArray.fetch(),
+        this.typeLabelArray.fetch(),
+        this.categoryLabelArray.fetch(),
+        this.companyLabelArray.fetch()
+      ]),
+          _.assign(this.filters, this.defaultFilters)
     },
     methods: {
       retrieve () {

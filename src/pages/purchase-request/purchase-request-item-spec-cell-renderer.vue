@@ -1,6 +1,6 @@
 <template>
-  <div class="row items-center fit bom-item-spec-cell-renderer">
-    <div class="bom-item-spec-cell-renderer-label">{{value}}</div>
+  <div class="row items-center fit purchase-request-item-spec-cell-renderer">
+    <div class="purchase-request-item-spec-cell-renderer-label">{{value}}</div>
     <q-btn icon="open_in_new" flat v-show="openable" @click="open"></q-btn>
   </div>
 </template>
@@ -9,12 +9,12 @@
   export default {
     computed: {
       openable() {
-        return this.data.parent && this.params.data.specifiable
+        return this.params.data.item.specifiable
       },
-      data () {
+      data() {
         return this.params.data
       },
-      value () {
+      value() {
         const itemSpec = this.params.data.itemSpec
         if (itemSpec) {
           return itemSpec.summary
@@ -32,11 +32,11 @@
   }
 </script>
 <style lang="stylus">
-  .bom-item-spec-cell-renderer-label
+  .purchase-request-item-spec-cell-renderer-label
     text-overflow: ellipsis
     overflow: hidden
 
-  .bom-item-spec-cell-renderer
+  .purchase-request-item-spec-cell-renderer
     flex-wrap: nowrap !important
     .q-btn
       padding: 5px 5px

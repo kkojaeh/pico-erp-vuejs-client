@@ -162,13 +162,15 @@
     methods: {
       async create() {
         this.model = new UserModel()
-        this.roleArray = new UserRoleArray(this.model)
-        await this.roleArray.fetch()
+        const roleArray = new UserRoleArray(this.model)
+        await roleArray.fetch()
+        this.roleArray = roleArray
       },
       async load(id) {
         this.model = await UserModel.get(id)
-        this.roleArray = new UserRoleArray(this.model)
-        await this.roleArray.fetch()
+        const roleArray = new UserRoleArray(this.model)
+        await roleArray.fetch()
+        this.roleArray = roleArray
       },
       async show() {
         await this.load(this.id)

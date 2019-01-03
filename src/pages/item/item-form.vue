@@ -1,4 +1,5 @@
-₩<template>
+₩
+<template>
 
   <q-page class="row layout-padding">
 
@@ -255,7 +256,8 @@
       },
       predefined: {
         type: Object,
-        default: () => {}
+        default: () => {
+        }
       },
       closeConfirmed: {
         type: Boolean,
@@ -267,7 +269,7 @@
       'processManager': 'hasRole(\'PROCESS_MANAGER\')',
       'bomAccessor': 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')'
     },
-    data () {
+    data() {
       return {
         model: new ItemModel(),
         companyLabelArray: new CompanyLabelArray(),
@@ -281,40 +283,42 @@
         specTypeModel: new ItemSpecTypeModel(),
       }
     },
-    mounted () {
-      this.unitLabelArray.fetch()
-      this.statusLabelArray.fetch()
-      this.typeLabelArray.fetch()
-      this.categoryLabelArray.fetch()
-      this.specTypeLabelArray.fetch()
-      this.companyLabelArray.fetch()
+    async mounted() {
+      await Promise.all([
+        this.unitLabelArray.fetch(),
+        this.statusLabelArray.fetch(),
+        this.typeLabelArray.fetch(),
+        this.categoryLabelArray.fetch(),
+        this.specTypeLabelArray.fetch(),
+        this.companyLabelArray.fetch(),
+      ])
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
     },
     methods: {
-      async onCustomerSearch (keyword, done) {
+      async onCustomerSearch(keyword, done) {
         await this.companyLabelArray.fetch(keyword)
         done()
       },
-      async onCategorySearch (keyword, done) {
+      async onCategorySearch(keyword, done) {
         await this.categoryLabelArray.fetch(keyword)
         done()
       },
-      async onSpecTypeSearch (keyword, done) {
+      async onSpecTypeSearch(keyword, done) {
         await this.specTypeLabelArray.fetch(keyword)
         done()
       },
-      async create () {
+      async create() {
         this.model = new ItemModel()
         _.forIn(this.predefined, (value, key) => {
           this.model[key] = value
         })
       },
-      async show () {
+      async show() {
         this.model = await ItemModel.get(this.id)
       },
-      async onSaveClick () {
+      async onSaveClick() {
         let valid = await this.model.validate()
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
@@ -348,7 +352,7 @@
           this.show()
         }
       },
-      async save () {
+      async save() {
         const attachment = this.$refs.attachment
         await attachment.save()
         await this.model.save()
@@ -369,10 +373,9 @@
       },
       'model.specTypeId': async function (to) {
         this.specTypeModel = await
-          ItemSpecTypeModel.get(to, true)
+            ItemSpecTypeModel.get(to, true)
       }
     },
-    components: {
-    }
+    components: {}
   }
 </script>

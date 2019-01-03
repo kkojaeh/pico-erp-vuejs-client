@@ -145,6 +145,38 @@ const menu = [
         authorize: 'hasAnyRole(\'PROCESS_MANAGER\')'
       }
     ]
+  },
+  {
+    icon: 'shopping_cart',
+    label: languageAliases({
+      ko: '구매'
+    })[language],
+    children: [
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '구매 요청 현황'
+        })[language],
+        url: '/purchase-request/request',
+        authorize: 'hasAnyRole(\'PURCHASE_REQUESTER\', \'PURCHASE_REQUEST_MANAGER\')'
+      },
+      {
+        icon: 'call_received',
+        label: languageAliases({
+          ko: '구매 요청 접수'
+        })[language],
+        url: '/purchase-request/await-accept',
+        authorize: 'hasAnyRole(\'PURCHASE_REQUEST_ACCEPTER\', \'PURCHASE_REQUEST_MANAGER\')'
+      },
+      {
+        icon: 'watch_later',
+        label: languageAliases({
+          ko: '발주 대기 현황'
+        })[language],
+        url: '/purchase-request/await-order',
+        authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
+      }
+    ]
   }
   /*
   ,

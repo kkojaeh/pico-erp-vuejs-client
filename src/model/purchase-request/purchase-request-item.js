@@ -1,11 +1,13 @@
 import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {ItemModel} from "src/model/item";
+import {ItemModel, ItemSpecModel} from "src/model/item";
+import {language, languageAliases} from "../../i18n";
 
 const itemSymbol = Symbol('item')
+const itemSpecSymbol = Symbol('item-spec')
 
-export class OrderAcceptanceItemModel extends Model {
+export class PurchaseRequestItemModel extends Model {
 
   constructor(data) {
     super(data)
@@ -14,7 +16,7 @@ export class OrderAcceptanceItemModel extends Model {
 
   get defaults() {
     return {
-      unitPrice: 0,
+      status: 'DRAFT',
       quantity: 0
     }
   }
@@ -27,51 +29,35 @@ export class OrderAcceptanceItemModel extends Model {
     return this[itemSymbol]
   }
 
+  get itemSpec() {
+    return this[itemSpecSymbol]
+  }
+
   get phantom() {
     return this.hasChanged("id")
   }
 
-  /*
-    static async get(id, cacheable) {
-      if (!id) {
-        return new ProjectModel()
-      }
-      const response = await api.get(
-          `/order-acceptance/acceptances/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
-      return new ProjectModel(response.data)
-    }
-
-    static async exists(id) {
-      return await exists(api, `/order-acceptance/acceptances/${id}`)
-    }
-  */
-
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
+    this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
   }
 
   async save() {
-    const orderAcceptanceId = this.orderAcceptanceId
+    const requestId = this.requestId
     if (this.phantom) {
       const response = await api.post(
-          `/order-acceptance/acceptances/${orderAcceptanceId}/items`,
+          `/purchase-request/requests/${requestId}/items`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/order-acceptance/acceptances/${orderAcceptanceId}/items/${this.id}`,
+          `/purchase-request/requests/${requestId}/items/${this.id}`,
           this)
     }
   }
 
   async validate() {
     let constraints = {
-      unitPrice: {
-        presence: true,
-        numericality: {
-          greaterThan: 0
-        }
-      },
       quantity: {
         presence: true,
         numericality: {
@@ -80,6 +66,20 @@ export class OrderAcceptanceItemModel extends Model {
       },
       itemId: {
         presence: true
+      },
+      itemSpecId: {
+        'function': async () => {
+          const errors = []
+          if (this.item.specifiable) {
+            if (!this.itemSpecId) {
+              const error = languageAliases({
+                ko: '품목의 스펙을 지정해야 합니'
+              })[language]
+              errors.push(error)
+            }
+          }
+          return errors
+        }
       }
     }
 
@@ -88,17 +88,17 @@ export class OrderAcceptanceItemModel extends Model {
 
   async delete() {
     await api.delete(
-        `/order-acceptance/acceptances/${this.orderAcceptanceId}/items/${this.id}`,
+        `/purchase-request/requests/${this.requestId}/items/${this.id}`,
         {})
   }
 }
 
-export const OrderAcceptanceItemArray = Array.decorate(
+export const PurchaseRequestItemArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/order-acceptance/acceptances/${orderAcceptanceId}/items'
+        return '/purchase-request/requests/${requestId}/items'
       }
 
       get axios() {
@@ -106,24 +106,24 @@ export const OrderAcceptanceItemArray = Array.decorate(
       }
 
       get model() {
-        return OrderAcceptanceItemModel
+        return PurchaseRequestItemModel
       }
 
-      initialize(orderAcceptance) {
+      initialize(request) {
         super.initialize()
-        this.orderAcceptance = orderAcceptance
+        this.request = request
       }
 
       async fetch() {
         await super.fetch({
-          orderAcceptanceId: this.orderAcceptance.id
+          requestId: this.request.id
         })
         await Promise.all(
             this.map(async (element) => await element.fetchReference()))
       }
 
       applyEach(element) {
-        element.orderAcceptanceId = this.orderAcceptance.id
+        element.requestId = this.request.id
       }
 
     }

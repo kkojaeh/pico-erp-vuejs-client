@@ -419,7 +419,7 @@
           const saleItem = new ProjectSaleItemModel({
             itemId: itemId
           })
-          saleItem.fetchReference()
+          await saleItem.fetchReference()
           this.saleItemArray.push(saleItem)
         })
       },
