@@ -167,13 +167,29 @@ const menu = [
         })[language],
         url: '/purchase-request/await-accept',
         authorize: 'hasAnyRole(\'PURCHASE_REQUEST_ACCEPTER\', \'PURCHASE_REQUEST_MANAGER\')'
-      },
+      }
+    ]
+  },
+  {
+    icon: 'fas fa-money-check',
+    label: languageAliases({
+      ko: '발주'
+    })[language],
+    children: [
       {
         icon: 'watch_later',
         label: languageAliases({
           ko: '발주 대기 현황'
         })[language],
-        url: '/purchase-request/await-order',
+        url: '/purchase-order/await-order',
+        authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
+      },
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '발주 현황'
+        })[language],
+        url: '/purchase-order/order',
         authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
       }
     ]

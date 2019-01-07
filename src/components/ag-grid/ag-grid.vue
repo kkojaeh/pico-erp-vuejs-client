@@ -16,7 +16,12 @@
   import lzutf8 from 'lzutf8'
   import Tooltip from 'tooltip.js'
 
-  const predefined = {}
+  const predefined = {
+    stopEditingWhenGridLosesFocus: {
+      type: Boolean,
+      default: false
+    }
+  }
   const watchedProperties = {}
   const props = {
     theme: {

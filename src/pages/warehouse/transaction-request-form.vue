@@ -265,17 +265,14 @@
       isChargeEditable(params) {
         return params.data.phantom;
       },
-      async ontransactionCompanySearch(keyword, done) {
+      async ontransactionCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
-      async onStationSearch(keyword, done) {
+      async onStationSearch(keyword) {
         await this.stationLabelArray.fetch(keyword)
-        done()
       },
       onItemSelectionChanged(event) {
         const item = event.api.getSelectedRows()[0]

@@ -173,9 +173,8 @@
       retrieve () {
         this.$refs.listView.retrieve()
       },
-      async _onDepartmentSearch (keyword, done) {
+      async _onDepartmentSearch(keyword) {
         await this.departmentLabelArray.fetch(keyword)
-        done()
       },
       async importByXlsx () {
         const uploader = this.$refs.importByXlsxUploader

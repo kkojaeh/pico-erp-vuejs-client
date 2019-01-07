@@ -173,17 +173,14 @@
       retrieve () {
         this.$refs.listView.retrieve()
       },
-      async onProcessTypeSearch (keyword, done) {
+      async onProcessTypeSearch(keyword) {
         await this.typeLabelArray.fetch(keyword)
-        done()
       },
-      async onItemSearch (keyword, done) {
+      async onItemSearch(keyword) {
         await this.itemLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
 
     },

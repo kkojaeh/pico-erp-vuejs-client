@@ -170,9 +170,8 @@
       retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       getNodeChildDetails(data) {
         if (data.children) {

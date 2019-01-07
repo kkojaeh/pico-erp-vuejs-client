@@ -4,7 +4,7 @@
     <q-card class="col-12" flat>
 
       <q-card-title>
-        구매 요청 정보
+        발주 정보
         <span slot="right" v-if="!!model.code">{{model.code}}
           <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
                  flat></q-btn>
@@ -16,28 +16,20 @@
 
       <q-card-main class="row gutter-md">
 
-        <q-field icon="fas fa-building" helper="프로젝트를 선택하세요"
+        <q-field icon="fas fa-building" helper="품목을 공급할 회사 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.projectId" :error-label="model.$errors.projectId">
-
-          <c-autocomplete-select float-label="프로젝트" v-model="model.projectId"
-                                 :label="projectModel.name" :options="projectLabelArray"
+                 :error="!!model.$errors.supplierId"
+                 :error-label="model.$errors.supplierId">
+          <c-autocomplete-select float-label="공급사" v-model="model.supplierId"
+                                 :label="supplierModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
                                  :readonly="!updatable" :hide-underline="!updatable"
-                                 @search="onProjectSearch">
+                                 @search="onCompanySearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
               {{option.stamp}} - {{option.subLabel}}
             </template>
           </c-autocomplete-select>
-        </q-field>
-
-        <q-field icon="account_circle" helper="이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
-                 :error="!!model.$errors.name"
-                 :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" :readonly="!updatable"
-                   :hide-underline="!updatable" class="ime-mode-active"/>
         </q-field>
 
         <q-field icon="fas fa-calendar" helper="만기일을 입력하세요"
@@ -48,15 +40,14 @@
                       type="date"/>
         </q-field>
 
-
-        <q-field icon="account_box" helper="요청자 입니다"
+        <q-field icon="account_box" helper="담당자 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.requesterId"
-                 :error-label="model.$errors.requesterId">
-          <c-autocomplete-select float-label="요청자" v-model="model.requesterId"
-                                 :label="requesterModel.name" :options="userLabelArray"
+                 :error="!!model.$errors.chargerId"
+                 :error-label="model.$errors.chargerId">
+          <c-autocomplete-select float-label="담당자" v-model="model.chargerId"
+                                 :label="chargerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
-                                 readonly hide-underline
+                                 :readonly="!updatable" :hide-underline="!updatable"
                                  @search="onUserSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
@@ -65,23 +56,7 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="account_box" helper="접수자 입니다"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.accepterId"
-                 :error-label="model.$errors.accepterId">
-          <c-autocomplete-select float-label="접수자" v-model="model.accepterId"
-                                 :label="accepterModel.name" :options="userLabelArray"
-                                 label-field="label" value-field="value"
-                                 readonly hide-underline
-                                 @search="onUserSearch">
-            <template slot="option" slot-scope="option">
-              {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
-            </template>
-          </c-autocomplete-select>
-        </q-field>
-
-        <q-field icon="check" helper="구매 요청의 상태 입니다"
+        <q-field icon="check" helper="발주의 상태 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="상태" v-model="model.status" readonly hide-underline
                     :options="statusLabelArray"></q-select>
@@ -106,6 +81,12 @@
 
       <q-card-title>
         인수 정보
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="인수사 주소 불러오기" icon="location_on"
+                 v-if="updatable"
+                 @click="onCompanyAddressLoad"
+                 :disabled="!model.receiverId"/>
+        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -129,25 +110,11 @@
           </c-autocomplete-select>
         </q-field>
 
-
-        <q-field icon="fas fa-building" helper="인수지를 선택하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.receiveSiteId"
-                 :error-label="model.$errors.receiveSiteId" v-if="ownerRelated">
-          <q-select float-label="인수지" v-model="model.receiveSiteId"
-                    :display-value="receiveSiteModel.name || null"
-                    :readonly="!updatable" :hide-underline="!updatable"
-                    :options="siteArray" clearable></q-select>
-        </q-field>
-
-        <q-field icon="fas fa-building" helper="인수지(상세)를 선택하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.receiveStationId"
-                 :error-label="model.$errors.receiveStationId" v-if="ownerRelated">
-          <q-select float-label="인수지" v-model="model.receiveStationId"
-                    :display-value="receiveStationModel.name || null"
-                    :readonly="!updatable" :hide-underline="!updatable"
-                    :options="stationArray" clearable></q-select>
+        <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
+                 :error="!!model.$errors.receiveAddress.postalCode || !!model.$errors.receiveAddress.street || !!model.$errors.receiveAddress.detail"
+                 :error-label="model.$errors.receiveAddress.postalCode || model.$errors.receiveAddress.street || model.$errors.receiveAddress.detail">
+          <c-address-input v-model="model.receiveAddress"/>
         </q-field>
 
       </q-card-main>
@@ -157,7 +124,7 @@
     <q-card class="col-12" flat>
 
       <q-card-title>
-        구매 품목
+        발주 품목
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="onAddItem"
                  v-if="updatable"
@@ -181,23 +148,40 @@
                  stop-editing-when-grid-loses-focus
                  suppress-no-rows-overlay
                  @selection-changed="onItemSelectionChanged"
+                 @cell-value-changed="onItemCellValueChanged"
                  :row-data="itemArray">
 
           <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"
                           :hide="!updatable"/>
-          <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
-          <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
+          <ag-grid-column field="projectId" header-name="프로젝트" :width="150"
+                          :editable="itemEditableFn"
+                          :cell-editor-params="{ options: projectLabelArray,  labelField: 'label' , valueField: 'value', onSearch:onProjectSearch}"
+                          :cell-renderer="projectRenderer"
+                          cell-editor-framework="ag-grid-autocomplete-select-editor"/>
+          <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
+          <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
           <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
-                          cell-renderer-framework="purchase-request-item-spec-cell-renderer"
+                          cell-renderer-framework="purchase-order-item-spec-cell-renderer"
                           :cell-renderer-params="{openHandler: onOpenItemSpec}"/>
-          <ag-grid-column field="quantity" header-name="수량" :width="150"
+          <ag-grid-column field="purchaseEstimatedUnitCost" header-name="예상단가" :width="120"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"/>
+          <ag-grid-column field="unitCost" header-name="단가" :width="120"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          :cell-editor-params="{ type: 'number', align: 'right' }"
+                          :editable="updatable"/>
+          <ag-grid-column field="quantity" header-name="수량" :width="120"
                           :cell-style="{textAlign: 'right'}"
                           cell-renderer-framework="ag-grid-number-renderer"
                           :cell-renderer-params="{format:'#,##0.00', words:true}"
                           cell-editor-framework="ag-grid-input-editor"
-                          :cell-editor-params="{ type: 'number' }"
-                          :editable="updatable"/>
-          <ag-grid-column field="item.unit" header-name="단위" :width="80"
+                          :cell-editor-params="{ type: 'number', align: 'right' }"
+                          :editable="itemEditableFn"/>
+          <ag-grid-column field="purchaseUnit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -219,8 +203,12 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat icon="send" @click="onCommit()" label="제출"
-               v-if="committable"></q-btn>
+        <q-btn flat icon="done" @click="onDetermine()" label="확정"
+               v-if="determinable"></q-btn>
+        <q-btn flat icon="cancel_presentation" @click="onReject()" label="공급사 거부"
+               v-if="rejectable"></q-btn>
+        <q-btn flat icon="send" @click="onSend()" label="전송"
+               v-if="sendable"></q-btn>
         <q-btn flat icon="cancel" @click="onCancel()" label="취소"
                v-if="cancelable"></q-btn>
 
@@ -237,11 +225,11 @@
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
-    PurchaseRequestItemArray,
-    PurchaseRequestItemModel,
-    PurchaseRequestModel,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+    PurchaseOrderItemArray,
+    PurchaseOrderItemModel,
+    PurchaseOrderModel,
+    PurchaseOrderStatusArray
+  } from 'src/model/purchase-order'
   import {
     WarehouseSiteArray,
     WarehouseSiteModel,
@@ -250,7 +238,7 @@
   } from 'src/model/warehouse'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
-  import PurchaseRequestItemSpecCellRenderer from './purchase-request-item-spec-cell-renderer'
+  import PurchaseOrderItemSpecCellRenderer from './purchase-order-item-spec-cell-renderer'
 
   export default {
     props: {
@@ -267,17 +255,17 @@
     },
     data() {
       return {
-        model: new PurchaseRequestModel(),
-        itemArray: new PurchaseRequestItemArray(),
+        model: new PurchaseOrderModel(),
+        itemArray: new PurchaseOrderItemArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
-        requesterModel: new UserModel(),
-        accepterModel: new UserModel(),
+        chargerModel: new UserModel(),
         projectModel: new ProjectModel(),
         projectLabelArray: new ProjectLabelArray(),
         receiverModel: new CompanyModel(),
+        supplierModel: new CompanyModel(),
         unitLabelArray: new UnitLabelArray(),
-        statusLabelArray: new PurchaseRequestStatusArray(),
+        statusLabelArray: new PurchaseOrderStatusArray(),
         receiveStationModel: new WarehouseStationModel(),
         receiveSiteModel: new WarehouseSiteModel(),
         siteArray: new WarehouseSiteArray(),
@@ -291,7 +279,6 @@
       }
     },
     async mounted() {
-      this.owner = await CompanyModel.owner()
       await Promise.all([
         this.unitLabelArray.fetch(),
         this.siteArray.fetch(),
@@ -309,6 +296,26 @@
       })
     },
     methods: {
+      projectRenderer(params) {
+        return params.data.project.name
+      },
+      itemEditableFn(params) {
+        return this.updatable && params.data.updatable
+      },
+      async onCompanyAddressLoad() {
+        const addresses = await this.$selectCompanyAddress(this.model.receiverId, {multiple: false})
+
+        if (addresses && addresses.length) {
+          const model = this.model
+          const companyAddress = addresses[0]
+          model.receiveAddress.postalCode = companyAddress.address.postalCode
+          model.receiveAddress.street = companyAddress.address.street
+          model.receiveAddress.detail = companyAddress.address.detail
+          model.deliveryMobilePhoneNumber = companyAddress.mobilePhoneNumber
+          model.deliveryTelephoneNumber = companyAddress.telephoneNumber
+        }
+      },
+
       async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
       },
@@ -323,11 +330,18 @@
         this.selected.item = event.api.getSelectedRows()[0]
       },
 
+      async onItemCellValueChanged(event) {
+        if (event.colDef.field == 'projectId') {
+          await event.data.fetchReference()
+          this.$redrawGrids()
+        }
+      },
+
       async onOpenItemSpec(data) {
         this.selected.item = data
         if (data.itemSpecId) {
           const changed = await this.$showItemSpec(data.itemSpecId, {
-            editable: this.updatable
+            editable: this.updatable && data.updatable
           })
           if (changed) {
             await data.fetchReference()
@@ -345,20 +359,21 @@
       },
 
       async create() {
-        this.model = new PurchaseRequestModel()
-        this.itemArray = new PurchaseRequestItemArray(this.model)
-        this.model.requesterId = this.user.id
+        this.model = new PurchaseOrderModel()
+        this.itemArray = new PurchaseOrderItemArray(this.model)
+        this.model.chargerId = this.user.id
       },
       async show() {
         await this.load(this.id)
       },
       async load(id) {
-        const model = await PurchaseRequestModel.get(id)
-        const itemArray = new PurchaseRequestItemArray(model)
+        const model = await PurchaseOrderModel.get(id)
+        const itemArray = new PurchaseOrderItemArray(model)
         await itemArray.fetch()
         this.model = model
         this.itemArray = itemArray
       },
+
       async closeOrReload() {
         if (this.closable) {
           const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
@@ -392,7 +407,7 @@
         await this.itemArray.save()
       },
 
-      async onCommit() {
+      async onDetermine() {
         let valid = ![
           await this.model.validate(),
           await this.itemArray.validate()
@@ -406,24 +421,38 @@
           this.$alert.warning('품목이 없습니다')
           return
         }
-        const validCommit = await this.model.validateCommit()
-        if (validCommit) {
-          const ok = await this.$alert.confirm('요청을 제출 하시겠습니까?')
+        const validDetermine = await this.model.validateDetermine()
+        if (validDetermine) {
+          const ok = await this.$alert.confirm('발주를 확정 하시겠습니까?')
           if (ok) {
             await this.save()
-            await this.model.commit()
-            this.$alert.positive('제출 되었습니다')
+            await this.model.determine()
+            this.$alert.positive('확정 되었습니다')
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.commit)
+          this.$alert.warning(this.selected.$errors.determine)
+        }
+      },
+
+      async onSend() {
+        const validSend = await this.model.validateSend()
+        if (validSend) {
+          const ok = await this.$alert.confirm('발주를 전송 하시겠습니까?')
+          if (ok) {
+            await this.model.send()
+            this.$alert.positive('전송 되었습니다')
+            await this.closeOrReload()
+          }
+        } else {
+          this.$alert.warning(this.selected.$errors.send)
         }
       },
 
       async onCancel() {
         const validCancel = await this.model.validateCancel()
         if (validCancel) {
-          const ok = await this.$alert.confirm('요청을 취소 하시겠습니까?')
+          const ok = await this.$alert.confirm('발주를 취소 하시겠습니까?')
           if (ok) {
             await this.model.cancel()
             this.$alert.positive('취소 되었습니다')
@@ -434,6 +463,25 @@
         }
       },
 
+      async onReject() {
+        const validReject = await this.model.validateReject()
+        if (validReject) {
+          const ok = await this.$alert.confirm('공급사가 거부 하였습니까?')
+          if (ok) {
+            const reason = await this.$alert.prompt('공급사의 거부 사유를 입력하세요')
+            if (!reason) {
+              this.$alert.warning("거부 사유가 없습니다")
+              return
+            }
+            await this.model.reject(reason)
+            this.$alert.positive('공급사 거부가 처리 되었습니다')
+            await this.closeOrReload()
+          }
+        } else {
+          this.$alert.warning(this.selected.$errors.reject)
+        }
+      },
+
       async onAddItem() {
         const itemModels = await this.$selectItem({})
         if (!itemModels) {
@@ -441,7 +489,7 @@
         }
         itemModels.map(async (itemModel) => {
           const itemId = itemModel.id
-          const item = new PurchaseRequestItemModel({
+          const item = new PurchaseOrderItemModel({
             itemId: itemId
           })
           await item.fetchReference()
@@ -469,52 +517,36 @@
       updatable() {
         return this.model.updatable
       },
-      committable() {
-        return this.model.committable
+      sendable() {
+        return this.model.sendable
       },
       cancelable() {
         return this.model.cancelable
       },
-      ownerRelated() {
-        return this.owner.id == this.model.receiverId
+      rejectable() {
+        return this.model.rejectable
+      },
+      determinable() {
+        return this.model.determinable
       }
     },
     watch: {
       'model.requesterId': async function (to) {
         this.requesterModel = await UserModel.get(to, true)
       },
-      'model.accepterId': async function (to) {
-        this.accepterModel = await UserModel.get(to, true)
+      'model.chargerId': async function (to) {
+        this.chargerModel = await UserModel.get(to, true)
+      },
+      'model.supplierId': async function (to) {
+        this.supplierModel = await CompanyModel.get(to, true)
       },
       'model.receiverId': async function (to) {
         this.receiverModel = await CompanyModel.get(to, true)
-        if (to != this.owner.id) {
-          this.model.receiveSiteId = null
-          this.model.receiveStationId = null
-        }
-      },
-      'model.projectId': async function (to) {
-        this.projectModel = await ProjectModel.get(to, true)
-      },
-      'model.receiveStationId': async function (to) {
-        this.receiveStationModel = await WarehouseStationModel.get(to, true)
-      },
-      'model.receiveSiteId': async function (to) {
-        this.receiveSiteModel = await WarehouseSiteModel.get(to, true)
-        const stationArray = new WarehouseStationArray(this.receiveSiteModel)
-        await stationArray.fetch()
-        this.stationArray = stationArray.map(station => {
-          return {
-            value: station.id,
-            label: station.name
-          }
-        })
-      },
-
+      }
     },
     components: {
       CommentList,
-      PurchaseRequestItemSpecCellRenderer
+      PurchaseOrderItemSpecCellRenderer
     }
   }
 </script>

@@ -617,13 +617,11 @@
         }
         return 48
       },
-      async onProjectSearch(keyword, done) {
+      async onProjectSearch(keyword) {
         await this.projectLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async create() {
         this.model = new QuotationModel()

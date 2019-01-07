@@ -176,9 +176,8 @@
         await this.roleArray.save()
         await this.userArray.save()
       },
-      async onUserSearch(keyword, done) {
+      async onUserSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async onUserRemove(user) {
         const ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')

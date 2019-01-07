@@ -105,9 +105,8 @@
       async show () {
         this.model = await MyModel.get()
       },
-      async _onDepartmentSearch (keyword, done) {
+      async _onDepartmentSearch(keyword) {
         await this.departmentLabelArray.fetch(keyword)
-        done()
       },
       async _onResetPasswordClick () {
         const ok = await this.$alert.confirm('패스워드를 변경 하시겠습니까?')

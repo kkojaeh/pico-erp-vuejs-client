@@ -188,6 +188,7 @@
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="remark" header-name="비고" :width="200"/>
         </ag-grid>
 
       </q-card-main>
@@ -287,17 +288,14 @@
       })
     },
     methods: {
-      async onCompanySearch(keyword, done) {
+      async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onUserSearch(keyword, done) {
+      async onUserSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
-      async onProjectSearch(keyword, done) {
+      async onProjectSearch(keyword) {
         await this.projectLabelArray.fetch(keyword)
-        done()
       },
 
       onItemSelectionChanged(event) {
@@ -336,6 +334,17 @@
         this.itemArray = itemArray
       },
 
+      async closeOrReload() {
+        if (this.closable) {
+          const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
+          if (close) {
+            this.$closeOverlay()
+            return
+          }
+        }
+        await this.load(this.id || this.model.id)
+      },
+
       async onReject() {
         const validReject = await this.model.validateReject()
         if (validReject) {
@@ -347,8 +356,8 @@
               return
             }
             await this.model.reject(reason)
-            await this.load(this.id || this.model.id)
             this.$alert.positive('반려 되었습니다')
+            await this.closeOrReload()
           }
         } else {
           this.$alert.warning(this.selected.$errors.reject)
@@ -361,8 +370,8 @@
           const ok = await this.$alert.confirm('요청을 접수 하시겠습니까?')
           if (ok) {
             await this.model.accept()
-            await this.load(this.id || this.model.id)
             this.$alert.positive('접수 되었습니다')
+            await this.closeOrReload()
           }
         } else {
           this.$alert.warning(this.selected.$errors.accept)

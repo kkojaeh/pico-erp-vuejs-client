@@ -115,9 +115,8 @@
       retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onCategorySearch(keyword, done) {
+      async onCategorySearch(keyword) {
         await this.categoryLabelArray.fetch(keyword)
-        done()
       },
       async onGridSelectionChanged(event) {
         const selected = event.api.getSelectedRows()

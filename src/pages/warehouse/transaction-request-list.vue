@@ -202,13 +202,11 @@
       async retrieve() {
         await this.$refs.listView.retrieve()
       },
-      async ontransactionCompanySearch(keyword, done) {
+      async ontransactionCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onCreatedBySearch(keyword, done) {
+      async onCreatedBySearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async onItemSearch() {
         const itemModels = await this.$selectItem({})

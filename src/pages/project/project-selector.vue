@@ -181,13 +181,11 @@
       retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onCustomerSearch(keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async onGridSelectionChanged(event) {
         const selected = event.api.getSelectedRows()

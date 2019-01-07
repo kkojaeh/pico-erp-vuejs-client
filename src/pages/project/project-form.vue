@@ -343,13 +343,11 @@
       isChargeEditable(params) {
         return params.data.phantom;
       },
-      async onCustomerSearch(keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       onSaleItemSelectionChanged(event) {
         this.selected.saleItem = event.api.getSelectedRows()[0]

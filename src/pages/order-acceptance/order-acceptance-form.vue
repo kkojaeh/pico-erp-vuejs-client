@@ -313,23 +313,19 @@
       this.statusLabelArray.fetch()
     },
     methods: {
-      async onCustomerSearch(keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onPurchaserSearch(keyword, done) {
+      async onPurchaserSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onReceiverSearch(keyword, done) {
+      async onReceiverSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
-      async onProjectSearch(keyword, done) {
+      async onProjectSearch(keyword) {
         await this.projectLabelArray.fetch(keyword)
         done()
       },

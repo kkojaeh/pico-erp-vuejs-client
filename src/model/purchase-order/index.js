@@ -3,6 +3,7 @@ import {api} from "../../plugins/axios";
 import {LabelModel} from "../shared";
 
 export * from './purchase-order'
+export * from './purchase-order-item'
 
 export const PurchaseOrderStatusArray = Array.decorate(
     class extends FetchableArray {

@@ -146,16 +146,15 @@
         }
       },
 
-      _onSelectSearch (keyword, loading) {
+      async _onSelectSearch(keyword, loading) {
         keyword = this.$el.querySelector('input').value
         if (this.lastQueried === keyword) {
           return
         }
         this.lastQueried = keyword
         loading(true)
-        this.$emit('search', this.lastQueried, () => {
-          loading(false)
-        })
+        this.$emit('search', this.lastQueried)
+        loading(false)
       }
     },
     watch: {

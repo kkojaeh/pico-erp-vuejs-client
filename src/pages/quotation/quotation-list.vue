@@ -210,17 +210,14 @@
       retrieve () {
         this.$refs.listView.retrieve()
       },
-      async onCustomerSearch (keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onProjectSearch (keyword, done) {
+      async onProjectSearch(keyword) {
         await this.projectLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch (keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async onFetched() {
         await Promise.all(

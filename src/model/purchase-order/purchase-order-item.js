@@ -2,12 +2,14 @@ import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {ItemModel, ItemSpecModel} from "src/model/item";
+import {ProjectModel} from "src/model/project";
 import {language, languageAliases} from "../../i18n";
 
 const itemSymbol = Symbol('item')
 const itemSpecSymbol = Symbol('item-spec')
+const projectSymbol = Symbol('project')
 
-export class PurchaseRequestItemModel extends Model {
+export class PurchaseOrderItemModel extends Model {
 
   constructor(data) {
     super(data)
@@ -18,7 +20,8 @@ export class PurchaseRequestItemModel extends Model {
     return {
       status: 'DRAFT',
       quantity: 0,
-      remark: null
+      remark: null,
+      unitCost: 0
     }
   }
 
@@ -34,25 +37,44 @@ export class PurchaseRequestItemModel extends Model {
     return this[itemSpecSymbol]
   }
 
+  get project() {
+    return this[projectSymbol]
+  }
+
   get phantom() {
     return this.hasChanged("id")
+  }
+
+  get updatable() {
+    return this.requestItemId == null
+  }
+
+  get purchaseUnit() {
+    return this.unit || this.itemSpec.purchaseUnit || this.item.unit
+  }
+
+  get purchaseEstimatedUnitCost() {
+    return this.estimatedUnitCost || this.itemSpec.purchaseUnitCost
+        || this.item.baseUnitCost
   }
 
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
     this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
+    this[projectSymbol] = await ProjectModel.get(this.projectId, true)
   }
 
   async save() {
-    const requestId = this.requestId
+    const orderId = this.orderId
+    this.unit = this.purchaseUnit
     if (this.phantom) {
       const response = await api.post(
-          `/purchase-request/requests/${requestId}/items`,
+          `/purchase-order/orders/${orderId}/items`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/purchase-request/requests/${requestId}/items/${this.id}`,
+          `/purchase-order/orders/${orderId}/items/${this.id}`,
           this)
     }
   }
@@ -65,7 +87,16 @@ export class PurchaseRequestItemModel extends Model {
           greaterThan: 0
         }
       },
+      unitCost: {
+        presence: true,
+        numericality: {
+          greaterThan: 0
+        }
+      },
       itemId: {
+        presence: true
+      },
+      projectId: {
         presence: true
       },
       itemSpecId: {
@@ -92,17 +123,17 @@ export class PurchaseRequestItemModel extends Model {
 
   async delete() {
     await api.delete(
-        `/purchase-request/requests/${this.requestId}/items/${this.id}`,
+        `/purchase-order/orders/${this.orderId}/items/${this.id}`,
         {})
   }
 }
 
-export const PurchaseRequestItemArray = Array.decorate(
+export const PurchaseOrderItemArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/purchase-request/requests/${requestId}/items'
+        return '/purchase-order/orders/${orderId}/items'
       }
 
       get axios() {
@@ -110,24 +141,24 @@ export const PurchaseRequestItemArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseRequestItemModel
+        return PurchaseOrderItemModel
       }
 
-      initialize(request) {
+      initialize(order) {
         super.initialize()
-        this.request = request
+        this.order = order
       }
 
       async fetch() {
         await super.fetch({
-          requestId: this.request.id
+          orderId: this.order.id
         })
         await Promise.all(
             this.map(async (element) => await element.fetchReference()))
       }
 
       applyEach(element) {
-        element.requestId = this.request.id
+        element.orderId = this.order.id
       }
 
     }

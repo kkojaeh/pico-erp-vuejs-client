@@ -44,6 +44,11 @@ import AgGridDatetimeEditor
 import AgGridArrayLabelRenderer
   from 'src/components/ag-grid/ag-grid-array-label-renderer.vue'
 import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
+
+import AgGridAutocompleteSelectEditor
+  from 'src/components/ag-grid/ag-grid-autocomplete-select-editor.vue'
+
+
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
@@ -109,5 +114,8 @@ export default ({app, router, Vue}) => {
   Vue.component('ag-grid-input-editor', AgGridInputEditor)
   Vue.component('ag-grid-number-renderer', AgGridNumberRenderer)
   Vue.component('ag-grid-datetime-editor', AgGridDatetimeEditor)
+  Vue.component('ag-grid-autocomplete-select-editor',
+      AgGridAutocompleteSelectEditor)
+
 
 }

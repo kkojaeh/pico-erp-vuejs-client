@@ -175,9 +175,8 @@
       async show() {
         await this.load(this.id)
       },
-      async _onDepartmentSearch(keyword, done) {
+      async _onDepartmentSearch(keyword) {
         await this.departmentLabelArray.fetch(keyword)
-        done()
       },
       async onSaveClick() {
         let valid = await this.model.validate()

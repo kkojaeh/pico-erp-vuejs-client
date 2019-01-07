@@ -338,13 +338,11 @@
           }]
         })
       },
-      async onProcessTypeSearch(keyword, done) {
+      async onProcessTypeSearch(keyword) {
         await this.processTypeLabelArray.fetch(keyword)
-        done()
       },
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async create() {
         this.model = new ProcessModel()

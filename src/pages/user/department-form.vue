@@ -95,9 +95,8 @@
       this.userLabelArray.fetch()
     },
     methods: {
-      async onManagerSearch(keyword, done) {
+      async onManagerSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
-        done()
       },
       async create() {
         this.model = new DepartmentModel()

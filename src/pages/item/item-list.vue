@@ -230,13 +230,11 @@
       retrieve () {
         this.$refs.listView.retrieve()
       },
-      async onCustomerSearch (keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onCategorySearch (keyword, done) {
+      async onCategorySearch(keyword) {
         await this.categoryLabelArray.fetch(keyword)
-        done()
       },
       async onFetched() {
         await Promise.all(

@@ -139,7 +139,8 @@ module.exports = function (ctx) {
         'QBtnGroup',
         'QInnerLoading',
         'QDatetimePicker',
-        'QAlert'
+        'QAlert',
+        'QSearch'
       ],
       directives: [
         'Ripple',

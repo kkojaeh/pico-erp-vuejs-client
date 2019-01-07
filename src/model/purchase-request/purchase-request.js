@@ -55,6 +55,10 @@ export class PurchaseRequestModel extends Model {
     }
   }
 
+  async cancel() {
+    await api.put(`/purchase-request/requests/${this.id}/cancel`, this)
+  }
+
   async accept() {
     await api.put(`/purchase-request/requests/${this.id}/accept`, this)
   }

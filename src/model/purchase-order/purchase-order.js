@@ -64,12 +64,16 @@ export class PurchaseOrderModel extends Model {
     }
   }
 
-  async accept() {
-    await api.put(`/purchase-order/orders/${this.id}/accept`, this)
+  async cancel() {
+    await api.put(`/purchase-order/orders/${this.id}/cancel`, this)
   }
 
-  async commit() {
-    await api.put(`/purchase-order/orders/${this.id}/commit`, this)
+  async send() {
+    await api.put(`/purchase-order/orders/${this.id}/send`, this)
+  }
+
+  async determine() {
+    await api.put(`/purchase-order/orders/${this.id}/determine`, this)
   }
 
   async reject(reason) {
@@ -78,9 +82,9 @@ export class PurchaseOrderModel extends Model {
     })
   }
 
-  async validateCommit() {
+  async validateDetermine() {
     let constraints = {
-      commit: {
+      determine: {
         'function': () => {
           const errors = []
           if (this.status !== 'DRAFT') {
@@ -114,14 +118,14 @@ export class PurchaseOrderModel extends Model {
     return await this.$validate(constraints)
   }
 
-  async validateAccept() {
+  async validateSend() {
     let constraints = {
-      accept: {
+      send: {
         'function': () => {
           const errors = []
-          if (!this.acceptable) {
+          if (!this.sendable) {
             const error = languageAliases({
-              ko: '접수 할 수 없습니다'
+              ko: '전송 할 수 없습니다'
             })[language]
             errors.push(error)
           }

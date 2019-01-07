@@ -164,9 +164,8 @@
       retrieve() {
         this.$refs.listView.retrieve()
       },
-      async onProcessInfoTypeSearch(keyword, done) {
+      async onProcessInfoTypeSearch(keyword) {
         await this.infoTypeLabelArray.fetch(keyword)
-        done()
       },
       async importByXlsx() {
         const uploader = this.$refs.importByXlsxUploader

@@ -20,11 +20,6 @@ let acceptForm = {
   authorize: 'hasAnyRole(\'PURCHASE_REQUEST_ACCEPTER\', \'PURCHASE_REQUEST_MANAGER\')'
 }
 
-let awaitList = {
-  title: '발주 대기 현황',
-  authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
-}
-
 export default [{
   name: 'purchase-request-list',
   path: '/purchase-request/request',
@@ -91,9 +86,4 @@ export default [{
       }
     }
   }]
-}, {
-  name: 'purchase-request-await-purchase-order-list',
-  path: '/purchase-request/await-order',
-  component: () => import('src/pages/purchase-request/purchase-request-await-order-list.vue'),
-  meta: awaitList
 }]

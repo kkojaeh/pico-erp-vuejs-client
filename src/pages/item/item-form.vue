@@ -297,17 +297,14 @@
       }
     },
     methods: {
-      async onCustomerSearch(keyword, done) {
+      async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-        done()
       },
-      async onCategorySearch(keyword, done) {
+      async onCategorySearch(keyword) {
         await this.categoryLabelArray.fetch(keyword)
-        done()
       },
-      async onSpecTypeSearch(keyword, done) {
+      async onSpecTypeSearch(keyword) {
         await this.specTypeLabelArray.fetch(keyword)
-        done()
       },
       async create() {
         this.model = new ItemModel()
