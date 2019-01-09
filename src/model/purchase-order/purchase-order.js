@@ -4,6 +4,9 @@ import {api} from 'src/plugins/axios'
 import {date} from 'quasar'
 import {language, languageAliases} from "../../i18n";
 import moment from 'moment'
+import qs from "qs";
+import {download} from "../data";
+import {authorizedUrl} from "../../plugins/auth";
 
 export class PurchaseOrderModel extends Model {
 
@@ -15,7 +18,11 @@ export class PurchaseOrderModel extends Model {
   get defaults() {
     return {
       status: 'DRAFT',
-      receiveAddress: {},
+      receiveAddress: {
+        postalCode: null,
+        street: null,
+        detail: null
+      },
       updatable: true,
       committable: true
     }
@@ -80,6 +87,13 @@ export class PurchaseOrderModel extends Model {
     await api.put(`/purchase-order/orders/${this.id}/reject`, {
       rejectedReason: reason
     })
+  }
+
+  async printDraft() {
+    const host = api.defaults.baseURL
+    const url = `${host}/purchase-order/orders/${this.id}/print-draft?${qs.stringify(
+        {})}`
+    download(authorizedUrl(url))
   }
 
   async validateDetermine() {

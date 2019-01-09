@@ -193,6 +193,22 @@ const menu = [
         authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
       }
     ]
+  },
+  {
+    icon: 'fas fa-file-invoice-dollar',
+    label: languageAliases({
+      ko: '송장'
+    })[language],
+    children: [
+      {
+        icon: 'fas fa-file-invoice-dollar',
+        label: languageAliases({
+          ko: '입고 송장 현황'
+        })[language],
+        url: '/invoice',
+        authorize: 'hasAnyRole(\'INVOICE_RECEIVER\', \'INVOICE_MANAGER\')'
+      }
+    ]
   }
   /*
   ,

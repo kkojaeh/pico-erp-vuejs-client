@@ -13,9 +13,12 @@ export default [{
   children: [{
     name: 'company-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/company/company-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/company', query: this.$route.query})
+    component: () => wrapModal(import('src/pages/company/company-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/company', query: this.$route.query})
+            })
       }
     }),
     meta,

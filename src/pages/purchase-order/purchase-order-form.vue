@@ -111,7 +111,7 @@
         </q-field>
 
         <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
-                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
+                 class="col-xs-12 col-md-6 col-lg-6 col-xl-4"
                  :error="!!model.$errors.receiveAddress.postalCode || !!model.$errors.receiveAddress.street || !!model.$errors.receiveAddress.detail"
                  :error-label="model.$errors.receiveAddress.postalCode || model.$errors.receiveAddress.street || model.$errors.receiveAddress.detail">
           <c-address-input v-model="model.receiveAddress"/>
@@ -181,6 +181,13 @@
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ type: 'number', align: 'right' }"
                           :editable="itemEditableFn"/>
+          <ag-grid-column field="receivedQuantity" header-name="받은수량" :width="120"
+                          :hide="!receivable"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number', align: 'right' }"/>
           <ag-grid-column field="purchaseUnit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
@@ -195,6 +202,47 @@
 
     </q-card>
 
+    <q-card class="col-12" flat v-if="invoiceable">
+
+      <q-card-title>
+        송장 목록
+        <div slot="right" class="row items-center">
+          <q-btn flat color="secondary" label="추가" icon="add" @click="onAddItem"
+                 v-if="updatable"
+          />
+          <q-btn flat color="secondary" label="삭제" icon="remove"
+                 v-if="updatable"
+                 @click="onRemoveItem"/>
+        </div>
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row">
+
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="false"
+                 stop-editing-when-grid-loses-focus
+                 suppress-no-rows-overlay
+                 @cell-clicked="onInvoiceGridCellClicked"
+                 :row-data="invoiceArray">
+          <ag-grid-column field="dueDate" header-name="입고일시" :width="180"
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          :cell-style="{'text-decoration': 'underline', 'cursor': 'pointer'}"
+                          :cell-renderer-params="{ago:true}"/>
+          <ag-grid-column field="status" header-name="상태" :width="100"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:invoiceStatusLabelArray, valueField:'value', labelField: 'label'}"/>
+        </ag-grid>
+
+      </q-card-main>
+
+    </q-card>
+
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
@@ -203,8 +251,12 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
+        <q-btn flat icon="print" @click="onPrintDraft()" label="발주서 출력"
+               v-if="printable"></q-btn>
         <q-btn flat icon="done" @click="onDetermine()" label="확정"
                v-if="determinable"></q-btn>
+        <q-btn flat icon="done" @click="onCreatePurchaseInvoice()" label="발주 송장 생성"
+               v-if="receivable" v-show="$authorized.invoicePublishable"></q-btn>
         <q-btn flat icon="cancel_presentation" @click="onReject()" label="공급사 거부"
                v-if="rejectable"></q-btn>
         <q-btn flat icon="send" @click="onSend()" label="전송"
@@ -231,6 +283,11 @@
     PurchaseOrderStatusArray
   } from 'src/model/purchase-order'
   import {
+    PurchaseInvoiceArray,
+    PurchaseInvoiceModel,
+    PurchaseInvoiceStatusArray
+  } from 'src/model/purchase-invoice'
+  import {
     WarehouseSiteArray,
     WarehouseSiteModel,
     WarehouseStationArray,
@@ -241,6 +298,9 @@
   import PurchaseOrderItemSpecCellRenderer from './purchase-order-item-spec-cell-renderer'
 
   export default {
+    authorized: {
+      'invoicePublishable': 'hasAnyRole(\'PURCHASE_INVOICE_PUBLISHER\', \'PURCHASE_INVOICE_MANAGER\')'
+    },
     props: {
       action: {
         type: String
@@ -249,6 +309,10 @@
         type: String
       },
       closable: {
+        type: Boolean,
+        default: false
+      },
+      closeConfirmed: {
         type: Boolean,
         default: false
       }
@@ -270,6 +334,8 @@
         receiveSiteModel: new WarehouseSiteModel(),
         siteArray: new WarehouseSiteArray(),
         stationArray: new WarehouseStationArray(),
+        invoiceStatusLabelArray: new PurchaseInvoiceStatusArray(),
+        invoiceArray: new PurchaseInvoiceArray(),
 
         enabled: true,
         selected: {
@@ -285,7 +351,8 @@
         this.companyLabelArray.fetch(),
         this.userLabelArray.fetch(),
         this.projectLabelArray.fetch(),
-        this.statusLabelArray.fetch()
+        this.statusLabelArray.fetch(),
+        this.invoiceStatusLabelArray.fetch()
       ])
       if (this.action) {
         this.$nextTick(() => this[this.action]())
@@ -296,6 +363,16 @@
       })
     },
     methods: {
+      async onInvoiceGridCellClicked(event) {
+        if (event.colDef.field == "dueDate") {
+          const data = event.data
+          const changed = await this.$showPurchaseInvoice(data.id)
+          console.log('onInvoiceGridCellClicked', changed)
+          if (changed) {
+            await this.load(this.id || this.model.id)
+          }
+        }
+      },
       projectRenderer(params) {
         return params.data.project.name
       },
@@ -308,11 +385,11 @@
         if (addresses && addresses.length) {
           const model = this.model
           const companyAddress = addresses[0]
-          model.receiveAddress.postalCode = companyAddress.address.postalCode
-          model.receiveAddress.street = companyAddress.address.street
-          model.receiveAddress.detail = companyAddress.address.detail
+          model.receiveAddress = Object.assign({}, companyAddress.address)
+          /*
           model.deliveryMobilePhoneNumber = companyAddress.mobilePhoneNumber
           model.deliveryTelephoneNumber = companyAddress.telephoneNumber
+          */
         }
       },
 
@@ -369,20 +446,22 @@
       async load(id) {
         const model = await PurchaseOrderModel.get(id)
         const itemArray = new PurchaseOrderItemArray(model)
-        await itemArray.fetch()
+        const invoiceArray = new PurchaseInvoiceArray(model)
+        await Promise.all([
+          itemArray.fetch(),
+          invoiceArray.fetch()
+        ])
         this.model = model
         this.itemArray = itemArray
+        this.invoiceArray = invoiceArray
       },
 
       async closeOrReload() {
-        if (this.closable) {
-          const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-          if (close) {
-            this.$closeOverlay()
-            return
-          }
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
         }
-        await this.load(this.id || this.model.id)
       },
       async onSave() {
         let valid = ![
@@ -428,10 +507,11 @@
             await this.save()
             await this.model.determine()
             this.$alert.positive('확정 되었습니다')
-            await this.closeOrReload()
+            await this.load(this.id || this.model.id)
+            await this.onPrintDraft()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.determine)
+          this.$alert.warning(this.model.$errors.determine)
         }
       },
 
@@ -445,7 +525,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.send)
+          this.$alert.warning(this.model.$errors.send)
         }
       },
 
@@ -459,7 +539,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.cancel)
+          this.$alert.warning(this.model.$errors.cancel)
         }
       },
 
@@ -478,7 +558,15 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.reject)
+          this.$alert.warning(this.model.$errors.reject)
+        }
+      },
+
+      async onPrintDraft() {
+        const ok = await this.$alert.confirm('발주서를 출력 하시겠습니까?')
+        if (ok) {
+          await this.model.printDraft()
+          this.$alert.positive('출력 되었습니다')
         }
       },
 
@@ -496,6 +584,13 @@
           this.itemArray.push(item)
         })
 
+      },
+
+      async onCreatePurchaseInvoice() {
+        const purchaseInvoice = await PurchaseInvoiceModel.generate(this.model.id)
+        await this.$await(1000)
+        await this.$showPurchaseInvoice(purchaseInvoice.id)
+        await this.load(this.id || this.model.id)
       },
 
       async onRemoveItem() {
@@ -528,12 +623,18 @@
       },
       determinable() {
         return this.model.determinable
+      },
+      printable() {
+        return this.model.printable
+      },
+      receivable() {
+        return this.model.receivable
+      },
+      invoiceable() {
+        return this.model.receivable || this.model.status == 'RECEIVED'
       }
     },
     watch: {
-      'model.requesterId': async function (to) {
-        this.requesterModel = await UserModel.get(to, true)
-      },
       'model.chargerId': async function (to) {
         this.chargerModel = await UserModel.get(to, true)
       },

@@ -18,11 +18,14 @@ export default [{
   children: [{
     name: 'process-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/process/process-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/process', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/process/process-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/process', query: this.$route.query})
+            })
+          }
+        }),
     meta: meta,
     props: (route) => {
       return {
@@ -41,11 +44,14 @@ export default [{
     name: 'process-type-form-create',
     path: 'create',
     component: () => wrapModal(
-        import('src/pages/process/process-type-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/process-type', query: this.$route.query})
-      }
-    }),
+        import('src/pages/process/process-type-form.vue'), {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/process-type', query: this.$route.query})
+            })
+          }
+        }),
     meta: typeMeta,
     props: {
       action: 'create',
@@ -55,11 +61,14 @@ export default [{
     name: 'process-type-form-show',
     path: 'show/:id',
     component: () => wrapModal(
-        import('src/pages/process/process-type-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/process-type', query: this.$route.query})
-      }
-    }),
+        import('src/pages/process/process-type-form.vue'), {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/process-type', query: this.$route.query})
+            })
+          }
+        }),
     meta: typeMeta,
     props: (route) => {
       return {

@@ -27,11 +27,14 @@ export default [{
   children: [{
     name: 'user-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/user/user-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/user', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/user-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/user', query: this.$route.query})
+            })
+          }
+        }),
     meta: userMeta,
     props: {
       action: 'create',
@@ -40,11 +43,14 @@ export default [{
   }, {
     name: 'user-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/user/user-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/user', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/user-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/user', query: this.$route.query})
+            })
+          }
+        }),
     meta: userMeta,
     props: (route) => {
       return {
@@ -62,11 +68,14 @@ export default [{
   children: [{
     name: 'group-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/user/group-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/group', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/group-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/group', query: this.$route.query})
+            })
+          }
+        }),
     meta: groupMeta,
     props: {
       action: 'create',
@@ -75,11 +84,14 @@ export default [{
   }, {
     name: 'group-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/user/group-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/group', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/group-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/group', query: this.$route.query})
+            })
+          }
+        }),
     meta: groupMeta,
     props: (route) => {
       return {
@@ -97,11 +109,14 @@ export default [{
   children: [{
     name: 'department-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/user/department-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/department', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/department-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/department', query: this.$route.query})
+            })
+          }
+        }),
     meta: departmentMeta,
     props: {
       action: 'create',
@@ -110,11 +125,14 @@ export default [{
   }, {
     name: 'department-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/user/department-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/department', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/user/department-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/department', query: this.$route.query})
+            })
+          }
+        }),
     meta: departmentMeta,
     props: (route) => {
       return {

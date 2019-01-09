@@ -15,11 +15,14 @@ export default [{
     name: 'quotation-form-create',
     path: 'create',
     component: () => wrapModal(import('src/pages/quotation/quotation-form.vue'),
+        {},
         {
-      onModalHide () {
-        this.$router.push({path: '/quotation', query: this.$route.query})
-      }
-    }),
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/quotation', query: this.$route.query})
+            })
+          }
+        }),
     meta,
     props: {
       action: 'create',
@@ -29,11 +32,14 @@ export default [{
     name: 'quotation-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('src/pages/quotation/quotation-form.vue'),
+        {},
         {
-      onModalHide () {
-        this.$router.push({path: '/quotation', query: this.$route.query})
-      }
-    }),
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/quotation', query: this.$route.query})
+            })
+          }
+        }),
     meta,
     props: (route) => {
       return {

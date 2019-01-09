@@ -3,9 +3,9 @@ import ModalRouterView from './modal-router-view.vue'
 
 Vue.component('modal-router-view', ModalRouterView)
 
-export const wrapModal = async (loader, data = {}) => {
+export const wrapModal = async (loader, data = {}, defaultConfig = {}) => {
   const component = (await loader).default
-  const config = {
+  const config = _.defaults(defaultConfig, {
     extends: Vue.component('modal-router-view'),
     props: component.props,
     data () {
@@ -14,7 +14,7 @@ export const wrapModal = async (loader, data = {}) => {
         component: Vue.extend(component)
       })
     }
-  }
+  })
   if(component.beforeRouteEnter){
     config.beforeRouteEnter = component.beforeRouteEnter
   }

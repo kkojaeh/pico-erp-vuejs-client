@@ -19,11 +19,14 @@ export default [{
     name: 'item-category-form-create',
     path: 'create',
     component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
-        {
-      onModalHide () {
-        this.$router.push({path: '/item-category', query: this.$route.query})
-      }
-    }),
+        {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/item-category', query: this.$route.query})
+            })
+          }
+        }),
     meta: categoryMeta,
     props: {
       parentId: null,
@@ -34,11 +37,14 @@ export default [{
     name: 'item-category-form-create-by-parent',
     path: 'create/:parentId',
     component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
-        {
-      onModalHide () {
-        this.$router.push({path: '/item-category', query: this.$route.query})
-      }
-    }),
+        {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/item-category', query: this.$route.query})
+            })
+          }
+        }),
     meta: categoryMeta,
     props: (route) => {
       return {
@@ -51,11 +57,14 @@ export default [{
     name: 'item-category-form-show',
     path: 'show/:id',
     component: () => wrapModal(import('src/pages/item/item-category-form.vue'),
-        {
-      onModalHide () {
-        this.$router.push({path: '/item-category', query: this.$route.query})
-      }
-    }),
+        {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/item-category', query: this.$route.query})
+            })
+          }
+        }),
     meta: categoryMeta,
     props: (route) => {
       return {
@@ -73,9 +82,11 @@ export default [{
   children: [{
     name: 'item-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/item/item-form'), {
-      onModalHide () {
-        this.$router.push({path: '/item', query: this.$route.query})
+    component: () => wrapModal(import('src/pages/item/item-form'), {}, {
+      mounted() {
+        this.$on('hide', () => {
+          this.$router.push({path: '/item', query: this.$route.query})
+        })
       }
     }),
     meta: itemMeta,
@@ -86,9 +97,11 @@ export default [{
   }, {
     name: 'item-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/item/item-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/item', query: this.$route.query})
+    component: () => wrapModal(import('src/pages/item/item-form.vue'), {}, {
+      mounted() {
+        this.$on('hide', () => {
+          this.$router.push({path: '/item', query: this.$route.query})
+        })
       }
     }),
     meta: itemMeta,

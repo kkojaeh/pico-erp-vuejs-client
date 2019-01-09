@@ -16,9 +16,12 @@ export default [{
   children: [{
     name: 'facility-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/facility/facility-form.vue'), {
-      onModalHide() {
-        this.$router.push({path: '/facility', query: this.$route.query})
+    component: () => wrapModal(import('src/pages/facility/facility-form.vue'),
+        {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/facility', query: this.$route.query})
+            })
       }
     }),
     meta,
@@ -31,9 +34,12 @@ export default [{
   }, {
     name: 'facility-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/facility/facility-form.vue'), {
-      onModalHide() {
-        this.$router.push({path: '/facility', query: this.$route.query})
+    component: () => wrapModal(import('src/pages/facility/facility-form.vue'),
+        {}, {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/facility', query: this.$route.query})
+            })
       }
     }),
     meta,

@@ -272,9 +272,15 @@
         this.$redrawGrids()
       },
       async onGenerate() {
-        const purchaseRequestItemIds = this.selected.map(e => e.requestItemId)
-        const order = await PurchaseOrderModel.generate(purchaseRequestItemIds)
-        console.log(order)
+        const ok = await this.$alert.confirm('선택한 내역으로 발주를 생성 하시겠습니까?')
+        if (ok) {
+          const purchaseRequestItemIds = this.selected.map(e => e.requestItemId)
+          const order = await PurchaseOrderModel.generate(purchaseRequestItemIds)
+          this.$router.push({
+            path: `/purchase-order/order/show/${order.id}`
+          })
+          await this.$alert.positive('발주가 생성 되었습니다')
+        }
       }
     },
     computed: {

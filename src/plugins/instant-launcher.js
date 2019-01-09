@@ -6,6 +6,7 @@ import company from './instant-launcher/company'
 import item from './instant-launcher/item'
 import process from './instant-launcher/process'
 import project from './instant-launcher/project'
+import puchaseInvoice from './instant-launcher/puchase-invoice'
 
 // leave the export, even if you don't use it
 export default (context) => {
@@ -15,6 +16,7 @@ export default (context) => {
   item(context)
   process(context)
   project(context)
+  puchaseInvoice(context)
   context.Vue.prototype.$await = function (miliseconds) {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, miliseconds)

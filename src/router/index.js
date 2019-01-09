@@ -19,6 +19,7 @@ import facilityRoutes from './facility'
 import warehouseRoutes from './warehouse'
 import purchaseRequestRoutes from './purchase-request'
 import purchaseOrderRoutes from './purchase-order'
+import invoiceRoutes from './invoice'
 
 Vue.use(VueRouter)
 
@@ -69,7 +70,8 @@ const Router = new VueRouter({
         ...facilityRoutes,
         ...warehouseRoutes,
         ...purchaseRequestRoutes,
-        ...purchaseOrderRoutes
+        ...purchaseOrderRoutes,
+        ...invoiceRoutes
       ]
     },
     {

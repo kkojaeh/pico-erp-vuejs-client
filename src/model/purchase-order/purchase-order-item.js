@@ -58,6 +58,16 @@ export class PurchaseOrderItemModel extends Model {
         || this.item.baseUnitCost
   }
 
+  static async get(id, cacheable) {
+    if (!id) {
+      return new PurchaseOrderItemModel()
+    }
+    const response = await api.get(
+        `/purchase-order/items/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new PurchaseOrderItemModel(response.data)
+  }
+
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
     this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)

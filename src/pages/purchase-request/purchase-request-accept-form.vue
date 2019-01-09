@@ -239,6 +239,10 @@
       closable: {
         type: Boolean,
         default: false
+      },
+      closeConfirmed: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -335,14 +339,11 @@
       },
 
       async closeOrReload() {
-        if (this.closable) {
-          const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-          if (close) {
-            this.$closeOverlay()
-            return
-          }
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
         }
-        await this.load(this.id || this.model.id)
       },
 
       async onReject() {
@@ -360,7 +361,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.reject)
+          this.$alert.warning(this.model.$errors.reject)
         }
       },
 
@@ -374,7 +375,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.accept)
+          this.$alert.warning(this.model.$errors.accept)
         }
       }
 

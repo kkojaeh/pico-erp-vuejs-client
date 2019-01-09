@@ -120,6 +120,10 @@
       introStepStart: {
         type: Number,
         default: 0
+      },
+      sorts: {
+        type: Array,
+        default: () => []
       }
     },
     data () {
@@ -341,6 +345,10 @@
         this.grid.$on('sort-changed', this._onGridSortChanged.bind(this))
       }
       this.initialCondition = _.assign({}, this.filters)
+
+      if (!this.sortQueryString) {
+        this.sortQueryString = Sort.toQueryString(this.sorts)
+      }
       this._assignQuery(this.$route.query)
 
       // TODO: 현재 slot 으로 할당 되는 컴포넌트에 대하여 이벤트 리스닝이 함수형으로 밖에 안되어 이렇게 처리 내용이 가변적이게 되면 동작이 보장 안됨

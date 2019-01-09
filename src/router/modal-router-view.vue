@@ -10,6 +10,7 @@
     name: 'modal-router-view',
     methods: {
       _onModalHide () {
+        this.$emit('hide')
         if (this.onModalHide) {
           this.onModalHide()
         }

@@ -263,6 +263,10 @@
       closable: {
         type: Boolean,
         default: false
+      },
+      closeConfirmed: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -360,14 +364,11 @@
         this.itemArray = itemArray
       },
       async closeOrReload() {
-        if (this.closable) {
-          const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-          if (close) {
-            this.$closeOverlay()
-            return
-          }
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
         }
-        await this.load(this.id || this.model.id)
       },
       async onSave() {
         let valid = ![
@@ -416,7 +417,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.commit)
+          this.$alert.warning(this.model.$errors.commit)
         }
       },
 
@@ -430,7 +431,7 @@
             await this.closeOrReload()
           }
         } else {
-          this.$alert.warning(this.selected.$errors.cancel)
+          this.$alert.warning(this.model.$errors.cancel)
         }
       },
 

@@ -27,11 +27,14 @@ export default [{
   children: [{
     path: 'create',
     component: () => wrapModal(
-        import('src/pages/warehouse/transaction-request-form.vue'), {
-          onModalHide() {
-            this.$router.push({
-              path: '/warehouse-transaction-request',
-              query: this.$route.query
+        import('src/pages/warehouse/transaction-request-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({
+                path: '/warehouse-transaction-request',
+                query: this.$route.query
+              })
             })
           }
         }),
@@ -43,11 +46,14 @@ export default [{
   }, {
     path: 'show/:id',
     component: () => wrapModal(
-        import('src/pages/warehouse/transaction-request-form.vue'), {
-          onModalHide() {
-            this.$router.push({
-              path: '/warehouse-transaction-request',
-              query: this.$route.query
+        import('src/pages/warehouse/transaction-request-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({
+                path: '/warehouse-transaction-request',
+                query: this.$route.query
+              })
             })
           }
         }),

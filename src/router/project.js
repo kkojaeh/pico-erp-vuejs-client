@@ -13,11 +13,14 @@ export default [{
   children: [{
     name: 'project-form-create',
     path: 'create',
-    component: () => wrapModal(import('src/pages/project/project-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/project', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/project/project-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/project', query: this.$route.query})
+            })
+          }
+        }),
     meta,
     props: {
       action: 'create',
@@ -26,11 +29,14 @@ export default [{
   }, {
     name: 'project-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/project/project-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/project', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/project/project-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/project', query: this.$route.query})
+            })
+          }
+        }),
     meta,
     props: (route) => {
       return {

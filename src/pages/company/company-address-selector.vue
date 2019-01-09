@@ -23,21 +23,18 @@
                :row-data="array">
         <ag-grid-column :checkbox-selection="true" :width="60"/>
         <ag-grid-column field="name" header-name="이름" :width="150"/>
-
-        <ag-grid-column field="mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
-                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
-
         <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="150"
                         cell-renderer-framework="ag-grid-phone-number-renderer"/>
-        <ag-grid-column field="" header-name="" :width="40" suppress-sorting
-                        cell-renderer-framework="ag-grid-icon-renderer"/>
+        <ag-grid-column field="faxNumber" header-name="FAX 번호" :width="150"
+                        cell-renderer-framework="ag-grid-phone-number-renderer"/>
         <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
                         :cell-style="{textAlign: 'center'}"/>
         <ag-grid-column field="address.street" header-name="주소" :width="220"/>
         <ag-grid-column field="address.detail" header-name="상세주소" :width="180"/>
+        <ag-grid-column field="represented" header-name="대표여부" :width="90" suppress-sorting
+                        cell-renderer-framework="ag-grid-checkbox-renderer"/>
         <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
                         cell-renderer-framework="ag-grid-checkbox-renderer"/>
-
       </ag-grid>
 
       <!-- main -->

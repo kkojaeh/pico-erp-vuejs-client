@@ -18,10 +18,12 @@ export default [{
   children: [{
     name: 'bom-form',
     path: ':id',
-    component: () => wrapModal(import('src/pages/bom/bom-form.vue'), {
-      onModalHide () {
-        const itemId = this.$route.params.itemId
-        this.$router.push(`/bom/${itemId}`)
+    component: () => wrapModal(import('src/pages/bom/bom-form.vue'), {}, {
+      mounted() {
+        this.$on('hide', () => {
+          const itemId = this.$route.params.itemId
+          this.$router.push(`/bom/${itemId}`)
+        })
       }
     }),
     meta,

@@ -29,10 +29,13 @@ export default [{
     name: 'purchase-request-form-create',
     path: 'create',
     component: () => wrapModal(
-        import('src/pages/purchase-request/purchase-request-form.vue'), {
-          onModalHide() {
-            this.$router.push(
-                {path: '/purchase-request/request', query: this.$route.query})
+        import('src/pages/purchase-request/purchase-request-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/purchase-request/request', query: this.$route.query})
+            })
           }
         }),
     meta: requestForm,
@@ -44,10 +47,13 @@ export default [{
     name: 'purchase-request-form-show',
     path: 'show/:id',
     component: () => wrapModal(
-        import('src/pages/purchase-request/purchase-request-form.vue'), {
-          onModalHide() {
-            this.$router.push(
-                {path: '/purchase-request/request', query: this.$route.query})
+        import('src/pages/purchase-request/purchase-request-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/purchase-request/request', query: this.$route.query})
+            })
           }
         }),
     meta: requestForm,
@@ -68,13 +74,17 @@ export default [{
     name: 'purchase-request-accept-form',
     path: ':id',
     component: () => wrapModal(
-        import('src/pages/purchase-request/purchase-request-accept-form.vue'), {
-          onModalHide() {
-            this.$router.push(
-                {
-                  path: '/purchase-request/await-accept',
-                  query: this.$route.query
-                })
+        import('src/pages/purchase-request/purchase-request-accept-form.vue'),
+        {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {
+                    path: '/purchase-request/await-accept',
+                    query: this.$route.query
+                  })
+            })
           }
         }),
     meta: acceptForm,

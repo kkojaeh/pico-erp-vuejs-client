@@ -29,10 +29,13 @@ export default [{
     name: 'purchase-order-form-create',
     path: 'create',
     component: () => wrapModal(
-        import('src/pages/purchase-order/purchase-order-form.vue'), {
-          onModalHide() {
-            this.$router.push(
-                {path: '/purchase-order/order', query: this.$route.query})
+        import('src/pages/purchase-order/purchase-order-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/purchase-order/order', query: this.$route.query})
+            })
           }
         }),
     meta: orderForm,
@@ -44,10 +47,13 @@ export default [{
     name: 'purchase-order-form-show',
     path: 'show/:id',
     component: () => wrapModal(
-        import('src/pages/purchase-order/purchase-order-form.vue'), {
-          onModalHide() {
-            this.$router.push(
-                {path: '/purchase-order/order', query: this.$route.query})
+        import('src/pages/purchase-order/purchase-order-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push(
+                  {path: '/purchase-order/order', query: this.$route.query})
+            })
           }
         }),
     meta: orderForm,

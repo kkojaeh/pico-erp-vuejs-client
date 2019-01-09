@@ -1,15 +1,16 @@
 <template>
   <div class="col address-input-container">
     <q-input float-label="우편번호"
-             v-model="model.postalCode" readonly
+             v-model="model.postalCode" readonly :hide-underline="hideUnderline"
              :after="[
               { icon:'search', handler:find, condition: visibleSearch },
               { icon:'clear', handler:clear, condition: visibleClear }
              ]">
     </q-input>
 
-    <q-input float-label="도로주소" v-model="model.street" readonly></q-input>
-    <q-input float-label="상세주소" v-model="model.detail"></q-input>
+    <q-input float-label="도로주소" v-model="model.street" readonly
+             :hide-underline="hideUnderline"></q-input>
+    <q-input float-label="상세주소" v-model="model.detail" :hide-underline="hideUnderline"></q-input>
   </div>
 </template>
 
