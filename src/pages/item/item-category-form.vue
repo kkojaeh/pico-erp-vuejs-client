@@ -100,8 +100,11 @@
           this.model.parentId = this.parentId
         }
       },
+      async load(id) {
+        this.model = await ItemCategoryModel.get(id)
+      },
       async show() {
-        this.model = await ItemCategoryModel.get(this.id)
+        await this.load(this.id)
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -110,12 +113,7 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-              }
-            }
+            await this.closeOrReload()
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -123,6 +121,13 @@
       },
       async save() {
         await this.model.save()
+      },
+      async closeOrReload() {
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
+        }
       }
     },
     computed: {

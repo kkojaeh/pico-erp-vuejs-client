@@ -11,9 +11,6 @@
     methods: {
       _onModalHide () {
         this.$emit('hide')
-        if (this.onModalHide) {
-          this.onModalHide()
-        }
       }
     },
     mounted () {

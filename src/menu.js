@@ -63,7 +63,16 @@ const menu = [
         })[language],
         url: '/warehouse-location',
         authorize: 'hasAnyRole(\'WAREHOUSE_MANAGER\')'
+      },
+      {
+        icon: 'fas fa-bell',
+        label: languageAliases({
+          ko: '알림 관리'
+        })[language],
+        url: '/notify-type',
+        authorize: 'hasAnyRole(\'NOTIFY_MANAGER\')'
       }
+
     ]
   },
   {

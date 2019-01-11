@@ -19,8 +19,8 @@ export default [{
             this.$on('hide', () => {
               this.$router.push({path: '/company', query: this.$route.query})
             })
-      }
-    }),
+          }
+        }),
     meta,
     props: {
       action: 'create',
@@ -29,11 +29,14 @@ export default [{
   }, {
     name: 'company-form-show',
     path: 'show/:id',
-    component: () => wrapModal(import('src/pages/company/company-form.vue'), {
-      onModalHide () {
-        this.$router.push({path: '/company', query: this.$route.query})
-      }
-    }),
+    component: () => wrapModal(import('src/pages/company/company-form.vue'), {},
+        {
+          mounted() {
+            this.$on('hide', () => {
+              this.$router.push({path: '/company', query: this.$route.query})
+            })
+          }
+        }),
     meta,
     props: (route) => {
       return {
