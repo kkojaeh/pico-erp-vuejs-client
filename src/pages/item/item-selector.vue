@@ -26,7 +26,10 @@
         <ag-grid-column field="name" header-name="이름" :width="300"/>
         <ag-grid-column field="customerName" header-name="고객사" :width="150"/>
         <ag-grid-column field="categoryPath" header-name="분류" :width="250"/>
-        <ag-grid-column field="unit" header-name="단위" :width="90" align="center"/>
+        <ag-grid-column field="unit" header-name="단위" :width="80"
+                        :cell-style="{textAlign: 'center'}"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="type" header-name="유형" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:typeLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -148,6 +151,7 @@
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
+  import {UnitLabelArray} from 'src/model/shared'
   import {CompanyLabelArray} from 'src/model/company'
   import * as _ from 'lodash'
 
@@ -170,6 +174,7 @@
         statusLabelArray: new ItemStatusArray(),
         typeLabelArray: new ItemTypeArray(),
         companyLabelArray: new CompanyLabelArray(),
+        unitLabelArray: new UnitLabelArray(),
         filters: {
           name: null,
           code: null,
@@ -197,6 +202,7 @@
     async mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
       await Promise.all([
+        this.unitLabelArray.fetch(),
         this.statusLabelArray.fetch(),
         this.typeLabelArray.fetch(),
         this.categoryLabelArray.fetch(),
