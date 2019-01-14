@@ -75,7 +75,10 @@
         <ag-grid-column field="name" header-name="이름" :width="300"/>
         <ag-grid-column field="customer.name" header-name="고객사" :width="150"/>
         <ag-grid-column field="category.path" header-name="분류" :width="250"/>
-        <ag-grid-column field="unit" header-name="단위" :width="90" align="center"/>
+        <ag-grid-column field="unit" header-name="단위" :width="80"
+                        :cell-style="{textAlign: 'center'}"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="type" header-name="유형" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:typeLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -181,6 +184,7 @@
     ItemStatusArray,
     ItemTypeArray
   } from 'src/model/item'
+  import {UnitLabelArray} from 'src/model/shared'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
@@ -195,6 +199,7 @@
         statusLabelArray: new ItemStatusArray(),
         typeLabelArray: new ItemTypeArray(),
         companyLabelArray: new CompanyLabelArray(),
+        unitLabelArray: new UnitLabelArray(),
         filters: {
           name: null,
           code: null,
@@ -219,12 +224,15 @@
         }
       }
     },
-    mounted () {
+    async mounted() {
       this.dataAdjuster = new DataAdjuster(this.filters, {})
-      this.statusLabelArray.fetch()
-      this.typeLabelArray.fetch()
-      this.categoryLabelArray.fetch()
-      this.companyLabelArray.fetch()
+      await Promise.all([
+        this.unitLabelArray.fetch(),
+        this.statusLabelArray.fetch(),
+        this.typeLabelArray.fetch(),
+        this.categoryLabelArray.fetch(),
+        this.companyLabelArray.fetch()
+      ])
     },
     methods: {
       retrieve () {
