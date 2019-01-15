@@ -47,6 +47,15 @@ export class NotifyTypeModel extends Model {
     }
   }
 
+  async testCompileMarkdown(key) {
+    const response = await api.post(
+        `/notify/types/${this.id}/test-compile/markdown`, {
+          key: key,
+          markdownTemplate: this.markdownTemplate
+        })
+    return response.data
+  }
+
   async validate() {
     let constraints = {
       name: {

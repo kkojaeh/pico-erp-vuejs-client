@@ -54,6 +54,17 @@
       <q-card-title>
         템플릿
         <span slot="subtitle">mustache 문법을 사용합니다</span>
+        <span slot="right">
+          <q-input v-model="testKey" float-label="테스트 키">
+            <q-btn slot="before" disabled loading v-if="testCompileSynchronized" flat>
+              <q-spinner slot="loading"/>
+            </q-btn>
+            <q-btn slot="after" icon="sync" v-if="!testCompileSynchronized"
+                   @click="testCompileSynchronized = !testCompileSynchronized" flat/>
+            <q-btn slot="after" icon="sync_disabled" v-if="testCompileSynchronized"
+                   @click="testCompileSynchronized = !testCompileSynchronized" flat/>
+          </q-input>
+        </span>
       </q-card-title>
 
       <q-card-separator/>
@@ -66,6 +77,11 @@
                  :error-label="model.$errors.markdownTemplate">
           <q-input type="textarea" v-model="model.markdownTemplate" float-label="markdown 템플릿"
                    rows="10"/>
+        </q-field>
+        <q-field icon="description" helper="markdown 결과"
+                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6">
+          <q-input type="textarea" v-model="markdownTemplateResult" float-label="markdown 템플릿 결과"
+                   rows="10" readonly/>
         </q-field>
       </q-card-main>
 
@@ -87,6 +103,7 @@
 </template>
 <script>
   import {NotifySenderArray, NotifySubjectTypeArray, NotifyTypeModel} from 'src/model/notify'
+  import * as _ from 'lodash'
 
   export default {
     props: {
@@ -112,7 +129,10 @@
       return {
         model: new NotifyTypeModel(),
         senderArray: [],
-        subjectTypeArray: []
+        subjectTypeArray: [],
+        testCompileSynchronized: false,
+        testKey: null,
+        markdownTemplateResult: null
       }
     },
     async mounted() {
@@ -163,11 +183,29 @@
         } else {
           await this.load(this.id || this.model.id)
         }
+      },
+
+      async testCompileMarkdownTemplate() {
+        if (!this.testCompileSynchronized) {
+          return
+        }
+        if (!this.testKey) {
+          return
+        }
+        this.markdownTemplateResult = await this.model.testCompileMarkdown(this.testKey)
       }
     },
     computed: {
       phantom() {
         return this.model.phantom
+      }
+    },
+    watch: {
+      'model.markdownTemplate': _.debounce(function (to) {
+        this.testCompileMarkdownTemplate()
+      }, 1000),
+      testCompileSynchronized: function (to) {
+        this.testCompileMarkdownTemplate()
       }
     },
     components: {}
