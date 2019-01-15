@@ -34,9 +34,6 @@
                         :cell-renderer-params="{path:'/purchase-request/await-accept/${id}', query:$route.query}"/>
         <ag-grid-column field="name" header-name="이름" :width="150"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="status" header-name="상태" :width="100"
-                        cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
         <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
