@@ -140,6 +140,13 @@
                    :error-label="edit.site.$errors.name">
             <q-input v-model="edit.site.name" float-label="이름"/>
           </q-field>
+
+          <q-field icon="fas fa-map-marker" helper="주소를 입력하세요"
+                   class="col-12"
+                   :error="!!edit.site.$errors.address.postalCode || !!edit.site.$errors.address.street || !!edit.site.$errors.address.detail"
+                   :error-label="edit.site.$errors.address.postalCode || edit.site.$errors.address.street || edit.site.$errors.address.detail">
+            <c-address-input v-model="edit.site.address"/>
+          </q-field>
         </q-card-main>
 
         <q-card-separator/>
@@ -323,8 +330,16 @@
     WarehouseZoneArray,
     WarehouseZoneModel
   } from 'src/model/warehouse'
-  import {Model} from 'src/model/model'
   import LocationCellRenderer from './location-cell-renderer.vue'
+
+  const models = {
+    site: WarehouseSiteModel,
+    zone: WarehouseZoneModel,
+    rack: WarehouseRackModel,
+    bay: WarehouseBayModel,
+    level: WarehouseLevelModel,
+    station: WarehouseStationModel
+  }
 
   export default {
     props: {},
@@ -347,12 +362,12 @@
           station: null
         },
         edit: {
-          site: new Model(),
-          zone: new Model(),
-          rack: new Model(),
-          bay: new Model(),
-          level: new Model(),
-          station: new Model()
+          site: new WarehouseSiteModel(),
+          zone: new WarehouseZoneModel(),
+          rack: new WarehouseRackModel(),
+          bay: new WarehouseBayModel(),
+          level: new WarehouseLevelModel(),
+          station: new WarehouseStationModel()
         },
         siteArray: new WarehouseSiteArray(),
         zoneArray: new WarehouseZoneArray(),
@@ -440,7 +455,7 @@
             this.selected[type] = null
             this.selected[type] = selected
             this.editing[type] = false
-            this.edit[type] = new Model()
+            this.edit[type] = new models[type]()
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -464,7 +479,7 @@
           this.selected[type] = null
           this.selected[type] = selected
           this.editing[type] = false
-          this.edit[type] = new Model()
+          this.edit[type] = new models[type]()
         }
       },
       async show(id) {

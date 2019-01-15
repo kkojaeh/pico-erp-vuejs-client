@@ -12,7 +12,14 @@ export class WarehouseSiteModel extends Model {
 
   get defaults() {
     return {
-      type: 'site'
+      type: 'site',
+      address: {}
+    }
+  }
+
+  get defaultErrors() {
+    return {
+      address: {}
     }
   }
 
@@ -57,6 +64,18 @@ export class WarehouseSiteModel extends Model {
       code: {
         presence: true,
         length: {minimum: 1, maximum: 2}
+      },
+      'address.postalCode': {
+        presence: true,
+        length: {minimum: 5, maximum: 6}
+      },
+      'address.street': {
+        presence: true,
+        length: {minimum: 10, maximum: 50}
+      },
+      'address.detail': {
+        presence: true,
+        length: {minimum: 3, maximum: 50}
       }
     }
     return await this.$validate(constraints)
