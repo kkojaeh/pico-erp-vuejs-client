@@ -570,7 +570,11 @@
       },
 
       async onAddItem() {
-        const itemModels = await this.$selectItem({})
+        const itemModels = await this.$selectItem({
+          defaultFilters: {
+            purchasable: true
+          }
+        })
         if (!itemModels) {
           return
         }

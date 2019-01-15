@@ -207,8 +207,8 @@
         this.typeLabelArray.fetch(),
         this.categoryLabelArray.fetch(),
         this.companyLabelArray.fetch()
-      ]),
-          _.assign(this.filters, this.defaultFilters)
+      ])
+      _.assign(this.filters, this.defaultFilters)
     },
     methods: {
       retrieve () {

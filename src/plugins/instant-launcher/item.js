@@ -34,7 +34,8 @@ function select(options) {
         }, [
           h(ItemSelector, {
             props: {
-              multiple: !!options.multiple
+              multiple: !!options.multiple,
+              defaultFilters: options.defaultFilters || {}
             },
             on: {
               selected: (itemModels) => finish(itemModels)
