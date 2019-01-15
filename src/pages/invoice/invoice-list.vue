@@ -217,10 +217,12 @@
         this.companyLabelArray.fetch(),
         this.userLabelArray.fetch()
       ])
+      /*
       if (!this.filters.receiverId) {
         this.filters.receiverId = this.owner.id
         this.filters.receiverName = this.owner.name
       }
+      */
       if (!this.filters.startDueDate) {
         this.filters.startDueDate = moment().subtract(1, 'weeks').toDate()
       }

@@ -367,7 +367,6 @@
         if (event.colDef.field == "dueDate") {
           const data = event.data
           const changed = await this.$showPurchaseInvoice(data.id)
-          console.log('onInvoiceGridCellClicked', changed)
           if (changed) {
             await this.load(this.id || this.model.id)
           }
