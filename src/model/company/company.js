@@ -114,6 +114,12 @@ export class CompanyModel extends Model {
         presence: true,
         length: {minimum: 2, maximum: 50}
       },
+      itemDescription: {
+        length: {maximum: 50}
+      },
+      conditionDescription: {
+        length: {maximum: 50}
+      },
       registrationNumber: {
         length: {minimum: 9, maximum: 20},
         exists: async (value) => {

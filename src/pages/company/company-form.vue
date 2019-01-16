@@ -44,6 +44,20 @@
           <q-input v-model="model.representative" float-label="대표자"/>
         </q-field>
 
+        <q-field icon="account_circle" helper="업태를 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.conditionDescription"
+                 :error-label="model.$errors.conditionDescription">
+          <q-input v-model="model.conditionDescription" float-label="업태"/>
+        </q-field>
+
+        <q-field icon="account_circle" helper="종목을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.itemDescription"
+                 :error-label="model.$errors.itemDescription">
+          <q-input v-model="model.itemDescription" float-label="종목"/>
+        </q-field>
+
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-toggle label="활성화 여부" v-model="model.enabled"/>
