@@ -17,7 +17,8 @@ let loadFunction = (config) => {
   // data 가 존재하지 않으면 Content-Type 이 삭제 되는 문제 수정
   config.data = config.data || {}
   config.url = _.template(config.url)(config.data)
-  config.headers['Cache-Control'] = 'max-age=0'
+  // response header cache-control 이 통하지 않아 제거
+  //config.headers['Cache-Control'] = 'max-age=0'
 
   config.headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
 
