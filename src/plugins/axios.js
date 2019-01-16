@@ -11,6 +11,8 @@ const apiContentType = document.querySelector(
   'meta[name=api-content-type]').content
 
 let apiRequests = 0
+let analyticsHandlerId
+const analytics = {}
 
 let loadFunction = (config) => {
 
@@ -32,11 +34,21 @@ let loadFunction = (config) => {
   apiRequests++
   const url = config.url
   const qi = url.lastIndexOf('?')
+  const method = config.method
   if (Vue.analytics) {
-    Vue.analytics.trackEvent('api-' + config.method,
-      qi > -1 ? url.substr(0, qi) : url,
-      qi > -1 ? url.substr(qi + 1) : null
-    )
+    const category = 'api-' + method
+    const action = qi > -1 ? url.substr(0, qi) : url
+    const label = qi > -1 ? url.substr(qi + 1) : null
+    analytics[`${category}/${action}/${label}`] = [category, action, label]
+    if (!isNaN(analyticsHandlerId)) {
+      clearTimeout(analyticsHandlerId)
+    }
+    analyticsHandlerId = setTimeout(function () {
+      _.forIn(analytics, function (value, key) {
+        Vue.analytics.trackEvent.apply(Vue.analytics, value)
+        delete analytics[key]
+      })
+    }, 1000)
   }
   return config
 }
