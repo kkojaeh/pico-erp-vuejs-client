@@ -149,7 +149,7 @@
         return this.model.phantom
       },
       updatable() {
-        return $authorized.itemManager
+        return this.$authorized.itemManager
       }
     },
     components: {

@@ -7,7 +7,7 @@ let itemMeta = {
 
 let categoryMeta = {
   title: '품목 분류 관리',
-  authorize: 'hasRole(\'ITEM_MANAGER\', \'ITEM_ACCESSOR\')'
+  authorize: 'hasAnyRole(\'ITEM_MANAGER\', \'ITEM_ACCESSOR\')'
 }
 
 export default [{
