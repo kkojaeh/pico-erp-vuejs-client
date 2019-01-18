@@ -112,6 +112,7 @@
 
         <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-6 col-xl-4"
+                 :readonly="!updatable" :hide-underline="!updatable"
                  :error="!!model.$errors.receiveAddress.postalCode || !!model.$errors.receiveAddress.street || !!model.$errors.receiveAddress.detail"
                  :error-label="model.$errors.receiveAddress.postalCode || model.$errors.receiveAddress.street || model.$errors.receiveAddress.detail">
           <c-address-input v-model="model.receiveAddress"/>
