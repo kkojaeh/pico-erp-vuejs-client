@@ -33,7 +33,7 @@
       <q-field :data-step="introStepStart + 4" data-intro="한번에 표시되는 행 수를 의미 합니다">
         <q-select v-model="rowsPerPage" :options="pageSizeOptions"></q-select>
       </q-field>
-      <q-pagination v-if="rowsPerPage > 0" v-model="page" :max="max"
+      <q-pagination v-if="rowsPerPage > 0" v-model="page" :max="max" :max-pages="10" boundary-links
                     @input="setPage" :data-step="introStepStart + 5"
                     data-intro="전체 목록에 대한 페이지의 링크입니다"></q-pagination>
       <div :data-step="introStepStart + 6" data-intro="(시작행번호) - (마지막행번호) / (전체 행수) 를 의미합니다">
@@ -126,10 +126,10 @@
         default: () => []
       }
     },
-    data () {
+    data() {
       let pageSizeOptions = []
       for (let pageSize = this.minPageSize; pageSize <= this.maxPageSize;
-        pageSize += this.pageSizeGap) {
+          pageSize += this.pageSizeGap) {
         pageSizeOptions.push({
           label: pageSize + '',
           value: pageSize
@@ -148,39 +148,39 @@
       }
     },
     computed: {
-      start () {
+      start() {
         return (this.page - 1) * this.rowsPerPage + 1
       },
-      end () {
+      end() {
         if (this.page === this.max || this.rowsPerPage === 0) {
           return this.entries
         }
         return this.page * this.rowsPerPage
       },
-      max () {
+      max() {
         return Math.max(1, Math.ceil(this.entries / this.rowsPerPage))
       }
     },
     methods: {
-      _toQs (object) {
+      _toQs(object) {
         console.log('list-view qs', JSON.stringify(object))
         return lzutf8.compress(JSON.stringify(object), {
           outputEncoding: 'Base64'
         })
       },
-      _fromQs (value) {
+      _fromQs(value) {
         return JSON.parse(lzutf8.decompress(value, {
           inputEncoding: 'Base64'
         }))
       },
-      _onSearch () {
+      _onSearch() {
         if (this.filtersVisible) {
           this.retrieve(true)
         } else {
           this.filtersVisible = true
         }
       },
-      setPage (value) {
+      setPage(value) {
         this.page = value
         this.array.page = value
       },
@@ -198,7 +198,7 @@
           }
         }
       },
-      _assignQuery (query) {
+      _assignQuery(query) {
         if (this.preventQueryString) {
           return
         }
@@ -236,7 +236,7 @@
         }
       },
 
-      async _fetch () {
+      async _fetch() {
         const array = this.array
         if (this.sortQueryString) {
           array.sorters = Sort.parseQueryString(this.sortQueryString)
@@ -257,22 +257,22 @@
         return this.array
       },
 
-      _clear () {
+      _clear() {
         this.array.splice(0, this.array.length)
       },
 
-      _onGridSortChanged (e) {
+      _onGridSortChanged(e) {
         this.sortQueryString = Sort.toQueryString(
-          e.api.getSortModel().map(
-            (sm) => Sort.createSort(e.api.getColumnDef(sm.colId).field, sm.sort))
+            e.api.getSortModel().map(
+                (sm) => Sort.createSort(e.api.getColumnDef(sm.colId).field, sm.sort))
         )
       },
 
-      _onGridComponentStateChanged (e) {
+      _onGridComponentStateChanged(e) {
         this._applyGridSort()
       },
 
-      _applyGridSort () {
+      _applyGridSort() {
         if (!this.grid.api) {
           return
         }
@@ -291,7 +291,7 @@
         }
       },
 
-      _applyQueryString () {
+      _applyQueryString() {
         let query = _.assign({}, this.$route.query)
         query[this.sortName] = this.sortQueryString
         query[this.filtersName] = this.filtersQueryString
@@ -307,40 +307,40 @@
         }
       },
 
-      _onFilterChipRemove () {
+      _onFilterChipRemove() {
         this.retrieve()
       },
 
     },
     intro: {
-      start () {
+      start() {
         this.filtersVisible = true
       },
-      exit () {
+      exit() {
         this.filtersVisible = false
       }
     },
     watch: {
-      '$route' (to, from) {
+      '$route'(to, from) {
         this._assignQuery(to.query)
       },
-      'sortQueryString' (to, from) {
+      'sortQueryString'(to, from) {
         this._applyQueryString()
       },
-      'filtersQueryString' (to, from) {
+      'filtersQueryString'(to, from) {
         this._applyQueryString()
       },
-      'page' (to, from) {
+      'page'(to, from) {
         this._applyQueryString()
       }
     },
-    created () {
+    created() {
       this._applyQueryString = _.debounce(this._applyQueryString, 500)
     },
-    mounted () {
+    mounted() {
       this.grid = this.$slots.default.reduce((acc, cur) => acc.tag ? acc : cur).componentInstance
       this.grid.$on('component-state-changed',
-        _.debounce(this._onGridComponentStateChanged.bind(this), 500))
+          _.debounce(this._onGridComponentStateChanged.bind(this), 500))
       if (this.grid.gridOptions.enableServerSideSorting) {
         this.grid.$on('sort-changed', this._onGridSortChanged.bind(this))
       }
@@ -357,9 +357,9 @@
         chip.componentInstance.$on('remove', this._onFilterChipRemove)
       })
     },
-    updated () {
+    updated() {
     },
-    destroyed () {
+    destroyed() {
     }
   }
 </script>

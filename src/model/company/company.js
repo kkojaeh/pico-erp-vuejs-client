@@ -115,10 +115,10 @@ export class CompanyModel extends Model {
         length: {minimum: 2, maximum: 50}
       },
       itemDescription: {
-        length: {maximum: 50}
+        length: {maximum: 200}
       },
       conditionDescription: {
-        length: {maximum: 50}
+        length: {maximum: 200}
       },
       registrationNumber: {
         length: {minimum: 9, maximum: 20},
