@@ -18,7 +18,7 @@
     <q-layout-drawer v-model="drawerOpened">
       <q-card color="primary" flat v-if="user" class="auth-card">
         <q-card-title>
-          {{ user.displayName }}
+          {{ user.name }}
           <span slot="subtitle">{{ user.email }}</span>
         </q-card-title>
         <q-card-separator/>
