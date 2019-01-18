@@ -24,7 +24,8 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름"/>
+          <q-input v-model="model.name" float-label="이름" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
       </q-card-main>
@@ -46,14 +47,14 @@
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="$authorized.userManager"/>
+                          :editable="updatable"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
           <ag-grid-column field="roleName" header-name="코드" :width="200"/>
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
       </q-tab-pane>
       <q-tab-pane name="tab-2" class="column">
-        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="col-auto">
+        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="col-auto" v-if="updatable">
           <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUserId"
                                  :options="userLabelArray"
                                  label-field="label" value-field="value"
@@ -74,7 +75,7 @@
           <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
                           :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"
-                          :hide="!$authorized.userManager"/>
+                          :hide="!updatable"/>
           <ag-grid-column field="userId" header-name="아이디" :width="200"/>
           <ag-grid-column field="userName" header-name="이름" :width="250"/>
         </ag-grid>
@@ -95,7 +96,7 @@
                v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
-               v-if="$authorized.userManager"></q-btn>
+               v-if="updatable"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -196,6 +197,9 @@
     computed: {
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return this.$authorized.userManager
       }
     },
     watch: {

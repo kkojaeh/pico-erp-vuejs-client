@@ -23,7 +23,9 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"
+                   :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="account_box" helper="부서의 관리자를 선택하세요"
@@ -33,6 +35,8 @@
           <c-autocomplete-select float-label="관리자" v-model="model.managerId"
                                  :label="managerModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
+                                 :readonly="!updatable"
+                                 :hide-underline="!updatable"
                                  @search="onManagerSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
@@ -58,7 +62,7 @@
                v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
-               v-if="$authorized.userManager"></q-btn>
+               v-if="updatable"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -135,6 +139,9 @@
     computed: {
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return this.$authorized.userManager
       }
     },
     watch: {
@@ -142,7 +149,6 @@
         this.managerModel = await UserModel.get(to, true)
       }
     },
-    components: {
-    }
+    components: {}
   }
 </script>
