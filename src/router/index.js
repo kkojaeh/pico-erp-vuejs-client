@@ -121,7 +121,11 @@ Router.beforeEach(async (to, from, next) => {
         })
         if (from) {
           // 전 페이지로
-          Router.push(from)
+          try {
+            Router.push(from)
+          } catch (e) {
+            Router.push('/')
+          }
         } else {
           // 로그인 페이지로
           Router.push('/sign-in')
