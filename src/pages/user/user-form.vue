@@ -24,21 +24,24 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름"/>
+          <q-input v-model="model.name" float-label="이름" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="email" helper="사용하는 이메일을 입력하세요(로그인에 사용됩니다)"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.email"
                  :error-label="model.$errors.email">
-          <q-input v-model="model.email" float-label="이메일" type="email"/>
+          <q-input v-model="model.email" float-label="이메일" type="email" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="account_circle" helper="직위 또는 직급을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.position"
                  :error-label="model.$errors.position">
-          <q-input v-model="model.position" float-label="직위/직급"/>
+          <q-input v-model="model.position" float-label="직위/직급" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="fas fa-sitemap" helper="사용자의 부서를 선택하세요"
@@ -48,6 +51,8 @@
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
                                  :label="departmentModel.name" :options="departmentLabelArray"
                                  label-field="label" value-field="value"
+                                 :readonly="!updatable"
+                                 :hide-underline="!updatable"
                                  @search="_onDepartmentSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
@@ -60,12 +65,14 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.mobilePhoneNumber"
                  :error-label="model.$errors.mobilePhoneNumber">
-          <c-phone-number-input v-model="model.mobilePhoneNumber" clearable float-label="핸드폰 번호"/>
+          <c-phone-number-input v-model="model.mobilePhoneNumber" clearable float-label="핸드폰 번호"
+                                :readonly="!updatable"
+                                :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 로그인이 불가합니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-toggle label="활성화 여부" v-model="model.enabled"/>
+          <q-toggle label="활성화 여부" v-model="model.enabled" :readonly="!updatable"/>
         </q-field>
 
       </q-card-main>
@@ -97,7 +104,7 @@
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="$authorized.userManager"/>
+                          :editable="updatable"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
           <ag-grid-column field="roleName" header-name="이름" :width="200"/>
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
@@ -121,7 +128,7 @@
                v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
-               v-if="$authorized.userManager"></q-btn>
+               v-if="updatable"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -207,6 +214,9 @@
     computed: {
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return this.$authorized.userManager
       }
     },
     watch: {
