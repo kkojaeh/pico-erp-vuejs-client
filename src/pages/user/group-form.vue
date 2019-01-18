@@ -46,7 +46,7 @@
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="true"/>
+                          :editable="$authorized.userManager"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
           <ag-grid-column field="roleName" header-name="코드" :width="200"/>
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
@@ -73,7 +73,8 @@
 
           <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
                           cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"/>
+                          :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"
+                          :hide="!$authorized.userManager"/>
           <ag-grid-column field="userId" header-name="아이디" :width="200"/>
           <ag-grid-column field="userName" header-name="이름" :width="250"/>
         </ag-grid>
@@ -91,9 +92,10 @@
         -->
         <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/group/${model.id}`)"
-               v-show="!phantom" label="이력">
+               v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
-        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"
+               v-if="$authorized.userManager"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -112,6 +114,9 @@
   } from 'src/model/user'
 
   export default {
+    authorized: {
+      'userManager': 'hasRole(\'USER_MANAGER\')'
+    },
     props: {
       action: {
         type: String

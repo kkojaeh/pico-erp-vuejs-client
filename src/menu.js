@@ -14,7 +14,7 @@ const menu = [
           ko: '사용자 관리'
         })[language],
         url: '/user',
-        authorize: 'hasAnyRole(\'USER_MANAGER\')'
+        authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
       },
       {
         icon: 'fas fa-users',
@@ -22,7 +22,7 @@ const menu = [
           ko: '그룹 관리'
         })[language],
         url: '/group',
-        authorize: 'hasAnyRole(\'USER_MANAGER\')'
+        authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
       },
       {
         icon: 'fas fa-sitemap',
@@ -30,7 +30,7 @@ const menu = [
           ko: '부서 관리'
         })[language],
         url: '/department',
-        authorize: 'hasAnyRole(\'USER_MANAGER\')'
+        authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
       },
       {
         icon: 'fas fa-building',
@@ -38,7 +38,7 @@ const menu = [
           ko: '회사 관리'
         })[language],
         url: '/company',
-        authorize: 'hasAnyRole(\'COMPANY_MANAGER\')'
+        authorize: 'hasAnyRole(\'COMPANY_MANAGER\', \'COMPANY_ACCESSOR\')'
       },
       {
         icon: 'fas fa-cogs',

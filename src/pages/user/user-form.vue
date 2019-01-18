@@ -97,7 +97,7 @@
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="true"/>
+                          :editable="$authorized.userManager"/>
           <ag-grid-column field="roleId" header-name="코드" :width="200"/>
           <ag-grid-column field="roleName" header-name="이름" :width="200"/>
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
@@ -118,9 +118,10 @@
         -->
         <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/user/${model.id}`)"
-               v-show="!phantom" label="이력">
+               v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
-        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"
+               v-if="$authorized.userManager"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -132,6 +133,9 @@
   import {DepartmentLabelArray, DepartmentModel, UserModel, UserRoleArray} from 'src/model/user'
 
   export default {
+    authorized: {
+      'userManager': 'hasRole(\'USER_MANAGER\')'
+    },
     props: {
       action: {
         type: String

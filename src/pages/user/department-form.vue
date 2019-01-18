@@ -55,9 +55,10 @@
         -->
         <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/department/${model.id}`)"
-               v-show="!phantom" label="이력">
+               v-show="!phantom" label="이력" v-if="$authorized.userManager">
         </q-btn>
-        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"
+               v-if="$authorized.userManager"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -69,6 +70,9 @@
   import {DepartmentModel, UserLabelArray, UserModel} from 'src/model/user'
 
   export default {
+    authorized: {
+      'userManager': 'hasRole(\'USER_MANAGER\')'
+    },
     props: {
       action: {
         type: String

@@ -81,9 +81,10 @@
       <q-card-title>
         연락처
         <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="추가" icon="add" @click="addContact"/>
+          <q-btn flat color="secondary" label="추가" icon="add" @click="addContact"
+                 v-if="$authorized.companyManager"/>
           <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.contact"
-                 @click="removeContact"/>
+                 @click="removeContact" v-if="$authorized.companyManager"/>
         </div>
       </q-card-title>
 
@@ -143,8 +144,10 @@
       <q-card-title>
         주소지
         <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="추가" icon="add" @click="addAddress"/>
+          <q-btn flat color="secondary" label="추가" icon="add" @click="addAddress"
+                 v-if="$authorized.companyManager"/>
           <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.address"
+                 v-if="$authorized.companyManager"
                  @click="removeAddress"/>
         </div>
       </q-card-title>
@@ -209,9 +212,10 @@
         -->
         <q-btn flat color="tertiary" icon="fas fa-history"
                @click="$showAudit(`/audit/company/${model.id}`)"
-               v-show="!phantom" label="이력">
+               v-show="!phantom" label="이력" v-if="$authorized.companyManager">
         </q-btn>
-        <q-btn flat icon="save" @click="onSaveClick()" label="저장"></q-btn>
+        <q-btn flat icon="save" @click="onSaveClick()" label="저장"
+               v-if="$authorized.companyManager"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -230,6 +234,9 @@
   import {AddressSelector} from 'src/model/data'
 
   export default {
+    authorized: {
+      'companyManager': 'hasRole(\'COMPANY_MANAGER\')'
+    },
     props: {
       action: {
         type: String
