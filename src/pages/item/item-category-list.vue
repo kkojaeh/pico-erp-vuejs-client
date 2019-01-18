@@ -15,7 +15,7 @@
         <q-btn flat icon="arrow_drop_down">
           <q-popover>
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
-            <q-btn flat icon="cloud_download" label="Export">
+            <q-btn flat icon="cloud_download" label="Export" v-if="$authorized.itemManager">
               <q-popover style="width: 300px;">
                 <q-card flat>
                   <q-card-main>
@@ -28,7 +28,7 @@
                 </q-card>
               </q-popover>
             </q-btn>
-            <q-btn flat icon="cloud_upload" label="Import">
+            <q-btn flat icon="cloud_upload" label="Import" v-if="$authorized.itemManager">
               <q-popover style="width: 300px; min-height: 500px;">
                 <q-card flat>
                   <q-card-main>
@@ -54,7 +54,7 @@
             </q-btn>
           </q-popover>
         </q-btn>
-        <q-btn-dropdown label="생성" flat>
+        <q-btn-dropdown label="생성" flat v-if="$authorized.itemManager">
           <!-- dropdown content -->
           <q-list>
             <router-link :to="{ path: '/item-category/create', query: $route.query}">
@@ -139,6 +139,9 @@
   import UppyUploader from 'src/components/uppy/uppy-uploader.vue'
 
   export default {
+    authorized: {
+      'itemManager': 'hasRole(\'ITEM_MANAGER\')'
+    },
     data() {
       return {
         array: new ItemCategoryHierarchyArray(),

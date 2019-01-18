@@ -22,7 +22,8 @@
                  class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active">
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"
+                   :readonly="!updatable" :hide-underline="!updatable">
             <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify slot="after"
                    flat></q-btn>
           </q-input>
@@ -39,7 +40,8 @@
                  :error="!!model.$errors.type"
                  :error-label="model.$errors.type">
           <q-select float-label="유형" v-model="model.type"
-                    :options="typeLabelArray"></q-select>
+                    :options="typeLabelArray"
+                    :readonly="!updatable" :hide-underline="!updatable"></q-select>
         </q-field>
 
         <q-field icon="fas fa-tag" helper="품목 분류를 선택하세요"
@@ -50,6 +52,7 @@
           <c-autocomplete-select float-label="분류" v-model="model.categoryId"
                                  :label="categoryModel.name" :options="categoryLabelArray"
                                  label-field="label" value-field="value"
+                                 :readonly="!updatable" :hide-underline="!updatable"
                                  @search="onCategorySearch">
             <template slot="option" slot-scope="option">
               {{option.label}}[{{option.stamp}}]<br>
@@ -63,14 +66,15 @@
                  :error="!!model.$errors.unit"
                  :error-label="model.$errors.unit">
           <q-select float-label="단위" v-model="model.unit"
-                    :options="unitLabelArray" filter autofocus-filter></q-select>
+                    :options="unitLabelArray" filter autofocus-filter
+                    :readonly="!updatable" :hide-underline="!updatable"></q-select>
         </q-field>
 
         <q-field icon="monetization_on" helper="구매 가능 여부를 체크하세요(구매시 노출여부가 달라 집니다)"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.purchasable"
                  :error-label="model.$errors.purchasable">
-          <q-checkbox label="구매가능" v-model="model.purchasable"/>
+          <q-checkbox label="구매가능" v-model="model.purchasable" :readonly="!updatable"/>
         </q-field>
 
         <!--        <q-field icon="monetization_on" helper="판매 가능 여부"
@@ -84,7 +88,8 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.baseUnitCost"
                  :error-label="model.$errors.baseUnitCost">
-          <q-input type="number" float-label="재료비" v-model="model.baseUnitCost" align="right"/>
+          <q-input type="number" float-label="재료비" v-model="model.baseUnitCost" align="right"
+                   :readonly="!updatable" :hide-underline="!updatable"/>
           <q-tooltip>
             {{$number.words(model.baseUnitCost)}}
           </q-tooltip>
@@ -112,6 +117,7 @@
           <c-autocomplete-select float-label="고객사" v-model="model.customerId"
                                  :label="customerModel.name" :options="companyLabelArray"
                                  label-field="label" value-field="value"
+                                 :readonly="!updatable" :hide-underline="!updatable"
                                  @search="onCustomerSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
@@ -124,7 +130,8 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.externalCode"
                  :error-label="model.$errors.externalCode">
-          <q-input v-model="model.externalCode" float-label="외부 코드" class="ime-mode-disabled">
+          <q-input v-model="model.externalCode" float-label="외부 코드" class="ime-mode-disabled"
+                   :readonly="!updatable" :hide-underline="!updatable">
             <q-btn icon="content_copy" v-clipboard:copy="model.externalCode" v-clipboard-notify
                    slot="after"
                    flat></q-btn>
@@ -154,6 +161,7 @@
           <c-autocomplete-select float-label="스펙 유형" v-model="model.specTypeId"
                                  :label.sync="specTypeModel.name" :options="specTypeLabelArray"
                                  label-field="label" value-field="value"
+                                 :readonly="!updatable" :hide-underline="!updatable"
                                  @search="onSpecTypeSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}[{{option.stamp}}]<br>
@@ -182,7 +190,7 @@
                  :error-label="model.$errors.description"
                  :count="200">
           <q-input type="textarea" v-model="model.description" float-label="설명"
-                   rows="5"
+                   rows="5" :readonly="!updatable" :hide-underline="!updatable"
                    max-length="200"/>
         </q-field>
 
@@ -190,7 +198,7 @@
                  class="col-xs-12 col-md-10 col-xl-8">
 
           <c-attachment ref="attachment" v-model="model.attachmentId" category="item"
-                        multiple></c-attachment>
+                        multiple :readonly="!updatable"></c-attachment>
         </q-field>
 
       </q-card-main>
@@ -221,7 +229,7 @@
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
         </router-link>
-        <q-btn flat icon="save" v-if="$authorized.itemManager" @click="onSaveClick()">저장</q-btn>
+        <q-btn flat icon="save" v-if="updatable" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -359,6 +367,9 @@
     computed: {
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return $authorized.itemManager
       }
     },
     watch: {

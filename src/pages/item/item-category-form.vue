@@ -25,7 +25,8 @@
                  class="col-xs-12 col-md-6 col-xl-6"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"/>
+          <q-input v-model="model.name" float-label="이름" class="ime-mode-active"
+                   :readonly="!updatable" :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="description" helper="품목 분류의 설명을 입력하세요"
@@ -34,7 +35,7 @@
                  :error-label="model.$errors.description"
                  :count="200">
           <q-input type="textarea" v-model="model.description" float-label="설명"
-                   rows="5"
+                   rows="5" :readonly="!updatable" :hide-underline="!updatable"
                    max-length="200"/>
         </q-field>
 
@@ -66,6 +67,9 @@
   import {ItemCategoryModel} from 'src/model/item'
 
   export default {
+    authorized: {
+      'itemManager': 'hasRole(\'ITEM_MANAGER\')'
+    },
     props: {
       action: {
         type: String
@@ -143,6 +147,9 @@
       },
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return $authorized.itemManager
       }
     },
     components: {

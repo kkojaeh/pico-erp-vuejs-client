@@ -2,17 +2,17 @@ import {wrapModal} from './default'
 
 const userMeta = {
   title: '사용자 관리',
-  authorize: 'hasRole(\'USER_MANAGER\')'
+  authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
 }
 
 const groupMeta = {
   title: '그룹 관리',
-  authorize: 'hasRole(\'USER_MANAGER\')'
+  authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
 }
 
 const departmentMeta = {
   title: '부서 관리',
-  authorize: 'hasRole(\'USER_MANAGER\')'
+  authorize: 'hasAnyRole(\'USER_MANAGER\', \'USER_ACCESSOR\')'
 }
 
 const meMeta = {
