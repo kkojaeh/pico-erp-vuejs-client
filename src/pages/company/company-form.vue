@@ -194,7 +194,8 @@
           <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
                           :cell-style="{textAlign: 'center'}"/>
           <ag-grid-column field="address.street" header-name="주소" :width="220"/>
-          <ag-grid-column field="address.detail" header-name="상세주소" :width="180" :editable="true"
+          <ag-grid-column field="address.detail" header-name="상세주소" :width="180"
+                          :editable="updatable"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ maxlength: 50 }"/>
           <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
