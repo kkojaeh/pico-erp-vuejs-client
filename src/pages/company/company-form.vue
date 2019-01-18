@@ -25,7 +25,8 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.name"
                  :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름"/>
+          <q-input v-model="model.name" float-label="이름" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="email" helper="등록번호를 입력하세요"
@@ -34,41 +35,44 @@
                  :error-label="model.$errors.registrationNumber">
           <c-cleave-input v-model="model.registrationNumber"
                           :cleave-options="{ numericOnly: true, delimiter: '-', blocks: [3, 2, 5]}"
-                          float-label="등록번호"/>
+                          float-label="등록번호" :readonly="!updatable" :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="account_circle" helper="대표자 이름을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.representative"
                  :error-label="model.$errors.representative">
-          <q-input v-model="model.representative" float-label="대표자"/>
+          <q-input v-model="model.representative" float-label="대표자" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="account_circle" helper="업태를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.conditionDescription"
                  :error-label="model.$errors.conditionDescription">
-          <q-input v-model="model.conditionDescription" float-label="업태"/>
+          <q-input v-model="model.conditionDescription" float-label="업태" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="account_circle" helper="종목을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.itemDescription"
                  :error-label="model.$errors.itemDescription">
-          <q-input v-model="model.itemDescription" float-label="종목"/>
+          <q-input v-model="model.itemDescription" float-label="종목" :readonly="!updatable"
+                   :hide-underline="!updatable"/>
         </q-field>
 
         <q-field icon="check_circle" helper="활성화 상태를 선택하세요 비활성시 사용할 수 없게 됩니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-toggle label="활성화 여부" v-model="model.enabled"/>
+          <q-toggle label="활성화 여부" v-model="model.enabled" :readonly="!updatable"/>
         </q-field>
 
         <q-field icon="fas fa-building" helper="업체의 유형을 선택하세요 체크여부에 따라 각 대상에서 제외됩니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-4">
           <div class="row justify-between">
-            <q-checkbox label="공급사" v-model="model.supplier"/>
-            <q-checkbox label="고객사" v-model="model.customer"/>
-            <q-checkbox label="외주사" v-model="model.outsourcing"/>
+            <q-checkbox label="공급사" v-model="model.supplier" :readonly="!updatable"/>
+            <q-checkbox label="고객사" v-model="model.customer" :readonly="!updatable"/>
+            <q-checkbox label="외주사" v-model="model.outsourcing" :readonly="!updatable"/>
           </div>
         </q-field>
 
@@ -82,9 +86,9 @@
         연락처
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="addContact"
-                 v-if="$authorized.companyManager"/>
+                 v-if="updatable"/>
           <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.contact"
-                 @click="removeContact" v-if="$authorized.companyManager"/>
+                 @click="removeContact" v-if="updatable"/>
         </div>
       </q-card-title>
 
@@ -98,39 +102,40 @@
                  :grid-auto-height="true"
                  row-selection="single"
                  enable-col-resize
-                 :editable="true"
+                 :editable="updatable"
                  suppress-no-rows-overlay
                  @selection-changed="onContactSelectionChanged"
                  :row-data="contacts"
         >
 
-          <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
-          <ag-grid-column field="contact.name" header-name="이름" :width="150" :editable="true"
+          <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"
+                          :hide="!updatable"/>
+          <ag-grid-column field="contact.name" header-name="이름" :width="150" :editable="updatable"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ maxlength: 50 }"/>
 
-          <ag-grid-column field="contact.email" header-name="이메일" :width="150" :editable="true"
+          <ag-grid-column field="contact.email" header-name="이메일" :width="150" :editable="updatable"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ maxlength: 50, type: 'email' }"/>
 
           <ag-grid-column field="contact.mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
-                          :editable="true"
+                          :editable="updatable"
                           cell-renderer-framework="ag-grid-phone-number-renderer"
                           cell-editor-framework="ag-grid-phone-number-editor"/>
 
           <ag-grid-column field="contact.telephoneNumber" header-name="전화번호" :width="150"
-                          :editable="true"
+                          :editable="updatable"
                           cell-renderer-framework="ag-grid-phone-number-renderer"
                           cell-editor-framework="ag-grid-phone-number-editor"/>
 
           <ag-grid-column field="contact.faxNumber" header-name="FAX 번호" :width="150"
-                          :editable="true"
+                          :editable="updatable"
                           cell-renderer-framework="ag-grid-phone-number-renderer"
                           cell-editor-framework="ag-grid-phone-number-editor"/>
           <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="true"/>
+                          :editable="updatable"/>
 
         </ag-grid>
 
@@ -145,9 +150,9 @@
         주소지
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="addAddress"
-                 v-if="$authorized.companyManager"/>
+                 v-if="updatable"/>
           <q-btn flat color="secondary" label="삭제" icon="remove" :disabled="!selected.address"
-                 v-if="$authorized.companyManager"
+                 v-if="updatable"
                  @click="removeAddress"/>
         </div>
       </q-card-title>
@@ -162,28 +167,29 @@
                  :grid-auto-height="true"
                  row-selection="single"
                  enable-col-resize
-                 :editable="true"
+                 :editable="updatable"
                  suppress-no-rows-overlay
                  @selection-changed="onAddressSelectionChanged"
                  :row-data="addresses"
         >
 
-          <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>
-          <ag-grid-column field="name" header-name="이름" :width="150" :editable="true"
+          <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"
+                          :hide="!updatable"/>
+          <ag-grid-column field="name" header-name="이름" :width="150" :editable="updatable"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ maxlength: 50 }"/>
 
           <ag-grid-column field="mobilePhoneNumber" header-name="휴대폰 번호" :width="150"
-                          :editable="true"
+                          :editable="updatable"
                           cell-renderer-framework="ag-grid-phone-number-renderer"
                           cell-editor-framework="ag-grid-phone-number-editor"/>
 
           <ag-grid-column field="telephoneNumber" header-name="전화번호" :width="150"
-                          :editable="true"
+                          :editable="updatable"
                           cell-renderer-framework="ag-grid-phone-number-renderer"
                           cell-editor-framework="ag-grid-phone-number-editor"/>
           <ag-grid-column field="" header-name="" :width="40" suppress-sorting
-                          cell-renderer-framework="ag-grid-icon-renderer"
+                          cell-renderer-framework="ag-grid-icon-renderer" :hide="!updatable"
                           :cell-renderer-params="{handler:onAddressSearch, icon:'search', link:true}"/>
           <ag-grid-column field="address.postalCode" header-name="우편번호" :width="90"
                           :cell-style="{textAlign: 'center'}"/>
@@ -194,7 +200,7 @@
           <ag-grid-column field="enabled" header-name="사용여부" :width="90" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="true"/>
+                          :editable="updatable"/>
 
         </ag-grid>
 
@@ -215,7 +221,7 @@
                v-show="!phantom" label="이력" v-if="$authorized.companyManager">
         </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
-               v-if="$authorized.companyManager"></q-btn>
+               v-if="updatable"></q-btn>
       </q-toolbar>
     </q-page-sticky>
 
@@ -358,6 +364,9 @@
     computed: {
       phantom() {
         return this.model.phantom
+      },
+      updatable() {
+        return this.$authorized.companyManager
       }
     },
     components: {
