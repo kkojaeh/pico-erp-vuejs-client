@@ -152,7 +152,10 @@
         await this.userArray.fetch()
       },
       async show() {
-        this.model = await GroupModel.get(this.id)
+        await this.load(this.id)
+      },
+      async load(id) {
+        this.model = await GroupModel.get(id)
         this.roleArray = new GroupRoleArray(this.model)
         this.userArray = new GroupUserArray(this.model)
         await this.roleArray.fetch()
@@ -165,11 +168,10 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-              }
+            if (this.closable && this.closeConfirmed) {
+              this.$closeOverlay()
+            } else {
+              await this.load(this.model.id)
             }
           }
         } else {

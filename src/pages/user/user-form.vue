@@ -189,14 +189,11 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-                return
-              }
+            if (this.closable && this.closeConfirmed) {
+              this.$closeOverlay()
+            } else {
+              await this.load(this.model.id)
             }
-            this.load(this.model.id)
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')

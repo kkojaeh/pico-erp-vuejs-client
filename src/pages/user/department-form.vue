@@ -106,7 +106,10 @@
         this.model = new DepartmentModel()
       },
       async show() {
-        this.model = await DepartmentModel.get(this.id)
+        await this.load(this.id)
+      },
+      async load(id) {
+        this.model = await DepartmentModel.get(id)
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -115,11 +118,10 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-              }
+            if (this.closable && this.closeConfirmed) {
+              this.$closeOverlay()
+            } else {
+              await this.load(this.model.id)
             }
           }
         } else {
