@@ -276,7 +276,9 @@
         if (ok) {
           const purchaseRequestItemIds = this.selected.map(e => e.requestItemId)
           const order = await PurchaseOrderModel.generate(purchaseRequestItemIds)
-          this.$await(2000)
+          this.$q.loading.show()
+          this.$await(3000)
+          this.$q.loading.hide()
           this.$router.push({
             path: `/purchase-order/order/show/${order.id}`
           })

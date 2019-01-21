@@ -592,7 +592,9 @@
 
       async onCreatePurchaseInvoice() {
         const purchaseInvoice = await PurchaseInvoiceModel.generate(this.model.id)
-        await this.$await(1000)
+        this.$q.loading.show()
+        await this.$await(2000)
+        this.$q.loading.hide()
         await this.$showPurchaseInvoice(purchaseInvoice.id)
         await this.load(this.id || this.model.id)
       },
