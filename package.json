@@ -27,7 +27,7 @@
     "lodash": "^4.17.10",
     "lzutf8": "^0.5.0",
     "moment": "^2.22.1",
-    "number-to-text": "^0.3.8",
+    "number-to-words": "^1.2.4",
     "plyr": "^3.3.7",
     "popper.js": "^1.14.3",
     "qs": "^6.5.2",

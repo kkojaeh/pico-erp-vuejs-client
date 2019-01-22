@@ -9,7 +9,7 @@ const delimiterChar = ' '
 
 class KoKrConverter {
 
-  convertToText (value, options) {
+  toWords(value) {
     if (value === undefined || value === null || value === '') {
       return ''
     }
