@@ -1,4 +1,3 @@
-₩
 <template>
 
   <q-page class="row layout-padding">
