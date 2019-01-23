@@ -41,7 +41,6 @@
         <ag-grid-column field="createdDate" header-name="생성시간" :width="200"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
-
       </ag-grid>
 
       <!-- main -->

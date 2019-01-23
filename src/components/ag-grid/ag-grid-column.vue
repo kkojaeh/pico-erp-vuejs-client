@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import {ColDefUtil} from 'ag-grid'
+  import {ColDefUtil} from 'ag-grid-community'
   import * as _ from 'lodash'
   import lzutf8 from 'lzutf8'
 

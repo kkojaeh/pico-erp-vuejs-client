@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import {ComponentUtil, Grid} from 'ag-grid'
+  import {ComponentUtil, Grid} from 'ag-grid-community'
   import {VueFrameworkFactory} from './vue-framework-factory'
   import {VueFrameworkComponentWrapper} from './vue-framework-component-wrapper'
   import * as _ from 'lodash'
@@ -18,6 +18,10 @@
 
   const predefined = {
     stopEditingWhenGridLosesFocus: {
+      type: Boolean,
+      default: false
+    },
+    gridAutoHeight: {
       type: Boolean,
       default: false
     }
@@ -217,7 +221,6 @@
       let frameworkComponentWrapper = new VueFrameworkComponentWrapper(this)
       let vueFrameworkFactory = new VueFrameworkFactory(this.$el, this)
       let gridOptions = ComponentUtil.copyAttributesToGridOptions(this.gridOptions, this)
-
       gridOptions.columnDefs = this.getColumns().map((column) => {
         return column.componentInstance.getColumnDefinition()
       })
@@ -246,8 +249,7 @@
         subtree: true,
         characterData: true
       })
-    }
-    ,
+    },
     watch: watchedProperties,
     computed:
         {
@@ -290,6 +292,8 @@
 <style lang="stylus">
   .ag-grid-wrapper
     overflow: auto
+    .ag-body-container
+      transform: translateZ(0)
     .tooltip
       z-index: 20000
       pointer-events: none
@@ -397,7 +401,6 @@
       input[type="text"], input[type="text"]:focus, input[type="tel"], input[type="tel"]:focus, input[type="date"], input[type="date"]:focus, input[type="datetime-local"], input[type="datetime-local"]:focus
         border: none
         padding-bottom: inherit
-
   /*
   .ag-grid-wrapper
     position: relative

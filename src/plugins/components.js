@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import {language, languageAliases} from 'src/i18n'
-import 'ag-grid/dist/styles/ag-grid.css'
-import 'ag-grid/dist/styles/ag-theme-material.css'
+import 'ag-grid-community/dist/styles/ag-grid.css'
+import 'ag-grid-community/dist/styles/ag-theme-material.css'
 // import 'ag-grid/dist/styles/ag-theme-balham.css'
 import 'viewerjs/dist/viewer.min.css'
 import Highcharts from 'highcharts'
@@ -47,8 +47,6 @@ import AgGridInputEditor from 'src/components/ag-grid/ag-grid-input-editor.vue'
 
 import AgGridAutocompleteSelectEditor
   from 'src/components/ag-grid/ag-grid-autocomplete-select-editor.vue'
-
-
 // 현재 사용하는 지정된 나라 의 cleavejs import
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
