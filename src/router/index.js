@@ -21,6 +21,7 @@ import purchaseRequestRoutes from './purchase-request'
 import purchaseOrderRoutes from './purchase-order'
 import invoiceRoutes from './invoice'
 import notifyRoutes from './notify'
+import productionRequestRoutes from './production-request'
 
 Vue.use(VueRouter)
 
@@ -73,7 +74,8 @@ const Router = new VueRouter({
         ...purchaseRequestRoutes,
         ...purchaseOrderRoutes,
         ...invoiceRoutes,
-        ...notifyRoutes
+        ...notifyRoutes,
+        ...productionRequestRoutes
       ]
     },
     {

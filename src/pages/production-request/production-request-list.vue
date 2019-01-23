@@ -17,7 +17,7 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
-        <router-link :to="{ path: '/purchase-request/request/create', query: $route.query}">
+        <router-link :to="{ path: '/production-request/request/create', query: $route.query}">
           <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
       </div>
@@ -32,19 +32,27 @@
                enable-col-resize
                enable-sorting
                :row-data="array">
-        <ag-grid-column field="code" header-name="구매요청번호" :width="120"
+        <ag-grid-column field="code" header-name="생산요청번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/purchase-request/request/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="name" header-name="이름" :width="150"/>
+                        :cell-renderer-params="{path:'/production-request/request/show/${id}', query:$route.query}"/>
+        <ag-grid-column field="item.code" header-name="품목코드" :width="100"/>
+        <ag-grid-column field="item.name" header-name="품목명" :width="200"/>
+        <ag-grid-column field="quantity" header-name="수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0', words:true}"/>
+        <ag-grid-column field="spareQuantity" header-name="여분수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0', words:true}"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
-        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
         <ag-grid-column field="committedDate" header-name="제출일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
@@ -61,9 +69,9 @@
 
       <!-- filters -->
 
-      <q-field slot="filter" icon="account_circle" helper="구매요청번호에 포함된 글자를 입력하세요"
+      <q-field slot="filter" icon="account_circle" helper="생산요청번호에 포함된 글자를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-input v-model="filters.code" float-label="구매요청번호" clearable
+        <q-input v-model="filters.code" float-label="생산요청번호" clearable
                  @keyup.enter="retrieve()"/>
       </q-field>
 
@@ -81,29 +89,14 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fas fa-building" helper="인수사를 선택하세요"
-               class="col-xs-11 col-md-4 col-xl-3">
-
-        <c-autocomplete-select float-label="인수사" v-model="filters.receiverId"
-                               :label.sync="filters.receiverName" :options="companyLabelArray"
-                               label-field="label" value-field="value" clearable
-                               @search="onCompanySearch">
-          <template slot="option" slot-scope="option">
-            {{option.label}}<br>
-            {{option.stamp}} - {{option.subLabel}}
-          </template>
-        </c-autocomplete-select>
-      </q-field>
-
-
       <q-field slot="filter" icon="account_box" helper="요청자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
         <c-autocomplete-select float-label="요청자" v-model="filters.requesterId"
                                :label.sync="filters.requesterName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
-                               :readonly="!$authorized.purchaseRequestManager"
-                               :hide-underline="!$authorized.purchaseRequestManager"
+                               :readonly="!$authorized.productionRequestManager"
+                               :hide-underline="!$authorized.productionRequestManager"
                                @search="onUserSearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
@@ -161,11 +154,9 @@
       <c-list-filter-label slot="filter-label" v-model="filters.code" label="구매요청번호"/>
       <c-list-filter-label slot="filter-label" v-model="filters.projectId"
                            :print-value="filters.projectName" label="프로젝트"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.receiverId"
-                           :print-value="filters.receiverName" label="인수사"/>
       <c-list-filter-label slot="filter-label" v-model="filters.requesterId"
                            :print-value="filters.requesterName" label="요청자"
-                           :immutable="!$authorized.purchaseRequestManager"/>
+                           :immutable="!$authorized.productionRequestManager"/>
       <c-list-filter-label slot="filter-label" v-model="filters.accepterId"
                            :print-value="filters.accepterName" label="접수자"/>
       <c-list-filter-label slot="filter-label" v-model="filters.statuses"
@@ -187,29 +178,26 @@
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
-  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {ItemModel} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {
-    PurchaseRequestPaginationArray,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+    ProductionRequestPaginationArray,
+    ProductionRequestStatusArray
+  } from 'src/model/production-request'
 
   export default {
     authorized: {
-      'purchaseRequestManager': 'hasRole(\'PURCHASE_REQUEST_MANAGER\')'
+      'productionRequestManager': 'hasRole(\'PRODUCTION_REQUEST_MANAGER\')'
     },
     data() {
       return {
-        array: new PurchaseRequestPaginationArray(),
-        companyLabelArray: new CompanyLabelArray(),
+        array: new ProductionRequestPaginationArray(),
         userLabelArray: new UserLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
-        statusLabelArray: new PurchaseRequestStatusArray(),
+        statusLabelArray: new ProductionRequestStatusArray(),
         filters: {
           code: null,
-          receiverId: null,
-          receiverName: null,
           accepterId: null,
           accepterName: null,
           requesterId: null,
@@ -245,11 +233,10 @@
       })
       await Promise.all([
         this.statusLabelArray.fetch(),
-        this.companyLabelArray.fetch(),
         this.userLabelArray.fetch(),
         this.projectLabelArray.fetch()
       ])
-      if (!this.$authorized.purchaseRequestManager) {
+      if (!this.$authorized.productionRequestManager) {
         this.filters.requesterId = this.user.id
         this.filters.requesterName = this.user.name
       }
@@ -286,7 +273,7 @@
       async onFetched() {
         await Promise.all(
             this.array.map(async (e) => {
-              e.receiver = await CompanyModel.get(e.receiverId, true)
+              e.item = await ItemModel.get(e.itemId, true)
               e.project = await ProjectModel.get(e.projectId, true)
               e.accepter = await UserModel.get(e.accepterId, true)
               e.requester = await UserModel.get(e.requesterId, true)

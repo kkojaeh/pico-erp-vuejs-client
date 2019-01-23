@@ -218,6 +218,30 @@ const menu = [
         authorize: 'hasAnyRole(\'INVOICE_RECEIVER\', \'INVOICE_MANAGER\')'
       }
     ]
+  },
+  {
+    icon: 'build',
+    label: languageAliases({
+      ko: '생산'
+    })[language],
+    children: [
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '생산 요청 현황'
+        })[language],
+        url: '/production-request/request',
+        authorize: 'hasAnyRole(\'PRODUCTION_REQUESTER\', \'PRODUCTION_REQUEST_MANAGER\')'
+      },
+      {
+        icon: 'call_received',
+        label: languageAliases({
+          ko: '생산 요청 접수'
+        })[language],
+        url: '/production-request/await-accept',
+        authorize: 'hasAnyRole(\'PRODUCTION_REQUEST_ACCEPTER\', \'PRODUCTION_REQUEST_MANAGER\')'
+      }
+    ]
   }
   /*
   ,
