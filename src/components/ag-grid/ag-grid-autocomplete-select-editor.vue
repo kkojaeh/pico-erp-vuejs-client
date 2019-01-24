@@ -1,8 +1,11 @@
 <template>
   <q-search ref="input" v-model="text">
     <q-autocomplete
+        ref="autocomplete"
         @search="onSearch"
         @selected="onSelected"
+        @show="onShow"
+        @hide="onHide"
         :min-characters="0"
         :value-field="valueField"
     />
@@ -46,6 +49,17 @@
       async onSelected(item, keyword) {
         this.model = item[this.valueField]
         this.params.api.stopEditing()
+      },
+      onShow() {
+        const popover = this.$refs.autocomplete.$refs.popover.$el
+        const activePopupElements = this.params.api.gridCore.popupService.activePopupElements
+        activePopupElements.push(popover)
+      },
+      onHide() {
+        const popover = this.$refs.autocomplete.$refs.popover.$el
+        const activePopupElements = this.params.api.gridCore.popupService.activePopupElements
+        const index = activePopupElements.indexOf(popover)
+        this.params.api.gridCore.popupService.activePopupElements.slice(index, 1)
       }
     },
     data() {
