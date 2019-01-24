@@ -64,7 +64,7 @@
     components: {
       Uppy
     },
-    data () {
+    data() {
       return {
         model: {},
         removed: [],
@@ -86,7 +86,7 @@
       }
     },
     watch: {
-      value (to, from) {
+      value(to, from) {
         if (to) {
           if (this.model.id !== to) {
             this._fetch(to)
@@ -97,7 +97,7 @@
       }
     },
     computed: {
-      restrictions () {
+      restrictions() {
         return {
           maxFileSize: this.maxFileSize * 1024 * 1024,
           maxNumberOfFiles: this.multiple ? this.maxNumberOfFiles : 1,
@@ -106,21 +106,21 @@
         }
       }
     },
-    mounted () {
+    mounted() {
       this._initModel()
       this.plyr = new Plyr(this.$refs.plyrVideo)
     },
     methods: {
-      _initModel () {
+      _initModel() {
         this.model = new this.modelType()
         this.model.multiple = this.multiple
         this.model.category = this.category
       },
-      async _fetch (id) {
+      async _fetch(id) {
         await this.model.fetch(id)
         this._addFiles(this.model.files)
       },
-      async _clear () {
+      async _clear() {
         const uppy = this.$refs.uppy
         uppy.reset()
         this._initModel()
@@ -129,15 +129,15 @@
         this.url = 'about:blank'
       },
 
-      _isImage (file) {
+      _isImage(file) {
         const type = file.type
         return type && type.indexOf('image/') > -1
       },
-      _isVideo (file) {
+      _isVideo(file) {
         const type = file.type
         return type && type.indexOf('video/') > -1
       },
-      _onUppyBeforeFileAdded ({file}) {
+      _onUppyBeforeFileAdded({file}) {
         const uppy = this.$refs.uppy
         if (!this.multiple) {
           uppy.removeAllFiles()
@@ -146,7 +146,7 @@
           file.preview = this.modelType.iconUrlByName(file.name)
         }
       },
-      _onUppyFileAdded ({file}) {
+      _onUppyFileAdded({file}) {
         const uppy = this.$refs.uppy
         if (file.isRemote) {
           this.$nextTick(() => {
@@ -160,7 +160,7 @@
           })
         }
       },
-      _onUppyClick (e) {
+      _onUppyClick(e) {
         const target = e.target
         if (target.tagName !== 'IMG') {
           return
@@ -176,7 +176,7 @@
           }
         }
       },
-      openVideo (file) {
+      openVideo(file) {
         this.$refs.plyrModal.show()
         this.plyr.source = {
           type: 'video',
@@ -189,19 +189,19 @@
         }
         this.plyr.play()
       },
-      openImage (file) {
+      openImage(file) {
         const viewer = new Viewer(this.$el, {
           zIndex: 10000,
-          url () {
+          url() {
             return file.remote
           },
-          hide () {
+          hide() {
             viewer.destroy()
           }
         })
         viewer.show(true)
       },
-      _onUppyFileRemoved ({file}) {
+      _onUppyFileRemoved({file}) {
         const fileId = _.isString(file) ? file : file.id
         const source = this.files[fileId]
 
@@ -209,19 +209,19 @@
           this.removed.push(source)
         }
       },
-      async _onUppyUploadSuccess ({response, fileId}) {
+      async _onUppyUploadSuccess({response, fileId}) {
         if (!_.isString(fileId)) {
           fileId = fileId.id
         }
         const uppy = this.$refs.uppy
         const model = this.model
         const fileModel = await this.model.addFile(
-          new AttachmentFileModel.Builder(model)
-          .id(response.id)
-          .name(response.name)
-          .size(response.contentLength)
-          .type(response.contentType)
-          .build()
+            new AttachmentFileModel.Builder(model)
+            .id(response.id)
+            .name(response.name)
+            .size(response.contentLength)
+            .type(response.contentType)
+            .build()
         )
         let uppyFile = uppy.getFileState(fileId)
         this.files[fileId] = fileModel.id
@@ -232,7 +232,7 @@
         uppy.setFileState(uppyFile.id, uppyFile)
       },
 
-      _onUppyUploadComplete ({result}) {
+      _onUppyUploadComplete({result}) {
         const uppy = this.$refs.uppy
         const successful = result.successful
         successful.forEach((file) => {
@@ -243,7 +243,7 @@
 
       },
 
-      async _onUppyBeforeUpload ({files}) {
+      async _onUppyBeforeUpload({files}) {
         _.forIn(files, (file, id) => {
           // 업로드 대상에서 제외 시키기 위함
           if (file.isRemote) {
@@ -255,11 +255,11 @@
         })
       },
 
-      async _addFiles (files) {
+      async _addFiles(files) {
         return await Promise.all(files.map(this._addFile))
       },
 
-      async _addFile (file) {
+      async _addFile(file) {
         const uppy = this.$refs.uppy
         return await uppy.addFile({
           source: file.id,
@@ -270,20 +270,20 @@
             size: file.size
           },
           preview: this._isImage(file) ? file.thumbnail : this.modelType.iconUrlByContentType(
-            file.type),
+              file.type),
           remote: file.download,
           isRemote: true
         })
       },
 
-      _hasChanged () {
+      _hasChanged() {
         const uppy = this.$refs.uppy
         const hasLocal = _.values(uppy.getState().files)
         .filter((file) => !file.isRemote).length > 0
         return hasLocal || this.removed.length
       },
 
-      async _uploadFiles () {
+      async _uploadFiles() {
         const uppy = this.$refs.uppy
         const xhrUpload = uppy.getPlugin('XHRUpload')
         xhrUpload.opts.endpoint = this.model.uploadUrl
@@ -291,14 +291,14 @@
         return await uppy.upload()
       },
 
-      async _removeFiles () {
+      async _removeFiles() {
         return await Promise.all(
-          this.removed
-          .map((id) => this.model.removeFile(id))
+            this.removed
+            .map((id) => this.model.removeFile(id))
         )
       },
 
-      async save () {
+      async save() {
         let value = this.value
         if (this._hasChanged()) {
           if (!value) {
@@ -311,9 +311,11 @@
       }
     },
 
-    beforeDestroy () {
-      this.plyr.destroy()
-      this.plyr = null
+    beforeDestroy() {
+      if (this.plyr) {
+        this.plyr.destroy()
+        this.plyr = null
+      }
     }
   }
 
