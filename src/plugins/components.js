@@ -51,6 +51,7 @@ import AgGridAutocompleteSelectEditor
 // import 하는 순서에 영향을 받아 미리 import 해야함
 import moment from 'moment'
 
+import entries from 'object.entries'
 import 'element-closest'
 
 import 'moment/locale/ko'
@@ -64,6 +65,10 @@ import 'imports-loader?jQuery=jquery!trumbowyg/dist/plugins/table/trumbowyg.tabl
 import 'trumbowyg/dist/ui/trumbowyg.css'
 import 'trumbowyg/dist/plugins/table/ui/trumbowyg.table.css'
 import svgIcons from 'trumbowyg/dist/ui/icons.svg'
+
+if (!Object.entries) {
+  entries.shim();
+}
 
 gantt(Highcharts)
 
