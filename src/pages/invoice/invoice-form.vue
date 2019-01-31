@@ -5,7 +5,8 @@
 
       <q-card-title>
         송장(입고 예정)
-        <span slot="right" v-if="!!model.code">{{model.code}}
+        <span slot="right" v-if="!!model.code">
+          {{statusLabel}} - {{model.code}}
           <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
                  flat></q-btn>
         </span>
@@ -49,12 +50,6 @@
           <q-datetime float-label="입고예정일시" v-model="model.dueDate"
                       readonly hide-underline
                       type="datetime"/>
-        </q-field>
-
-        <q-field icon="check" helper="송장의 상태 입니다"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-select float-label="상태" v-model="model.status" readonly hide-underline
-                    :options="statusLabelArray"></q-select>
         </q-field>
 
         <q-field icon="description" helper="비고 입니다"
@@ -249,6 +244,11 @@
       },
       receivable() {
         return this.model.receivable
+      },
+      statusLabel() {
+        const status = this.model.status
+        const found = this.statusLabelArray.find(e => e.value == status) || {}
+        return found.label || ''
       }
     },
     watch: {

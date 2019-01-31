@@ -26,25 +26,23 @@
                  :row-data="processes"
                  @cell-clicked="onGridCellClicked"
                  @selection-changed="onGridSelectionChanged">
-          <ag-grid-column :checkbox-selection="true" field="process.name" header-name="이름"
+          <ag-grid-column :checkbox-selection="true" field="name" header-name="이름"
                           :cell-style="{'text-decoration': 'underline', 'cursor': 'pointer'}"
                           :width="150"/>
-          <ag-grid-column field="process.status" header-name="상태" :width="100"
+          <ag-grid-column field="status" header-name="상태" :width="100"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"
                           :cell-style="{textAlign: 'center'}"/>
-          <ag-grid-column field="process.difficulty" header-name="난이도" :width="100"
+          <ag-grid-column field="difficulty" header-name="난이도" :width="100"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-style="{textAlign: 'center'}"
                           :cell-renderer-params="{array:difficultyLabelArray, valueField:'value', labelField: 'label'}"/>
-          <ag-grid-column field="conversionRate" header-name="생산 전환율(%)" :width="150"
-                          :editable="updatable"
+          <ag-grid-column field="inputRate" header-name="투입 비율(%)" :width="150"
                           :cell-style="{textAlign: 'right'}"
-                          :value-formatter="percentFormatter"
-                          cell-editor-framework="ag-grid-input-editor"
-                          :cell-editor-params="{ type: 'number',decimals: 2, suffix:'%', align:'right', getValue: percentGetValue, setValue: percentSetValue }"/>
+                          :value-formatter="percentFormatter"/>
 
         </ag-grid>
+
       </q-card-main>
 
     </q-card>
@@ -70,13 +68,12 @@
 
 </template>
 <script>
-  import {BomModel, BomProcessModel} from 'src/model/bom'
-  import {ProcessDifficultyArray, ProcessStatusArray} from 'src/model/process'
+  import {ItemProcessArray, ProcessDifficultyArray, ProcessStatusArray} from 'src/model/process'
   import Big from 'big.js'
 
   export default {
     props: {
-      bomId: {
+      itemId: {
         type: String
       },
       closable: {
@@ -97,7 +94,7 @@
     },
     data() {
       return {
-        processes: [],
+        processes: new ItemProcessArray(),
         selected: null,
         statusLabelArray: new ProcessStatusArray(),
         difficultyLabelArray: new ProcessDifficultyArray()
@@ -113,7 +110,7 @@
     },
     methods: {
       async refresh() {
-        this.load(this.bomId)
+        this.load(this.itemId)
       },
       async onGridSelectionChanged(event) {
         this.$nextTick(() => {
@@ -121,9 +118,9 @@
         })
       },
       async onGridCellClicked(event) {
-        if (event.colDef.field == "process.name") {
+        if (event.colDef.field == "name") {
           const data = event.data
-          const changed = await this.$showProcess(data.processId)
+          const changed = await this.$showProcess(data.id)
           if (changed) {
             await this.refresh()
             this.$emit('changed')
@@ -132,65 +129,35 @@
       },
       onHelpProcessesEditor() {
         this.$alert.info('위의 공정부터 아래의 공정으로 진행됩니다')
-        this.$alert.info('생산 전환율은 투입 수량 대비 생산 수량을 의미합니다')
+        this.$alert.info('투입 비율은 공정으로 생성되는 1개의 품목에 대한 투입 수량 비율입니다')
       },
       percentFormatter(params) {
         if (params.value) {
           return new Big(params.value).times(100).toFixed(2) + ' %'
         }
       },
-      percentGetValue(value) {
-        return Number(new Big(value).times(100).round(2))
-      },
-      percentSetValue(value) {
-        return Number(new Big(value).div(100))
-      },
-      async load(id) {
-        const bom = await BomModel.get(id)
-        await bom.fetchReference()
-        this.processes = bom.processes
+      async load(itemId) {
+        await this.processes.fetch(itemId)
       },
       async onAdd() {
-        const created = await this.$createProcess({})
+        const created = await this.$createProcess({
+          itemId: this.itemId
+        })
         if (created) {
-          const bomProcess = new BomProcessModel({
-            bomId: this.bomId,
-            processId: created.id
-          })
-          await bomProcess.save()
           this.$emit('changed')
           await this.refresh()
         }
       },
       async onRemove() {
-        const selected = this.selected
-        await selected.delete()
-        this.$emit('changed')
-        await this.refresh()
-      },
-      async onSave() {
-        const valid = this.processes.validate()
-        if (valid) {
-          const ok = await this.$alert.confirm('저장 하시겠습니까?')
-          if (ok) {
-            await this.save()
-            this.$alert.positive('저장 되었습니다')
-            if (this.closable && !this.closeConfirmed) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-              }
-            }
-          }
-        } else {
-          this.$redrawGrids()
-          this.$alert.warning('입력이 유효하지 않습니다')
+        const ok = await this.$alert.confirm('해당 공정을 삭제 하시겠습니까?')
+        if (ok) {
+          const selected = this.selected
+          await selected.delete()
+          this.$emit('changed')
+          await this.refresh()
         }
       },
-      async save() {
-        this.processes.save()
-        this.$emit('saved', this.model)
-      },
+
       async onMoveUp() {
         const selected = this.selected
         const order = selected.order

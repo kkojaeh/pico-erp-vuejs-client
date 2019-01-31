@@ -102,9 +102,13 @@ export class ItemModel extends Model {
     let constraints = {
       name: {
         presence: true,
-        length: {minimum: 2, maximum: 50}
+        length: {minimum: 2, maximum: 100}
       },
       externalCode: {
+        presence: false,
+        length: {maximum: 100}
+      },
+      barcodeNumber: {
         presence: false,
         length: {maximum: 100}
       },

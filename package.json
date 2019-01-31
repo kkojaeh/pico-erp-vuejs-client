@@ -29,7 +29,7 @@
     "moment": "^2.22.1",
     "number-to-words": "^1.2.4",
     "object.entries": "^1.1.0",
-    "plyr": "^3.3.7",
+    "plyr": "^3.4.8",
     "popper.js": "^1.14.3",
     "qs": "^6.5.2",
     "quasar-extras": "^2.0.5",

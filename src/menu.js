@@ -240,6 +240,14 @@ const menu = [
         })[language],
         url: '/production-request/await-accept',
         authorize: 'hasAnyRole(\'PRODUCTION_REQUEST_ACCEPTER\', \'PRODUCTION_REQUEST_MANAGER\')'
+      },
+      {
+        icon: 'fas fa-calendar',
+        label: languageAliases({
+          ko: '생산 계획 현황'
+        })[language],
+        url: '/production-plan/plan',
+        authorize: 'hasAnyRole(\'PRODUCTION_PLAN_CHARGER\', \'PRODUCTION_PLAN_MANAGER\')'
       }
     ]
   }

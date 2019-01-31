@@ -11,3 +11,8 @@ export const token = (state, payload) => {
   localStorage.setItem('AUTH/TOKEN', payload)
   state.token = payload
 }
+
+export const lastAccessed = (state, payload) => {
+  localStorage.setItem('AUTH/LAST-ACCESSED', payload)
+  state.lastAccessed = payload
+}

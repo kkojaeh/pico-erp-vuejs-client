@@ -1,4 +1,4 @@
-import { Authentication } from 'src/plugins/auth'
+import {Authentication} from 'src/plugins/auth'
 
 export const user = (state) => {
   return state.user
@@ -20,5 +20,9 @@ export const tokenParameterName = (state) => {
 export const authentication = (state) => {
   return state.user ? new Authentication(state.user, state.user.wholeRoles)
     : new Authentication(null, [])
+}
+
+export const lastAccessed = (state) => {
+  return state.lastAccessed
 }
 

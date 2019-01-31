@@ -1,5 +1,6 @@
 <template>
-  <router-link :to="to" v-html="value">
+  <router-link :to="{path: routerPath, query:routerQuery, name:routerName, params: routerParams}"
+               v-html="value">
   </router-link>
 </template>
 
@@ -8,29 +9,24 @@
 
   export default {
     name: 'ag-grid-router-link-renderer',
-    methods: {},
     computed: {
-      to () {
-        let location = {}
-        if (this.params.path) {
-          location.path = _.template(this.params.path)(this.params.data)
-        }
-        if (this.params.query) {
-          location.query = this.params.query
-        }
-        if (this.params.name) {
-          location.name = this.params.name
-        }
-        if (this.params.params) {
-          location.params = this.params.params
-        }
-        return location
-      },
-      value () {
+      value() {
         if (this.params.innerRenderer) {
           return this.params.innerRenderer(this.params)
         }
         return this.params.value
+      },
+      routerPath() {
+        return _.template(this.params.path)(this.params.data)
+      },
+      routerQuery() {
+        return this.params.query
+      },
+      routerName() {
+        return this.params.name
+      },
+      routerParams() {
+        return this.params.params
       }
     }
   }

@@ -80,6 +80,15 @@
         }
       },
 
+      getColumnDefs() {
+        const columnDefs = this.$slots.default
+        .filter(
+            (column) => column.componentInstance
+                && column.componentInstance.getColumnDefinition)
+        .map((column) => column.componentInstance.getColumnDefinition())
+        return columnDefs
+      },
+
       invalidateColumnDefinitions() {
         if (this._editing) {
           this._invalidateColumnDefinitionsQueued = true
@@ -87,13 +96,8 @@
         }
         if (this.api) {
           const focused = this.api.getFocusedCell()
-          this.api.setColumnDefs(
-              this.$slots.default
-              .filter(
-                  (column) => column.componentInstance
-                      && column.componentInstance.getColumnDefinition)
-              .map((column) => column.componentInstance.getColumnDefinition())
-          )
+          this.api.setColumnDefs(this.getColumnDefs())
+
           if (focused) {
             this.api.focusedCellController.setFocusedCell(focused.rowIndex,
                 focused.column.getColId(), focused.floating, false)
@@ -105,11 +109,6 @@
         if (this.autoSizeColumnsToFit && (this.$el.clientHeight + this.$el.clientWidth > 0)) {
           this.api.sizeColumnsToFit()
         }
-      },
-
-      getColumns() {
-        return (this.$slots.default || [])
-        .filter((c) => c.componentInstance && c.componentInstance.getColumnDefinition)
       },
 
       onGridSizeChanged(event) {
@@ -221,9 +220,6 @@
       let frameworkComponentWrapper = new VueFrameworkComponentWrapper(this)
       let vueFrameworkFactory = new VueFrameworkFactory(this.$el, this)
       let gridOptions = ComponentUtil.copyAttributesToGridOptions(this.gridOptions, this)
-      gridOptions.columnDefs = this.getColumns().map((column) => {
-        return column.componentInstance.getColumnDefinition()
-      })
       this._gridParams = {
         globalEventListener: this.globalEventListener.bind(this),
         frameworkFactory: vueFrameworkFactory,
@@ -249,6 +245,7 @@
         subtree: true,
         characterData: true
       })
+      this.$nextTick(() => this.invalidateColumnDefinitions())
     },
     watch: watchedProperties,
     computed:

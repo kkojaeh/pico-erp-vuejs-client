@@ -10,17 +10,6 @@
         :value-field="valueField"
     />
   </q-search>
-  <!--
-  <c-autocomplete-select ref="input" v-model="model"
-                         :label="label" :options="options"
-                         :label-field="labelField" :value-field="valueField"
-                         @search="onSearch">
-    <template slot="option" slot-scope="option">
-      {{option.label}}<br>
-      {{option.stamp}} - {{option.subLabel}}
-    </template>
-  </c-autocomplete-select>
-  -->
 </template>
 
 <script>

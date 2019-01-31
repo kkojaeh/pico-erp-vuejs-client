@@ -5,7 +5,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css'
 // import 'ag-grid/dist/styles/ag-theme-balham.css'
 import 'viewerjs/dist/viewer.min.css'
 import Highcharts from 'highcharts'
-import gantt from 'highcharts/modules/gantt';
+import HighchartsGantt from 'highcharts/modules/gantt';
+import HighchartsExporting from 'highcharts/modules/exporting';
 import AgGrid from 'src/components/ag-grid/ag-grid.vue'
 import AgGridColumn from 'src/components/ag-grid/ag-grid-column.vue'
 import ListFilterLabel from 'src/components/list/list-filter-label.vue'
@@ -70,7 +71,8 @@ if (!Object.entries) {
   entries.shim();
 }
 
-gantt(Highcharts)
+HighchartsGantt(Highcharts)
+HighchartsExporting(Highcharts)
 
 $.trumbowyg.svgPath = svgIcons
 

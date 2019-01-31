@@ -5,7 +5,8 @@
 
       <q-card-title>
         생산 요청 정보
-        <span slot="right" v-if="!!model.code">{{model.code}}
+        <span slot="right" v-if="!!model.code">
+          {{statusLabel}} - {{model.code}}
           <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
                  flat></q-btn>
         </span>
@@ -103,12 +104,6 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="check" helper="구매 요청의 상태 입니다"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-select float-label="상태" v-model="model.status" readonly hide-underline
-                    :options="statusLabelArray"></q-select>
-        </q-field>
-
       </q-card-main>
 
     </q-card>
@@ -181,7 +176,6 @@
     methods: {
       async onItemSearch() {
         const itemModels = await this.$selectItem({})
-        console.log(itemModels)
         if (!itemModels) {
           return
         }
@@ -241,6 +235,11 @@
       },
       acceptable() {
         return this.model.acceptable
+      },
+      statusLabel() {
+        const status = this.model.status
+        const found = this.statusLabelArray.find(e => e.value == status) || {}
+        return found.label || ''
       }
     },
     watch: {

@@ -1,6 +1,6 @@
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {SpringPaginationArray} from '../array'
+import {FetchableArray, SpringPaginationArray} from '../array'
 import {language, languageAliases} from "../../i18n";
 
 export class ProcessModel extends Model {
@@ -15,6 +15,7 @@ export class ProcessModel extends Model {
       status: 'DRAFT',
       difficulty: 'NORMAL',
       lossRate: 0,
+      inputRate: 1,
       adjustCost: 0,
       estimatedCost: {
         directLabor: 0,
@@ -80,6 +81,12 @@ export class ProcessModel extends Model {
     await api.put(`/process/processes/${this.id}/complete-plan`, {})
   }
 
+  async changeOrder(order) {
+    await api.put(`/process/processes/${this.id}/order`, {
+      order: order
+    })
+  }
+
   async validateCompletePlan() {
     return await this.$validate({
       'completePlan': {
@@ -101,6 +108,9 @@ export class ProcessModel extends Model {
 
   async validate() {
     let constraints = {
+      itemId: {
+        presence: true
+      },
       difficulty: {
         presence: true
       },
@@ -149,6 +159,28 @@ export const ProcessPaginationArray = Array.decorate(
 
       get model() {
         return ProcessModel
+      }
+    }
+)
+
+export const ItemProcessArray = Array.decorate(
+    class extends FetchableArray {
+      get url() {
+        return '/process/items/${itemId}/processes'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return ProcessModel
+      }
+
+      async fetch(itemId) {
+        return await super.fetch({
+          itemId: itemId
+        })
       }
     }
 )

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import ProcessForm from 'src/pages/process/process-form.vue'
 import ProcessTypeSelector from 'src/pages/process/process-type-selector.vue'
+import ProcessesEditor from 'src/pages/process/processes-editor.vue'
 
 function showProcess(id) {
   const parent = this
@@ -80,6 +81,7 @@ function createProcess(options) {
           h(ProcessForm, {
             'ref': 'form',
             props: {
+              'item-id': options.itemId,
               'closable': true,
               'close-confirmed': true
             },
@@ -135,9 +137,58 @@ function selectProcessType(options) {
   })
 }
 
+function editProcesses(options) {
+  const parent = this
+  return new Promise(async (resolve, reject) => {
+    let changed = false
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    const finish = (forceChanged) => {
+      resolve(changed || forceChanged)
+      vm.$destroy()
+      vm.$el.remove()
+    }
+    const vm = new Vue({
+      el: node,
+      parent: parent,
+      mounted() {
+        this.$nextTick(() => {
+          this.$refs.modal.show()
+        })
+      },
+      render(h) {
+        return h('q-modal', {
+          'ref': 'modal',
+          props: {
+            'content-classes': 'column'
+          },
+          on: {
+            hide: () => finish(false)
+          }
+        }, [
+          h(ProcessesEditor, {
+            'ref': 'editor',
+            props: {
+              itemId: options.itemId,
+              updatable: options.updatable,
+              closable: true
+            },
+            on: {
+              saved: () => finish(true),
+              changed: () => changed = true
+            }
+          })
+        ])
+      }
+    })
+  })
+}
+
+
 
 export default ({app, router, Vue}) => {
   Vue.prototype.$showProcess = showProcess
   Vue.prototype.$createProcess = createProcess
   Vue.prototype.$selectProcessType = selectProcessType
+  Vue.prototype.$editProcesses = editProcesses
 }

@@ -94,6 +94,18 @@
           </q-tooltip>
         </q-field>
 
+        <q-field icon="fas fa-barcode" helper="바코드 번호를 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.barcodeNumber"
+                 :error-label="model.$errors.barcodeNumber">
+          <q-input v-model="model.barcodeNumber" float-label="바코드 번호" class="ime-mode-disabled"
+                   :readonly="!updatable" :hide-underline="!updatable">
+            <q-btn icon="content_copy" v-clipboard:copy="model.barcodeNumber" v-clipboard-notify
+                   slot="after"
+                   flat></q-btn>
+          </q-input>
+        </q-field>
+
       </q-card-main>
 
     </q-card>
@@ -160,7 +172,7 @@
           <c-autocomplete-select float-label="스펙 유형" v-model="model.specTypeId"
                                  :label.sync="specTypeModel.name" :options="specTypeLabelArray"
                                  label-field="label" value-field="value"
-                                 :readonly="!updatable" :hide-underline="!updatable"
+                                 :readonly="!phantom" :hide-underline="!phantom"
                                  @search="onSpecTypeSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}[{{option.stamp}}]<br>
@@ -224,6 +236,12 @@
                v-if="$authorized.itemManager"
                @click="onDeactivate">비활성화
         </q-btn>
+
+        <q-btn flat icon="fast_forward" v-show="!phantom"
+               v-if="$authorized.processAccessor"
+               @click="onShowProcess">공정
+        </q-btn>
+
         <router-link :to="`/bom/${model.id}`" v-show="!phantom"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
@@ -273,7 +291,7 @@
     },
     authorized: {
       'itemManager': 'hasRole(\'ITEM_MANAGER\')',
-      'processManager': 'hasRole(\'PROCESS_MANAGER\')',
+      'processAccessor': 'hasRole(\'PROCESS_MANAGER\', \'PROCESS_ACCESSOR\')',
       'bomAccessor': 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')'
     },
     data() {
@@ -355,6 +373,12 @@
           this.$alert.positive('비활성화 되었습니다')
           this.show()
         }
+      },
+      async onShowProcess() {
+        await this.$editProcesses({
+          itemId: this.model.id,
+          updatable: true
+        })
       },
       async save() {
         const attachment = this.$refs.attachment

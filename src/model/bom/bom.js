@@ -4,7 +4,7 @@ import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
 import {language, languageAliases} from 'src/i18n'
 import {ItemModel, ItemSpecModel} from "src/model/item";
-import {BomProcessArray} from './bom-process'
+import {ItemProcessArray} from '../process'
 
 const parentSymbol = Symbol('parent')
 const childrenSymbol = Symbol('children')
@@ -58,7 +58,7 @@ export class BomModel extends Model {
   }
 
   get processesNames() {
-    return this.processes.map(process => process.process.name).join(', ')
+    return this.processes.map(process => process.name).join(', ')
   }
 
   get processable() {
@@ -104,8 +104,8 @@ export class BomModel extends Model {
 
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
-    const processArray = new BomProcessArray(this)
-    await processArray.fetch()
+    const processArray = new ItemProcessArray()
+    await processArray.fetch(this.itemId)
     this[processesSymbol] = processArray
     this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
   }

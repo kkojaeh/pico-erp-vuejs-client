@@ -457,8 +457,6 @@
     .forEach(d => d.parent = data.id)
   })
 
-  console.log(datas)
-
   window.Highcharts = Highcharts
 
   const dateScaleFormatters = {
@@ -466,9 +464,9 @@
       return moment(data.value).format('D(ddd)')
     },
     'week'(data) {
-      const start = new Date(data.value)
-      const end = new Date(data.value + data.tickPositionInfo.unitRange)
-      return moment(start).format('YYYY-MM-DD') + ' ~ ' + moment(end).format('YYYY-MM-DD')
+      const start = moment(data.value)
+      const end = moment(start).day(7)
+      return start.format('YYYY-MM-DD') + ' ~ ' + end.format('YYYY-MM-DD')
     },
     'hour'(data) {
       const start = new Date(data.value)
@@ -515,15 +513,15 @@
 
 // Update disabled status of the remove button, depending on whether or not we
 // have any selected points.
-      function updateRemoveButtonStatus() {
-        debugger
+      function updateRemoveButtonStatus(event) {
         /*var chart = this.series.chart;
         // Run in a timeout to allow the select to update
         setTimeout(function () {
           btnRemoveTask.disabled = !chart.getSelectedPoints().length ||
               isAddingTask;
         }, 10);*/
-        console.log('updateRemoveButtonStatus')
+        const data = event.target
+        alert(data.id)
       }
 
 // Create the chart
@@ -541,20 +539,24 @@
           text: 'Drag and drop points to edit'
         },
 
+        exporting: {
+          sourceHeight: 1748,
+          sourceWidth: 2480,
+          scale: 2
+        },
+
         plotOptions: {
           series: {
-            animation: false, // Do not animate dependency connectors
+            animation: true, // Do not animate dependency connectors
             dragDrop: {
               draggableX: true,
-              draggableY: true,
-              dragPrecisionX: day / 3 // Snap to eight hours
             },
             dataLabels: {
               enabled: true,
               formatter: function () {
                 const point = this.point
                 const completed = (point.completed || 0) * 100
-                return `${point.name} ${completed}%`
+                return `${completed}%`
               },
               style: {
                 cursor: 'default',
@@ -564,9 +566,7 @@
             allowPointSelect: true,
             point: {
               events: {
-                select: updateRemoveButtonStatus,
-                unselect: updateRemoveButtonStatus,
-                remove: updateRemoveButtonStatus
+                select: updateRemoveButtonStatus
               }
             },
             tooltip: {
@@ -575,13 +575,66 @@
           }
         },
 
-        /* yAxis: {
-           type: 'category',
-           categories: ['Tech', 'Marketing', 'Sales'],
-           min: 0,
-           max: 2
-         },
- */
+        yAxis: [{
+          "grid": {
+            "enabled": true,
+          },
+          "staticScale": 50,
+          "reversed": true,
+          "type": "treegrid",
+          "index": 0
+        }, {
+          "grid": {
+            "enabled": true,
+            columns: [{
+              title: {
+                text: 'Project'
+              },
+              labels: {
+                format: '{point.name}'
+              }
+            }, {
+              title: {
+                text: 'Assignee'
+              },
+              labels: {
+                format: '{point.assignee}'
+              }
+            }, {
+              title: {
+                text: 'Est. days'
+              },
+              labels: {
+                formatter: function () {
+                  var point = this.point,
+                      days = (1000 * 60 * 60 * 24),
+                      number = (point.x2 - point.x) / days;
+                  return Math.round(number * 100) / 100;
+                }
+              }
+            }, {
+              labels: {
+                format: '{point.start:%e. %b}'
+              },
+              title: {
+                text: 'Start date'
+              }
+            }, {
+              title: {
+                text: 'End date'
+              },
+              offset: 30,
+              labels: {
+                format: '{point.end:%e. %b}'
+              }
+            }]
+          },
+          opposite: true,
+          "staticScale": 50,
+          "reversed": true,
+          "type": "treegrid",
+          "index": 0
+        }],
         xAxis: [{
           //currentDateIndicator: true,
           labels: {
@@ -597,6 +650,31 @@
         tooltip: {
           xDateFormat: '%a %b %d, %H:%M'
         },
+
+        /*yAxis: [{
+          "grid":{"enabled":true},
+          "staticScale":50,
+          "reversed":true,
+          "type":"category",
+          "index":0,
+          columns: [{
+            title: {
+              text: '이름'
+            },
+            labels: {
+              format: '{name}'
+            }
+          },
+            {
+              title: {
+                text: '아이디'
+              },
+              labels: {
+                format: '{itemId}'
+              }
+            }]
+
+        }],*/
 
         series: [{
           name: '생산 계획',
@@ -732,6 +810,7 @@
       });
 
       window.gantt = chart
+      window.Highcharts = Highcharts
 
       /* Add button handlers for add/remove tasks */
       /*

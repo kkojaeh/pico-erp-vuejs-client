@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as _ from 'lodash'
 import {Loading, Notify} from 'quasar'
-import {signOut} from './auth'
+import {init, signOut} from './auth'
 import store from 'src/store'
 import Router from 'src/router'
 import Vue from 'vue'
@@ -14,8 +14,7 @@ let apiRequests = 0
 let analyticsHandlerId
 const analytics = {}
 
-let loadFunction = (config) => {
-
+const configRequest = function (config) {
   // data 가 존재하지 않으면 Content-Type 이 삭제 되는 문제 수정
   config.data = config.data || {}
   config.url = _.template(config.url)(config.data)
@@ -23,15 +22,22 @@ let loadFunction = (config) => {
   //config.headers['Cache-Control'] = 'max-age=0'
 
   config.headers[store.getters['auth/tokenHeaderName']] = store.getters['auth/token']
-
   config.headers['Accept'] = apiContentType
   config.headers['Content-Type'] = apiContentType
+  return config
+}
+
+const loadingRequest = function (config) {
   if (apiRequests == 0) {
     Loading.show({
       delay: 0
     })
   }
   apiRequests++
+  return config
+}
+
+const analyticsRequest = function (config) {
   const url = config.url
   const qi = url.lastIndexOf('?')
   const method = config.method
@@ -53,33 +59,48 @@ let loadFunction = (config) => {
   return config
 }
 
-let completeFunction = () => {
+const loadingResponse = function (response) {
   setTimeout(() => {
     apiRequests--
     if (apiRequests == 0) {
       Loading.hide()
     }
   }, 200)
-}
-let finishFunction = (response) => {
-  completeFunction()
+  if (response instanceof Error) {
+    return Promise.reject(response)
+  }
   return response
 }
 
+const sessionMilliseconds = 1000 * 60 * 60
+
 const authExpiredHandler = _.debounce(() => {
-  Notify.create({
-    icon: 'warning',
-    position: 'top-right',
-    message: '인증이 만료 되었습니다',
-    timeout: 3000,
-    detail: '다시 로그인 하세요'
-  })
-  setTimeout(() => {
-    store.commit('route/lastAccessed', _.assign({}, Router.currentRoute))
-    signOut().then(() => {
-      Router.push('/sign-in')
+  const lastAccessed = store.getters['auth/lastAccessed']
+  store.commit('route/lastAccessed', _.assign({}, Router.currentRoute))
+  if (sessionMilliseconds + lastAccessed < Date.now()) {
+    Notify.create({
+      icon: 'warning',
+      position: 'top-right',
+      message: '인증이 만료 되었습니다',
+      timeout: 3000,
+      detail: '다시 로그인 하세요'
     })
-  }, 2000)
+    setTimeout(() => {
+      signOut().then(() => {
+        Router.push('/sign-in')
+      })
+    }, 2000)
+  } else {
+    init()
+    Notify.create({
+      icon: 'warning',
+      position: 'top-right',
+      message: '인증이 만료 되었습니다',
+      timeout: 3000,
+      detail: '다시 시도 하세요'
+    })
+  }
+
 
 }, 500)
 
@@ -97,8 +118,7 @@ let statusHandlers = {
   }
 }
 
-let errorHandler = (error) => {
-  completeFunction()
+const errorHandler = (error) => {
   let messages = [error.message]
   let preventDefault
   if (error.response) {
@@ -126,8 +146,7 @@ let errorHandler = (error) => {
   }
 }
 
-let errorFunction = (error) => {
-  Loading.hide()
+let errorResponse = (error) => {
   if (error.config && !error.config.preventDefault) {
     errorHandler(error)
   } else {
@@ -140,8 +159,17 @@ const axiosApi = axios.create({
   baseURL: apiBaseUrl
 })
 
-axiosApi.interceptors.request.use(loadFunction)
-axiosApi.interceptors.response.use(finishFunction, errorFunction)
+let lastAccessedResponse = (response) => {
+  store.commit('auth/lastAccessed', Date.now())
+  return response
+}
+
+axiosApi.interceptors.request.use(configRequest)
+axiosApi.interceptors.request.use(loadingRequest)
+axiosApi.interceptors.request.use(analyticsRequest)
+
+axiosApi.interceptors.response.use(loadingResponse, loadingResponse)
+axiosApi.interceptors.response.use(lastAccessedResponse, errorResponse)
 
 export default ({Vue}) => {
   Vue.prototype.$api = axiosApi

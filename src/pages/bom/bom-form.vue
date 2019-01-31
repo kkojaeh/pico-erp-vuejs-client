@@ -342,8 +342,8 @@
 
       async onOpenProcesses(data) {
         this.selected = data
-        const changed = await this.$editBomProcesses({
-          bomId: this.selected.id,
+        const changed = await this.$editProcesses({
+          itemId: this.selected.itemId,
           updatable: this.selected.processable && this.selected.updatable
         })
         if (changed) {

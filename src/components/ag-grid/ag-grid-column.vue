@@ -81,6 +81,10 @@
     methods: {
       processChanges(propertyName, val, oldVal) {
         if (this._initialised) {
+          if (propertyName == 'cellRendererParams' && this.cellRendererFramework
+              == "ag-grid-router-link-renderer") {
+            //console.log(propertyName, val, oldVal, _.isEqual(val, oldVal))
+          }
           if (_.isEqual(val, oldVal)) {
             return
           }
