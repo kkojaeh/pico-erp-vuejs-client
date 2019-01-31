@@ -79,14 +79,17 @@ export class BomModel extends Model {
     return this.order < this.parent.children.length - 1
   }
 
-  static async get(id) {
-    const response = await api.get(`/bom/boms/${id}`)
+  static async get(id, cacheable) {
+    const response = await api.get(
+        `/bom/boms/${id}${cacheable ? '' : '?cb=' + Date.now()}`)
     return new BomModel(response.data)
   }
 
-  static async getByItemId(itemId, revision) {
+  static async getByItemId(itemId, revision, cacheable) {
     revision = revision || 0
-    const response = await api.get(`/bom/items/${itemId}/${revision}`)
+    const response = await api.get(
+        `/bom/items/${itemId}/${revision}${cacheable ? '' : '?cb='
+            + Date.now()}`)
     return new BomModel(response.data)
   }
 
