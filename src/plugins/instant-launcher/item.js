@@ -94,6 +94,53 @@ function create(options) {
   })
 }
 
+function show(id) {
+  const parent = this
+  return new Promise(async (resolve, reject) => {
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    const finish = (selected) => {
+      resolve(selected)
+      vm.$destroy()
+      vm.$el.remove()
+    }
+    const vm = new Vue({
+      el: node,
+      parent: parent,
+      mounted() {
+        this.$nextTick(() => {
+          this.$refs.modal.show()
+          this.$refs.form.show()
+        })
+      },
+      render(h) {
+        return h('q-modal', {
+          'ref': 'modal',
+          props: {
+            'content-classes': 'column'
+          },
+          on: {
+            hide: () => finish()
+          }
+        }, [
+          h(ItemForm, {
+            'ref': 'form',
+            props: {
+              action: 'show',
+              id: id,
+              'close-confirmed': true,
+              closable: true
+            },
+            on: {
+              saved: (itemModel) => finish(itemModel)
+            }
+          })
+        ])
+      }
+    })
+  })
+}
+
 function selectLot(options) {
   const parent = this
   return new Promise(async (resolve, reject) => {
@@ -234,6 +281,7 @@ function createSpec(options) {
 export default ({app, router, Vue}) => {
   Vue.prototype.$selectItem = select
   Vue.prototype.$createItem = create
+  Vue.prototype.$showItem = show
   Vue.prototype.$showItemSpec = showSpec
   Vue.prototype.$createItemSpec = createSpec
   Vue.prototype.$selectItemLot = selectLot

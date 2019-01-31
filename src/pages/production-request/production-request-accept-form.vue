@@ -37,8 +37,9 @@
                  :error="!!model.$errors.itemId"
                  :error-label="model.$errors.itemId"
                  class="col-xs-12 col-md-6 col-lg-8 col-xl-9">
-          <q-input :prefix="itemModel.code" float-label="품목" :value="itemModel.name" clearable
-                   readonly hide-underline/>
+          <q-input :prefix="itemModel.code" float-label="품목" :value="itemModel.name"
+                   :before="[{icon: 'open_in_new', condition: !!model.itemId, handler: onShowItem}]"
+                   clearable readonly hide-underline/>
         </q-field>
 
         <q-field icon="info" helper="요청 수량을 입력하세요"
@@ -174,6 +175,9 @@
       }
     },
     methods: {
+      onShowItem() {
+        this.$showItem(this.model.itemId)
+      },
       async onItemSearch() {
         const itemModels = await this.$selectItem({})
         if (!itemModels) {

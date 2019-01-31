@@ -40,6 +40,7 @@
           <q-input :prefix="itemModel.code" float-label="품목" :value="itemModel.name" clearable
                    readonly
                    :hide-underline="!updatable"
+                   :before="[{icon: 'open_in_new', condition: !!model.itemId, handler: onShowItem}]"
                    :after="[{ icon:'search', condition: updatable, handler:onItemSearch}, { icon:'clear', condition: updatable && !!model.itemId, handler:onItemClear}]"/>
         </q-field>
 
@@ -181,6 +182,9 @@
       }
     },
     methods: {
+      onShowItem() {
+        this.$showItem(this.model.itemId)
+      },
       async onItemSearch() {
         const itemModels = await this.$selectItem({})
         if (!itemModels) {
