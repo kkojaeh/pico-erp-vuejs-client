@@ -121,7 +121,7 @@
     </q-page-sticky>
 
     <q-modal v-model="detailEditing">
-      <q-card class="col-12" flat>
+      <q-card class="col-12" flat style="max-width:1024px">
         <q-card-title>
           {{detailTitle}}
           <span slot="right">
