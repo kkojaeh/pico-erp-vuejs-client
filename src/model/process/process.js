@@ -15,7 +15,6 @@ export class ProcessModel extends Model {
       status: 'DRAFT',
       difficulty: 'NORMAL',
       lossRate: 0,
-      inputRate: 1,
       adjustCost: 0,
       estimatedCost: {
         directLabor: 0,

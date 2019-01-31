@@ -37,10 +37,6 @@
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-style="{textAlign: 'center'}"
                           :cell-renderer-params="{array:difficultyLabelArray, valueField:'value', labelField: 'label'}"/>
-          <ag-grid-column field="inputRate" header-name="투입 비율(%)" :width="150"
-                          :cell-style="{textAlign: 'right'}"
-                          :value-formatter="percentFormatter"/>
-
         </ag-grid>
 
       </q-card-main>
@@ -69,7 +65,6 @@
 </template>
 <script>
   import {ItemProcessArray, ProcessDifficultyArray, ProcessStatusArray} from 'src/model/process'
-  import Big from 'big.js'
 
   export default {
     props: {
@@ -130,11 +125,6 @@
       onHelpProcessesEditor() {
         this.$alert.info('위의 공정부터 아래의 공정으로 진행됩니다')
         this.$alert.info('투입 비율은 공정으로 생성되는 1개의 품목에 대한 투입 수량 비율입니다')
-      },
-      percentFormatter(params) {
-        if (params.value) {
-          return new Big(params.value).times(100).toFixed(2) + ' %'
-        }
       },
       async load(itemId) {
         await this.processes.fetch(itemId)

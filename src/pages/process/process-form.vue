@@ -71,22 +71,6 @@
                     :options="difficultyLabelArray"></q-select>
         </q-field>
 
-        <q-field icon="error" helper="공정의 손실률 입니다"
-                 :error="!!model.$errors.lossRate"
-                 :error-label="model.$errors.lossRate"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input type="number" v-model="lossRatePercentage" float-label="손실률" align="right"
-                   suffix="%" :decimals="2"/>
-        </q-field>
-
-        <q-field icon="error" helper="공정유형의 손실률 입니다"
-                 :error="!!model.$errors.inputRate"
-                 :error-label="model.$errors.inputRate"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input type="number" v-model="inputRatePercentage" float-label="투입 비율" align="right"
-                   suffix="%" :decimals="2"/>
-        </q-field>
-
         <!--        <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
                          class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                          :error="!!model.$errors.managerId"
@@ -454,15 +438,7 @@
         set(value) {
           this.model.lossRate = Number(new Big(value).div(100))
         }
-      },
-      inputRatePercentage: {
-        get() {
-          return Number(new Big(this.model.inputRate).times(100))
-        },
-        set(value) {
-          this.model.inputRate = Number(new Big(value).div(100))
-        }
-      },
+      }
     },
     watch: {
       'model.typeId': async function (to) {
