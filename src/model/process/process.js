@@ -65,7 +65,7 @@ export class ProcessModel extends Model {
   }
 
   get canCompletePlan() {
-    return !this.phantom && this.status == 'DRAFT'
+    return this.status == 'DRAFT' && !!this.typeId
   }
 
   get typeFixed() {

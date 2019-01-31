@@ -1,38 +1,6 @@
 <template>
   <q-page class="row layout-padding">
 
-    <!--<q-card class="col-12" flat>
-
-      <q-card-title>
-        품목 정보
-      </q-card-title>
-
-      <q-card-main class="row gutter-md">
-
-        <q-field icon="shopping_cart" helper="공정의 대상 품목입니다"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input v-model="itemModel.code" float-label="품목 코드" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="itemModel.code" v-clipboard-notify
-                   slot="after"
-                   flat></q-btn>
-          </q-input>
-
-        </q-field>
-
-        <q-field icon="shopping_cart" helper="공정의 대상 품목입니다"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input v-model="itemModel.name" float-label="품목 이름" readonly hide-underline>
-            <q-btn icon="content_copy" v-clipboard:copy="itemModel.name" v-clipboard-notify
-                   slot="after"
-                   flat></q-btn>
-          </q-input>
-        </q-field>
-
-      </q-card-main>
-
-    </q-card>-->
-
-
     <q-card class="col-12" flat>
 
       <q-card-title>
@@ -69,6 +37,14 @@
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
           <q-select float-label="난이도" v-model="model.difficulty"
                     :options="difficultyLabelArray"></q-select>
+        </q-field>
+
+        <q-field icon="error" helper="공정의 손실률 입니다"
+                 :error="!!model.$errors.lossRate"
+                 :error-label="model.$errors.lossRate"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-input type="number" v-model="lossRatePercentage" float-label="손실률" align="right"
+                   suffix="%" :decimals="2"/>
         </q-field>
 
         <!--        <q-field icon="account_box" helper="공정의 관리자를 선택하세요"
@@ -387,8 +363,13 @@
       },
 
       async onCompletePlan() {
-        let valid = await this.model.validateCompletePlan()
-        if (valid) {
+        let valid = await this.model.validate()
+        if (!valid) {
+          this.$alert.warning('입력이 유효하지 않습니다')
+          return
+        }
+        let validCompletePlan = await this.model.validateCompletePlan()
+        if (validCompletePlan) {
           const ok = await this.$alert.confirm('가확정 하시겠습니까?')
           if (ok) {
             await this.save()
@@ -405,7 +386,7 @@
             this.load(this.model.id)
           }
         } else {
-          this.$alert.warning('입력이 유효하지 않습니다')
+          this.$alert.warning(this.model.$errors.completePlan)
         }
       }
     },
