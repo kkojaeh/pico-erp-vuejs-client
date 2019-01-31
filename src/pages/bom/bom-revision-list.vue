@@ -38,8 +38,6 @@
         <ag-grid-column field="revision" header-name="버전" :width="150"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:`/bom/${itemId}/\${id}`}"/>
-        <ag-grid-column field="processName" header-name="공정" :width="150"
-                        :cell-renderer="processNameRenderer"/>
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -107,9 +105,6 @@
       this.array.fetch(this.itemId)
     },
     methods: {
-      processNameRenderer (params) {
-        return params.value ? params.value : 'N/A'
-      },
       async _onDraftClick () {
         await BomModel.createByItemId(this.itemId)
         const bom = await BomModel.getByItemId(this.itemId)
