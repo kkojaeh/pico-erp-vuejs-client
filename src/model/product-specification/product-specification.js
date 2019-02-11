@@ -55,7 +55,8 @@ export class ProductSpecificationModel extends Model {
   static async draft(itemId) {
     const id = uuid()
     const response = await api.post(
-        `/product-specification/specifications/${id}`, {
+        `/product-specification/specifications`, {
+          id: id,
           itemId: itemId
         })
     return new ProductSpecificationModel(response.data)
