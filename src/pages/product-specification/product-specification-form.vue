@@ -268,11 +268,12 @@
             if (key == 'root') {
               return
             }
+            const value = e.value || ''
             properties.push({
               key: e.key,
               name: e.header.innerText,
               order: orders.indexOf(e.key),
-              value: e.value
+              value: value.replace(/\\n/g, '<br>')
             })
           })
 
