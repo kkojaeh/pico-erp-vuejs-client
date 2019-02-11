@@ -280,7 +280,6 @@
           return o
 
         })
-        console.log(this.$refs.imageAttachment.getFiles())
         data.images = this.$refs.imageAttachment.getFiles().map(file => {
           return {
             name: file.name,
@@ -318,7 +317,6 @@
         this.editors.forEach(editor => {
           _.assign(editor.process.processInfo, editor.getValue())
         })
-        this.processes.forEach(p => console.log(p.processInfo, p.hasChanged()))
         await Promise.all([
           await this.$refs.imageAttachment.save(),
           await this.$refs.bluePrintAttachment.save(),
@@ -333,6 +331,7 @@
         const ok = await this.$alert.confirm('새 버전을 생성 하시겠습니까?')
         if (ok) {
           await this.model.nextDrft()
+          await this.$await(1000)
           this.$alert.positive('새버전이 생성 되었습니다')
           await this.reload()
         }
