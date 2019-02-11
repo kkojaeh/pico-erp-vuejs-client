@@ -2,7 +2,7 @@
   <uppy-attachment ref="attachment" v-model="model" :model-type="modelType"
                    :multiple="multiple" :max-file-size="maxFileSize"
                    :max-number-of-files="maxNumberOfFiles" :category="category"
-                   :readonly="readonly">
+                   :readonly="readonly" :allowed-content-types="allowedContentTypes">
   </uppy-attachment>
 
 </template>
@@ -127,6 +127,9 @@
         type: Number,
         default: 5
       },
+      allowedContentTypes: {
+        type: Array
+      },
       value: {
         type: String
       },
@@ -164,6 +167,10 @@
         const result = await this.$refs.attachment.save()
         Loading.hide()
         return result
+      },
+
+      getFiles() {
+        return this.$refs.attachment.getFiles()
       }
     },
     mounted() {

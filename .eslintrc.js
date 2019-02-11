@@ -29,7 +29,7 @@ module.exports = {
   'rules': {
     'max-len': [
       2,
-      120
+      150
     ],
     'comma-dangle': [
       2,

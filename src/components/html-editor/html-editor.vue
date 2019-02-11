@@ -6,7 +6,6 @@
   import $ from 'jquery';
   import {language, languageAliases} from 'src/i18n'
 
-
   class Adapter {
     constructor(loader) {
       this.loader = loader
@@ -119,3 +118,7 @@
   }
 
 </script>
+<style lang="stylus">
+  .trumbowyg-box
+    margin-top: 0px
+</style>

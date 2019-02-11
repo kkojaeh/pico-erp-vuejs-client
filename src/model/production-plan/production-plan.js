@@ -57,7 +57,7 @@ export class ProductionPlanModel extends Model {
   }
 
   async determine() {
-    await api.put(`/production-plan/plans/${this.id}/commit`, this)
+    await api.put(`/production-plan/plans/${this.id}/determine`, this)
   }
 
   async validateDetermine() {

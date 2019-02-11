@@ -177,6 +177,7 @@
           this.uppy.removeFile(id)
         })
       }
+
     }
 
   }

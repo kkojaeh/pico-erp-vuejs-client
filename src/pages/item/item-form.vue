@@ -242,6 +242,11 @@
                @click="onShowProcess">공정
         </q-btn>
 
+        <q-btn flat icon="library_books" v-show="!phantom"
+               v-if="$authorized.productSpecificationAccessor"
+               @click="onShowProductSpecification">사양서
+        </q-btn>
+
         <router-link :to="`/bom/${model.id}`" v-show="!phantom"
                      v-if="$authorized.bomAccessor">
           <q-btn flat icon="playlist_add_check">BOM</q-btn>
@@ -265,6 +270,10 @@
     ItemTypeArray
   } from 'src/model/item'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {
+    ProductSpecificationModel,
+    ProductSpecificationViewer
+  } from 'src/model/product-specification'
   import {UnitLabelArray} from 'src/model/shared'
 
   export default {
@@ -292,7 +301,10 @@
     authorized: {
       'itemManager': 'hasRole(\'ITEM_MANAGER\')',
       'processAccessor': 'hasRole(\'PROCESS_MANAGER\', \'PROCESS_ACCESSOR\')',
-      'bomAccessor': 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')'
+      'bomAccessor': 'hasAnyRole(\'BOM_MANAGER\', \'BOM_ACCESSOR\')',
+      'productSpecificationWriter': 'hasAnyRole(\'PRODUCT_SPECIFICATION_WRITER\', \'PRODUCT_SPECIFICATION_MANAGER\')',
+      'productSpecificationAccessor':
+          'hasAnyRole(\'PRODUCT_SPECIFICATION_WRITER\', \'PRODUCT_SPECIFICATION_MANAGER\', \'PRODUCT_SPECIFICATION_ACCESSOR\')'
     },
     data() {
       return {
@@ -379,6 +391,20 @@
           itemId: this.model.id,
           updatable: true
         })
+      },
+
+      async onShowProductSpecification() {
+        const exists = await ProductSpecificationModel.existsByItemId(this.model.id)
+        if (!exists && this.$authorized.productSpecificationWriter) {
+          const ok = await this.$alert.confirm('사양서가 존재하지 않습니다. 생성 하시겠습니까?')
+          if (ok) {
+            await ProductSpecificationModel.draft(this.model.id)
+          }
+        }
+        const specification = await ProductSpecificationModel.getByItemId(this.model.id)
+        const viewer = new ProductSpecificationViewer(this)
+        viewer.id = specification.id
+        await viewer.show()
       },
       async save() {
         const attachment = this.$refs.attachment

@@ -31,6 +31,7 @@
     "object.entries": "^1.1.0",
     "plyr": "^3.4.8",
     "popper.js": "^1.14.3",
+    "print-js": "^1.0.54",
     "qs": "^6.5.2",
     "quasar-extras": "^2.0.5",
     "quasar-framework": "^0.17.11",
@@ -66,6 +67,7 @@
     "eslint-plugin-vue": "^4.3.0",
     "firebase-tools": "^4.2.0",
     "imports-loader": "^0.8.0",
+    "mustache-loader": "^1.4.1",
     "quasar-cli": "^0.17.22",
     "strip-ansi": "^3.0.1"
   },

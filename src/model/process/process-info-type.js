@@ -3,6 +3,12 @@ import {exists, Model} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {LabelModel} from 'src/model/shared'
 
+const propertyOrders = {
+  'width': 1,
+  'height': 2,
+  'remark': Number.MAX_VALUE
+}
+
 export class ProcessInfoTypeModel extends Model {
 
   get defaults() {
@@ -21,6 +27,22 @@ export class ProcessInfoTypeModel extends Model {
 
   static async exists(id) {
     return await exists(api, `/process/process-info-types/${id}`)
+  }
+
+  getMetadata() {
+    const numbers = ['integer']
+    const data = JSON.parse(this.metadata)
+    _.forIn(data.properties, (value, key) => {
+      if (propertyOrders[key]) {
+        value.propertyOrder = propertyOrders[key]
+      }
+      if (numbers.includes(value.type)) {
+        if (_.isArray(value.enum)) {
+          value.enum = value.enum.map(Number)
+        }
+      }
+    })
+    return data
   }
 
 }

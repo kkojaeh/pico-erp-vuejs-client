@@ -308,6 +308,10 @@
           this.$emit('input', value)
         }
         return value
+      },
+
+      getFiles() {
+        return this.model.files
       }
     },
 

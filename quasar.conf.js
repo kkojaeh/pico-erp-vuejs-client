@@ -81,6 +81,11 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/
         })
+        cfg.module.rules.push({
+          test: /\.mustache$/,
+          exclude: /node_modules/,
+          loader: 'mustache-loader'
+        })
       }
     },
     devServer: {

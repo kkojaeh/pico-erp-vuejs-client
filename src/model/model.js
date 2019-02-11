@@ -45,8 +45,18 @@ export class Model {
     }
   }
 
+  getSnapshot() {
+    return this[snapshotSymbol]
+  }
+
   snapshot() {
-    this[snapshotSymbol] = _.assign({}, this)
+    const o = _.assign({}, this)
+    _.forEach(o, (value, key) => {
+      if (_.isObject(value)) {
+        o[key] = _.cloneDeep(value)
+      }
+    })
+    this[snapshotSymbol] = o
   }
 
   hasChanged(property) {

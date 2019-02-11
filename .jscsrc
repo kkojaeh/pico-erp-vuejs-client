@@ -1,6 +1,6 @@
 {
   "preset": "google",
-  "maximumLineLength": 120,
+  "maximumLineLength": 150,
   "disallowTrailingComma": true,
   "fileExtensions": [
     ".js"

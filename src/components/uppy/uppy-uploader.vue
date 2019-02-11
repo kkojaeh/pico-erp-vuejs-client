@@ -128,10 +128,6 @@
             file.meta[key] = value
           })
         })
-
-        console.log(uppy.getState().files)
-
-
         return await uppy.upload()
       }
 
