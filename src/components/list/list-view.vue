@@ -240,6 +240,8 @@
         const array = this.array
         if (this.sortQueryString) {
           array.sorters = Sort.parseQueryString(this.sortQueryString)
+        } else {
+          array.sorters = null
         }
         if (this.pagination) {
           array.page = this.page
@@ -262,10 +264,14 @@
       },
 
       _onGridSortChanged(e) {
+        const previousSortQueryString = this.sortQueryString
         this.sortQueryString = Sort.toQueryString(
             e.api.getSortModel().map(
                 (sm) => Sort.createSort(e.api.getColumnDef(sm.colId).field, sm.sort))
         )
+        if (previousSortQueryString != this.sortQueryString && this.preventQueryString) {
+          this._fetch()
+        }
       },
 
       _onGridComponentStateChanged(e) {
