@@ -33,11 +33,32 @@
           </c-autocomplete-select>
         </q-field>
 
-        <q-field icon="account_circle" helper="이름을 입력하세요"
-                 class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
-                 :error="!!model.$errors.name"
-                 :error-label="model.$errors.name">
-          <q-input v-model="model.name" float-label="이름" readonly hide-underline/>
+        <q-field icon="fas fa-gift" helper="품목을 선택하세요"
+                 :error="!!model.$errors.itemId"
+                 :error-label="model.$errors.itemId"
+                 class="col-xs-12 col-md-6 col-lg-8 col-xl-9">
+          <q-input :prefix="itemModel.code" float-label="품목" :value="itemModel.name" clearable
+                   readonly hide-underline
+                   :before="[{icon: 'open_in_new', condition: !!model.itemId, handler: onShowItem}]"/>
+        </q-field>
+
+        <q-field icon="fas fa-gift" helper="품목 스펙을 입력하세요"
+                 :error="!!model.$errors.itemSpecId"
+                 :error-label="model.$errors.itemSpecId"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+          <q-input float-label="품목 스펙" :value="model.itemSpecCode" clearable
+                   readonly hide-underline/>
+        </q-field>
+
+        <q-field icon="info" helper="요청 수량을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.quantity"
+                 :error-label="model.$errors.quantity">
+          <q-input type="number" float-label="수량" v-model="model.quantity" align="right"
+                   readonly hide-underline :suffix="unitLabel"/>
+          <q-tooltip>
+            {{$number.words(model.quantity)}}
+          </q-tooltip>
         </q-field>
 
         <q-field icon="fas fa-calendar" helper="만기일을 입력하세요"
@@ -148,48 +169,6 @@
 
     </q-card>
 
-    <q-card class="col-12" flat>
-
-      <q-card-title>
-        구매 품목
-      </q-card-title>
-
-      <q-card-separator/>
-
-
-      <q-card-main class="row">
-
-        <ag-grid class="col"
-                 :grid-auto-height="true"
-                 row-selection="single"
-                 enable-col-resize
-                 suppress-no-rows-overlay
-                 @selection-changed="onItemSelectionChanged"
-                 :row-data="itemArray">
-
-          <!--<ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"/>-->
-          <ag-grid-column field="item.code" header-name="품목 코드" :width="200"/>
-          <ag-grid-column field="item.name" header-name="품목 이름" :width="300"/>
-          <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
-                          cell-renderer-framework="purchase-request-item-spec-cell-renderer"
-                          :cell-renderer-params="{openHandler: onOpenItemSpec}"/>
-          <ag-grid-column field="quantity" header-name="수량" :width="150"
-                          :cell-style="{textAlign: 'right'}"
-                          cell-renderer-framework="ag-grid-number-renderer"
-                          :cell-renderer-params="{format:'#,##0.00', words:true}"
-                          cell-editor-framework="ag-grid-input-editor"
-                          :cell-editor-params="{ type: 'number' }"/>
-          <ag-grid-column field="item.unit" header-name="단위" :width="80"
-                          :cell-style="{textAlign: 'center'}"
-                          cell-renderer-framework="ag-grid-array-label-renderer"
-                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
-          <ag-grid-column field="remark" header-name="비고" :width="200"/>
-        </ag-grid>
-
-      </q-card-main>
-
-    </q-card>
-
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
@@ -208,6 +187,7 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
+  import {ItemModel} from 'src/model/item'
   import {
     PurchaseRequestItemArray,
     PurchaseRequestModel,
@@ -221,7 +201,6 @@
   } from 'src/model/warehouse'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
-  import PurchaseRequestItemSpecCellRenderer from './purchase-request-item-spec-cell-renderer'
 
   export default {
     props: {
@@ -243,7 +222,7 @@
     data() {
       return {
         model: new PurchaseRequestModel(),
-        itemArray: new PurchaseRequestItemArray(),
+        itemModel: new ItemModel(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         requesterModel: new UserModel(),
@@ -287,6 +266,9 @@
       })
     },
     methods: {
+      onShowItem() {
+        this.$showItem(this.model.itemId)
+      },
       async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
       },
@@ -327,10 +309,7 @@
       },
       async load(id) {
         const model = await PurchaseRequestModel.get(id)
-        const itemArray = new PurchaseRequestItemArray(model)
-        await itemArray.fetch()
         this.model = model
-        this.itemArray = itemArray
       },
 
       async closeOrReload() {
@@ -342,6 +321,7 @@
       },
 
       async onReject() {
+        await this.model.fetchReference()
         const validReject = await this.model.validateReject()
         if (validReject) {
           const ok = await this.$alert.confirm('요청을 반려 하시겠습니까?')
@@ -361,6 +341,7 @@
       },
 
       async onAccept() {
+        await this.model.fetchReference()
         const validCancel = await this.model.validateAccept()
         if (validCancel) {
           const ok = await this.$alert.confirm('요청을 접수 하시겠습니까?')
@@ -394,6 +375,11 @@
       statusLabel() {
         const status = this.model.status
         const found = this.statusLabelArray.find(e => e.value == status) || {}
+        return found.label || ''
+      },
+      unitLabel() {
+        const unit = this.model.unit
+        const found = this.unitLabelArray.find(e => e.value == unit) || {}
         return found.label || ''
       }
     },
@@ -434,11 +420,12 @@
           }
         })
       },
-
+      'model.itemId': async function (to) {
+        this.itemModel = await ItemModel.get(to, true)
+      },
     },
     components: {
-      CommentList,
-      PurchaseRequestItemSpecCellRenderer
+      CommentList
     }
   }
 </script>

@@ -81,6 +81,10 @@ export class ItemModel extends Model {
     return this.hasChanged("id")
   }
 
+  get specifiable() {
+    return !!this.specTypeId
+  }
+
   async save() {
     if(this.phantom) {
       const response = await api.post('/item/items', this)

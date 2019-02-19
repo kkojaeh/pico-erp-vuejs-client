@@ -35,8 +35,18 @@
         <ag-grid-column field="code" header-name="구매요청번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/purchase-request/request/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="name" header-name="이름" :width="150"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
+        <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
+        <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
+        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
+        <ag-grid-column field="quantity" header-name="수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
+        <ag-grid-column field="unit" header-name="단위" :width="80"
+                        :cell-style="{textAlign: 'center'}"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -190,6 +200,7 @@
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
+  import {UnitLabelArray} from 'src/model/shared'
   import {
     PurchaseRequestPaginationArray,
     PurchaseRequestStatusArray
@@ -204,6 +215,7 @@
         array: new PurchaseRequestPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
+        unitLabelArray: new UnitLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
         statusLabelArray: new PurchaseRequestStatusArray(),
         filters: {
@@ -219,7 +231,9 @@
           endDueDate: null,
           itemId: null,
           itemCode: null,
-          itemName: null
+          itemName: null,
+          projectId: null,
+          projectName: null
         },
         dataAdjuster: null
       }
@@ -247,7 +261,8 @@
         this.statusLabelArray.fetch(),
         this.companyLabelArray.fetch(),
         this.userLabelArray.fetch(),
-        this.projectLabelArray.fetch()
+        this.projectLabelArray.fetch(),
+        this.unitLabelArray.fetch()
       ])
       if (!this.$authorized.purchaseRequestManager) {
         this.filters.requesterId = this.user.id
@@ -286,6 +301,7 @@
       async onFetched() {
         await Promise.all(
             this.array.map(async (e) => {
+              await e.fetchReference()
               e.receiver = await CompanyModel.get(e.receiverId, true)
               e.project = await ProjectModel.get(e.projectId, true)
               e.accepter = await UserModel.get(e.accepterId, true)

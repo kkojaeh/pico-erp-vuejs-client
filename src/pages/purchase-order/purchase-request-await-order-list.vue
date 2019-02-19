@@ -34,11 +34,10 @@
                :row-data="array"
                @selection-changed="onSelectionChanged">
         <ag-grid-column :checkbox-selection="checkboxSelectionFn" :width="60"/>
-        <!--<ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>-->
+        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="150"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="150"/>
-        <ag-grid-column field="itemSpec.summary" header-name="품목 스펙" :width="150"/>
-
+        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
@@ -157,7 +156,6 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {PurchaseRequestAwaitOrderPaginationArray} from 'src/model/purchase-request'
   import {PurchaseOrderModel} from 'src/model/purchase-order'
-  import {ItemModel, ItemSpecModel} from 'src/model/item'
   import {UnitLabelArray} from 'src/model/shared'
   import {WarehouseSiteModel} from 'src/model/warehouse'
 
@@ -221,8 +219,8 @@
           return true
         } else {
           const selected = this.selected[0]
-          const selectedDey = selected.receiverId + selected.receiveSiteId
-          const key = data.receiverId + data.receiveSiteId
+          const selectedDey = selected.supplierId + selected.receiverId + selected.receiveSiteId
+          const key = data.supplierId + data.receiverId + data.receiveSiteId
           return selectedDey == key
         }
       },
@@ -261,11 +259,10 @@
       async onFetched() {
         await Promise.all(
             this.array.map(async (e) => {
+              await e.fetchReference()
               e.receiver = await CompanyModel.get(e.receiverId, true)
               e.project = await ProjectModel.get(e.projectId, true)
               e.requester = await UserModel.get(e.requesterId, true)
-              e.item = await ItemModel.get(e.itemId, true)
-              e.itemSpec = await ItemSpecModel.get(e.itemSpecId, true)
               e.receiveSite = await WarehouseSiteModel.get(e.receiveSiteId, true)
             })
         )

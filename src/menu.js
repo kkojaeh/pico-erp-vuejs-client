@@ -250,6 +250,30 @@ const menu = [
         authorize: 'hasAnyRole(\'PRODUCTION_PLAN_CHARGER\', \'PRODUCTION_PLAN_MANAGER\')'
       }
     ]
+  },
+  {
+    icon: 'share',
+    label: languageAliases({
+      ko: '외주'
+    })[language],
+    children: [
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '외주 요청 현황'
+        })[language],
+        url: '/outsourcing-request/request',
+        authorize: 'hasAnyRole(\'OUTSOURCING_REQUESTER\', \'OUTSOURCING_REQUEST_MANAGER\')'
+      },
+      {
+        icon: 'call_received',
+        label: languageAliases({
+          ko: '외주 요청 접수'
+        })[language],
+        url: '/outsourcing-request/await-accept',
+        authorize: 'hasAnyRole(\'OUTSOURCING_REQUEST_ACCEPTER\', \'OUTSOURCING_REQUEST_MANAGER\')'
+      }
+    ]
   }
   /*
   ,

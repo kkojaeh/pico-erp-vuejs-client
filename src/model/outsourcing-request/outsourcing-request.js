@@ -9,7 +9,7 @@ import {ItemModel} from "../item";
 
 const itemSymbol = Symbol('item')
 
-export class PurchaseRequestModel extends Model {
+export class OutsourcingRequestModel extends Model {
 
   constructor(data) {
     super(data)
@@ -22,11 +22,11 @@ export class PurchaseRequestModel extends Model {
       receiveSiteId: null,
       receiveStationId: null,
       updatable: true,
-      committable: true,
+      committable: false,
       itemId: null,
-      itemSpecId: null,
       itemSpecCode: null,
-      quantity: 0
+      quantity: 0,
+      spareQuantity: 0
     }
   }
 
@@ -42,48 +42,48 @@ export class PurchaseRequestModel extends Model {
     return this.hasChanged("id")
   }
 
+  static async get(id, cacheable) {
+    if (!id) {
+      return new OutsourcingRequestModel()
+    }
+    const response = await api.get(
+        `/outsourcing-request/requests/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new OutsourcingRequestModel(response.data)
+  }
+
+  static async exists(id) {
+    return await exists(api, `/outsourcing-request/requests/${id}`)
+  }
+
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
   }
 
-  static async get(id, cacheable) {
-    if (!id) {
-      return new PurchaseRequestModel()
-    }
-    const response = await api.get(
-        `/purchase-request/requests/${id}${cacheable ? '' : '?cb='
-            + Date.now()}`)
-    return new PurchaseRequestModel(response.data)
-  }
-
-  static async exists(id) {
-    return await exists(api, `/purchase-request/requests/${id}`)
-  }
-
   async save() {
     if (this.phantom) {
-      const response = await api.post('/purchase-request/requests',
+      const response = await api.post('/outsourcing-request/requests',
           this)
       this.assign(response.data)
     } else {
-      await api.put(`/purchase-request/requests/${this.id}`, this)
+      await api.put(`/outsourcing-request/requests/${this.id}`, this)
     }
   }
 
   async cancel() {
-    await api.put(`/purchase-request/requests/${this.id}/cancel`, this)
+    await api.put(`/outsourcing-request/requests/${this.id}/cancel`, this)
   }
 
   async accept() {
-    await api.put(`/purchase-request/requests/${this.id}/accept`, this)
+    await api.put(`/outsourcing-request/requests/${this.id}/accept`, this)
   }
 
   async commit() {
-    await api.put(`/purchase-request/requests/${this.id}/commit`, this)
+    await api.put(`/outsourcing-request/requests/${this.id}/commit`, this)
   }
 
   async reject(reason) {
-    await api.put(`/purchase-request/requests/${this.id}/reject`, {
+    await api.put(`/outsourcing-request/requests/${this.id}/reject`, {
       rejectedReason: reason
     })
   }
@@ -226,10 +226,10 @@ export class PurchaseRequestModel extends Model {
   }
 }
 
-export const PurchaseRequestPaginationArray = Array.decorate(
+export const OutsourcingRequestPaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/purchase-request/requests?${$QS}'
+        return '/outsourcing-request/requests?${$QS}'
       }
 
       get axios() {
@@ -237,15 +237,15 @@ export const PurchaseRequestPaginationArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseRequestModel
+        return OutsourcingRequestModel
       }
     }
 )
 
-export const PurchaseRequestAwaitOrderPaginationArray = Array.decorate(
+export const OutsourcingRequestAwaitOrderPaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/purchase-request/await-orders?${$QS}'
+        return '/outsourcing-request/await-orders?${$QS}'
       }
 
       get axios() {
@@ -253,15 +253,15 @@ export const PurchaseRequestAwaitOrderPaginationArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseRequestModel
+        return OutsourcingRequestModel
       }
     }
 )
 
-export const PurchaseRequestAwaitAcceptPaginationArray = Array.decorate(
+export const OutsourcingRequestAwaitAcceptPaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/purchase-request/await-accepts?${$QS}'
+        return '/outsourcing-request/await-accepts?${$QS}'
       }
 
       get axios() {
@@ -269,7 +269,7 @@ export const PurchaseRequestAwaitAcceptPaginationArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseRequestModel
+        return OutsourcingRequestModel
       }
     }
 )

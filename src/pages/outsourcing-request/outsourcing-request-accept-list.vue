@@ -31,11 +31,11 @@
                :row-data="array">
         <ag-grid-column field="code" header-name="구매요청번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/purchase-request/await-accept/${id}', query:$route.query}"/>
+                        :cell-renderer-params="{path:'/outsourcing-request/await-accept/${id}', query:$route.query}"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
+        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="140"/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
@@ -160,20 +160,20 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {UnitLabelArray} from 'src/model/shared'
   import {
-    PurchaseRequestAwaitAcceptPaginationArray,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+    OutsourcingRequestAwaitAcceptPaginationArray,
+    OutsourcingRequestStatusArray
+  } from 'src/model/outsourcing-request'
 
   export default {
     authorized: {},
     data() {
       return {
-        array: new PurchaseRequestAwaitAcceptPaginationArray(),
+        array: new OutsourcingRequestAwaitAcceptPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         unitLabelArray: new UnitLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
-        statusLabelArray: new PurchaseRequestStatusArray(),
+        statusLabelArray: new OutsourcingRequestStatusArray(),
         filters: {
           code: null,
           receiverId: null,
@@ -184,7 +184,9 @@
           endDueDate: null,
           itemId: null,
           itemCode: null,
-          itemName: null
+          itemName: null,
+          projectId: null,
+          projectName: null
         },
         dataAdjuster: null
       }

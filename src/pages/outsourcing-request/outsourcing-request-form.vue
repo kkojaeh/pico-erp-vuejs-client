@@ -4,7 +4,7 @@
     <q-card class="col-12" flat>
 
       <q-card-title>
-        구매 요청 정보
+        외주 요청 정보
         <span slot="right" v-if="!!model.code">
           {{statusLabel}} - {{model.code}}
           <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
@@ -44,14 +44,13 @@
                    :after="[{ icon:'search', condition: updatable, handler:onItemSearch}]"/>
         </q-field>
 
-        <q-field icon="fas fa-gift" helper="품목 스펙을 입력하세요"
-                 :error="!!model.$errors.itemSpecId"
-                 :error-label="model.$errors.itemSpecId"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-input float-label="품목 스펙" :value="model.itemSpecCode" clearable
-                   readonly
-                   :hide-underline="!updatable"
-                   :after="[{ icon:'open_in_new', condition: updatable && itemModel.specifiable, handler:onOpenItemSpec}]"/>
+        <q-field icon="fas fa-building" helper="공정을 선택하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.processId"
+                 :error-label="model.$errors.processId">
+          <q-select float-label="공정" v-model="model.processId" :disabled="!model.itemId"
+                    :readonly="!updatable" :hide-underline="!updatable"
+                    :options="processLabels"></q-select>
         </q-field>
 
         <q-field icon="info" helper="요청 수량을 입력하세요"
@@ -62,6 +61,17 @@
                    :readonly="!updatable" :hide-underline="!updatable" :suffix="unitLabel"/>
           <q-tooltip>
             {{$number.words(model.quantity)}}
+          </q-tooltip>
+        </q-field>
+
+        <q-field icon="info" helper="여분 수량을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.spareQuantity"
+                 :error-label="model.$errors.spareQuantity">
+          <q-input type="number" float-label="여분 수량" v-model="model.spareQuantity" align="right"
+                   :readonly="!updatable" :hide-underline="!updatable" :suffix="unitLabel"/>
+          <q-tooltip>
+            {{$number.words(model.spareQuantity)}}
           </q-tooltip>
         </q-field>
 
@@ -173,6 +183,61 @@
 
     </q-card>
 
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        재료 품목
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row">
+
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="true"
+                 stop-editing-when-grid-loses-focus
+                 suppress-no-rows-overlay
+                 @cell-value-changed="onItemCellValueChanged"
+                 :row-data="itemArray">
+          <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
+          <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
+          <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="140"/>
+          <ag-grid-column field="quantity" header-name="수량" :width="100"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number' }"
+                          :editable="updatable"/>
+          <ag-grid-column field="unit" header-name="단위" :width="80"
+                          :cell-style="{textAlign: 'center'}"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="supplierId" header-name="공급사" :width="150"
+                          :editable="updatable"
+                          :cell-editor-params="{ options: companyLabelArray,  labelField: 'label' , valueField: 'value', onSearch:onCompanySearch}"
+                          :cell-renderer="supplierRenderer"
+                          cell-editor-framework="ag-grid-autocomplete-select-editor"/>
+          <ag-grid-column field="estimatedSupplyDate" header-name="예상 공급 시간" :width="170"
+                          :editable="updatable"
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          cell-editor-framework="ag-grid-datetime-editor"
+                          :cell-style="{textAlign: 'center'}"
+                          :cell-editor-params="{ type: 'datetime', format24h:true }"/>
+          <ag-grid-column field="remark" header-name="비고" :width="200"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ maxlength: 50 }"
+                          :editable="updatable"/>
+        </ag-grid>
+
+      </q-card-main>
+
+    </q-card>
+
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
@@ -200,11 +265,11 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ItemModel, ItemSpecModel} from 'src/model/item'
   import {
-    PurchaseRequestItemArray,
-    PurchaseRequestItemModel,
-    PurchaseRequestModel,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+    OutsourcingRequestMaterialArray,
+    OutsourcingRequestModel,
+    OutsourcingRequestStatusArray
+  } from 'src/model/outsourcing-request'
+  import {ItemProcessArray, ProcessModel} from 'src/model/process'
   import {
     WarehouseSiteArray,
     WarehouseSiteModel,
@@ -233,7 +298,10 @@
     },
     data() {
       return {
-        model: new PurchaseRequestModel(),
+        model: new OutsourcingRequestModel(),
+        processes: new ItemProcessArray(),
+        processLabels: [],
+        itemArray: new OutsourcingRequestMaterialArray(),
         itemModel: new ItemModel(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
@@ -243,16 +311,12 @@
         projectLabelArray: new ProjectLabelArray(),
         receiverModel: new CompanyModel(),
         unitLabelArray: new UnitLabelArray(),
-        statusLabelArray: new PurchaseRequestStatusArray(),
+        statusLabelArray: new OutsourcingRequestStatusArray(),
         receiveStationModel: new WarehouseStationModel(),
         receiveSiteModel: new WarehouseSiteModel(),
         siteArray: new WarehouseSiteArray(),
         stationArray: new WarehouseStationArray(),
-
         enabled: true,
-        selected: {
-          item: null
-        },
         owner: new CompanyModel()
       }
     },
@@ -275,6 +339,15 @@
       })
     },
     methods: {
+      async onItemCellValueChanged(event) {
+        if (event.colDef.field == 'supplierId') {
+          await event.data.fetchReference()
+          this.$redrawGrids()
+        }
+      },
+      supplierRenderer(params) {
+        return params.data.supplier.name
+      },
       onShowItem() {
         this.$showItem(this.model.itemId)
       },
@@ -308,10 +381,6 @@
         await this.projectLabelArray.fetch(keyword)
       },
 
-      onItemSelectionChanged(event) {
-        this.selected.item = event.api.getSelectedRows()[0]
-      },
-
       async onOpenItemSpec(data) {
         this.selected.item = data
         const model = this.model
@@ -337,31 +406,33 @@
       },
 
       async create() {
-        this.model = new PurchaseRequestModel()
-        //this.itemArray = new PurchaseRequestItemArray(this.model)
+        this.model = new OutsourcingRequestModel()
+        this.itemArray = new OutsourcingRequestMaterialArray(this.model)
         this.model.requesterId = this.user.id
       },
       async show() {
         await this.load(this.id)
       },
       async load(id) {
-        const model = await PurchaseRequestModel.get(id)
-        // const itemArray = new PurchaseRequestItemArray(model)
-        // await itemArray.fetch()
+        const model = await OutsourcingRequestModel.get(id)
+        const itemArray = new OutsourcingRequestMaterialArray(model)
+        await itemArray.fetch()
         this.model = model
-        // this.itemArray = itemArray
+        this.itemArray = itemArray
       },
       async closeOrReload() {
         if (this.closable && this.closeConfirmed) {
           this.$closeOverlay()
         } else {
           await this.load(this.id || this.model.id)
+          this.$redrawGrids()
         }
       },
       async onSave() {
         await this.model.fetchReference()
         let valid = ![
-          await this.model.validate()
+          await this.model.validate(),
+          await this.itemArray.validate()
         ].includes(false)
 
         if (valid) {
@@ -369,6 +440,7 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
+            await this.$await(1000)
             await this.closeOrReload()
           }
         } else {
@@ -378,12 +450,14 @@
       },
       async save() {
         await this.model.save()
+        await this.itemArray.save()
       },
 
       async onCommit() {
         await this.model.fetchReference()
         let valid = ![
-          await this.model.validate()
+          await this.model.validate(),
+          await this.itemArray.validate()
         ].includes(false)
         if (!valid) {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -482,6 +556,17 @@
       },
       'model.itemId': async function (to) {
         this.itemModel = await ItemModel.get(to, true)
+        await this.processes.fetch(to)
+        this.processLabels = this.processes.map(process => {
+          return {
+            value: process.id,
+            label: process.name
+          }
+        })
+      },
+      'model.processId': async function (to) {
+        const process = await ProcessModel.get(to, true)
+        this.model.itemSpecCode = process.itemSpecCode
       }
 
     },

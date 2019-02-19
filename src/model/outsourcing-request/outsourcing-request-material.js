@@ -1,13 +1,14 @@
 import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {ItemModel, ItemSpecModel} from "src/model/item";
-import {language, languageAliases} from "../../i18n";
+import {ItemModel} from "src/model/item";
+import {CompanyModel} from "src/model/company";
+import moment from "moment";
 
 const itemSymbol = Symbol('item')
-const itemSpecSymbol = Symbol('item-spec')
+const supplierSymbol = Symbol('supplier')
 
-export class PurchaseRequestItemModel extends Model {
+export class OutsourcingRequestMaterialModel extends Model {
 
   constructor(data) {
     super(data)
@@ -30,8 +31,8 @@ export class PurchaseRequestItemModel extends Model {
     return this[itemSymbol]
   }
 
-  get itemSpec() {
-    return this[itemSpecSymbol]
+  get supplier() {
+    return this[supplierSymbol]
   }
 
   get phantom() {
@@ -40,19 +41,19 @@ export class PurchaseRequestItemModel extends Model {
 
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
-    this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
+    this[supplierSymbol] = await CompanyModel.get(this.supplierId, true)
   }
 
   async save() {
     const requestId = this.requestId
     if (this.phantom) {
       const response = await api.post(
-          `/purchase-request/requests/${requestId}/items`,
+          `/outsourcing-request/requests/${requestId}/materials`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/purchase-request/requests/${requestId}/items/${this.id}`,
+          `/outsourcing-request/requests/${requestId}/materials/${this.id}`,
           this)
     }
   }
@@ -68,19 +69,16 @@ export class PurchaseRequestItemModel extends Model {
       itemId: {
         presence: true
       },
-      itemSpecId: {
-        'function': async () => {
-          const errors = []
-          if (this.item.specifiable) {
-            if (!this.itemSpecId) {
-              const error = languageAliases({
-                ko: '품목의 스펙을 지정해야 합니다'
-              })[language]
-              errors.push(error)
-            }
-          }
-          return errors
+      estimatedSupplyDate: {
+        presence: true,
+        datetime: {
+          parse: (date) => moment(date),
+          format: (date) => moment(date).format('YYYY-MM-DD HH:mm:ss'),
+          earliest: new Date()
         }
+      },
+      supplierId: {
+        presence: true
       },
       remark: {
         length: {maximum: 50}
@@ -92,17 +90,17 @@ export class PurchaseRequestItemModel extends Model {
 
   async delete() {
     await api.delete(
-        `/purchase-request/requests/${this.requestId}/items/${this.id}`,
+        `/outsourcing-request/requests/${this.requestId}/materials/${this.id}`,
         {})
   }
 }
 
-export const PurchaseRequestItemArray = Array.decorate(
+export const OutsourcingRequestMaterialArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/purchase-request/requests/${requestId}/items'
+        return '/outsourcing-request/requests/${requestId}/materials'
       }
 
       get axios() {
@@ -110,7 +108,7 @@ export const PurchaseRequestItemArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseRequestItemModel
+        return OutsourcingRequestMaterialModel
       }
 
       initialize(request) {

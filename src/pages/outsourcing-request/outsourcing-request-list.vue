@@ -17,6 +17,9 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
+        <router-link :to="{ path: '/outsourcing-request/request/create', query: $route.query}">
+          <q-btn flat icon="add" label="생성"></q-btn>
+        </router-link>
       </div>
 
       <!-- action -->
@@ -31,11 +34,11 @@
                :row-data="array">
         <ag-grid-column field="code" header-name="구매요청번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/purchase-request/await-accept/${id}', query:$route.query}"/>
+                        :cell-renderer-params="{path:'/outsourcing-request/request/show/${id}', query:$route.query}"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
+        <ag-grid-column field="process.name" header-name="공정" :width="100"/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
@@ -44,13 +47,23 @@
                         :cell-style="{textAlign: 'center'}"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+        <ag-grid-column field="status" header-name="상태" :width="100"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
         <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="committedDate" header-name="제출일" :width="120"
-                        cell-renderer-framework="ag-grid-date-renderer"
+        <ag-grid-column field="committedDate" header-name="제출일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="accepter.name" header-name="접수자" :width="120"/>
+        <ag-grid-column field="acceptedDate" header-name="접수일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="completedDate" header-name="완료일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 
@@ -99,6 +112,8 @@
         <c-autocomplete-select float-label="요청자" v-model="filters.requesterId"
                                :label.sync="filters.requesterName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
+                               :readonly="!$authorized.outsourcingRequestManager"
+                               :hide-underline="!$authorized.outsourcingRequestManager"
                                @search="onUserSearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
@@ -106,6 +121,27 @@
           </template>
         </c-autocomplete-select>
       </q-field>
+
+      <q-field slot="filter" icon="account_box" helper="접수자를 선택하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+
+        <c-autocomplete-select float-label="접수자" v-model="filters.accepterId"
+                               :label.sync="filters.accepterName" :options="userLabelArray"
+                               label-field="label" value-field="value" clearable
+                               @search="onUserSearch">
+          <template slot="option" slot-scope="option">
+            {{option.label}}<br>
+            {{option.stamp}} - {{option.subLabel}}
+          </template>
+        </c-autocomplete-select>
+      </q-field>
+
+      <q-field slot="filter" icon="fas fa-building" helper="구매 요청의 상태를 선택하세요 체크한 대상만 검색됩니다"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-select float-label="상태" v-model="filters.statuses"
+                  :options="statusLabelArray" multiple></q-select>
+      </q-field>
+
 
       <q-field slot="filter" icon="fas fa-calendar" helper="만기일 범위(부터)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
@@ -138,7 +174,13 @@
       <c-list-filter-label slot="filter-label" v-model="filters.receiverId"
                            :print-value="filters.receiverName" label="인수사"/>
       <c-list-filter-label slot="filter-label" v-model="filters.requesterId"
-                           :print-value="filters.requesterName" label="요청자"/>
+                           :print-value="filters.requesterName" label="요청자"
+                           :immutable="!$authorized.outsourcingRequestManager"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.accepterId"
+                           :print-value="filters.accepterName" label="접수자"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.statuses"
+                           :print-value="statusesLabel" :clear-value="[]"
+                           label="상태"/>
       <c-list-filter-label slot="filter-label" v-model="filters.itemId"
                            :print-value="`[${filters.itemCode}] ${filters.itemName}`" label="품목"
                            @remove="onItemClear"/>
@@ -156,30 +198,36 @@
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {ProcessModel} from 'src/model/process'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {UnitLabelArray} from 'src/model/shared'
   import {
-    PurchaseRequestAwaitAcceptPaginationArray,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+    OutsourcingRequestPaginationArray,
+    OutsourcingRequestStatusArray
+  } from 'src/model/outsourcing-request'
 
   export default {
-    authorized: {},
+    authorized: {
+      'outsourcingRequestManager': 'hasRole(\'OUTSOURCING_REQUEST_MANAGER\')'
+    },
     data() {
       return {
-        array: new PurchaseRequestAwaitAcceptPaginationArray(),
+        array: new OutsourcingRequestPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         unitLabelArray: new UnitLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
-        statusLabelArray: new PurchaseRequestStatusArray(),
+        statusLabelArray: new OutsourcingRequestStatusArray(),
         filters: {
           code: null,
           receiverId: null,
           receiverName: null,
+          accepterId: null,
+          accepterName: null,
           requesterId: null,
           requesterName: null,
+          statuses: [],
           startDueDate: null,
           endDueDate: null,
           itemId: null,
@@ -215,6 +263,10 @@
         this.projectLabelArray.fetch(),
         this.unitLabelArray.fetch()
       ])
+      if (!this.$authorized.outsourcingRequestManager) {
+        this.filters.requesterId = this.user.id
+        this.filters.requesterName = this.user.name
+      }
     },
     methods: {
       retrieve() {
@@ -251,7 +303,9 @@
               await e.fetchReference()
               e.receiver = await CompanyModel.get(e.receiverId, true)
               e.project = await ProjectModel.get(e.projectId, true)
+              e.accepter = await UserModel.get(e.accepterId, true)
               e.requester = await UserModel.get(e.requesterId, true)
+              e.process = await ProcessModel.get(e.processId, true)
             })
         )
         this.$redrawGrids()
