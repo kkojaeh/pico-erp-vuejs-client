@@ -10,7 +10,9 @@
                       :cleave-options="cleaveOptions" :stack-label="stackLabel"
                       :float-label="floatLabel" :disable="disable"
                       :hide-underline="hideUnderline"
-                      :readonly="readonly"></c-cleave-input>
+                      :readonly="readonly">
+        <slot></slot>
+      </c-cleave-input>
     </div>
   </div>
 </template>
@@ -18,7 +20,7 @@
 <script>
   import InputMixin from './input-mixin'
   import phoneRegions from './phone-regions.js'
-  import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
+  import {PhoneNumberFormat, PhoneNumberUtil} from 'google-libphonenumber'
   import CCleaveInput from './cleave-input.vue'
 
   let phoneNumberUtil = PhoneNumberUtil.getInstance()

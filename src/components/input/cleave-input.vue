@@ -18,7 +18,7 @@
       :focused="focused"
       :length="length"
   >
-
+    <slot></slot>
     <input :type="type" ref="input" @input="_onInput"
            class="col q-input-target"
            :class="[`text-${align}`]"
@@ -63,7 +63,26 @@
       return {
         cleave: null,
         model: this.value,
-        focused: false
+        focused: false,
+        shadow: {
+          val: this.model,
+          set: this.__set,
+          setNav: this.__set,
+          loading: false,
+          watched: 0,
+          isEditable: () => this.editable,
+          isDark: () => this.dark,
+          hasFocus: () => document.activeElement === this.$refs.input,
+          register: () => {
+            this.shadow.watched += 1
+            this.__watcherRegister()
+          },
+          unregister: () => {
+            this.shadow.watched = Math.max(0, this.shadow.watched - 1)
+            this.__watcherUnregister()
+          },
+          getEl: () => this.$refs.input
+        }
       }
     },
     computed: {
@@ -134,6 +153,11 @@
     destroyed () {
       this.cleave.destroy()
       this.cleave = null
-    }
+    },
+    provide() {
+      return {
+        __input: this.shadow
+      }
+    },
   }
 </script>

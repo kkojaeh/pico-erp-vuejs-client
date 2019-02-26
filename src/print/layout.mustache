@@ -1,0 +1,100 @@
+<html>
+<head>
+  <style type="text/css">
+    body {
+      background: white;
+    }
+
+    page {
+      background: white;
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 0.5cm;
+      box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+    }
+
+    page {
+      width: 21cm;
+      height: 29.7cm;
+    }
+
+    page[layout="landscape"] {
+      width: 29.7cm;
+      height: 21cm;
+    }
+
+    @media print {
+      body, page {
+        margin: 0px;
+        box-shadow: 0px;
+      }
+    }
+
+    table, th, td {
+      border-collapse: collapse;
+      border: 1px solid black;
+    }
+
+    table {
+      width: 100%;
+      page-break-inside: auto;
+    }
+
+    th {
+      text-align: center;
+      padding: 10px;
+      background-color: lightgray;
+    }
+
+    td {
+      padding: 10px;
+    }
+
+    tr {
+      page-break-inside: auto;
+    }
+
+    section {
+      padding: 10px 5px;
+    }
+
+    h2, h3 {
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+
+    img {
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .flex-container {
+      display: flex;
+      flex-flow: row wrap;
+    }
+    .flex-box-5 {
+      width: calc(100% * (1/2) - 10px);
+      flex: 0 0 auto;
+    }
+
+    .flex-box {
+      flex: 0 0 auto;
+    }
+
+    .logo {
+      width: 6cm;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="/{{logo}}""></img>
+    <h1 align="center">{{title}}</h1>
+  </header>
+  {{{html}}}
+</body>
+</html>

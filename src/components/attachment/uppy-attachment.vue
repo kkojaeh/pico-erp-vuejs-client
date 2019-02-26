@@ -21,7 +21,7 @@
 <script>
   import * as _ from 'lodash'
   import Uppy from 'src/components/uppy/uppy.vue'
-  import {AttachmentFileModel} from './attachment-model'
+  import {AttachmentFileModel} from 'src/model/attachment/attachment'
   import Viewer from 'viewerjs/dist/viewer'
   import Plyr from 'plyr'
   import 'plyr/dist/plyr.css'

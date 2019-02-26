@@ -1,10 +1,10 @@
-import { date } from 'quasar'
+import {date} from 'quasar'
 import moment from 'moment'
 
 export const dateFormat = 'YYYY-MM-DD'
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-function formatDate (value, dateFormat) {
+export function formatDate(value, dateFormat) {
   if (typeof value == 'string') {
     value = new Date(Date.parse(value))
   }
@@ -13,7 +13,7 @@ function formatDate (value, dateFormat) {
   }
 }
 
-function formatDateAgo (value) {
+export function formatDateAgo(value) {
   if (typeof value == 'string') {
     value = new Date(Date.parse(value))
   }

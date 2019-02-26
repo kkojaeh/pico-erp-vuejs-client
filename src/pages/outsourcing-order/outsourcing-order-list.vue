@@ -17,8 +17,9 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
-        <q-btn flat icon="add" label="발주생성" :disabled="!selected.length"
-               @click="onGenerate"></q-btn>
+        <router-link :to="{ path: '/purchase-order/order/create', query: $route.query}">
+          <q-btn flat icon="add" label="생성"></q-btn>
+        </router-link>
       </div>
 
       <!-- action -->
@@ -26,40 +27,40 @@
       <!-- main -->
       <ag-grid ref="grid"
                class="col-grow"
-               row-selection="multiple"
+               row-selection="single"
                enable-server-side-sorting
-               suppress-row-click-selection
                enable-col-resize
                enable-sorting
-               :row-data="array"
-               @selection-changed="onSelectionChanged">
-        <ag-grid-column :checkbox-selection="checkboxSelectionFn" :width="60"/>
-        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="item.code" header-name="품목 코드" :width="150"/>
-        <ag-grid-column field="item.name" header-name="품목 이름" :width="150"/>
-        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
-        <ag-grid-column field="quantity" header-name="수량" :width="100"
-                        :cell-style="{textAlign: 'right'}"
-                        cell-renderer-framework="ag-grid-number-renderer"
-                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
-        <ag-grid-column field="item.unit" header-name="단위" :width="80"
-                        :cell-style="{textAlign: 'center'}"
-                        cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+               :row-data="array">
+        <ag-grid-column field="code" header-name="발주번호" :width="100"
+                        cell-renderer-framework="ag-grid-router-link-renderer"
+                        :cell-renderer-params="{path:'/outsourcing-order/order/show/${id}', query:$route.query}"/>
+        <ag-grid-column field="supplier.name" header-name="공급사" :width="120"/>
         <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
-        <ag-grid-column field="receiveSite.name" header-name="인수지" :width="120"/>
-        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
+        <ag-grid-column field="charger.name" header-name="담당자" :width="120"/>
+        <ag-grid-column field="status" header-name="상태" :width="100"
+                        cell-renderer-framework="ag-grid-array-label-renderer"
+                        :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
+        <ag-grid-column field="sentDate" header-name="전송일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="committedDate" header-name="제출일" :width="120"
-                        cell-renderer-framework="ag-grid-date-renderer"
+        <ag-grid-column field="receivedDate" header-name="완료일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 
       <!-- main -->
 
       <!-- filters -->
+
+      <q-field slot="filter" icon="account_circle" helper="발주번호에 포함된 글자를 입력하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-input v-model="filters.code" float-label="발주번호" clearable
+                 @keyup.enter="retrieve()"/>
+      </q-field>
 
       <q-field slot="filter" icon="fas fa-building" helper="프로젝트를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
@@ -68,6 +69,20 @@
                                :label.sync="filters.projectName" :options="projectLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onProjectSearch">
+          <template slot="option" slot-scope="option">
+            {{option.label}}<br>
+            {{option.stamp}} - {{option.subLabel}}
+          </template>
+        </c-autocomplete-select>
+      </q-field>
+
+      <q-field slot="filter" icon="fas fa-building" helper="공급사를 선택하세요"
+               class="col-xs-11 col-md-4 col-xl-3">
+
+        <c-autocomplete-select float-label="공급사" v-model="filters.supplierId"
+                               :label.sync="filters.supplierName" :options="companyLabelArray"
+                               label-field="label" value-field="value" clearable
+                               @search="onCompanySearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
             {{option.stamp}} - {{option.subLabel}}
@@ -89,12 +104,11 @@
         </c-autocomplete-select>
       </q-field>
 
-
-      <q-field slot="filter" icon="account_box" helper="요청자를 선택하세요"
+      <q-field slot="filter" icon="account_box" helper="담당자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
-        <c-autocomplete-select float-label="요청자" v-model="filters.requesterId"
-                               :label.sync="filters.requesterName" :options="userLabelArray"
+        <c-autocomplete-select float-label="담당자" v-model="filters.chargerId"
+                               :label.sync="filters.chargerName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
                                @search="onUserSearch">
           <template slot="option" slot-scope="option">
@@ -103,6 +117,13 @@
           </template>
         </c-autocomplete-select>
       </q-field>
+
+      <q-field slot="filter" icon="fas fa-building" helper="발주의 상태를 선택하세요 체크한 대상만 검색됩니다"
+               class="col-xs-11 col-md-4 col-xl-3">
+        <q-select float-label="상태" v-model="filters.statuses"
+                  :options="statusLabelArray" multiple></q-select>
+      </q-field>
+
 
       <q-field slot="filter" icon="fas fa-calendar" helper="만기일 범위(부터)를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
@@ -129,12 +150,17 @@
 
       <!-- filter -->
 
+      <c-list-filter-label slot="filter-label" v-model="filters.code" label="구매요청번호"/>
       <c-list-filter-label slot="filter-label" v-model="filters.projectId"
                            :print-value="filters.projectName" label="프로젝트"/>
       <c-list-filter-label slot="filter-label" v-model="filters.receiverId"
                            :print-value="filters.receiverName" label="인수사"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.requesterId"
-                           :print-value="filters.requesterName" label="요청자"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.chargerId"
+                           :print-value="filters.chargerName" label="담당자"
+                           :immutable="!$authorized.purchaseRequestManager"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.statuses"
+                           :print-value="statusesLabel" :clear-value="[]"
+                           label="상태"/>
       <c-list-filter-label slot="filter-label" v-model="filters.itemId"
                            :print-value="`[${filters.itemCode}] ${filters.itemName}`" label="품목"
                            @remove="onItemClear"/>
@@ -153,30 +179,32 @@
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {PurchaseRequestAwaitOrderPaginationArray} from 'src/model/purchase-request'
-  import {PurchaseOrderModel} from 'src/model/purchase-order'
-  import {UnitLabelArray} from 'src/model/shared'
-  import {WarehouseSiteModel} from 'src/model/warehouse'
+  import {ProjectLabelArray} from 'src/model/project'
+  import {
+    OutsourcingOrderPaginationArray,
+    OutsourcingOrderStatusArray
+  } from 'src/model/outsourcing-order'
 
   export default {
-    authorized: {},
+    authorized: {
+      'purchaseOrderManager': 'hasRole(\'PURCHASE_ORDER_MANAGER\')'
+    },
     data() {
       return {
-        array: new PurchaseRequestAwaitOrderPaginationArray(),
+        array: new OutsourcingOrderPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
-        unitLabelArray: new UnitLabelArray(),
-        selected: [],
+        statusLabelArray: new OutsourcingOrderStatusArray(),
         filters: {
           code: null,
+          supplierId: null,
+          supplierName: null,
           receiverId: null,
           receiverName: null,
-          accepterId: null,
-          accepterName: null,
-          requesterId: null,
-          requesterName: null,
+          chargerId: null,
+          chargerName: null,
+          statuses: [],
           startDueDate: null,
           endDueDate: null,
           itemId: null,
@@ -206,28 +234,13 @@
         }
       })
       await Promise.all([
-        this.unitLabelArray.fetch(),
+        this.statusLabelArray.fetch(),
         this.companyLabelArray.fetch(),
         this.userLabelArray.fetch(),
-        this.projectLabelArray.fetch(),
+        this.projectLabelArray.fetch()
       ])
     },
     methods: {
-      checkboxSelectionFn(params) {
-        const data = params.data
-        if (!this.selected.length) {
-          return true
-        } else {
-          const selected = this.selected[0]
-          const selectedDey = selected.supplierId + selected.receiverId + selected.receiveSiteId
-          const key = data.supplierId + data.receiverId + data.receiveSiteId
-          return selectedDey == key
-        }
-      },
-      onSelectionChanged(event) {
-        this.selected = event.api.getSelectedRows()
-        this.$redrawGrids()
-      },
       retrieve() {
         this.$refs.listView.retrieve()
       },
@@ -259,34 +272,25 @@
       async onFetched() {
         await Promise.all(
             this.array.map(async (e) => {
-              await e.fetchReference()
+              e.supplier = await CompanyModel.get(e.supplierId, true)
               e.receiver = await CompanyModel.get(e.receiverId, true)
-              e.project = await ProjectModel.get(e.projectId, true)
-              e.requester = await UserModel.get(e.requesterId, true)
-              e.receiveSite = await WarehouseSiteModel.get(e.receiveSiteId, true)
+              e.charger = await UserModel.get(e.chargerId, true)
             })
         )
         this.$redrawGrids()
-      },
-      async onGenerate() {
-        const ok = await this.$alert.confirm('선택한 내역으로 발주를 생성 하시겠습니까?')
-        if (ok) {
-          const ids = this.selected.map(e => e.id)
-          const order = await PurchaseOrderModel.generate(ids)
-          this.$q.loading.show()
-          this.$await(3000)
-          this.$q.loading.hide()
-          this.$router.push({
-            path: `/purchase-order/order/show/${order.id}`
-          })
-          await this.$alert.positive('발주가 생성 되었습니다')
-        }
       }
     },
     computed: {
       ...mapGetters({
         user: 'auth/user'
-      })
+      }),
+      statusesLabel() {
+        return this.filters.statuses.map(
+            value => this.statusLabelArray.find(status => status.value == value))
+        .filter(data => data)
+        .map(data => data.label)
+        .join(', ')
+      }
     }
   }
 </script>

@@ -35,8 +35,12 @@
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="140"/>
+        <ag-grid-column field="process.name" header-name="공정" :width="100"/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
+        <ag-grid-column field="spareQuantity" header-name="여분수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0.00', words:true}"/>
@@ -159,6 +163,7 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {UnitLabelArray} from 'src/model/shared'
+  import {ProcessModel} from 'src/model/process'
   import {
     OutsourcingRequestAwaitAcceptPaginationArray,
     OutsourcingRequestStatusArray
@@ -254,6 +259,7 @@
               e.receiver = await CompanyModel.get(e.receiverId, true)
               e.project = await ProjectModel.get(e.projectId, true)
               e.requester = await UserModel.get(e.requesterId, true)
+              e.process = await ProcessModel.get(e.processId, true)
             })
         )
         this.$redrawGrids()

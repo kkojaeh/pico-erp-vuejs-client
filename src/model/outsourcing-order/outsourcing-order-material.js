@@ -8,7 +8,7 @@ import moment from "moment";
 const itemSymbol = Symbol('item')
 const supplierSymbol = Symbol('supplier')
 
-export class OutsourcingRequestMaterialModel extends Model {
+export class OutsourcingOrderMaterialModel extends Model {
 
   constructor(data) {
     super(data)
@@ -19,7 +19,8 @@ export class OutsourcingRequestMaterialModel extends Model {
     return {
       status: 'DRAFT',
       quantity: 0,
-      remark: null
+      remark: null,
+      unitCost: 0
     }
   }
 
@@ -39,21 +40,32 @@ export class OutsourcingRequestMaterialModel extends Model {
     return this.hasChanged("id")
   }
 
+  static async get(id, cacheable) {
+    if (!id) {
+      return new OutsourcingOrderMaterialModel()
+    }
+    const response = await api.get(
+        `/outsourcing-order/materials/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new OutsourcingOrderMaterialModel(response.data)
+  }
+
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
     this[supplierSymbol] = await CompanyModel.get(this.supplierId, true)
   }
 
   async save() {
-    const requestId = this.requestId
+    const orderId = this.orderId
+    this.unit = this.outsourcingUnit
     if (this.phantom) {
       const response = await api.post(
-          `/outsourcing-request/requests/${requestId}/materials`,
+          `/outsourcing-order/orders/${orderId}/materials`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/outsourcing-request/requests/${requestId}/materials/${this.id}`,
+          `/outsourcing-order/orders/${orderId}/materials/${this.id}`,
           this)
     }
   }
@@ -61,6 +73,12 @@ export class OutsourcingRequestMaterialModel extends Model {
   async validate() {
     let constraints = {
       quantity: {
+        presence: true,
+        numericality: {
+          greaterThan: 0
+        }
+      },
+      unitCost: {
         presence: true,
         numericality: {
           greaterThan: 0
@@ -90,21 +108,17 @@ export class OutsourcingRequestMaterialModel extends Model {
 
   async delete() {
     await api.delete(
-        `/outsourcing-request/requests/${this.requestId}/materials/${this.id}`,
+        `/outsourcing-order/orders/${this.orderId}/materials/${this.id}`,
         {})
   }
 }
 
-export const OutsourcingRequestMaterialArray = Array.decorate(
+export const OutsourcingOrderMaterialArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/outsourcing-request/requests/${requestId}/materials'
-      }
-
-      isValidateTarget(element) {
-        return element
+        return '/outsourcing-order/orders/${orderId}/materials'
       }
 
       get axios() {
@@ -112,24 +126,24 @@ export const OutsourcingRequestMaterialArray = Array.decorate(
       }
 
       get model() {
-        return OutsourcingRequestMaterialModel
+        return OutsourcingOrderMaterialModel
       }
 
-      initialize(request) {
+      initialize(order) {
         super.initialize()
-        this.request = request
+        this.order = order
       }
 
       async fetch() {
         await super.fetch({
-          requestId: this.request.id
+          orderId: this.order.id
         })
         await Promise.all(
             this.map(async (element) => await element.fetchReference()))
       }
 
       applyEach(element) {
-        element.requestId = this.request.id
+        element.orderId = this.order.id
       }
 
     }

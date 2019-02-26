@@ -1,5 +1,9 @@
 export class AttachmentModel {
 
+  constructor() {
+
+  }
+
   /**
    * 기존에 저장되어 있는 파일을 반환
    * @returns {Array.<AttachmentFileModel>} 파일 모델의 배열
@@ -45,7 +49,7 @@ export class AttachmentModel {
   /**
    * 아이디로 조회하고 자신을 반환한다
    * @param {string} id 조회할 id
-   * @returns {Promise.<AttachmentModel>} self
+   * @returns {Promise.<Attachment>} self
    */
   async fetch (id) {
     return this

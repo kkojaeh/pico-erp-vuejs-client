@@ -43,6 +43,10 @@
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0.00', words:true}"/>
+        <ag-grid-column field="spareQuantity" header-name="여분수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
         <ag-grid-column field="unit" header-name="단위" :width="80"
                         :cell-style="{textAlign: 'center'}"
                         cell-renderer-framework="ag-grid-array-label-renderer"

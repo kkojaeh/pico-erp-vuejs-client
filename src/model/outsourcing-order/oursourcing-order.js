@@ -4,8 +4,11 @@ import {api} from 'src/plugins/axios'
 import {date} from 'quasar'
 import {language, languageAliases} from "../../i18n";
 import moment from 'moment'
+import qs from "qs";
+import {download} from "../data";
+import {authorizedUrl} from "../../plugins/auth";
 
-export class PurchaseOrderModel extends Model {
+export class OutsourcingOrderModel extends Model {
 
   constructor(data) {
     super(data)
@@ -37,53 +40,60 @@ export class PurchaseOrderModel extends Model {
 
   static async get(id, cacheable) {
     if (!id) {
-      return new PurchaseOrderModel()
+      return new OutsourcingOrderModel()
     }
     const response = await api.get(
-        `/purchase-order/orders/${id}${cacheable ? '' : '?cb='
+        `/outsourcing-order/orders/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
-    return new PurchaseOrderModel(response.data)
+    return new OutsourcingOrderModel(response.data)
   }
 
   static async generate(requestIds) {
     const id = uuid()
     const response = await api.post(
-        `/purchase-order/orders/${id}/generate`, {
+        `/outsourcing-order/orders/${id}/generate`, {
           requestIds: requestIds
         })
-    return new PurchaseOrderModel(response.data)
+    return new OutsourcingOrderModel(response.data)
   }
 
   static async exists(id) {
-    return await exists(api, `/purchase-order/orders/${id}`)
+    return await exists(api, `/outsourcing-order/orders/${id}`)
   }
 
   async save() {
     if (this.phantom) {
-      const response = await api.post('/purchase-order/orders',
+      const response = await api.post('/outsourcing-order/orders',
           this)
       this.assign(response.data)
     } else {
-      await api.put(`/purchase-order/orders/${this.id}`, this)
+      await api.put(`/outsourcing-order/orders/${this.id}`, this)
     }
   }
 
   async cancel() {
-    await api.put(`/purchase-order/orders/${this.id}/cancel`, this)
+    await api.put(`/outsourcing-order/orders/${this.id}/cancel`, this)
   }
 
   async send() {
-    await api.put(`/purchase-order/orders/${this.id}/send`, this)
+    await api.put(`/outsourcing-order/orders/${this.id}/send`, this)
   }
 
   async determine() {
-    await api.put(`/purchase-order/orders/${this.id}/determine`, this)
+    await api.put(`/outsourcing-order/orders/${this.id}/determine`, this)
   }
 
   async reject(reason) {
-    await api.put(`/purchase-order/orders/${this.id}/reject`, {
+    await api.put(`/outsourcing-order/orders/${this.id}/reject`, {
       rejectedReason: reason
     })
+  }
+
+  async printDraft() {
+    const host = api.defaults.baseURL
+    const url = `${host}/outsourcing-order/orders/${this.id}/print-draft?${qs.stringify(
+        {})}`
+    download(authorizedUrl(url))
   }
 
   async validateDetermine() {
@@ -198,10 +208,10 @@ export class PurchaseOrderModel extends Model {
   }
 }
 
-export const PurchaseOrderPaginationArray = Array.decorate(
+export const OutsourcingOrderPaginationArray = Array.decorate(
     class extends SpringPaginationArray {
       get url() {
-        return '/purchase-order/orders?${$QS}'
+        return '/outsourcing-order/orders?${$QS}'
       }
 
       get axios() {
@@ -209,7 +219,7 @@ export const PurchaseOrderPaginationArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseOrderModel
+        return OutsourcingOrderModel
       }
     }
 )

@@ -1,15 +1,16 @@
 import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {ItemModel, ItemSpecModel} from "src/model/item";
+import {ItemModel} from "src/model/item";
+import {ProcessModel} from "src/model/process";
 import {ProjectModel} from "src/model/project";
 import {language, languageAliases} from "../../i18n";
 
 const itemSymbol = Symbol('item')
-const itemSpecSymbol = Symbol('item-spec')
+const processSymbol = Symbol('process')
 const projectSymbol = Symbol('project')
 
-export class PurchaseOrderItemModel extends Model {
+export class OutsourcingOrderItemModel extends Model {
 
   constructor(data) {
     super(data)
@@ -33,8 +34,8 @@ export class PurchaseOrderItemModel extends Model {
     return this[itemSymbol]
   }
 
-  get itemSpec() {
-    return this[itemSpecSymbol]
+  get process() {
+    return this[processSymbol]
   }
 
   get project() {
@@ -49,42 +50,41 @@ export class PurchaseOrderItemModel extends Model {
     return this.requestId == null
   }
 
-  get purchaseUnit() {
-    return this.unit || this.itemSpec.purchaseUnit || this.item.unit
+  get outsourcingUnit() {
+    return this.unit
   }
 
-  get purchaseEstimatedUnitCost() {
-    return this.estimatedUnitCost || this.itemSpec.purchaseUnitCost
-        || this.item.baseUnitCost
+  get outsourcingEstimatedUnitCost() {
+    return this.estimatedUnitCost
   }
 
   static async get(id, cacheable) {
     if (!id) {
-      return new PurchaseOrderItemModel()
+      return new OutsourcingOrderItemModel()
     }
     const response = await api.get(
-        `/purchase-order/items/${id}${cacheable ? '' : '?cb='
+        `/outsourcing-order/items/${id}${cacheable ? '' : '?cb='
             + Date.now()}`)
-    return new PurchaseOrderItemModel(response.data)
+    return new OutsourcingOrderItemModel(response.data)
   }
 
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
-    this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
+    this[processSymbol] = await ProcessModel.get(this.processId, true)
     this[projectSymbol] = await ProjectModel.get(this.projectId, true)
   }
 
   async save() {
     const orderId = this.orderId
-    this.unit = this.purchaseUnit
+    this.unit = this.outsourcingUnit
     if (this.phantom) {
       const response = await api.post(
-          `/purchase-order/orders/${orderId}/items`,
+          `/outsourcing-order/orders/${orderId}/items`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/purchase-order/orders/${orderId}/items/${this.id}`,
+          `/outsourcing-order/orders/${orderId}/items/${this.id}`,
           this)
     }
   }
@@ -133,17 +133,17 @@ export class PurchaseOrderItemModel extends Model {
 
   async delete() {
     await api.delete(
-        `/purchase-order/orders/${this.orderId}/items/${this.id}`,
+        `/outsourcing-order/orders/${this.orderId}/items/${this.id}`,
         {})
   }
 }
 
-export const PurchaseOrderItemArray = Array.decorate(
+export const OutsourcingOrderItemArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/purchase-order/orders/${orderId}/items'
+        return '/outsourcing-order/orders/${orderId}/items'
       }
 
       get axios() {
@@ -151,7 +151,7 @@ export const PurchaseOrderItemArray = Array.decorate(
       }
 
       get model() {
-        return PurchaseOrderItemModel
+        return OutsourcingOrderItemModel
       }
 
       initialize(order) {

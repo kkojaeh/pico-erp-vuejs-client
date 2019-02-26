@@ -30,8 +30,10 @@
                  v-show="editing"
                  :error="!!content.$errors.description"
                  :error-label="content.$errors.description">
-          <c-html-editor v-model="content.description"></c-html-editor>
+          <q-input type="textarea" v-model="content.description"
+                   rows="10"/>
         </q-field>
+
 
         <q-field icon="fas fa-comment"
                  class="col-xs-12 col-md-11 col-lg-11 col-xl-11"
@@ -80,7 +82,8 @@
         <q-btn flat icon="add" @click="onNewDraft()" label="새버전" v-if="draftable"></q-btn>
         <q-btn flat icon="edit" @click="onEdit()" label="수정" v-if="editable"
                v-show="!editing"></q-btn>
-        <q-btn flat icon="print" @click="onPrint()" label="출력" v-if="!editing"></q-btn>
+        <q-btn flat icon="fas fa-file-pdf" @click="onDownload()" label="다운로드"
+               v-if="downloadable"></q-btn>
         <q-btn flat icon="done" @click="onCommit()" label="제출" v-if="committable"></q-btn>
         <q-btn flat icon="save" @click="onSave()" label="저장" v-if="updatable"></q-btn>
       </q-toolbar>
@@ -98,9 +101,9 @@
     ProductSpecificationModel,
     ProductSpecificationStatusArray
   } from 'src/model/product-specification'
+  import {DocumentModel} from 'src/model/document'
   import 'json-editor'
   import * as _ from 'lodash'
-  import printRenderer from './print.mustache'
 
   export default {
     authorized: {
@@ -223,6 +226,7 @@
             await this.save()
             await this.model.commit()
             this.$alert.positive('제출 되었습니다')
+            await this.$await(1000)
             await this.reload()
             this.editing = false
           }
@@ -250,68 +254,8 @@
         this.editing = true
       },
 
-      onPrint() {
-        const data = {
-          code: this.item.code,
-          name: this.item.name,
-          barcodeNumber: this.item.barcodeNumber,
-          description: this.content.description
-        }
-        data.processes = this.editors.map((editor, index) => {
-          const o = {
-            order: index + 1,
-            name: editor.editors.root.header.innerText,
-          }
-          const properties = []
-          const orders = editor.editors.root.property_order
-          _.forEach(editor.editors, (e, key) => {
-            if (key == 'root') {
-              return
-            }
-            const value = e.value || ''
-            properties.push({
-              key: e.key,
-              name: e.header.innerText,
-              order: orders.indexOf(e.key),
-              value: value.replace(/\\n/g, '<br>')
-            })
-          })
-
-          o.properties = _.sortBy(properties, ['order'])
-          return o
-
-        })
-        data.images = this.$refs.imageAttachment.getFiles().map(file => {
-          return {
-            name: file.name,
-            url: file.download
-          }
-        })
-        data.bluePrints = this.$refs.bluePrintAttachment.getFiles().map(file => {
-          return {
-            name: file.name,
-            url: file.download
-          }
-        })
-        const width = (595 / 1.4) * window.devicePixelRatio
-        const height = (842 / 1.4) * window.devicePixelRatio
-
-        const dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
-        const dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
-
-        const left = (width / 2) + dualScreenLeft;
-        const top = (height / 2) + dualScreenTop;
-
-        const options = `width=${width},height=${height},top=${top},left=${left},toolbars=no,scrollbars=no,status=no,resizable=no`
-
-        const w = window.open('', "spcification-print", options);
-        w.document.writeln(printRenderer(data))
-        w.document.close();
-        w.focus();
-        setTimeout(() => {
-          w.print();
-          w.close();
-        }, 2000)
+      async onDownload() {
+        await DocumentModel.download(this.content.documentId)
       },
 
       async save() {
@@ -365,6 +309,10 @@
         const status = this.model.status
         const found = this.statuses.find(e => e.value == status) || {}
         return found.label || ''
+      },
+
+      downloadable() {
+        return !this.editing && !!this.content.documentId
       }
     },
     watch: {

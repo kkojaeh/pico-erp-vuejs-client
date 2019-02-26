@@ -37,8 +37,12 @@
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="150"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="150"/>
-        <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="120"/>
+        <ag-grid-column field="process.name" header-name="공정" :width="100"/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
+        <ag-grid-column field="spareQuantity" header-name="여분수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0.00', words:true}"/>
@@ -153,9 +157,10 @@
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
+  import {ProcessModel} from 'src/model/process'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {PurchaseRequestAwaitOrderPaginationArray} from 'src/model/purchase-request'
-  import {PurchaseOrderModel} from 'src/model/purchase-order'
+  import {OutsourcingRequestAwaitOrderPaginationArray} from 'src/model/outsourcing-request'
+  import {OutsourcingOrderModel} from 'src/model/outsourcing-order'
   import {UnitLabelArray} from 'src/model/shared'
   import {WarehouseSiteModel} from 'src/model/warehouse'
 
@@ -163,7 +168,7 @@
     authorized: {},
     data() {
       return {
-        array: new PurchaseRequestAwaitOrderPaginationArray(),
+        array: new OutsourcingRequestAwaitOrderPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
@@ -264,6 +269,7 @@
               e.project = await ProjectModel.get(e.projectId, true)
               e.requester = await UserModel.get(e.requesterId, true)
               e.receiveSite = await WarehouseSiteModel.get(e.receiveSiteId, true)
+              e.process = await ProcessModel.get(e.processId, true)
             })
         )
         this.$redrawGrids()
@@ -272,12 +278,12 @@
         const ok = await this.$alert.confirm('선택한 내역으로 발주를 생성 하시겠습니까?')
         if (ok) {
           const ids = this.selected.map(e => e.id)
-          const order = await PurchaseOrderModel.generate(ids)
+          const order = await OutsourcingOrderModel.generate(ids)
           this.$q.loading.show()
           this.$await(3000)
           this.$q.loading.hide()
           this.$router.push({
-            path: `/purchase-order/order/show/${order.id}`
+            path: `/outsourcing-order/order/show/${order.id}`
           })
           await this.$alert.positive('발주가 생성 되었습니다')
         }

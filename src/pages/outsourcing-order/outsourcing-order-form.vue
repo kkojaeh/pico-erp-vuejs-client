@@ -156,10 +156,8 @@
                           cell-editor-framework="ag-grid-autocomplete-select-editor"/>
           <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
           <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-          <ag-grid-column field="itemSpecId" header-name="스펙" :width="160"
-                          cell-renderer-framework="purchase-order-item-spec-cell-renderer"
-                          :cell-renderer-params="{openHandler: onOpenItemSpec}"/>
-          <ag-grid-column field="purchaseEstimatedUnitCost" header-name="예상단가" :width="120"
+          <ag-grid-column field="process.name" header-name="공정" :width="100"/>
+          <ag-grid-column field="outsourcingEstimatedUnitCost" header-name="예상단가" :width="120"
                           :cell-style="{textAlign: 'right'}"
                           cell-renderer-framework="ag-grid-number-renderer"
                           :cell-renderer-params="{format:'#,##0.00', words:true}"/>
@@ -184,10 +182,66 @@
                           :cell-renderer-params="{format:'#,##0.00', words:true}"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ type: 'number', align: 'right' }"/>
-          <ag-grid-column field="purchaseUnit" header-name="단위" :width="80"
+          <ag-grid-column field="outsourcingUnit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="remark" header-name="비고" :width="200"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ maxlength: 50 }"
+                          :editable="updatable"/>
+        </ag-grid>
+
+      </q-card-main>
+
+    </q-card>
+
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        재료 품목
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row">
+
+        <ag-grid class="col"
+                 :grid-auto-height="true"
+                 row-selection="single"
+                 enable-col-resize
+                 :editable="updatable"
+                 stop-editing-when-grid-loses-focus
+                 suppress-no-rows-overlay
+                 @cell-value-changed="onItemCellValueChanged"
+                 :row-data="materialArray">
+          <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
+          <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
+          <ag-grid-column field="itemSpecCode" header-name="품목 스펙" :width="140"/>
+          <ag-grid-column field="quantity" header-name="수량" :width="100"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number' }"
+                          :editable="updatable"/>
+          <ag-grid-column field="unit" header-name="단위" :width="80"
+                          :cell-style="{textAlign: 'center'}"
+                          cell-renderer-framework="ag-grid-array-label-renderer"
+                          :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+          <ag-grid-column field="supplierId" header-name="공급사" :width="150"
+                          :editable="updatable"
+                          :cell-editor-params="{ options: companyLabelArray,  labelField: 'label' , valueField: 'value', onSearch:onCompanySearch}"
+                          :cell-renderer="supplierRenderer"
+                          cell-editor-framework="ag-grid-autocomplete-select-editor"/>
+          <ag-grid-column field="estimatedSupplyDate" header-name="예상 공급 시간" :width="170"
+                          :editable="updatable"
+                          cell-renderer-framework="ag-grid-datetime-renderer"
+                          cell-editor-framework="ag-grid-datetime-editor"
+                          :cell-style="{textAlign: 'center'}"
+                          :cell-renderer-params="{ago:true}"
+                          :cell-editor-params="{ type: 'datetime', format24h:true }"/>
           <ag-grid-column field="remark" header-name="비고" :width="200"
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ maxlength: 50 }"
@@ -247,7 +301,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat icon="fas fa-file-pdf" @click="onPrintDraft()" label="발주서"
+        <q-btn flat icon="print" @click="onPrintDraft()" label="발주서 출력"
                v-if="printable"></q-btn>
         <q-btn flat icon="done" @click="onDetermine()" label="확정"
                v-if="determinable"></q-btn>
@@ -275,11 +329,11 @@
   import {CompanyContactArray, CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
-    PurchaseOrderItemArray,
-    PurchaseOrderItemModel,
-    PurchaseOrderModel,
-    PurchaseOrderStatusArray
-  } from 'src/model/purchase-order'
+    OutsourcingOrderItemArray,
+    OutsourcingOrderMaterialArray,
+    OutsourcingOrderModel,
+    OutsourcingOrderStatusArray
+  } from 'src/model/outsourcing-order'
   import {
     PurchaseInvoiceArray,
     PurchaseInvoiceModel,
@@ -291,15 +345,15 @@
     WarehouseStationArray,
     WarehouseStationModel,
   } from 'src/model/warehouse'
-  import {DeliveryExecutor} from "src/model/delivery"
-  import {DocumentModel} from "src/model/document";
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
-  import PurchaseOrderItemSpecCellRenderer from './purchase-order-item-spec-cell-renderer'
+  import {DeliveryExecutor} from "src/model/delivery"
+  import {DocumentModel} from "src/model/document";
+  import PurchaseOrderItemSpecCellRenderer from './outsourcing-order-item-spec-cell-renderer'
 
   export default {
     authorized: {
-      'invoicePublishable': 'hasAnyRole(\'PURCHASE_INVOICE_PUBLISHER\', \'PURCHASE_INVOICE_MANAGER\')'
+      'invoicePublishable': 'hasAnyRole(\'OUTSOURCING_INVOICE_PUBLISHER\', \'OUTSOURCING_INVOICE_MANAGER\')'
     },
     props: {
       action: {
@@ -319,8 +373,9 @@
     },
     data() {
       return {
-        model: new PurchaseOrderModel(),
-        itemArray: new PurchaseOrderItemArray(),
+        model: new OutsourcingOrderModel(),
+        itemArray: new OutsourcingOrderItemArray(),
+        materialArray: new OutsourcingOrderMaterialArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         chargerModel: new UserModel(),
@@ -329,7 +384,7 @@
         receiverModel: new CompanyModel(),
         supplierModel: new CompanyModel(),
         unitLabelArray: new UnitLabelArray(),
-        statusLabelArray: new PurchaseOrderStatusArray(),
+        statusLabelArray: new OutsourcingOrderStatusArray(),
         receiveStationModel: new WarehouseStationModel(),
         receiveSiteModel: new WarehouseSiteModel(),
         siteArray: new WarehouseSiteArray(),
@@ -371,6 +426,9 @@
             await this.load(this.id || this.model.id)
           }
         }
+      },
+      supplierRenderer(params) {
+        return params.data.supplier.name
       },
       projectRenderer(params) {
         return params.data.project.name
@@ -435,24 +493,27 @@
       },
 
       async create() {
-        this.model = new PurchaseOrderModel()
-        this.itemArray = new PurchaseOrderItemArray(this.model)
+        this.model = new OutsourcingOrderModel()
+        this.itemArray = new OutsourcingOrderItemArray(this.model)
         this.model.chargerId = this.user.id
       },
       async show() {
         await this.load(this.id)
       },
       async load(id) {
-        const model = await PurchaseOrderModel.get(id)
-        const itemArray = new PurchaseOrderItemArray(model)
+        const model = await OutsourcingOrderModel.get(id)
+        const itemArray = new OutsourcingOrderItemArray(model)
+        const materialArray = new OutsourcingOrderMaterialArray(model)
         const invoiceArray = new PurchaseInvoiceArray(model)
         await Promise.all([
           itemArray.fetch(),
+          materialArray.fetch(),
           invoiceArray.fetch()
         ])
         this.model = model
         this.itemArray = itemArray
         this.invoiceArray = invoiceArray
+        this.materialArray = materialArray
       },
 
       async closeOrReload() {
@@ -465,7 +526,8 @@
       async onSave() {
         let valid = ![
           await this.model.validate(),
-          await this.itemArray.validate()
+          await this.itemArray.validate(),
+          await this.materialArray.validate()
         ].includes(false)
 
         if (valid) {
@@ -483,12 +545,14 @@
       async save() {
         await this.model.save()
         await this.itemArray.save()
+        await this.materialArray.save()
       },
 
       async onDetermine() {
         let valid = ![
           await this.model.validate(),
-          await this.itemArray.validate()
+          await this.itemArray.validate(),
+          await this.materialArray.validate()
         ].includes(false)
         if (!valid) {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -511,6 +575,20 @@
           }
         } else {
           this.$alert.warning(this.model.$errors.determine)
+        }
+      },
+
+      async onSend() {
+        const validSend = await this.model.validateSend()
+        if (validSend) {
+          const ok = await this.$alert.confirm('발주의 전송이 완료 되었습니까?')
+          if (ok) {
+            await this.model.send()
+            this.$alert.positive('전송 완료 되었습니다')
+            await this.closeOrReload()
+          }
+        } else {
+          this.$alert.warning(this.model.$errors.send)
         }
       },
 
@@ -546,20 +624,6 @@
         executor.mails = mails
         executor.faxNumbers = faxNumbers
         await executor.show()
-      },
-
-      async onSend() {
-        const validSend = await this.model.validateSend()
-        if (validSend) {
-          const ok = await this.$alert.confirm('발주의 전송이 완료 되었습니까?')
-          if (ok) {
-            await this.model.send()
-            this.$alert.positive('전송 완료 되었습니다')
-            await this.closeOrReload()
-          }
-        } else {
-          this.$alert.warning(this.model.$errors.send)
-        }
       },
 
       async onCancel() {

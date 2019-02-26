@@ -220,6 +220,7 @@
                           cell-renderer-framework="ag-grid-datetime-renderer"
                           cell-editor-framework="ag-grid-datetime-editor"
                           :cell-style="{textAlign: 'center'}"
+                          :cell-renderer-params="{ago:true}"
                           :cell-editor-params="{ type: 'datetime', format24h:true }"/>
           <ag-grid-column field="remark" header-name="비고" :width="200"
                           cell-editor-framework="ag-grid-input-editor"

@@ -71,8 +71,15 @@ const menu = [
         })[language],
         url: '/notify-type',
         authorize: 'hasAnyRole(\'NOTIFY_MANAGER\')'
+      },
+      {
+        icon: 'fas fa-file-invoice',
+        label: languageAliases({
+          ko: '문서 관리'
+        })[language],
+        url: '/document-subject',
+        authorize: 'hasAnyRole(\'DOCUMENT_MANAGER\')'
       }
-
     ]
   },
   {
@@ -194,12 +201,28 @@ const menu = [
         authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
       },
       {
+        icon: 'watch_later',
+        label: languageAliases({
+          ko: '외주발주 대기 현황'
+        })[language],
+        url: '/outsourcing-order/await-order',
+        authorize: 'hasAnyRole(\'OUTSOURCING_ORDER_CHARGER\', \'OUTSOURCING_ORDER_MANAGER\')'
+      },
+      {
         icon: 'view_list',
         label: languageAliases({
           ko: '발주 현황'
         })[language],
         url: '/purchase-order/order',
         authorize: 'hasAnyRole(\'PURCHASE_ORDER_CHARGER\', \'PURCHASE_ORDER_MANAGER\')'
+      },
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '외주발주 현황'
+        })[language],
+        url: '/outsourcing-order/order',
+        authorize: 'hasAnyRole(\'OUTSOURCING_ORDER_CHARGER\', \'OUTSOURCING_ORDER_MANAGER\')'
       }
     ]
   },

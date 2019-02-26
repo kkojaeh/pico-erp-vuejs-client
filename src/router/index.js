@@ -24,6 +24,8 @@ import notifyRoutes from './notify'
 import productionRequestRoutes from './production-request'
 import productionPlanRoutes from './production-plan'
 import outsourcingRequestRoutes from './outsourcing-request'
+import outsourcingOrderRoutes from './outsourcing-order'
+import documentRoutes from './document'
 
 Vue.use(VueRouter)
 
@@ -79,7 +81,9 @@ const Router = new VueRouter({
         ...notifyRoutes,
         ...productionRequestRoutes,
         ...productionPlanRoutes,
-        ...outsourcingRequestRoutes
+        ...outsourcingRequestRoutes,
+        ...outsourcingOrderRoutes,
+        ...documentRoutes
       ]
     },
     {

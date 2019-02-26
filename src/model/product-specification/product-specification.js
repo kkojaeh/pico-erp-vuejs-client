@@ -1,11 +1,10 @@
 import {exists, Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
 import {date} from 'quasar'
+import 'json-editor'
 import {language, languageAliases} from "../../i18n";
 
 export class ProductSpecificationModel extends Model {
-
-  a
 
   constructor(data) {
     super(data)
