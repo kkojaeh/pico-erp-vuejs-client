@@ -421,6 +421,7 @@
           })
           if (changed) {
             await data.fetchReference()
+            data.itemSpecCode = data.itemSpec.code
           }
         } else {
           const created = await this.$createItemSpec({
@@ -429,6 +430,7 @@
           if (created) {
             data.itemSpecId = created.id
             await data.fetchReference()
+            data.itemSpecCode = data.itemSpec.code
           }
         }
         this.$redrawGrids()
