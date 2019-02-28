@@ -87,7 +87,7 @@
                  :error-label="model.$errors.receiveAddress.postalCode || model.$errors.receiveAddress.street || model.$errors.receiveAddress.detail">
           <c-address-input v-model="model.receiveAddress" :readonly="!updatable"
                            :hide-underline="!updatable"
-                           :after="[{ icon:'contacts', condition: updatable, handler:onSelectReceiverAddress}]"/>
+                           :after="[{ icon:'list', condition: updatable, handler:onSelectReceiverAddress}]"/>
         </q-field>
 
       </q-card-main>
@@ -100,11 +100,9 @@
         송장 품목
         <div slot="right" class="row items-center">
           <q-btn flat color="secondary" label="추가" icon="add" @click="onAddItem"
-                 v-if="updatable"
-          />
-          <q-btn flat color="secondary" label="삭제" icon="remove"
-                 v-if="updatable"
-                 @click="onRemoveItem"/>
+                 v-if="updatable" v-show="!determined"/>
+          <q-btn flat color="secondary" label="삭제" icon="remove" @click="onRemoveItem"
+                 v-if="updatable" v-show="!determined"/>
         </div>
       </q-card-title>
 
@@ -122,7 +120,7 @@
                  :editable="updatable"
                  :row-data="itemArray">
           <ag-grid-column header-name="선택" :checkbox-selection="true" :width="70"
-                          :hide="!updatable"/>
+                          :hide="!updatable || determined"/>
           <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
           <ag-grid-column field="item.name" header-name="품목 이름" :width="250"/>
           <ag-grid-column field="quantity" header-name="수량" :width="120"
@@ -383,6 +381,9 @@
       },
       determinable() {
         return this.model.determinable
+      },
+      determined() {
+        return this.model.status == 'DETERMINED'
       },
       statusLabel() {
         const status = this.model.status
