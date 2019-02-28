@@ -367,7 +367,9 @@
       async onInvoiceGridCellClicked(event) {
         if (event.colDef.field == "dueDate") {
           const data = event.data
-          const changed = await this.$showPurchaseInvoice(data.id)
+          const viewer = new PurchaseInvoiceViewer(this)
+          viewer.id = data.id
+          const changed = await viewer.show()
           if (changed) {
             await this.load(this.id || this.model.id)
           }
@@ -623,12 +625,12 @@
       },
 
       async onCreatePurchaseInvoice() {
-        const purchaseInvoice = await PurchaseInvoiceModel.generate(this.model.id)
+        const invoice = await PurchaseInvoiceModel.generate(this.model.id)
         this.$q.loading.show()
         await this.$await(2000)
         this.$q.loading.hide()
         const viewer = new PurchaseInvoiceViewer(this)
-        viewer.id = purchaseInvoice.id
+        viewer.id = invoice.id
         await viewer.show()
         await this.load(this.id || this.model.id)
       },

@@ -2,29 +2,14 @@ import {FetchableArray} from "../array";
 import {api} from "../../plugins/axios";
 import {LabelModel} from "../shared";
 
-export * from './purchase-order'
-export * from './purchase-order-item'
+export * from './outsourcing-invoice'
+export * from './outsourcing-invoice-item'
+export * from './outsourcing-invoice-viewer'
 
-export const PurchaseOrderStatusArray = Array.decorate(
+export const OutsourcingInvoiceStatusArray = Array.decorate(
     class extends FetchableArray {
       get url() {
-        return '/purchase-order/status-labels'
-      }
-
-      get axios() {
-        return api
-      }
-
-      get model() {
-        return LabelModel
-      }
-    }
-)
-
-export const PurchaseOrderItemStatusArray = Array.decorate(
-    class extends FetchableArray {
-      get url() {
-        return '/purchase-order/item-status-labels'
+        return '/outsourcing-invoice/status-labels'
       }
 
       get axios() {

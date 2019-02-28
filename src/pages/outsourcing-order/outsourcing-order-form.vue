@@ -305,7 +305,7 @@
                v-if="printable"></q-btn>
         <q-btn flat icon="done" @click="onDetermine()" label="확정"
                v-if="determinable"></q-btn>
-        <q-btn flat icon="done" @click="onCreatePurchaseInvoice()" label="발주 송장 생성"
+        <q-btn flat icon="done" @click="onCreateOutsourcingInvoice()" label="발주 송장 생성"
                v-if="receivable" v-show="$authorized.invoicePublishable"></q-btn>
         <q-btn flat icon="cancel_presentation" @click="onReject()" label="공급사 거부"
                v-if="rejectable"></q-btn>
@@ -330,15 +330,17 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
     OutsourcingOrderItemArray,
+    OutsourcingOrderItemModel,
     OutsourcingOrderMaterialArray,
     OutsourcingOrderModel,
     OutsourcingOrderStatusArray
   } from 'src/model/outsourcing-order'
   import {
-    PurchaseInvoiceArray,
-    PurchaseInvoiceModel,
-    PurchaseInvoiceStatusArray
-  } from 'src/model/purchase-invoice'
+    OutsourcingInvoiceArray,
+    OutsourcingInvoiceModel,
+    OutsourcingInvoiceStatusArray,
+    OutsourcingInvoiceViewer
+  } from 'src/model/outsourcing-invoice'
   import {
     WarehouseSiteArray,
     WarehouseSiteModel,
@@ -349,7 +351,6 @@
   import {UnitLabelArray} from 'src/model/shared'
   import {DeliveryExecutor} from "src/model/delivery"
   import {DocumentModel} from "src/model/document";
-  import PurchaseOrderItemSpecCellRenderer from './outsourcing-order-item-spec-cell-renderer'
 
   export default {
     authorized: {
@@ -389,8 +390,8 @@
         receiveSiteModel: new WarehouseSiteModel(),
         siteArray: new WarehouseSiteArray(),
         stationArray: new WarehouseStationArray(),
-        invoiceStatusLabelArray: new PurchaseInvoiceStatusArray(),
-        invoiceArray: new PurchaseInvoiceArray(),
+        invoiceStatusLabelArray: new OutsourcingInvoiceStatusArray(),
+        invoiceArray: new OutsourcingInvoiceArray(),
 
         enabled: true,
         selected: {
@@ -421,7 +422,9 @@
       async onInvoiceGridCellClicked(event) {
         if (event.colDef.field == "dueDate") {
           const data = event.data
-          const changed = await this.$showPurchaseInvoice(data.id)
+          const viewer = new OutsourcingInvoiceViewer(this)
+          viewer.id = data.id
+          const changed = await viewer.show()
           if (changed) {
             await this.load(this.id || this.model.id)
           }
@@ -504,7 +507,7 @@
         const model = await OutsourcingOrderModel.get(id)
         const itemArray = new OutsourcingOrderItemArray(model)
         const materialArray = new OutsourcingOrderMaterialArray(model)
-        const invoiceArray = new PurchaseInvoiceArray(model)
+        const invoiceArray = new OutsourcingInvoiceArray(model)
         await Promise.all([
           itemArray.fetch(),
           materialArray.fetch(),
@@ -674,7 +677,7 @@
         }
         itemModels.map(async (itemModel) => {
           const itemId = itemModel.id
-          const item = new PurchaseOrderItemModel({
+          const item = new OutsourcingOrderItemModel({
             itemId: itemId
           })
           await item.fetchReference()
@@ -683,12 +686,14 @@
 
       },
 
-      async onCreatePurchaseInvoice() {
-        const purchaseInvoice = await PurchaseInvoiceModel.generate(this.model.id)
+      async onCreateOutsourcingInvoice() {
+        const invoice = await OutsourcingInvoiceModel.generate(this.model.id)
         this.$q.loading.show()
         await this.$await(2000)
         this.$q.loading.hide()
-        await this.$showPurchaseInvoice(purchaseInvoice.id)
+        const viewer = new OutsourcingInvoiceViewer(this)
+        viewer.id = invoice.id
+        await viewer.show()
         await this.load(this.id || this.model.id)
       },
 
@@ -750,8 +755,7 @@
       }
     },
     components: {
-      CommentList,
-      PurchaseOrderItemSpecCellRenderer
+      CommentList
     }
   }
 </script>

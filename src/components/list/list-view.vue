@@ -269,7 +269,7 @@
             e.api.getSortModel().map(
                 (sm) => {
                   const def = e.api.getColumnDef(sm.colId)
-                  Sort.createSort(def.sortField || def.field, sm.sort)
+                  return Sort.createSort(def.sortField || def.field, sm.sort)
                 })
         )
         if (previousSortQueryString != this.sortQueryString && this.preventQueryString) {

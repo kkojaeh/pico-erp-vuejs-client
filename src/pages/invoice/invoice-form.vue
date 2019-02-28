@@ -90,8 +90,8 @@
                  :row-data="itemArray">
 
           <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
-          <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-          <ag-grid-column field="itemLot.code" header-name="LOT" :width="160"/>
+          <ag-grid-column field="item.name" header-name="품목 이름" :width="250"/>
+          <ag-grid-column field="itemSpecCode" header-name="LOT" :width="100"/>
           <ag-grid-column field="quantity" header-name="수량" :width="120"
                           :cell-style="{textAlign: 'right'}"
                           cell-renderer-framework="ag-grid-number-renderer"

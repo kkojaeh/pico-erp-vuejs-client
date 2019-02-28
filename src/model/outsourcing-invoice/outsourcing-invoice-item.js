@@ -1,11 +1,11 @@
 import {FetchableArray, SavableArray, ValidatableArray} from 'src/model/array'
 import {Model, uuid} from 'src/model/model'
 import {api} from 'src/plugins/axios'
-import {ItemModel} from "src/model/item";
+import {OutsourcingOrderItemModel} from "src/model/outsourcing-order";
 
-const itemSymbol = Symbol('item')
+const orderItemSymbol = Symbol('order-item')
 
-export class InvoiceItemModel extends Model {
+export class OutsourcingInvoiceItemModel extends Model {
 
   constructor(data) {
     super(data)
@@ -25,8 +25,8 @@ export class InvoiceItemModel extends Model {
     return {}
   }
 
-  get item() {
-    return this[itemSymbol]
+  get orderItem() {
+    return this[orderItemSymbol]
   }
 
   get phantom() {
@@ -38,19 +38,22 @@ export class InvoiceItemModel extends Model {
   }
 
   async fetchReference() {
-    this[itemSymbol] = await ItemModel.get(this.itemId, true)
+    this[orderItemSymbol] = await OutsourcingOrderItemModel.get(
+        this.orderItemId,
+        true)
+    await this.orderItem.fetchReference()
   }
 
   async save() {
     const invoiceId = this.invoiceId
     if (this.phantom) {
       const response = await api.post(
-          `/invoice/invoices/${invoiceId}/items`,
+          `/outsourcing-invoice/invoices/${invoiceId}/items`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/invoice/invoices/${invoiceId}/items/${this.id}`,
+          `/outsourcing-invoice/invoices/${invoiceId}/items/${this.id}`,
           this)
     }
   }
@@ -71,14 +74,19 @@ export class InvoiceItemModel extends Model {
     return await this.$validate(constraints)
   }
 
+  async delete() {
+    await api.delete(
+        `/outsourcing-invoice/invoices/${this.invoiceId}/items/${this.id}`,
+        {})
+  }
 }
 
-export const InvoiceItemArray = Array.decorate(
+export const OutsourcingInvoiceItemArray = Array.decorate(
     SavableArray,
     ValidatableArray,
     class extends FetchableArray {
       get url() {
-        return '/invoice/invoices/${invoiceId}/items'
+        return '/outsourcing-invoice/invoices/${invoiceId}/items'
       }
 
       get axios() {
@@ -86,7 +94,7 @@ export const InvoiceItemArray = Array.decorate(
       }
 
       get model() {
-        return InvoiceItemModel
+        return OutsourcingInvoiceItemModel
       }
 
       initialize(invoice) {
