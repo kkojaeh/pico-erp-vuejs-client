@@ -1,7 +1,7 @@
 <template>
   <q-page class="column">
     <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
-                 prevent-route filter-opened prevent-query-string>
+                 prevent-route filter-opened prevent-query-string @fetched="onFetched">
 
       <!-- action -->
 
@@ -24,7 +24,7 @@
         <ag-grid-column field="code" header-name="코드" :width="120"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
         <ag-grid-column field="name" header-name="이름" :width="300"/>
-        <ag-grid-column field="customerName" header-name="고객사" :width="150"/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="150" :sortable="false"/>
         <ag-grid-column field="categoryPath" header-name="분류" :width="250"/>
         <ag-grid-column field="unit" header-name="단위" :width="80"
                         :cell-style="{textAlign: 'center'}"
@@ -151,7 +151,7 @@
     ItemTypeArray
   } from 'src/model/item'
   import {UnitLabelArray} from 'src/model/shared'
-  import {CompanyLabelArray} from 'src/model/company'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import * as _ from 'lodash'
 
   export default {
@@ -230,6 +230,14 @@
         } else {
           this.$alert.warning('선택한 품목이 없습니다')
         }
+      },
+      async onFetched() {
+        await Promise.all(
+            this.array.map(async (e) => {
+              e.customer = await CompanyModel.get(e.customerId, true)
+            })
+        )
+        this.$redrawGrids()
       }
     },
     computed: {

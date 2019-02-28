@@ -4,7 +4,8 @@
              v-model="model.postalCode" readonly :hide-underline="hideUnderline"
              :after="[
               { icon:'search', handler:find, condition: visibleSearch },
-              { icon:'clear', handler:clear, condition: visibleClear }
+              { icon:'clear', handler:clear, condition: visibleClear },
+              ...after
              ]">
     </q-input>
 
@@ -24,6 +25,10 @@
     props: {
       value: {
         type: Object
+      },
+      after: {
+        type: Array,
+        default: () => []
       }
     },
     data () {

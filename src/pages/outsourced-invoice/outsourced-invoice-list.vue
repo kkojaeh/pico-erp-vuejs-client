@@ -7,7 +7,7 @@
     <!-- child -->
 
     <c-list-view ref="listView" :array="array" :filters="filters" pagination class="col-grow"
-                 @fetched="onFetched">
+                 @fetched="onFetched" :sorts="sorts">
 
       <!-- action -->
 
@@ -17,7 +17,7 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
-        <router-link :to="{ path: '/outsourcing-request/request/create', query: $route.query}">
+        <router-link :to="{ path: '/outsourced-invoice/create', query: $route.query}">
           <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
       </div>
@@ -32,41 +32,20 @@
                enable-col-resize
                enable-sorting
                :row-data="array">
-        <ag-grid-column field="code" header-name="구매요청번호" :width="120"
+        <ag-grid-column field="invoice.code" header-name="송장번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/outsourcing-request/request/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
-        <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
-        <ag-grid-column field="process.name" header-name="공정" :width="100"/>
-        <ag-grid-column field="quantity" header-name="수량" :width="100"
-                        :cell-style="{textAlign: 'right'}"
-                        cell-renderer-framework="ag-grid-number-renderer"
-                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
-        <ag-grid-column field="spareQuantity" header-name="여분수량" :width="100"
-                        :cell-style="{textAlign: 'right'}"
-                        cell-renderer-framework="ag-grid-number-renderer"
-                        :cell-renderer-params="{format:'#,##0.00', words:true}"/>
-        <ag-grid-column field="unit" header-name="단위" :width="80"
-                        :cell-style="{textAlign: 'center'}"
-                        cell-renderer-framework="ag-grid-array-label-renderer"
-                        :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
+                        :cell-renderer-params="{path:'/outsourced-invoice/show/${id}', query:$route.query, innerRenderer: invoiceCodeRenderer}"/>
+        <ag-grid-column field="project.name" header-name="프로젝트" :width="170"/>
+        <ag-grid-column field="sender.name" header-name="고객사" :width="120"/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
-        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
-        <ag-grid-column field="dueDate" header-name="만기일" :width="120"
-                        cell-renderer-framework="ag-grid-date-renderer"
-                        :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="committedDate" header-name="제출일시" :width="170"
+        <ag-grid-column field="dueDate" header-name="예정일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="accepter.name" header-name="접수자" :width="120"/>
-        <ag-grid-column field="acceptedDate" header-name="접수일시" :width="170"
-                        cell-renderer-framework="ag-grid-datetime-renderer"
-                        :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="completedDate" header-name="완료일시" :width="170"
+        <ag-grid-column field="createdBy.name" header-name="생성자" :width="100"/>
+        <ag-grid-column field="createdDate" header-name="인수일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
       </ag-grid>
@@ -74,20 +53,20 @@
       <!-- main -->
 
       <!-- filters -->
+      <!--
+            <q-field slot="filter" icon="account_circle" helper="송장번호에 포함된 글자를 입력하세요"
+                     class="col-xs-11 col-md-4 col-xl-3">
+              <q-input v-model="filters.code" float-label="송장번호" clearable
+                       @keyup.enter="retrieve()"/>
+            </q-field>-->
 
-      <q-field slot="filter" icon="account_circle" helper="구매요청번호에 포함된 글자를 입력하세요"
+      <q-field slot="filter" icon="fas fa-building" helper="발송사를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-input v-model="filters.code" float-label="구매요청번호" clearable
-                 @keyup.enter="retrieve()"/>
-      </q-field>
 
-      <q-field slot="filter" icon="fas fa-building" helper="프로젝트를 선택하세요"
-               class="col-xs-11 col-md-4 col-xl-3">
-
-        <c-autocomplete-select float-label="프로젝트" v-model="filters.projectId"
-                               :label.sync="filters.projectName" :options="projectLabelArray"
+        <c-autocomplete-select float-label="인수사" v-model="filters.senderId"
+                               :label.sync="filters.senderName" :options="companyLabelArray"
                                label-field="label" value-field="value" clearable
-                               @search="onProjectSearch">
+                               @search="onCompanySearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
             {{option.stamp}} - {{option.subLabel}}
@@ -109,37 +88,6 @@
         </c-autocomplete-select>
       </q-field>
 
-
-      <q-field slot="filter" icon="account_box" helper="요청자를 선택하세요"
-               class="col-xs-11 col-md-4 col-xl-3">
-
-        <c-autocomplete-select float-label="요청자" v-model="filters.requesterId"
-                               :label.sync="filters.requesterName" :options="userLabelArray"
-                               label-field="label" value-field="value" clearable
-                               :readonly="!$authorized.outsourcingRequestManager"
-                               :hide-underline="!$authorized.outsourcingRequestManager"
-                               @search="onUserSearch">
-          <template slot="option" slot-scope="option">
-            {{option.label}}<br>
-            {{option.stamp}} - {{option.subLabel}}
-          </template>
-        </c-autocomplete-select>
-      </q-field>
-
-      <q-field slot="filter" icon="account_box" helper="접수자를 선택하세요"
-               class="col-xs-11 col-md-4 col-xl-3">
-
-        <c-autocomplete-select float-label="접수자" v-model="filters.accepterId"
-                               :label.sync="filters.accepterName" :options="userLabelArray"
-                               label-field="label" value-field="value" clearable
-                               @search="onUserSearch">
-          <template slot="option" slot-scope="option">
-            {{option.label}}<br>
-            {{option.stamp}} - {{option.subLabel}}
-          </template>
-        </c-autocomplete-select>
-      </q-field>
-
       <q-field slot="filter" icon="fas fa-building" helper="상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
@@ -151,7 +99,6 @@
                class="col-xs-11 col-md-4 col-xl-3">
         <q-datetime suffix="~" float-label="만기일 ~부터" v-model="filters.startDueDate"
                     type="date"/>
-        <!--filters.startDueDate-->
       </q-field>
 
       <q-field slot="filter" icon="fas fa-calendar" helper="만기일 범위(까지)를 입력하세요"
@@ -172,16 +119,11 @@
 
       <!-- filter -->
 
-      <c-list-filter-label slot="filter-label" v-model="filters.code" label="구매요청번호"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.projectId"
-                           :print-value="filters.projectName" label="프로젝트"/>
+      <!--<c-list-filter-label slot="filter-label" v-model="filters.code" label="송장번호"/>-->
+      <c-list-filter-label slot="filter-label" v-model="filters.senderId"
+                           :print-value="filters.supplierName" label="발송사"/>
       <c-list-filter-label slot="filter-label" v-model="filters.receiverId"
                            :print-value="filters.receiverName" label="인수사"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.requesterId"
-                           :print-value="filters.requesterName" label="요청자"
-                           :immutable="!$authorized.outsourcingRequestManager"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.accepterId"
-                           :print-value="filters.accepterName" label="접수자"/>
       <c-list-filter-label slot="filter-label" v-model="filters.statuses"
                            :print-value="statusesLabel" :clear-value="[]"
                            label="상태"/>
@@ -200,37 +142,36 @@
 </template>
 <script>
   import {DataAdjuster} from 'src/model/data'
+  import Sort from 'src/model/sort'
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
-  import {ProcessModel} from 'src/model/process'
-  import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {UnitLabelArray} from 'src/model/shared'
+  import {InvoiceModel} from 'src/model/invoice'
+  import {ProjectModel} from 'src/model/project'
+  import {UserLabelArray} from 'src/model/user'
   import {
-    OutsourcingRequestPaginationArray,
-    OutsourcingRequestStatusArray
-  } from 'src/model/outsourcing-request'
+    OutsourcedInvoicePaginationArray,
+    OutsourcedInvoiceStatusArray
+  } from 'src/model/outsourced-invoice'
+
+  import moment from 'moment'
 
   export default {
     authorized: {
-      'outsourcingRequestManager': 'hasRole(\'OUTSOURCING_REQUEST_MANAGER\')'
+      'outsourceInvoiceManager': 'hasRole(\'OUTSOURCED_INVOICE_MANAGER\')'
     },
     data() {
       return {
-        array: new OutsourcingRequestPaginationArray(),
+        array: new OutsourcedInvoicePaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
-        unitLabelArray: new UnitLabelArray(),
-        projectLabelArray: new ProjectLabelArray(),
-        statusLabelArray: new OutsourcingRequestStatusArray(),
+        statusLabelArray: new OutsourcedInvoiceStatusArray(),
+        sorts: [Sort.createSort('dueDate', 'ASC')],
         filters: {
-          code: null,
+          /*code: null,*/
           receiverId: null,
           receiverName: null,
-          accepterId: null,
-          accepterName: null,
-          requesterId: null,
-          requesterName: null,
+          senderId: null,
+          senderName: null,
           statuses: [],
           startDueDate: null,
           endDueDate: null,
@@ -238,6 +179,7 @@
           itemCode: null,
           itemName: null
         },
+        owner: new CompanyModel(),
         dataAdjuster: null
       }
     },
@@ -260,27 +202,32 @@
           lastTime: true
         }
       })
+      this.owner = await CompanyModel.owner()
       await Promise.all([
         this.statusLabelArray.fetch(),
         this.companyLabelArray.fetch(),
-        this.userLabelArray.fetch(),
-        this.projectLabelArray.fetch(),
-        this.unitLabelArray.fetch()
+        this.userLabelArray.fetch()
       ])
-      if (!this.$authorized.outsourcingRequestManager) {
-        this.filters.requesterId = this.user.id
-        this.filters.requesterName = this.user.name
+      /*
+      if (!this.filters.receiverId) {
+        this.filters.receiverId = this.owner.id
+        this.filters.receiverName = this.owner.name
       }
+      */
+      if (!this.filters.startDueDate) {
+        this.filters.startDueDate = moment().subtract(1, 'weeks').toDate()
+      }
+      this.retrieve()
     },
     methods: {
+      invoiceCodeRenderer(params) {
+        return params.value || 'N/A'
+      },
       retrieve() {
         this.$refs.listView.retrieve()
       },
       async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
-      },
-      async onProjectSearch(keyword) {
-        await this.projectLabelArray.fetch(keyword)
       },
       async onUserSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
@@ -304,12 +251,10 @@
       async onFetched() {
         await Promise.all(
             this.array.map(async (e) => {
-              await e.fetchReference()
+              e.sender = await CompanyModel.get(e.senderId, true)
               e.receiver = await CompanyModel.get(e.receiverId, true)
+              e.invoice = await InvoiceModel.get(e.invoiceId, true)
               e.project = await ProjectModel.get(e.projectId, true)
-              e.accepter = await UserModel.get(e.accepterId, true)
-              e.requester = await UserModel.get(e.requesterId, true)
-              e.process = await ProcessModel.get(e.processId, true)
             })
         )
         this.$redrawGrids()

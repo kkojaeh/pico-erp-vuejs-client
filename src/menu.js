@@ -119,6 +119,14 @@ const menu = [
         })[language],
         url: '/order-acceptance',
         authorize: 'hasAnyRole(\'ORDER_ACCEPTANCE_MANAGER\')'
+      },
+      {
+        icon: 'fas fa-truck',
+        label: languageAliases({
+          ko: '고객 입고 송장 현황'
+        })[language],
+        url: '/outsourced-invoice',
+        authorize: 'hasAnyRole(\'OUTSOURCED_INVOICE_PUBLISHER\', \'OUTSOURCED_INVOICE_MANAGER\')'
       }
     ]
   },
@@ -241,7 +249,7 @@ const menu = [
     })[language],
     children: [
       {
-        icon: 'fas fa-file-invoice-dollar',
+        icon: 'fas fa-truck',
         label: languageAliases({
           ko: '입고 송장 현황'
         })[language],

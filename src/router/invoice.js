@@ -1,12 +1,12 @@
 import {wrapModal} from './default'
 
 let invoiceList = {
-  title: '송장 현황',
+  title: '입고 송장 현황',
   authorize: 'hasAnyRole(\'INVOICE_RECEIVER\', \'INVOICE_MANAGER\')'
 }
 
 let invoiceForm = {
-  title: '송장 내용',
+  title: '입고 송장 내용',
   authorize: 'hasAnyRole(\'INVOICE_RECEIVER\', \'INVOICE_MANAGER\')'
 }
 

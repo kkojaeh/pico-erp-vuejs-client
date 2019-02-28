@@ -84,7 +84,7 @@
         </c-autocomplete-select>
       </q-field>
 
-      <q-field slot="filter" icon="fas fa-building" helper="구매 요청의 상태를 선택하세요 체크한 대상만 검색됩니다"
+      <q-field slot="filter" icon="fas fa-building" helper="상태를 선택하세요 체크한 대상만 검색됩니다"
                class="col-xs-11 col-md-4 col-xl-3">
         <q-select float-label="상태" v-model="filters.statuses"
                   :options="statusLabelArray" multiple></q-select>

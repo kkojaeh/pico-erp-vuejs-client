@@ -509,6 +509,7 @@
     QuotationStatusArray
   } from 'src/model/quotation'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
+  import {ItemSelector} from 'src/model/item'
   import {BomModel} from 'src/model/bom'
   import {CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
@@ -697,7 +698,9 @@
       },
 
       async onAddItemBySelect() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

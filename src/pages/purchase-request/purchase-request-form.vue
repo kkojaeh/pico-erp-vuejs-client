@@ -199,12 +199,7 @@
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ItemModel, ItemSpecModel} from 'src/model/item'
-  import {
-    PurchaseRequestItemArray,
-    PurchaseRequestItemModel,
-    PurchaseRequestModel,
-    PurchaseRequestStatusArray
-  } from 'src/model/purchase-request'
+  import {PurchaseRequestModel, PurchaseRequestStatusArray} from 'src/model/purchase-request'
   import {
     WarehouseSiteArray,
     WarehouseSiteModel,
