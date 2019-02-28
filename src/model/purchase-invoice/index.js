@@ -4,6 +4,7 @@ import {LabelModel} from "../shared";
 
 export * from './purchase-invoice'
 export * from './purchase-invoice-item'
+export * from './purchase-invoice-viewer'
 
 export const PurchaseInvoiceStatusArray = Array.decorate(
     class extends FetchableArray {

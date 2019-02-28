@@ -267,7 +267,10 @@
         const previousSortQueryString = this.sortQueryString
         this.sortQueryString = Sort.toQueryString(
             e.api.getSortModel().map(
-                (sm) => Sort.createSort(e.api.getColumnDef(sm.colId).field, sm.sort))
+                (sm) => {
+                  const def = e.api.getColumnDef(sm.colId)
+                  Sort.createSort(def.sortField || def.field, sm.sort)
+                })
         )
         if (previousSortQueryString != this.sortQueryString && this.preventQueryString) {
           this._fetch()
@@ -286,7 +289,10 @@
           const columns = this.grid.api.columnController.getAllGridColumns()
           let parsed = Sort.parseQueryString(this.sortQueryString)
           this.grid.api.setSortModel(parsed.map((value) => {
-            const column = columns.find(c => c.getColDef().field == value.getField())
+            const column = columns.find(c => {
+              const def = c.getColDef()
+              return (def.sortField || def.field) == value.getField()
+            })
             return {
               colId: column.getId(),
               sort: value.getDir().toLowerCase()

@@ -60,7 +60,11 @@
 
   }
   const watchedProperties = {}
-  const props = {}
+  const props = {
+    sortField: {
+      type: String
+    }
+  }
 
   ColDefUtil.ALL_PROPERTIES.forEach((propertyName) => {
     props[propertyName] = predefined[propertyName] || {}

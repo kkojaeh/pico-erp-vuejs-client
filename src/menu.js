@@ -79,6 +79,14 @@ const menu = [
         })[language],
         url: '/document-subject',
         authorize: 'hasAnyRole(\'DOCUMENT_MANAGER\')'
+      },
+      {
+        icon: 'send',
+        label: languageAliases({
+          ko: '전송 관리'
+        })[language],
+        url: '/delivery-subject',
+        authorize: 'hasAnyRole(\'DELIVERY_MANAGER\')'
       }
     ]
   },

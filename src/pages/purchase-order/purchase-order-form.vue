@@ -283,7 +283,8 @@
   import {
     PurchaseInvoiceArray,
     PurchaseInvoiceModel,
-    PurchaseInvoiceStatusArray
+    PurchaseInvoiceStatusArray,
+    PurchaseInvoiceViewer
   } from 'src/model/purchase-invoice'
   import {
     WarehouseSiteArray,
@@ -626,7 +627,9 @@
         this.$q.loading.show()
         await this.$await(2000)
         this.$q.loading.hide()
-        await this.$showPurchaseInvoice(purchaseInvoice.id)
+        const viewer = new PurchaseInvoiceViewer(this)
+        viewer.id = purchaseInvoice.id
+        await viewer.show()
         await this.load(this.id || this.model.id)
       },
 
