@@ -286,7 +286,7 @@
           return
         }
         if (this.sortQueryString) {
-          const columns = this.grid.api.columnController.getAllGridColumns()
+          const columns = this.grid.api.columnController.getAllGridColumns() || []
           let parsed = Sort.parseQueryString(this.sortQueryString)
           this.grid.api.setSortModel(parsed.map((value) => {
             const column = columns.find(c => {
