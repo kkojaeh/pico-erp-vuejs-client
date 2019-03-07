@@ -39,8 +39,7 @@ export class OutsourcingInvoiceItemModel extends Model {
 
   async fetchReference() {
     this[orderItemSymbol] = await OutsourcingOrderItemModel.get(
-        this.orderItemId,
-        true)
+        this.orderItemId)
     await this.orderItem.fetchReference()
   }
 

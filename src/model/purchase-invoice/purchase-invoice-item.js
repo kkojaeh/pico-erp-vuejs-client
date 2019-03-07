@@ -38,8 +38,7 @@ export class PurchaseInvoiceItemModel extends Model {
   }
 
   async fetchReference() {
-    this[orderItemSymbol] = await PurchaseOrderItemModel.get(this.orderItemId,
-        true)
+    this[orderItemSymbol] = await PurchaseOrderItemModel.get(this.orderItemId)
     await this.orderItem.fetchReference()
   }
 
