@@ -42,6 +42,14 @@
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0', words:true}"/>
+        <ag-grid-column field="completedQuantity" header-name="완료수량" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'#,##0', words:true}"/>
+        <ag-grid-column field="progressRate" header-name="진행율" :width="100"
+                        :cell-style="{textAlign: 'right'}"
+                        cell-renderer-framework="ag-grid-number-renderer"
+                        :cell-renderer-params="{format:'0.0%'}"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
