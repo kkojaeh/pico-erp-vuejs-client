@@ -87,7 +87,7 @@
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ type: 'number', align: 'right' }"
                           :editable="updatable"/>
-          <ag-grid-column field="orderItem.purchaseUnit" header-name="단위" :width="80"
+          <ag-grid-column field="orderItem.outsourcingUnit" header-name="단위" :width="80"
                           :cell-style="{textAlign: 'center'}"
                           cell-renderer-framework="ag-grid-array-label-renderer"
                           :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
@@ -175,6 +175,7 @@
         const model = await OutsourcingInvoiceModel.get(id)
         const itemArray = new OutsourcingInvoiceItemArray(model)
         await itemArray.fetch()
+        console.log(itemArray)
         this.model = model
         this.itemArray = itemArray
       },

@@ -14,6 +14,7 @@ export class ProductionRequestModel extends Model {
 
   get defaults() {
     return {
+      unit: null,
       itemId: null,
       quantity: 0,
       spareQuantity: 0,
@@ -123,6 +124,12 @@ export class ProductionRequestModel extends Model {
   async validate() {
     let constraints = {
       itemId: {
+        presence: true
+      },
+      unit: {
+        presence: true
+      },
+      receiverId: {
         presence: true
       },
       quantity: {

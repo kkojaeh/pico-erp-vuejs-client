@@ -109,6 +109,36 @@
 
     </q-card>
 
+    <q-card class="col-12" flat>
+
+      <q-card-title>
+        인수 정보
+      </q-card-title>
+
+      <q-card-separator/>
+
+
+      <q-card-main class="row gutter-md">
+
+        <q-field icon="fas fa-building" helper="품목을 인수할 회사 입니다"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.receiverId"
+                 :error-label="model.$errors.receiverId">
+          <c-autocomplete-select float-label="인수사" v-model="model.receiverId"
+                                 :label="receiverModel.name" :options="[]"
+                                 label-field="label" value-field="value"
+                                 readonly hide-underline>
+            <template slot="option" slot-scope="option">
+              {{option.label}}<br>
+              {{option.stamp}} - {{option.subLabel}}
+            </template>
+          </c-autocomplete-select>
+        </q-field>
+
+      </q-card-main>
+
+    </q-card>
+
     <q-page-sticky expand position="bottom">
       <q-toolbar>
         <q-btn flat icon="arrow_back" v-close-overlay v-if="closable" label="이전"></q-btn>
@@ -132,6 +162,7 @@
   import {ProductionRequestModel, ProductionRequestStatusArray} from 'src/model/production-request'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
+  import {CompanyModel} from "../../model/company";
 
   export default {
     props: {
@@ -160,7 +191,8 @@
         projectModel: new ProjectModel(),
         projectLabelArray: new ProjectLabelArray(),
         unitLabelArray: new UnitLabelArray(),
-        statusLabelArray: new ProductionRequestStatusArray()
+        statusLabelArray: new ProductionRequestStatusArray(),
+        receiverModel: new CompanyModel()
       }
     },
     async mounted() {
@@ -258,6 +290,9 @@
       },
       'model.itemId': async function (to) {
         this.itemModel = await ItemModel.get(to, true)
+      },
+      'model.receiverId': async function (to) {
+        this.receiverModel = await CompanyModel.get(to, true)
       }
     },
     components: {

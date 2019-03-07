@@ -6,11 +6,20 @@ import {CompanyModel} from "src/model/company";
 import {ProcessModel} from "src/model/process";
 import {language, languageAliases} from "../../i18n";
 import moment from "moment";
+import * as _ from 'lodash'
+import {ProductionPlanDetailMediatorModel} from "../production-mediator/production-mediator";
 
 const itemSymbol = Symbol('item')
 const itemSpecSymbol = Symbol('item-spec')
 const progressCompanySymbol = Symbol('progress-company')
 const processSymbol = Symbol('process')
+
+const progressTypeUrlTemplates = {
+  'OUTSOURCING': '/outsourcing-request/${id}',
+  'PRODUCE': '/outsourcing-request/${id}',
+  'WAREHOUSING': '/outsourcing-request/${id}',
+  'PURCHASE': '/outsourcing-request/${id}'
+};
 
 export class ProductionPlanDetailModel extends Model {
 
@@ -24,7 +33,17 @@ export class ProductionPlanDetailModel extends Model {
       status: 'DRAFT',
       quantity: 0,
       spareQuantity: 0,
-      remark: null
+      remark: null,
+      determinable: false,
+      receiverId: null
+    }
+  }
+
+  get allowedProgressTypes() {
+    if (this.processId) {
+      return ['OUTSOURCING', 'PRODUCE']
+    } else {
+      return ['WAREHOUSING', 'PURCHASE']
     }
   }
 
@@ -52,10 +71,20 @@ export class ProductionPlanDetailModel extends Model {
     return this.hasChanged("id")
   }
 
+  async getLinkedUrl() {
+    const mediator = await ProductionPlanDetailMediatorModel.get(this.id)
+    return _.template(progressTypeUrlTemplates[this.progressType])({
+      id: mediator.linkedId
+    })
+  }
+
+
+
+
   async fetchReference() {
     this[itemSymbol] = await ItemModel.get(this.itemId, true)
     this[itemSpecSymbol] = await ItemSpecModel.get(this.itemSpecId, true)
-    this[progressCompanySymbol] = await CompanyModel.get(this.progressCompanyId,
+    this[progressCompanySymbol] = await CompanyModel.get(this.actorId,
         true)
     this[processSymbol] = await ProcessModel.get(this.processId, true)
   }
@@ -100,6 +129,9 @@ export class ProductionPlanDetailModel extends Model {
 
   async validate() {
     let constraints = {
+      progressType: {
+        inclusion: ['OUTSOURCING', 'PRODUCE', 'WAREHOUSING', 'PURCHASE']
+      },
       quantity: {
         presence: true,
         numericality: {

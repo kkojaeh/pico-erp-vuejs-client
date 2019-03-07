@@ -121,7 +121,7 @@
     </q-page-sticky>
 
     <q-modal v-model="detailEditing">
-      <q-card class="col-12" flat style="max-width:1024px">
+      <q-card class="col-12" flat style="max-width:768px">
         <q-card-title>
           {{detailTitle}}
           <span slot="right">
@@ -138,16 +138,17 @@
                    :error-label="editing.detail.$errors.progressType">
             <q-select float-label="진행 방법" v-model="editing.detail.progressType"
                       :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
-                      :options="progressTypeArray"></q-select>
+                      :options="progressTypes"></q-select>
           </q-field>
 
           <q-field icon="fas fa-building" helper="진행 회사 입니다"
                    class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
-                   :error="!!editing.detail.$errors.progressCompanyId"
-                   :error-label="editing.detail.$errors.progressCompanyId">
-            <c-autocomplete-select float-label="진행사" v-model="editing.detail.progressCompanyId"
-                                   :label="progressCompanyModel.name" :options="companyLabelArray"
+                   :error="!!editing.detail.$errors.actorId"
+                   :error-label="editing.detail.$errors.actorId">
+            <c-autocomplete-select float-label="진행사" v-model="editing.detail.actorId"
+                                   :label="actorModel.name" :options="companyLabelArray"
                                    label-field="label" value-field="value"
+                                   :disabled="detailActorDisabled"
                                    :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
                                    @search="onCompanySearch">
               <template slot="option" slot-scope="option">
@@ -196,6 +197,15 @@
                         :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
                         type="datetime"/>
           </q-field>
+
+          <q-field icon="fas fa-building" helper="완료후 인수할 회사 입니다"
+                   class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
+                   :error="!!editing.detail.$errors.receiverId"
+                   :error-label="editing.detail.$errors.receiverId">
+            <q-select float-label="인수사" v-model="editing.detail.receiverId"
+                      :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
+                      :options="receiverLabelArray"></q-select>
+          </q-field>
         </q-card-main>
 
         <q-card-separator/>
@@ -228,6 +238,7 @@
     ProductionPlanModel,
     ProductionPlanStatusArray
   } from 'src/model/production-plan'
+  import Big from 'big.js'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
   import ProductionPlanItemSpecCellRenderer from './production-plan-item-spec-cell-renderer.vue'
@@ -285,6 +296,7 @@
         model: new ProductionPlanModel(),
         detailArray: new ProductionPlanDetailArray(),
         companyLabelArray: new CompanyLabelArray(),
+        receiverLabelArray: [],
         itemModel: new ItemModel(),
         userLabelArray: new UserLabelArray(),
         requesterModel: new UserModel(),
@@ -294,7 +306,9 @@
         unitLabelArray: new UnitLabelArray(),
         statusLabelArray: new ProductionPlanStatusArray(),
         progressTypeArray: new ProductionPlanDetailProgressTypeArray(),
-        progressCompanyModel: new CompanyModel(),
+        progressTypes: [],
+        actorModel: new CompanyModel(),
+        receiverModel: new CompanyModel(),
         detailStatusLabelArray: new ProductionPlanDetailStatusArray(),
         editing: {
           detail: new ProductionPlanDetailModel()
@@ -304,6 +318,7 @@
       }
     },
     async mounted() {
+      this.owner = await CompanyModel.owner()
       await Promise.all([
         this.unitLabelArray.fetch(),
         this.userLabelArray.fetch(),
@@ -321,6 +336,7 @@
       onShowItem() {
         this.$showItem(this.model.itemId)
       },
+
       async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
       },
@@ -380,7 +396,6 @@
         if (validDetermine) {
           const ok = await this.$alert.confirm('계획을 확정 하시겠습니까?')
           if (ok) {
-            await this.save()
             await this.model.determine()
             this.$alert.positive('확정 되었습니다')
             await this.$await(1000)
@@ -433,7 +448,7 @@
             this.$alert.positive('확정 되었습니다')
             this.detailEditing = false
             this.editing.detail = new ProductionPlanDetailModel()
-            await this.refreshDetails()
+            await this.load(this.id || this.model.id)
           }
         } else {
           this.$alert.warning(this.editing.detail.$errors.determine)
@@ -450,12 +465,33 @@
         }
       },
 
-      onGanttSelect(event) {
+      async onGanttSelect(event) {
         const data = event.target
-        this.editing.detail = this.detailArray.filter(e => e.id == data.id)[0]
+        const detail = this.detailArray.find(e => e.id == data.id)
+        //console.log(await detail.getLinkedUrl())
+        const id = detail.id;
+        const allowedProgressTypes = detail.allowedProgressTypes
+        this.progressTypes = this.progressTypeArray.filter(
+            e => allowedProgressTypes.includes(e.value))
+
+        let dependedOns = this.detailArray
+        .filter(detail => detail.dependencies.includes(id))
+        .map(detail => detail.actorId)
+        .filter(actorId => !!actorId)
+
+        if (!dependedOns.length && detail.receiverId) {
+          dependedOns = [detail.receiverId]
+        }
+        const receivers = await Promise.all(
+            dependedOns.map(async id => await CompanyModel.get(id))
+        )
+
+        this.receiverLabelArray = receivers.map(company => {
+          return {value: company.id, label: company.name}
+        })
+        this.editing.detail = detail
         this.detailEditing = true
         this.$nextTick(() => data.select(false))
-
       },
 
       drawGantt() {
@@ -473,6 +509,10 @@
             process: detail.process.name || 'N/A',
             status: detail.status
           })
+
+          o.completed = Number(
+              new Big(detail.progressedQuantity).div(detail.quantity + detail.spareQuantity))
+
           o.progressCompany = detail.progressCompany
           o.progressType = _.get(
               this.progressTypeArray.find(type => type.value == detail.progressType), 'label',
@@ -514,7 +554,7 @@
                 enabled: true,
                 formatter: function () {
                   const point = this.point
-                  const completed = (point.completed || 0) * 100
+                  const completed = Number((point.completed || 0) * 100).toFixed(1)
                   const progress = _.get(point.progressCompany, 'name', 'N/A')
                   const progressType = point.progressType
                   return `${progressType} : ${progress} ( ${completed}% )`
@@ -631,6 +671,9 @@
       },
       detailUpdatable() {
         return this.editing.detail.updatable
+      },
+      detailActorDisabled() {
+        return this.editing.detail.progressType == 'PRODUCE'
       }
     },
     watch: {
@@ -643,8 +686,16 @@
       'model.itemId': async function (to) {
         this.itemModel = await ItemModel.get(to, true)
       },
-      'editing.detail.progressCompanyId': async function (to) {
-        this.progressCompanyModel = await CompanyModel.get(to, true)
+      'editing.detail.actorId': async function (to) {
+        this.actorModel = await CompanyModel.get(to, true)
+      },
+      'editing.detail.receiverId': async function (to) {
+        this.receiverModel = await CompanyModel.get(to, true)
+      },
+      'editing.detail.progressType': async function (to) {
+        if (to == 'PRODUCE') {
+          this.editing.detail.actorId = this.owner.id
+        }
       }
     },
     components: {

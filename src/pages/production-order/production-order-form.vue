@@ -4,7 +4,7 @@
     <q-card class="col-12" flat>
 
       <q-card-title>
-        생산 요청 정보
+        생산 지시 정보
         <span slot="right" v-if="!!model.code">
           {{statusLabel}} - {{model.code}}
           <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
@@ -41,7 +41,16 @@
                    readonly
                    :hide-underline="!updatable"
                    :before="[{icon: 'open_in_new', condition: !!model.itemId, handler: onShowItem}]"
-                   :after="[{ icon:'search', condition: updatable, handler:onItemSearch}, { icon:'clear', condition: updatable && !!model.itemId, handler:onItemClear}]"/>
+                   :after="[{ icon:'search', condition: updatable, handler:onItemSearch}]"/>
+        </q-field>
+
+        <q-field icon="fas fa-building" helper="공정을 선택하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.processId"
+                 :error-label="model.$errors.processId">
+          <q-select float-label="공정" v-model="model.processId" :disabled="!model.itemId"
+                    :readonly="!updatable" :hide-underline="!updatable"
+                    :options="processLabels"></q-select>
         </q-field>
 
         <q-field icon="info" helper="요청 수량을 입력하세요"
@@ -55,7 +64,7 @@
           </q-tooltip>
         </q-field>
 
-        <q-field icon="warning" helper="여분 수량을 입력하세요"
+        <q-field icon="info" helper="여분 수량을 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
                  :error="!!model.$errors.spareQuantity"
                  :error-label="model.$errors.spareQuantity">
@@ -75,12 +84,12 @@
         </q-field>
 
 
-        <q-field icon="account_box" helper="요청자 입니다"
+        <q-field icon="account_box" helper="지시자 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
-                 :error="!!model.$errors.requesterId"
-                 :error-label="model.$errors.requesterId">
-          <c-autocomplete-select float-label="요청자" v-model="model.requesterId"
-                                 :label="requesterModel.name" :options="userLabelArray"
+                 :error="!!model.$errors.ordererId"
+                 :error-label="model.$errors.ordererId">
+          <c-autocomplete-select float-label="지시자" v-model="model.ordererId"
+                                 :label="ordererModel.name" :options="userLabelArray"
                                  label-field="label" value-field="value"
                                  readonly hide-underline
                                  @search="onUserSearch">
@@ -105,6 +114,17 @@
               {{option.stamp}} - {{option.subLabel}}
             </template>
           </c-autocomplete-select>
+        </q-field>
+
+        <q-field icon="description" helper="비고 입니다"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.remark"
+                 :error-label="model.$errors.remark"
+                 :count="50">
+          <q-input type="textarea" v-model="model.remark" float-label="비고"
+                   rows="4"
+                   :readonly="!updatable" :hide-underline="!updatable"
+                   max-length="50"/>
         </q-field>
 
       </q-card-main>
@@ -138,6 +158,27 @@
           </c-autocomplete-select>
         </q-field>
 
+
+        <q-field icon="fas fa-building" helper="인수지를 선택하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.receiveSiteId"
+                 :error-label="model.$errors.receiveSiteId" v-if="ownerRelated">
+          <q-select float-label="인수지" v-model="model.receiveSiteId"
+                    :display-value="receiveSiteModel.name || null"
+                    :readonly="!updatable" :hide-underline="!updatable"
+                    :options="siteArray" clearable></q-select>
+        </q-field>
+
+        <q-field icon="fas fa-building" helper="인수지(상세)를 선택하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.receiveStationId"
+                 :error-label="model.$errors.receiveStationId" v-if="ownerRelated">
+          <q-select float-label="인수지" v-model="model.receiveStationId"
+                    :display-value="receiveStationModel.name || null"
+                    :readonly="!updatable" :hide-underline="!updatable"
+                    :options="stationArray" clearable></q-select>
+        </q-field>
+
       </q-card-main>
 
     </q-card>
@@ -165,13 +206,22 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {ItemModel} from 'src/model/item'
+  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ProductionRequestModel, ProductionRequestStatusArray} from 'src/model/production-request'
+  import {ItemModel, ItemSpecModel} from 'src/model/item'
+  import {
+    ProductionOrderModel,
+    ProductionOrderStatusArray
+  } from 'src/model/production-order'
+  import {ItemProcessArray, ProcessModel} from 'src/model/process'
+  import {
+    WarehouseSiteArray,
+    WarehouseSiteModel,
+    WarehouseStationArray,
+    WarehouseStationModel,
+  } from 'src/model/warehouse'
   import CommentList from 'src/pages/comment/comment-list.vue'
   import {UnitLabelArray} from 'src/model/shared'
-  import {CompanyModel} from "../../model/company/company";
-  import {CompanyLabelArray} from "../../model/company";
 
   export default {
     props: {
@@ -192,17 +242,24 @@
     },
     data() {
       return {
-        model: new ProductionRequestModel(),
+        model: new ProductionOrderModel(),
+        processes: new ItemProcessArray(),
+        processLabels: [],
         itemModel: new ItemModel(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
-        requesterModel: new UserModel(),
+        ordererModel: new UserModel(),
         accepterModel: new UserModel(),
         projectModel: new ProjectModel(),
         projectLabelArray: new ProjectLabelArray(),
-        unitLabelArray: new UnitLabelArray(),
-        statusLabelArray: new ProductionRequestStatusArray(),
         receiverModel: new CompanyModel(),
+        unitLabelArray: new UnitLabelArray(),
+        statusLabelArray: new ProductionOrderStatusArray(),
+        receiveStationModel: new WarehouseStationModel(),
+        receiveSiteModel: new WarehouseSiteModel(),
+        siteArray: new WarehouseSiteArray(),
+        stationArray: new WarehouseStationArray(),
+        enabled: true,
         owner: new CompanyModel()
       }
     },
@@ -210,6 +267,7 @@
       this.owner = await CompanyModel.owner()
       await Promise.all([
         this.unitLabelArray.fetch(),
+        this.siteArray.fetch(),
         this.companyLabelArray.fetch(),
         this.userLabelArray.fetch(),
         this.projectLabelArray.fetch(),
@@ -218,11 +276,12 @@
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
+      this.siteArray.forEach(site => {
+        site.value = site.id
+        site.label = site.name
+      })
     },
     methods: {
-      async onCompanySearch(keyword) {
-        await this.companyLabelArray.fetch(keyword)
-      },
       onShowItem() {
         this.$showItem(this.model.itemId)
       },
@@ -231,13 +290,23 @@
         if (!itemModels) {
           return
         }
-        itemModels.forEach(itemModel => {
-          this.model.itemId = itemModel.id
-          this.model.unit = itemModel.unit
+        itemModels.forEach(async itemModel => {
+          const item = await ItemModel.get(itemModel.id, true)
+          this.model.itemId = item.id
+          this.model.itemSpecId = null
+          this.model.unit = item.unit
+          if (item.specifiable) {
+            this.model.itemSpecCode = null
+          } else {
+            this.model.itemSpecCode = 'N/A'
+          }
         })
       },
       onItemClear() {
         this.model.itemId = null
+      },
+      async onCompanySearch(keyword) {
+        await this.companyLabelArray.fetch(keyword)
       },
       async onUserSearch(keyword) {
         await this.userLabelArray.fetch(keyword)
@@ -247,15 +316,15 @@
       },
 
       async create() {
-        this.model = new ProductionRequestModel()
-        this.model.requesterId = this.user.id
+        this.model = new ProductionOrderModel()
+        this.model.ordererId = this.user.id
         this.model.receiverId = this.owner.id
       },
       async show() {
         await this.load(this.id)
       },
       async load(id) {
-        const model = await ProductionRequestModel.get(id)
+        const model = await ProductionOrderModel.get(id)
         this.model = model
       },
       async closeOrReload() {
@@ -263,19 +332,19 @@
           this.$closeOverlay()
         } else {
           await this.load(this.id || this.model.id)
+          this.$redrawGrids()
         }
       },
       async onSave() {
-        let valid = ![
-          await this.model.validate(),
-          await this.itemArray.validate()
-        ].includes(false)
+        await this.model.fetchReference()
+        let valid = await this.model.validate()
 
         if (valid) {
           const ok = await this.$alert.confirm('저장 하시겠습니까?')
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
+            await this.$await(1000)
             await this.closeOrReload()
           }
         } else {
@@ -288,6 +357,7 @@
       },
 
       async onCommit() {
+        await this.model.fetchReference()
         let valid = await this.model.validate()
         if (!valid) {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -339,6 +409,9 @@
       cancelable() {
         return this.model.cancelable
       },
+      ownerRelated() {
+        return this.owner.id == this.model.receiverId
+      },
       statusLabel() {
         const status = this.model.status
         const found = this.statusLabelArray.find(e => e.value == status) || {}
@@ -351,21 +424,51 @@
       }
     },
     watch: {
-      'model.requesterId': async function (to) {
-        this.requesterModel = await UserModel.get(to, true)
+      'model.ordererId': async function (to) {
+        this.ordererModel = await UserModel.get(to, true)
       },
       'model.accepterId': async function (to) {
         this.accepterModel = await UserModel.get(to, true)
       },
+      'model.receiverId': async function (to) {
+        this.receiverModel = await CompanyModel.get(to, true)
+        if (to != this.owner.id) {
+          this.model.receiveSiteId = null
+          this.model.receiveStationId = null
+        }
+      },
       'model.projectId': async function (to) {
         this.projectModel = await ProjectModel.get(to, true)
       },
+      'model.receiveStationId': async function (to) {
+        this.receiveStationModel = await WarehouseStationModel.get(to, true)
+      },
+      'model.receiveSiteId': async function (to) {
+        this.receiveSiteModel = await WarehouseSiteModel.get(to, true)
+        const stationArray = new WarehouseStationArray(this.receiveSiteModel)
+        await stationArray.fetch()
+        this.stationArray = stationArray.map(station => {
+          return {
+            value: station.id,
+            label: station.name
+          }
+        })
+      },
       'model.itemId': async function (to) {
         this.itemModel = await ItemModel.get(to, true)
+        await this.processes.fetch(to)
+        this.processLabels = this.processes.map(process => {
+          return {
+            value: process.id,
+            label: process.name
+          }
+        })
       },
-      'model.receiverId': async function (to) {
-        this.receiverModel = await CompanyModel.get(to, true)
+      'model.processId': async function (to) {
+        const process = await ProcessModel.get(to, true)
+        this.model.itemSpecCode = process.itemSpecCode
       }
+
     },
     components: {
       CommentList

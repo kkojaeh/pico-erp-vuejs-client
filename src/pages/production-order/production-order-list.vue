@@ -17,7 +17,7 @@
             <q-btn flat icon="help" @click="$intro" v-close-overlay></q-btn>
           </q-popover>
         </q-btn>
-        <router-link :to="{ path: '/outsourcing-request/request/create', query: $route.query}">
+        <router-link :to="{ path: '/production-order/order/create', query: $route.query}">
           <q-btn flat icon="add" label="생성"></q-btn>
         </router-link>
       </div>
@@ -32,9 +32,9 @@
                enable-col-resize
                enable-sorting
                :row-data="array">
-        <ag-grid-column field="code" header-name="외주요청번호" :width="120"
+        <ag-grid-column field="code" header-name="생산지시번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
-                        :cell-renderer-params="{path:'/outsourcing-request/request/show/${id}', query:$route.query}"/>
+                        :cell-renderer-params="{path:'/production-order/order/show/${id}', query:$route.query}"/>
         <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
         <ag-grid-column field="item.code" header-name="품목 코드" :width="100"/>
         <ag-grid-column field="item.name" header-name="품목 이름" :width="200"/>
@@ -55,7 +55,7 @@
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
-        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
+        <ag-grid-column field="orderer.name" header-name="지시자" :width="120"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
@@ -75,9 +75,9 @@
 
       <!-- filters -->
 
-      <q-field slot="filter" icon="account_circle" helper="외주요청번호에 포함된 글자를 입력하세요"
+      <q-field slot="filter" icon="account_circle" helper="생산지시번호에 포함된 글자를 입력하세요"
                class="col-xs-11 col-md-4 col-xl-3">
-        <q-input v-model="filters.code" float-label="외주요청번호" clearable
+        <q-input v-model="filters.code" float-label="생산지시번호" clearable
                  @keyup.enter="retrieve()"/>
       </q-field>
 
@@ -110,14 +110,14 @@
       </q-field>
 
 
-      <q-field slot="filter" icon="account_box" helper="요청자를 선택하세요"
+      <q-field slot="filter" icon="account_box" helper="지시자를 선택하세요"
                class="col-xs-11 col-md-4 col-xl-3">
 
-        <c-autocomplete-select float-label="요청자" v-model="filters.requesterId"
-                               :label.sync="filters.requesterName" :options="userLabelArray"
+        <c-autocomplete-select float-label="지시자" v-model="filters.ordererId"
+                               :label.sync="filters.ordererName" :options="userLabelArray"
                                label-field="label" value-field="value" clearable
-                               :readonly="!$authorized.outsourcingRequestManager"
-                               :hide-underline="!$authorized.outsourcingRequestManager"
+                               :readonly="!$authorized.productionOrderManager"
+                               :hide-underline="!$authorized.productionOrderManager"
                                @search="onUserSearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
@@ -172,14 +172,14 @@
 
       <!-- filter -->
 
-      <c-list-filter-label slot="filter-label" v-model="filters.code" label="외주요청번호"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.code" label="생산지시번호"/>
       <c-list-filter-label slot="filter-label" v-model="filters.projectId"
                            :print-value="filters.projectName" label="프로젝트"/>
       <c-list-filter-label slot="filter-label" v-model="filters.receiverId"
                            :print-value="filters.receiverName" label="인수사"/>
-      <c-list-filter-label slot="filter-label" v-model="filters.requesterId"
-                           :print-value="filters.requesterName" label="요청자"
-                           :immutable="!$authorized.outsourcingRequestManager"/>
+      <c-list-filter-label slot="filter-label" v-model="filters.ordererId"
+                           :print-value="filters.ordererName" label="지시자"
+                           :immutable="!$authorized.productionOrderManager"/>
       <c-list-filter-label slot="filter-label" v-model="filters.accepterId"
                            :print-value="filters.accepterName" label="접수자"/>
       <c-list-filter-label slot="filter-label" v-model="filters.statuses"
@@ -207,30 +207,30 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {UnitLabelArray} from 'src/model/shared'
   import {
-    OutsourcingRequestPaginationArray,
-    OutsourcingRequestStatusArray
-  } from 'src/model/outsourcing-request'
+    ProductionOrderPaginationArray,
+    ProductionOrderStatusArray
+  } from 'src/model/production-order'
 
   export default {
     authorized: {
-      'outsourcingRequestManager': 'hasRole(\'OUTSOURCING_REQUEST_MANAGER\')'
+      'productionOrderManager': 'hasRole(\'PRODUCTION_ODER_MANAGER\')'
     },
     data() {
       return {
-        array: new OutsourcingRequestPaginationArray(),
+        array: new ProductionOrderPaginationArray(),
         companyLabelArray: new CompanyLabelArray(),
         userLabelArray: new UserLabelArray(),
         unitLabelArray: new UnitLabelArray(),
         projectLabelArray: new ProjectLabelArray(),
-        statusLabelArray: new OutsourcingRequestStatusArray(),
+        statusLabelArray: new ProductionOrderStatusArray(),
         filters: {
           code: null,
           receiverId: null,
           receiverName: null,
           accepterId: null,
           accepterName: null,
-          requesterId: null,
-          requesterName: null,
+          ordererId: null,
+          ordererName: null,
           statuses: [],
           startDueDate: null,
           endDueDate: null,
@@ -267,9 +267,9 @@
         this.projectLabelArray.fetch(),
         this.unitLabelArray.fetch()
       ])
-      if (!this.$authorized.outsourcingRequestManager) {
-        this.filters.requesterId = this.user.id
-        this.filters.requesterName = this.user.name
+      if (!this.$authorized.productionOrderManager) {
+        this.filters.ordererId = this.user.id
+        this.filters.ordererName = this.user.name
       }
     },
     methods: {
@@ -308,7 +308,7 @@
               e.receiver = await CompanyModel.get(e.receiverId, true)
               e.project = await ProjectModel.get(e.projectId, true)
               e.accepter = await UserModel.get(e.accepterId, true)
-              e.requester = await UserModel.get(e.requesterId, true)
+              e.orderer = await UserModel.get(e.ordererId, true)
               e.process = await ProcessModel.get(e.processId, true)
             })
         )

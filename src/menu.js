@@ -287,6 +287,30 @@ const menu = [
         })[language],
         url: '/production-plan/plan',
         authorize: 'hasAnyRole(\'PRODUCTION_PLAN_CHARGER\', \'PRODUCTION_PLAN_MANAGER\')'
+      },
+      {
+        icon: 'view_list',
+        label: languageAliases({
+          ko: '생산 지시 현황'
+        })[language],
+        url: '/production-order/order',
+        authorize: 'hasAnyRole(\'PRODUCTION_ORDERER\', \'PRODUCTION_ORDER_MANAGER\')'
+      },
+      {
+        icon: 'call_received',
+        label: languageAliases({
+          ko: '생산 지시 접수'
+        })[language],
+        url: '/production-order/await-accept',
+        authorize: 'hasAnyRole(\'PRODUCTION_ORDER_ACCEPTER\', \'PRODUCTION_ORDER_MANAGER\')'
+      },
+      {
+        icon: 'build',
+        label: languageAliases({
+          ko: '생산 진행'
+        })[language],
+        url: '/production-execution/await-execution',
+        authorize: 'hasAnyRole(\'PRODUCTION_EXECUTOR\', \'PRODUCTION_EXECUTE_MANAGER\')'
       }
     ]
   },

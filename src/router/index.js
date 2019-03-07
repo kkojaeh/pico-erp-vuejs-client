@@ -28,6 +28,8 @@ import outsourcingOrderRoutes from './outsourcing-order'
 import documentRoutes from './document'
 import deliveryRoutes from './delivery'
 import outsourcedInvoiceRoutes from './outsourced-invoice'
+import productionOrderRoutes from './production-order'
+import productionExecutionRoutes from './production-execution'
 
 Vue.use(VueRouter)
 
@@ -87,7 +89,9 @@ const Router = new VueRouter({
         ...outsourcingOrderRoutes,
         ...documentRoutes,
         ...deliveryRoutes,
-        ...outsourcedInvoiceRoutes
+        ...outsourcedInvoiceRoutes,
+        ...productionOrderRoutes,
+        ...productionExecutionRoutes
       ]
     },
     {
