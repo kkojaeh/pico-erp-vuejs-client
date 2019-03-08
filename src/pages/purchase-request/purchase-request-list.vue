@@ -201,6 +201,7 @@
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {UnitLabelArray} from 'src/model/shared'
+  import {ItemSelector} from 'src/model/item'
   import {
     PurchaseRequestPaginationArray,
     PurchaseRequestStatusArray
@@ -283,7 +284,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

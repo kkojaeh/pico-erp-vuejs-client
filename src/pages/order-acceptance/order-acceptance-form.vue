@@ -130,12 +130,6 @@
 
       <q-card-title>
         인수 정보
-        <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="인수사 주소 불러오기" icon="location_on"
-                 v-if="modifiable"
-                 @click="onCompanyAddressLoad"
-                 :disabled="!model.receiverId"/>
-        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -179,7 +173,8 @@
 
         <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-6 col-xl-6">
-          <c-address-input v-model="model.deliveryAddress"/>
+          <c-address-input v-model="model.deliveryAddress"
+                           :after="[{ icon:'list', condition: modifiable && !!model.receiverId, handler:onCompanyAddressLoad}]"/>
         </q-field>
 
       </q-card-main>
@@ -244,11 +239,6 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fas fa-history"
-               @click="$showAudit(`/audit/project/${model.id}`)"
-               v-show="!phantom" label="이력">
-        </q-btn>
-
         <q-btn flat icon="call_received" @click="onAccept()" label="접수"
                v-if="model.acceptable"></q-btn>
         <q-btn flat icon="save" @click="onSave()" label="저장"></q-btn>
@@ -260,8 +250,8 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {ProjectLabelArray, ProjectModel, ProjectSaleItemSelector} from 'src/model/project'
+  import {CompanyAddressSelector, CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
     OrderAcceptanceItemArray,
@@ -391,7 +381,9 @@
       },
 
       async onCompanyAddressLoad() {
-        const addresses = await this.$selectCompanyAddress(this.model.receiverId, {multiple: false})
+        const selector = new CompanyAddressSelector(this)
+        selector.companyId = this.model.receiverId
+        const addresses = await selector.show()
 
         if (addresses && addresses.length) {
           const model = this.model
@@ -405,14 +397,16 @@
       },
 
       async onAddItem() {
-        const saleItemModels = await this.$selectProjectSaleItem(this.model.projectId,
-            {multiple: true})
-        saleItemModels.map(async (saleItemModel) => {
+        const selector = new ProjectSaleItemSelector(this)
+        selector.projectId = this.model.projectId
+        selector.multiple = true
+        const models = await selector.show()
+        models.map(async model => {
           const item = new OrderAcceptanceItemModel({
-            itemId: saleItemModel.itemId,
-            unitPrice: saleItemModel.unitPrice
+            itemId: model.itemId,
+            unitPrice: model.unitPrice
           })
-          item.fetchReference()
+          await item.fetchReference()
           this.itemArray.push(item)
         })
       },

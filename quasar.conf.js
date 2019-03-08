@@ -26,8 +26,7 @@ module.exports = function (ctx) {
       'intro',
       'google-analytics',
       'raven',
-      'ag-grid',
-      'instant-launcher'
+      'ag-grid'
     ],
     css: [
       'app.styl'

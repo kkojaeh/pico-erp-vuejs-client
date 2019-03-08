@@ -125,6 +125,7 @@
   import {ProjectPaginationArray} from 'src/model/project'
   import {UserLabelArray} from 'src/model/user'
   import {CompanyLabelArray} from 'src/model/company'
+  import {ItemSelector} from 'src/model/item'
 
   export default {
     props: {
@@ -192,7 +193,8 @@
         this.selectable = selected.length > 0
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

@@ -64,7 +64,12 @@
 
 </template>
 <script>
-  import {ItemProcessArray, ProcessDifficultyArray, ProcessStatusArray} from 'src/model/process'
+  import {
+    ItemProcessArray,
+    ProcessDifficultyArray,
+    ProcessStatusArray,
+    ProcessViewer
+  } from 'src/model/process'
 
   export default {
     props: {
@@ -115,7 +120,10 @@
       async onGridCellClicked(event) {
         if (event.colDef.field == "name") {
           const data = event.data
-          const changed = await this.$showProcess(data.id)
+          const viewer = new ProcessViewer(this)
+          viewer.id = data.id
+
+          const changed = await viewer.show()
           if (changed) {
             await this.refresh()
             this.$emit('changed')
@@ -124,15 +132,15 @@
       },
       onHelpProcessesEditor() {
         this.$alert.info('위의 공정부터 아래의 공정으로 진행됩니다')
-        this.$alert.info('투입 비율은 공정으로 생성되는 1개의 품목에 대한 투입 수량 비율입니다')
       },
       async load(itemId) {
         await this.processes.fetch(itemId)
       },
       async onAdd() {
-        const created = await this.$createProcess({
-          itemId: this.itemId
-        })
+        const viewer = new ProcessViewer(this)
+        viewer.itemId = this.itemId
+
+        const created = await viewer.create()
         if (created) {
           this.$emit('changed')
           await this.refresh()

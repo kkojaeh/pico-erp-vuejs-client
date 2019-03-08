@@ -180,6 +180,7 @@
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProjectLabelArray} from 'src/model/project'
+  import {ItemSelector} from 'src/model/item'
   import {
     OutsourcingOrderPaginationArray,
     OutsourcingOrderStatusArray
@@ -254,7 +255,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

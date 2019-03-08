@@ -196,6 +196,7 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
+  import {ItemLotSelector, ItemSelector} from 'src/model/item'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import CommentList from 'src/pages/comment/comment-list.vue'
@@ -354,7 +355,8 @@
       },
 
       async onAddItem() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }
@@ -369,9 +371,9 @@
       },
 
       async onAddItemLot() {
-        const itemLots = await this.$selectItemLot({
-          itemId: this.selected.item.itemId
-        })
+        const selector = new ItemLotSelector(this)
+        selector.itemId = this.selected.item.itemId
+        const itemLots = selector.show()
         if (itemLots && itemLots.length) {
           itemLots.forEach(async (itemLot) => {
             const requestItemLot = new WarehouseTransactionRequestItemLotModel({

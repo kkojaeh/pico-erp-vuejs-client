@@ -123,7 +123,8 @@
 </template>
 <script>
   import {BomModel, BomStatusArray} from 'src/model/bom'
-
+  import {ItemSelector, ItemSpecViewer, ItemViewer} from 'src/model/item'
+  import {ItemProcessesViewer} from 'src/model/process'
   import {UnitLabelArray} from 'src/model/shared'
   import BomProcessCellRenderer from './bom-process-cell-renderer.vue'
   import BomItemSpecCellRenderer from './bom-item-spec-cell-renderer.vue'
@@ -307,7 +308,9 @@
       async onAddBomByNew() {
         const selected = this.selected
         this.loading = true
-        const itemModel = await this.$createItem({customerId: this.model.customerId})
+        const viewer = new ItemViewer(this)
+        viewer.predefined = {customerId: this.model.customerId}
+        const itemModel = await viewer.create()
         if (itemModel) {
           const material = await BomModel.createByItemId(itemModel.id)
           await selected.addMaterial(material)
@@ -318,8 +321,9 @@
 
       async onAddBomBySelect() {
         const selected = this.selected
-        const itemModels = await this.$selectItem({})
-        if (!itemModels) {
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
+        if (!itemModels || !itemModels.length) {
           return
         }
         this.loading = true
@@ -342,47 +346,31 @@
 
       async onOpenProcesses(data) {
         this.selected = data
-        const changed = await this.$editProcesses({
-          itemId: this.selected.itemId,
-          updatable: this.selected.processable && this.selected.updatable
-        })
+        const viewer = new ItemProcessesViewer(this)
+        viewer.itemId = this.selected.itemId
+        viewer.updatable = this.selected.processable && this.selected.updatable
+        const changed = await viewer.show()
         if (changed) {
           await this.refresh()
         }
-        /*
-        this.loading = true
-        if (data.processId) {
-          const changed = await this.$showProcess(data.processId)
-          if (changed) {
-            await this.refresh()
-          }
-        } else {
-          const created = await this.$createProcess({
-            itemId: data.itemId
-          })
-          if (created) {
-            data.processId = created.id
-            await data.save()
-            await this.refresh()
-          }
-        }
-        this.loading = false*/
+
       },
       async onOpenItemSpec(data) {
         this.selected = data
         this.loading = true
         if (data.itemSpecId) {
-          const changed = await this.$showItemSpec(data.itemSpecId, {
-            editable: true
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.id = data.itemSpecId
+          viewer.editable = true
+          const changed = await viewer.show()
           if (changed) {
             await this.$await(1000)
             await this.refresh()
           }
         } else {
-          const created = await this.$createItemSpec({
-            itemId: data.itemId
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.itemId = data.itemId
+          const created = await viewer.create()
           if (created) {
             data.itemSpecId = created.id
             const parent = data.parent

@@ -109,6 +109,7 @@
     FacilityProcessTypeArray,
     FacilityProcessTypeModel
   } from 'src/model/facility'
+  import {ProcessTypeSelector} from 'src/model/process'
   import Big from 'big.js'
 
   export default {
@@ -159,14 +160,17 @@
         return Number(new Big(value).div(100))
       },
       async onAddProcessType() {
-        const processTypes = await this.$selectProcessType({multiple: false})
+        const selector = new ProcessTypeSelector(this)
+        selector.multiple = true
+        const processTypes = await selector.show()
         if (processTypes && processTypes.length) {
-          const processType = processTypes[0]
-          const model = new FacilityProcessTypeModel({
-            processTypeId: processType.id
+          processTypes.forEach(async processType => {
+            const model = new FacilityProcessTypeModel({
+              processTypeId: processType.id
+            })
+            await model.fetchReference()
+            this.processTypeArray.push(model)
           })
-          await model.fetchReference()
-          this.processTypeArray.push(model)
         }
       },
       async onRemoveProcessType() {
@@ -189,6 +193,13 @@
         await processTypeArray.fetch()
         this.processTypeArray = processTypeArray
       },
+      async closeOrReload() {
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
+        }
+      },
       async show() {
         this.load(this.id)
       },
@@ -203,14 +214,7 @@
             await this.save()
             this.$emit('saved', this.model)
             this.$alert.positive('저장 되었습니다')
-            if (this.closable && !this.closeConfirmed) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-                return
-              }
-            }
-            this.load(this.model.id)
+            await this.closeOrReload()
           }
         } else {
           this.$redrawGrids()

@@ -69,7 +69,7 @@
                                :label.sync="filters.transactionCompanyName"
                                :options="companyLabelArray"
                                label-field="label" value-field="value" clearable
-                               @search="ontransactionCompanySearch">
+                               @search="onCompanySearch">
           <template slot="option" slot-scope="option">
             {{option.label}}<br>
             {{option.stamp}} - {{option.subLabel}}
@@ -135,6 +135,7 @@
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray} from 'src/model/user'
+  import {ItemSelector} from 'src/model/item'
   import {
     WarehouseStationModel,
     WarehouseTransactionRequestPaginationArray,
@@ -202,17 +203,18 @@
       async retrieve() {
         await this.$refs.listView.retrieve()
       },
-      async ontransactionCompanySearch(keyword) {
+      async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
       },
       async onCreatedBySearch(keyword) {
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
         if (!itemModels && itemModels.length) {
           return
         }
+        const itemModels = await itemSelector.show()
         const itemModel = itemModels[0]
         this.filters.itemCode = itemModel.code
         this.filters.itemName = itemModel.name

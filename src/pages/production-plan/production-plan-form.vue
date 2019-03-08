@@ -227,7 +227,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {ItemModel} from 'src/model/item'
+  import {ItemModel, ItemViewer} from 'src/model/item'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {
@@ -334,7 +334,9 @@
     },
     methods: {
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
 
       async onCompanySearch(keyword) {

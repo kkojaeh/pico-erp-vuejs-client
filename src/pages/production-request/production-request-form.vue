@@ -165,7 +165,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {ItemModel} from 'src/model/item'
+  import {ItemModel, ItemSelector, ItemViewer} from 'src/model/item'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import {ProductionRequestModel, ProductionRequestStatusArray} from 'src/model/production-request'
   import CommentList from 'src/pages/comment/comment-list.vue'
@@ -224,10 +224,13 @@
         await this.companyLabelArray.fetch(keyword)
       },
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

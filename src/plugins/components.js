@@ -92,6 +92,12 @@ const appVersion = document.querySelector('meta[name=app-version]').content
 // leave the export, even if you don't use it
 export default ({app, router, Vue}) => {
 
+  Vue.prototype.$await = function (miliseconds) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, miliseconds)
+    })
+  }
+
   Vue.prototype.$version = appVersion
 
   Vue.component('c-autocomplete-select', AutocompleteSelect)

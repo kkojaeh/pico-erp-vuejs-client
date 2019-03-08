@@ -509,8 +509,8 @@
     QuotationStatusArray
   } from 'src/model/quotation'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {ItemSelector} from 'src/model/item'
-  import {BomModel} from 'src/model/bom'
+  import {ItemSelector, ItemViewer} from 'src/model/item'
+  import {BomModel, BomViewer} from 'src/model/bom'
   import {CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
   import QuotationBomRenderer from './quotation-bom-renderer.vue'
@@ -567,7 +567,9 @@
       async onOpenBom() {
         const item = this.selected.item
         const bomId = item.bom.id
-        const changed = await this.$showBom(bomId)
+        const viewer = new BomViewer(this)
+        viewer.id = bomId
+        const changed = await viewer.show()
         if (changed) {
           if (!this.model.phantom) {
             const model = await QuotationModel.get(this.id)
@@ -690,7 +692,9 @@
        * ItemForm@saved -> BomModel.createByItemId -> selected.addMaterial
        */
       async onAddItemByNew() {
-        const itemModel = await this.$createItem({customerId: this.model.customerId})
+        const viewer = new ItemViewer(this)
+        viewer.predefined = {customerId: this.model.customerId}
+        const itemModel = await viewer.create()
         if (itemModel) {
           const bom = await BomModel.createByItemId(itemModel.id)
           await this.addItem(bom)
@@ -699,7 +703,6 @@
 
       async onAddItemBySelect() {
         const itemSelector = new ItemSelector(this)
-
         const itemModels = await itemSelector.show()
         if (!itemModels) {
           return

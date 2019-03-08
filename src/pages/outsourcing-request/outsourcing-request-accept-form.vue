@@ -249,7 +249,7 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ItemModel} from 'src/model/item'
+  import {ItemModel, ItemViewer} from 'src/model/item'
   import {
     OutsourcingRequestMaterialArray,
     OutsourcingRequestModel,
@@ -336,7 +336,9 @@
         return params.data.supplier.name
       },
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onCompanySearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
@@ -350,27 +352,6 @@
 
       onItemSelectionChanged(event) {
         this.selected.item = event.api.getSelectedRows()[0]
-      },
-
-      async onOpenItemSpec(data) {
-        this.selected.item = data
-        if (data.itemSpecId) {
-          const changed = await this.$showItemSpec(data.itemSpecId, {
-            editable: false
-          })
-          if (changed) {
-            await data.fetchReference()
-          }
-        } else {
-          const created = await this.$createItemSpec({
-            itemId: data.itemId
-          })
-          if (created) {
-            data.itemSpecId = created.id
-            await data.fetchReference()
-          }
-        }
-        this.$redrawGrids()
       },
 
       async show() {

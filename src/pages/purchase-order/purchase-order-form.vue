@@ -76,12 +76,6 @@
 
       <q-card-title>
         인수 정보
-        <div slot="right" class="row items-center">
-          <q-btn flat color="secondary" label="인수사 주소 불러오기" icon="location_on"
-                 v-if="updatable"
-                 @click="onCompanyAddressLoad"
-                 :disabled="!model.receiverId"/>
-        </div>
       </q-card-title>
 
       <q-card-separator/>
@@ -107,10 +101,12 @@
 
         <q-field icon="fas fa-map-marker" helper="인수지의 주소를 입력하세요"
                  class="col-xs-12 col-md-6 col-lg-6 col-xl-4"
-                 :readonly="!updatable" :hide-underline="!updatable"
+
                  :error="!!model.$errors.receiveAddress.postalCode || !!model.$errors.receiveAddress.street || !!model.$errors.receiveAddress.detail"
                  :error-label="model.$errors.receiveAddress.postalCode || model.$errors.receiveAddress.street || model.$errors.receiveAddress.detail">
-          <c-address-input v-model="model.receiveAddress"/>
+          <c-address-input v-model="model.receiveAddress"
+                           :readonly="!updatable" :hide-underline="!updatable"
+                           :after="[{ icon:'list', condition: updatable && !!model.receiverId, handler:onCompanyAddressLoad}]"/>
         </q-field>
 
       </q-card-main>
@@ -272,8 +268,14 @@
 <script>
   import {mapGetters} from 'vuex'
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
-  import {CompanyContactArray, CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {
+    CompanyAddressSelector,
+    CompanyContactArray,
+    CompanyLabelArray,
+    CompanyModel
+  } from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
+  import {ItemSelector, ItemSpecViewer} from 'src/model/item'
   import {
     PurchaseOrderItemArray,
     PurchaseOrderItemModel,
@@ -382,7 +384,9 @@
         return this.updatable && params.data.updatable
       },
       async onCompanyAddressLoad() {
-        const addresses = await this.$selectCompanyAddress(this.model.receiverId, {multiple: false})
+        const selector = new CompanyAddressSelector(this)
+        selector.companyId = this.model.receiverId
+        const addresses = await selector.show()
 
         if (addresses && addresses.length) {
           const model = this.model
@@ -419,17 +423,18 @@
       async onOpenItemSpec(data) {
         this.selected.item = data
         if (data.itemSpecId) {
-          const changed = await this.$showItemSpec(data.itemSpecId, {
-            editable: this.updatable && data.updatable
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.id = data.itemSpecId
+          viewer.editable = this.updatable && data.updatable
+          const changed = await viewer.show()
           if (changed) {
             await data.fetchReference()
             data.itemSpecCode = data.itemSpec.code
           }
         } else {
-          const created = await this.$createItemSpec({
-            itemId: data.itemId
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.itemId = data.itemId
+          const created = await viewer.create()
           if (created) {
             data.itemSpecId = created.id
             await data.fetchReference()
@@ -605,11 +610,11 @@
       },
 
       async onAddItem() {
-        const itemModels = await this.$selectItem({
-          defaultFilters: {
-            purchasable: true
-          }
-        })
+        const itemSelector = new ItemSelector(this)
+        itemSelector.defaultFilters = {
+          purchasable: true
+        }
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

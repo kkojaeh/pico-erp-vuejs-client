@@ -163,6 +163,7 @@
   import {OutsourcingOrderModel} from 'src/model/outsourcing-order'
   import {UnitLabelArray} from 'src/model/shared'
   import {WarehouseSiteModel} from 'src/model/warehouse'
+  import {ItemSelector} from 'src/model/item'
 
   export default {
     authorized: {},
@@ -246,7 +247,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

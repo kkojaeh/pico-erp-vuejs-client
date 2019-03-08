@@ -217,10 +217,6 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fas fa-history"
-               @click="$showAudit(`/audit/company/${model.id}`)"
-               v-show="!phantom" label="이력" v-if="$authorized.companyManager">
-        </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
                v-if="updatable"></q-btn>
       </q-toolbar>

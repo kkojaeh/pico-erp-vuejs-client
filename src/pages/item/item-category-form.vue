@@ -51,10 +51,6 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fas fa-history"
-               @click="$showAudit(`/audit/item-category/${model.id}`)"
-               v-show="!phantom" label="이력">
-        </q-btn>
         <q-btn flat icon="save" @click="onSaveClick()">저장</q-btn>
       </q-toolbar>
     </q-page-sticky>

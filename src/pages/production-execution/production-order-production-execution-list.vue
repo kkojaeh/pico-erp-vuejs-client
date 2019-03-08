@@ -140,18 +140,16 @@
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
-  import {
-    ProductionOrderModel
-  } from 'src/model/production-order'
+  import {ProductionOrderModel} from 'src/model/production-order'
   import {UserModel} from 'src/model/user'
   import {
     ProductionExecutionPaginationArray,
     ProductionExecutionViewer
   } from 'src/model/production-execution'
-  import {OutsourcingOrderModel} from 'src/model/outsourcing-order'
   import {UnitLabelArray} from 'src/model/shared'
   import {ItemModel} from "../../model/item";
   import {ItemProcessArray} from "../../model/process";
+  import {ItemViewer} from 'src/model/item'
 
   export default {
     authorized: {},
@@ -216,7 +214,9 @@
         await this.$refs.listView.retrieve(true)
       },
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onFetched() {
         await Promise.all(

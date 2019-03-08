@@ -208,11 +208,8 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ItemModel, ItemSpecModel} from 'src/model/item'
-  import {
-    ProductionOrderModel,
-    ProductionOrderStatusArray
-  } from 'src/model/production-order'
+  import {ItemModel, ItemSelector, ItemViewer} from 'src/model/item'
+  import {ProductionOrderModel, ProductionOrderStatusArray} from 'src/model/production-order'
   import {ItemProcessArray, ProcessModel} from 'src/model/process'
   import {
     WarehouseSiteArray,
@@ -283,10 +280,13 @@
     },
     methods: {
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

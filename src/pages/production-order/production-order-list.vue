@@ -201,6 +201,7 @@
 <script>
   import {DataAdjuster} from 'src/model/data'
   import {mapGetters} from 'vuex'
+  import {ItemSelector} from 'src/model/item'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {ProcessModel} from 'src/model/process'
   import {UserLabelArray, UserModel} from 'src/model/user'
@@ -286,7 +287,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

@@ -103,7 +103,7 @@
   import {mapGetters} from 'vuex'
   import moment from 'moment'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ItemModel} from 'src/model/item'
+  import {ItemModel, ItemViewer} from 'src/model/item'
   import {ProductionExecutionModel,} from 'src/model/production-execution'
   import {ItemProcessArray, ProcessModel} from 'src/model/process'
   import CommentList from 'src/pages/comment/comment-list.vue'
@@ -153,7 +153,9 @@
     },
     methods: {
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onUserSearch(keyword) {
         await this.userLabelArray.fetch(keyword)

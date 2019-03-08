@@ -158,6 +158,7 @@
   import {mapGetters} from 'vuex'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
+  import {ItemSelector} from 'src/model/item'
   import {InvoicePaginationArray, InvoiceStatusArray} from 'src/model/invoice'
 
   import moment from 'moment'
@@ -239,7 +240,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

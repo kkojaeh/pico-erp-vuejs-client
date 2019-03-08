@@ -198,7 +198,7 @@
   import {ProjectLabelArray, ProjectModel} from 'src/model/project'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
   import {UserLabelArray, UserModel} from 'src/model/user'
-  import {ItemModel, ItemSpecModel} from 'src/model/item'
+  import {ItemModel, ItemSelector, ItemSpecModel, ItemSpecViewer, ItemViewer} from 'src/model/item'
   import {PurchaseRequestModel, PurchaseRequestStatusArray} from 'src/model/purchase-request'
   import {
     WarehouseSiteArray,
@@ -271,10 +271,13 @@
     },
     methods: {
       onShowItem() {
-        this.$showItem(this.model.itemId)
+        const viewer = new ItemViewer(this)
+        viewer.id = this.model.itemId
+        viewer.show()
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }
@@ -311,17 +314,18 @@
         this.selected.item = data
         const model = this.model
         if (model.itemSpecId) {
-          const changed = await this.$showItemSpec(model.itemSpecId, {
-            editable: this.updatable
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.id = model.itemSpecId
+          viewer.editable = this.updatable
+          const changed = await viewer.show()
           if (changed) {
             const itemSpecModel = await ItemSpecModel.get(model.itemSpecId)
             this.model.itemSpecCode = itemSpecModel.code
           }
         } else {
-          const created = await this.$createItemSpec({
-            itemId: model.itemId
-          })
+          const viewer = new ItemSpecViewer(this)
+          viewer.itemId = model.itemId
+          const created = await viewer.create()
           if (created) {
             model.itemSpecId = created.id
             const itemSpecModel = await ItemSpecModel.get(model.itemSpecId)

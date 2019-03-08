@@ -148,6 +148,7 @@
   import {InvoiceModel} from 'src/model/invoice'
   import {ProjectModel} from 'src/model/project'
   import {UserLabelArray} from 'src/model/user'
+  import {ItemSelector} from 'src/model/item'
   import {
     OutsourcedInvoicePaginationArray,
     OutsourcedInvoiceStatusArray
@@ -233,7 +234,8 @@
         await this.userLabelArray.fetch(keyword)
       },
       async onItemSearch() {
-        const itemModels = await this.$selectItem({})
+        const itemSelector = new ItemSelector(this)
+        const itemModels = await itemSelector.show()
         if (!itemModels) {
           return
         }

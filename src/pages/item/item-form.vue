@@ -224,10 +224,6 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom">삭제</q-btn>
         -->
-        <q-btn flat color="tertiary" icon="fas fa-history"
-               @click="$showAudit(`/audit/item/${model.id}`)"
-               v-show="!phantom" v-if="$authorized.itemManager" label="이력">
-        </q-btn>
         <q-btn flat icon="play_arrow" v-show="!phantom && model.isActivatable"
                v-if="$authorized.itemManager"
                @click="onActivate">활성화
@@ -270,6 +266,7 @@
     ItemTypeArray
   } from 'src/model/item'
   import {CompanyLabelArray, CompanyModel} from 'src/model/company'
+  import {ItemProcessesViewer} from 'src/model/process'
   import {
     ProductSpecificationModel,
     ProductSpecificationViewer
@@ -387,10 +384,10 @@
         }
       },
       async onShowProcess() {
-        await this.$editProcesses({
-          itemId: this.model.id,
-          updatable: true
-        })
+        const viewer = new ItemProcessesViewer(this)
+        viewer.itemId = this.model.id
+        viewer.updatable = true
+        await viewer.show()
       },
 
       async onShowProductSpecification() {
