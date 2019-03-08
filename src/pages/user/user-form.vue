@@ -49,14 +49,13 @@
                  :error="!!model.$errors.departmentId"
                  :error-label="model.$errors.departmentId">
           <c-autocomplete-select float-label="부서" v-model="model.departmentId"
-                                 :label="departmentModel.name" :options="departmentLabelArray"
+                                 :label="labels.department.name" :options="labels.departments"
                                  label-field="label" value-field="value"
                                  :readonly="!updatable"
                                  :hide-underline="!updatable"
                                  @search="_onDepartmentSearch">
             <template slot="option" slot-scope="option">
               {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
             </template>
           </c-autocomplete-select>
         </q-field>
@@ -79,28 +78,34 @@
 
     </q-card>
 
-    <q-card class="col-12" flat>
-
-      <q-card-title>
-        권한 정보
-
-        <div slot="right" class="row items-center">
-          <q-field icon="search"
-                   class="col-12">
-            <q-input v-model="roleFilter" clearable></q-input>
-          </q-field>
-        </div>
-      </q-card-title>
-
-      <q-card-separator/>
-
-      <q-card-main class="column gutter-md" style="height:100%;min-height:300px;">
-
+    <q-tabs class="col-12" inverted>
+      <!-- Tabs - notice slot="title" -->
+      <q-tab default slot="title" name="tab-1" icon="group">그룹</q-tab>
+      <q-tab slot="title" name="tab-2" icon="account_box">권한</q-tab>
+      <!-- Targets -->
+      <q-tab-pane name="tab-1" class="row">
         <ag-grid ref="roleGrid" class="col"
-                 row-selection="multiple"
+                 row-selection="single"
+                 :grid-auto-height="true"
                  enable-col-resize
                  enable-sorting
-                 :row-data="roleArray">
+                 :row-data="groups">
+          <ag-grid-column field="included" header-name="포함여부" :width="120" suppress-sorting
+                          cell-renderer-framework="ag-grid-checkbox-renderer"
+                          cell-editor-framework="ag-grid-checkbox-editor"
+                          :editable="updatable"/>
+          <ag-grid-column field="groupId" header-name="코드" :width="200"/>
+          <ag-grid-column field="groupName" header-name="이름" :width="200"/>
+        </ag-grid>
+      </q-tab-pane>
+
+      <q-tab-pane name="tab-2" class="row">
+        <ag-grid ref="roleGrid" class="col"
+                 row-selection="single"
+                 :grid-auto-height="true"
+                 enable-col-resize
+                 enable-sorting
+                 :row-data="roles">
           <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
                           cell-renderer-framework="ag-grid-checkbox-renderer"
                           cell-editor-framework="ag-grid-checkbox-editor"
@@ -109,11 +114,8 @@
           <ag-grid-column field="roleName" header-name="이름" :width="200"/>
           <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
         </ag-grid>
-
-      </q-card-main>
-
-
-    </q-card>
+      </q-tab-pane>
+    </q-tabs>
 
     <q-page-sticky expand position="bottom">
       <q-toolbar>
@@ -133,7 +135,14 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  import {DepartmentLabelArray, DepartmentModel, UserModel, UserRoleArray} from 'src/model/user'
+  import {QSelect} from 'quasar'
+  import {
+    DepartmentLabelArray,
+    DepartmentModel,
+    UserGroupArray,
+    UserModel,
+    UserRoleArray
+  } from 'src/model/user'
 
   export default {
     authorized: {
@@ -154,36 +163,54 @@
     data() {
       return {
         model: new UserModel(),
-        departmentLabelArray: new DepartmentLabelArray(),
-        departmentModel: new DepartmentModel(),
-        roleArray: new UserRoleArray(),
-        roleFilter: null
+        labels: {
+          department: new DepartmentModel(),
+          departments: new DepartmentLabelArray()
+        },
+        roles: new UserRoleArray(),
+        roleFilter: null,
+        groups: new UserGroupArray()
       }
     },
     mounted() {
       if (this.action) {
         this.$nextTick(() => this[this.action]())
       }
-      this.departmentLabelArray.fetch()
+      this.labels.departments.fetch()
     },
     methods: {
+      $autocomplete(expression) {
+        return function (terms, done) {
+
+        }
+      },
+      async departmentFilter(keyword, done) {
+        console.log(keyword, done)
+        await this.labels.departments.fetch(keyword)
+      },
       async create() {
         this.model = new UserModel()
-        const roleArray = new UserRoleArray(this.model)
-        await roleArray.fetch()
-        this.roleArray = roleArray
+        const roles = new UserRoleArray(this.model)
+        await roles.fetch()
+        const groups = new UserGroupArray(this.model)
+        await groups.fetch()
+        this.roles = roles
+        this.groups = groups
       },
       async load(id) {
         this.model = await UserModel.get(id)
-        const roleArray = new UserRoleArray(this.model)
-        await roleArray.fetch()
-        this.roleArray = roleArray
+        const roles = new UserRoleArray(this.model)
+        await roles.fetch()
+        const groups = new UserGroupArray(this.model)
+        await groups.fetch()
+        this.roles = roles
+        this.groups = groups
       },
       async show() {
         await this.load(this.id)
       },
       async _onDepartmentSearch(keyword) {
-        await this.departmentLabelArray.fetch(keyword)
+        await this.labels.departments.fetch(keyword)
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -204,7 +231,8 @@
       },
       async save() {
         await this.model.save()
-        await this.roleArray.save()
+        await this.roles.save()
+        await this.groups.save()
       }
     },
     computed: {
@@ -221,7 +249,7 @@
         grid.api.setQuickFilter(this.roleFilter)
       },
       'model.departmentId': async function (to) {
-        this.departmentModel = await DepartmentModel.get(to, true)
+        this.labels.department = await DepartmentModel.get(to, true)
       },
     }
   }

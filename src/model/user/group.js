@@ -108,13 +108,11 @@ export const GroupArray = Array.decorate(
 export class GroupRoleModel extends Model {
 
   async grant() {
-    await api.post(`/user/groups/${this.groupId}/roles`, this)
+    await api.post(`/user/groups/${this.groupId}/roles/${this.roleId}`)
   }
 
   async revoke() {
-    await api.delete(`/user/groups/${this.groupId}/roles`, {
-      data: this
-    })
+    await api.delete(`/user/groups/${this.groupId}/roles/${this.roleId}`)
   }
 }
 
@@ -125,13 +123,11 @@ export class GroupUserModel extends Model {
   }
 
   async add() {
-    await api.post(`/user/groups/${this.groupId}/users`, this)
+    await api.post(`/user/groups/${this.groupId}/users/${this.userId}`)
   }
 
   async remove() {
-    await api.delete(`/user/groups/${this.groupId}/users`, {
-      data: this
-    })
+    await api.delete(`/user/groups/${this.groupId}/users/${this.userId}`)
   }
 }
 

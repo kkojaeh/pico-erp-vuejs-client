@@ -112,13 +112,11 @@ export class UserModel extends Model {
 export class UserRoleModel extends Model {
 
   async grant() {
-    await api.post(`/user/users/${this.userId}/roles`, this)
+    await api.post(`/user/users/${this.userId}/roles/${this.roleId}`)
   }
 
   async revoke() {
-    await api.delete(`/user/users/${this.userId}/roles`, {
-      data: this
-    })
+    await api.delete(`/user/users/${this.userId}/roles/${this.roleId}`)
   }
 }
 
@@ -199,5 +197,62 @@ export const UserLabelArray = Array.decorate(
           query: keyword || ''
         })
       }
+    }
+)
+
+export class UserGroupModel extends Model {
+
+  get phantom() {
+    return this.hasChanged("userId")
+  }
+
+  async belong() {
+    await api.post(`/user/users/${this.userId}/groups/${this.groupId}`)
+  }
+
+  async withdraw() {
+    await api.delete(`/user/users/${this.userId}/groups/${this.groupId}`)
+  }
+}
+
+export const UserGroupArray = Array.decorate(
+    CollectionArray,
+    SavableArray,
+    class extends FetchableArray {
+      get url() {
+        return '/user/users/${userId}/groups'
+      }
+
+      get axios() {
+        return api
+      }
+
+      get model() {
+        return UserGroupModel
+      }
+
+      initialize(user) {
+        super.initialize()
+        this.user = user
+      }
+
+      async fetch() {
+        return await super.fetch({
+          userId: this.user.id || ' '
+        })
+      }
+
+      isSaveTarget(element) {
+        return element.hasChanged('included')
+      }
+
+      async saveElement(element) {
+        return await element.included ? element.belong() : element.withdraw()
+      }
+
+      applyEach(element) {
+        element.userId = this.user.id
+      }
+
     }
 )

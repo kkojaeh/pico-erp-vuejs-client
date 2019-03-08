@@ -30,57 +30,46 @@
 
       </q-card-main>
 
+      <q-tabs class="col-12" inverted>
+        <!-- Tabs - notice slot="title" -->
+        <q-tab default slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
+        <q-tab slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
+        <!-- Targets -->
+        <q-tab-pane name="tab-1" class="row">
+          <ag-grid ref="roleGrid" class="col"
+                   row-selection="single"
+                   :grid-auto-height="true"
+                   enable-col-resize
+                   enable-sorting
+                   :row-data="roles">
+            <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
+                            cell-renderer-framework="ag-grid-checkbox-renderer"
+                            cell-editor-framework="ag-grid-checkbox-editor"
+                            :editable="updatable"/>
+            <ag-grid-column field="roleId" header-name="코드" :width="200"/>
+            <ag-grid-column field="roleName" header-name="코드" :width="200"/>
+            <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
+          </ag-grid>
+        </q-tab-pane>
+        <q-tab-pane name="tab-2" class="row">
+          <ag-grid ref="userGrid" class="col"
+                   row-selection="single"
+                   :grid-auto-height="true"
+                   enable-col-resize
+                   enable-sorting
+                   :row-data="users">
+
+            <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
+                            cell-renderer-framework="ag-grid-icon-renderer"
+                            :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"
+                            :hide="!updatable"/>
+            <ag-grid-column field="userId" header-name="아이디" :width="200"/>
+            <ag-grid-column field="userName" header-name="이름" :width="250"/>
+          </ag-grid>
+        </q-tab-pane>
+      </q-tabs>
+
     </q-card>
-
-    <q-tabs class="col-12" inverted>
-      <!-- Tabs - notice slot="title" -->
-      <q-tab default slot="title" name="tab-1" icon="account_boxs">권한</q-tab>
-      <q-tab slot="title" name="tab-2" icon="fingerprint">사용자</q-tab>
-      <!-- Targets -->
-      <q-tab-pane name="tab-1" class="row">
-        <ag-grid ref="roleGrid" class="col"
-                 row-selection="single"
-                 :grid-auto-height="true"
-                 enable-col-resize
-                 enable-sorting
-                 :row-data="roleArray">
-          <ag-grid-column field="granted" header-name="승인여부" :width="120" suppress-sorting
-                          cell-renderer-framework="ag-grid-checkbox-renderer"
-                          cell-editor-framework="ag-grid-checkbox-editor"
-                          :editable="updatable"/>
-          <ag-grid-column field="roleId" header-name="코드" :width="200"/>
-          <ag-grid-column field="roleName" header-name="코드" :width="200"/>
-          <ag-grid-column field="roleDescription" header-name="설명" :width="400"/>
-        </ag-grid>
-      </q-tab-pane>
-      <q-tab-pane name="tab-2" class="column">
-        <q-field icon="search" helper="추가할 사용자의 이름을 입력하고 선택하세요" class="col-auto" v-if="updatable">
-          <c-autocomplete-select ref="groupUser" float-label="담당자" v-model="groupUserId"
-                                 :options="userLabelArray"
-                                 label-field="label" value-field="value"
-                                 @search="onUserSearch">
-            <template slot="option" slot-scope="option">
-              {{option.label}}<br>
-              {{option.stamp}} - {{option.subLabel}}
-            </template>
-          </c-autocomplete-select>
-        </q-field>
-        <ag-grid ref="userGrid" class="col-auto"
-                 row-selection="single"
-                 :grid-auto-height="true"
-                 enable-col-resize
-                 enable-sorting
-                 :row-data="userArray">
-
-          <ag-grid-column field="deleted" header-name="삭제" :width="100" suppress-sorting
-                          cell-renderer-framework="ag-grid-icon-renderer"
-                          :cell-renderer-params="{handler:onUserRemove, icon:'fas fa-ban', link:true}"
-                          :hide="!updatable"/>
-          <ag-grid-column field="userId" header-name="아이디" :width="200"/>
-          <ag-grid-column field="userName" header-name="이름" :width="250"/>
-        </ag-grid>
-      </q-tab-pane>
-    </q-tabs>
 
 
     <q-page-sticky expand position="bottom">
@@ -91,6 +80,7 @@
         <!--
         <q-btn flat color="negative" icon="delete" @click="save()" v-show="!phantom" label="삭제"></q-btn>
         -->
+        <q-btn flat icon="add" v-if="updatable" label="사용자 추가" @click="onAddUser"/>
         <q-btn flat icon="save" @click="onSaveClick()" label="저장"
                v-if="updatable"></q-btn>
       </q-toolbar>
@@ -106,8 +96,7 @@
     GroupRoleArray,
     GroupUserArray,
     GroupUserModel,
-    UserLabelArray,
-    UserModel
+    UserSelector
   } from 'src/model/user'
 
   export default {
@@ -129,10 +118,8 @@
     data() {
       return {
         model: new GroupModel(),
-        roleArray: new GroupRoleArray(),
-        userArray: new GroupUserArray(),
-        userLabelArray: new UserLabelArray(),
-        groupUserId: null
+        roles: new GroupRoleArray(),
+        users: new GroupUserArray()
       }
     },
     mounted() {
@@ -143,20 +130,20 @@
     methods: {
       async create() {
         this.model = new GroupModel()
-        this.roleArray = new GroupRoleArray(this.model)
-        this.userArray = new GroupUserArray(this.model)
-        await this.roleArray.fetch()
-        await this.userArray.fetch()
+        this.roles = new GroupRoleArray(this.model)
+        this.users = new GroupUserArray(this.model)
+        await this.roles.fetch()
+        await this.users.fetch()
       },
       async show() {
         await this.load(this.id)
       },
       async load(id) {
         this.model = await GroupModel.get(id)
-        this.roleArray = new GroupRoleArray(this.model)
-        this.userArray = new GroupUserArray(this.model)
-        await this.roleArray.fetch()
-        await this.userArray.fetch()
+        this.roles = new GroupRoleArray(this.model)
+        this.users = new GroupUserArray(this.model)
+        await this.roles.fetch()
+        await this.users.fetch()
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -175,18 +162,28 @@
           this.$alert.warning('입력이 유효하지 않습니다')
         }
       },
+      async onAddUser() {
+        const selector = new UserSelector(this)
+        selector.mutiple = true
+        const users = await selector.show()
+        if (users) {
+          users.forEach(user => {
+            const groupUser = new GroupUserModel()
+            groupUser.userId = user.id
+            groupUser.userName = user.name
+            this.users.push(groupUser)
+          })
+        }
+      },
       async save() {
         await this.model.save()
-        await this.roleArray.save()
-        await this.userArray.save()
-      },
-      async onUserSearch(keyword) {
-        await this.userLabelArray.fetch(keyword)
+        await this.roles.save()
+        await this.users.save()
       },
       async onUserRemove(user) {
         const ok = await this.$alert.confirm('해당 사용자를 삭제 하시겠습니까?')
         if (ok) {
-          this.userArray.remove(user)
+          this.users.remove(user)
         }
       }
     },
@@ -198,19 +195,7 @@
         return this.$authorized.userManager
       }
     },
-    watch: {
-      'groupUserId': async function (to) {
-        if (to) {
-          const user = await UserModel.get(to, true)
-          const groupUser = new GroupUserModel()
-          groupUser.userId = user.id
-          groupUser.userName = user.name
-          this.userArray.push(groupUser)
-          this.groupUserId = null
-          this.$refs.groupUser.focus()
-        }
-      }
-    },
+    watch: {},
     components: {}
   }
 </script>

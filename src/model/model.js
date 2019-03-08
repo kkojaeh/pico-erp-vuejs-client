@@ -99,3 +99,27 @@ export async function exists(axios, url, data) {
 export function uuid() {
   return uuidv4()
 }
+
+export function extendAsLabel(superClass, value, label) {
+  return class extends superClass {
+    constructor(data) {
+      super(data)
+    }
+
+    get value() {
+      if (_.isString(value)) {
+        return this[value]
+      } else if (_.isFunction(value)) {
+        return value(this)
+      }
+    }
+
+    get label() {
+      if (_.isString(label)) {
+        return this[label]
+      } else if (_.isFunction(label)) {
+        return label(this)
+      }
+    }
+  }
+}

@@ -35,7 +35,7 @@
     "print-js": "^1.0.54",
     "qs": "^6.5.2",
     "quasar-extras": "^2.0.5",
-    "quasar-framework": "^0.17.11",
+    "quasar-framework": "^0.17.20",
     "raven-js": "^3.25.2",
     "ssf": "^0.10.2",
     "tippy.js": "^2.5.3",
