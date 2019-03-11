@@ -32,15 +32,15 @@
         <ag-grid-column field="code" header-name="송장번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/invoice/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="sender.name" header-name="발송사" :width="120"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
+        <ag-grid-column field="sender.name" header-name="발송사" :width="120" suppress-sorting/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120" suppress-sorting/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="dueDate" header-name="예정일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="confirmer.name" header-name="인수자" :width="100"/>
+        <ag-grid-column field="confirmer.name" header-name="인수자" :width="100" suppress-sorting/>
         <ag-grid-column field="receivedDate" header-name="인수일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>

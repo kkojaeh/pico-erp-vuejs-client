@@ -40,9 +40,9 @@
         <ag-grid-column field="status" header-name="상태" :width="130"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="project.name" header-name="프로젝트" :width="170"/>
-        <ag-grid-column field="customer.name" header-name="고객사" :width="170"/>
-        <ag-grid-column field="manager.name" header-name="담당자" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트" :width="170" suppress-sorting/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="170" suppress-sorting/>
+        <ag-grid-column field="manager.name" header-name="담당자" :width="120" suppress-sorting/>
         <ag-grid-column field="committedDate" header-name="제출시간" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>

@@ -10,28 +10,18 @@
 
 import 'quasar-framework/dist/quasar.ie.polyfills.js'
 
-
-
 import 'quasar-extras/roboto-font/roboto-font.css'
 
 import 'quasar-extras/material-icons/material-icons.css'
 
 import 'quasar-extras/fontawesome/fontawesome.css'
 
-
-
-
 import 'quasar-app-styl'
-
 
 import 'src/css/app.styl'
 
-
 import Vue from 'vue'
 import createApp from './app.js'
-
-
-
 
 import pAxios from 'src/plugins/axios'
 
@@ -59,18 +49,6 @@ import pRaven from 'src/plugins/raven'
 
 import pAggrid from 'src/plugins/ag-grid'
 
-import pInstantlauncher from 'src/plugins/instant-launcher'
-
-
-
-
-
-
-
-
-
-
-
 Vue.config.devtools = true
 Vue.config.productionTip = false
 
@@ -82,10 +60,8 @@ console.info('[Quasar] Running SPA with MAT theme.')
 
 const { app, store, router } = createApp()
 
-
-
-
-;[pAxios,pAlert,pAuth,pComponents,pValidate,pNumber,pDate,pCloseoverlay,pClipboard,pIntro,pGoogleanalytics,pRaven,pAggrid,pInstantlauncher].forEach(plugin => {
+;[pAxios, pAlert, pAuth, pComponents, pValidate, pNumber, pDate, pCloseoverlay,
+  pClipboard, pIntro, pGoogleanalytics, pRaven, pAggrid].forEach(plugin => {
   plugin({
     app,
     router,

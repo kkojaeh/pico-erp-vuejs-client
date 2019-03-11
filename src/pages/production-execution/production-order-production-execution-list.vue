@@ -47,7 +47,7 @@
                         :cell-style="{textAlign: 'center'}"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="executor.name" header-name="작업자" :width="120"/>
+        <ag-grid-column field="executor.name" header-name="작업자" :width="120" suppress-sorting/>
         <ag-grid-column field="startDate" header-name="시작일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>

@@ -24,7 +24,7 @@
         <ag-grid-column field="code" header-name="코드" :width="120"/>
         <ag-grid-column field="externalCode" header-name="외부코드" :width="150"/>
         <ag-grid-column field="name" header-name="이름" :width="300"/>
-        <ag-grid-column field="customer.name" header-name="고객사" :width="150" :sortable="false"/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="150" suppress-sorting/>
         <ag-grid-column field="categoryPath" header-name="분류" :width="250"/>
         <ag-grid-column field="unit" header-name="단위" :width="80"
                         :cell-style="{textAlign: 'center'}"

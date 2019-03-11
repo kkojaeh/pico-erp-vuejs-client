@@ -36,8 +36,8 @@
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/project/show/${id}', query:$route.query}"/>
 
-        <ag-grid-column field="customer.name" header-name="고객사명" :width="150"/>
-        <ag-grid-column field="manager.name" header-name="담당자명" :width="120"/>
+        <ag-grid-column field="customer.name" header-name="고객사명" :width="150" suppress-sorting/>
+        <ag-grid-column field="manager.name" header-name="담당자명" :width="120" suppress-sorting/>
 
         <ag-grid-column field="customerManagerContact.name" header-name="고객사 담당자명" :width="120"/>
         <ag-grid-column field="createdBy.name" header-name="생성자" :width="120"/>

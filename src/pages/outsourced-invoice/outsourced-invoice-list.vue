@@ -35,9 +35,9 @@
         <ag-grid-column field="invoice.code" header-name="송장번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/outsourced-invoice/show/${id}', query:$route.query, innerRenderer: invoiceCodeRenderer}"/>
-        <ag-grid-column field="project.name" header-name="프로젝트" :width="170"/>
-        <ag-grid-column field="sender.name" header-name="고객사" :width="120"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트" :width="170" suppress-sorting/>
+        <ag-grid-column field="sender.name" header-name="고객사" :width="120" suppress-sorting/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120" suppress-sorting/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>

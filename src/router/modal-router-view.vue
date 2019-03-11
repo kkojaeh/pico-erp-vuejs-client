@@ -16,7 +16,7 @@
         @click="__minimize"
         class="fixed gt-sm"
         icon="minimize"
-        style="right: 18px; top: 18px"
+        style="right: 18px; top: 18px; z-index:100000;"
         v-if="maximized"
     />
     <component ref="component" :is="component" v-bind="$props"></component>
@@ -38,7 +38,6 @@
       }
     },
     mounted () {
-      window.qq = this.$q
       this.$nextTick(() => {
         this.$refs.modal.show()
       })

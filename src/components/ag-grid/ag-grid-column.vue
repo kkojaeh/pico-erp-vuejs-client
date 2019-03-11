@@ -51,6 +51,10 @@
     editable: {
       type: [Boolean, Function]
     },
+    suppressSorting: {
+      type: Boolean,
+      default: false
+    },
     colId: {
       type: String,
       default: () => {

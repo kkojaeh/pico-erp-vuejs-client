@@ -37,7 +37,8 @@
                         :cell-renderer-params="{path:'/warehouse-transaction-request/show/${id}', query:$route.query}"
                         :cell-style="{textAlign: 'center'}"/>
 
-        <ag-grid-column field="transactionCompany.name" header-name="거래 회사" :width="150"/>
+        <ag-grid-column field="transactionCompany.name" header-name="거래 회사" :width="150"
+                        suppress-sorting/>
         <ag-grid-column field="station.name" header-name="거래 위치" :width="120"/>
         <ag-grid-column field="dueDate" header-name="만기 일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"

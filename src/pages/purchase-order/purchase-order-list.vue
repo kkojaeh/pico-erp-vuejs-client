@@ -35,9 +35,9 @@
         <ag-grid-column field="code" header-name="발주번호" :width="100"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/purchase-order/order/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="supplier.name" header-name="공급사" :width="120" :sortable="false"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120" :sortable="false"/>
-        <ag-grid-column field="charger.name" header-name="담당자" :width="120" :sortable="false"/>
+        <ag-grid-column field="supplier.name" header-name="공급사" :width="120" suppress-sorting/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120" suppress-sorting/>
+        <ag-grid-column field="charger.name" header-name="담당자" :width="120" suppress-sorting/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>

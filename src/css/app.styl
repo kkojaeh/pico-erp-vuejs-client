@@ -71,7 +71,7 @@ a[disabled] > *
     .clear
       bottom: 6px !important
 
-.modal
+.modal:not(.maximized)
   .modal-content
     main
       min-height: calc(80vh) !important
@@ -83,6 +83,9 @@ a[disabled] > *
         max-width: 80vw
       @media (max-width: 767px)
         margin-bottom: 4rem
+
+.modal
+  .modal-content
     .fixed-bottom.q-page-sticky-expand
       left: 0px !important
 

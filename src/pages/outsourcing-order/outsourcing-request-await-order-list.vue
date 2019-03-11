@@ -34,10 +34,10 @@
                :row-data="array"
                @selection-changed="onSelectionChanged">
         <ag-grid-column :checkbox-selection="checkboxSelectionFn" :width="60"/>
-        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="item.code" header-name="품목 코드" :width="150"/>
-        <ag-grid-column field="item.name" header-name="품목 이름" :width="150"/>
-        <ag-grid-column field="process.name" header-name="공정" :width="100"/>
+        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120" suppress-sorting/>
+        <ag-grid-column field="item.code" header-name="품목 코드" :width="150" suppress-sorting/>
+        <ag-grid-column field="item.name" header-name="품목 이름" :width="150" suppress-sorting/>
+        <ag-grid-column field="process.name" header-name="공정" :width="100" suppress-sorting/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
@@ -46,7 +46,7 @@
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0.00', words:true}"/>
-        <ag-grid-column field="item.unit" header-name="단위" :width="80"
+        <ag-grid-column field="unit" header-name="단위" :width="80"
                         :cell-style="{textAlign: 'center'}"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:unitLabelArray, valueField:'value', labelField: 'label'}"/>

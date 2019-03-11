@@ -35,8 +35,8 @@
         <ag-grid-column field="code" header-name="생산요청번호" :width="120"
                         cell-renderer-framework="ag-grid-router-link-renderer"
                         :cell-renderer-params="{path:'/production-request/request/show/${id}', query:$route.query}"/>
-        <ag-grid-column field="item.code" header-name="품목코드" :width="100"/>
-        <ag-grid-column field="item.name" header-name="품목명" :width="200"/>
+        <ag-grid-column field="item.code" header-name="품목코드" :width="100" suppress-sorting/>
+        <ag-grid-column field="item.name" header-name="품목명" :width="200" suppress-sorting/>
         <ag-grid-column field="quantity" header-name="수량" :width="100"
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
@@ -45,14 +45,14 @@
                         :cell-style="{textAlign: 'right'}"
                         cell-renderer-framework="ag-grid-number-renderer"
                         :cell-renderer-params="{format:'#,##0', words:true}"/>
-        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120" suppress-sorting/>
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
-        <ag-grid-column field="requester.name" header-name="요청자" :width="120"/>
+        <ag-grid-column field="requester.name" header-name="요청자" :width="120" suppress-sorting/>
         <ag-grid-column field="committedDate" header-name="제출일시" :width="170"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>

@@ -398,6 +398,9 @@
       input[type="text"], input[type="text"]:focus, input[type="tel"], input[type="tel"]:focus, input[type="date"], input[type="date"]:focus, input[type="datetime-local"], input[type="datetime-local"]:focus
         border: none
         padding-bottom: inherit
+
+  .ag-body-viewport.ag-layout-auto-height
+    padding-bottom: 18px
   /*
   .ag-grid-wrapper
     position: relative

@@ -38,10 +38,10 @@
         <ag-grid-column field="status" header-name="상태" :width="100"
                         cell-renderer-framework="ag-grid-array-label-renderer"
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
-        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120"/>
-        <ag-grid-column field="customer.name" header-name="고객사" :width="120"/>
-        <ag-grid-column field="purchaser.name" header-name="발주사" :width="120"/>
-        <ag-grid-column field="receiver.name" header-name="인수사" :width="120"/>
+        <ag-grid-column field="project.name" header-name="프로젝트명" :width="120" suppress-sorting/>
+        <ag-grid-column field="customer.name" header-name="고객사" :width="120" suppress-sorting/>
+        <ag-grid-column field="purchaser.name" header-name="발주사" :width="120" suppress-sorting/>
+        <ag-grid-column field="receiver.name" header-name="인수사" :width="120" suppress-sorting/>
         <ag-grid-column field="orderedDate" header-name="주문일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
