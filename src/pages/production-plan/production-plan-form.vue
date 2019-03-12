@@ -500,6 +500,9 @@
         this.receiverLabelArray = receivers.map(company => {
           return {value: company.id, label: company.name}
         })
+        if (!detail.receiverId && receivers.length == 1) {
+          detail.receiverId = receivers[0].id
+        }
         this.editing.detail = detail
         this.detailEditing = true
         this.$nextTick(() => data.select(false))
