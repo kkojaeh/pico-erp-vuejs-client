@@ -58,8 +58,14 @@
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="estimatedPreparedDate" header-name="준비완료 예정일시" :width="120"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
         <ag-grid-column field="committedDate" header-name="제출일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="preparedDate" header-name="준비완료일시" :width="120"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
       </ag-grid>
 

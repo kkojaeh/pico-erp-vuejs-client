@@ -83,6 +83,22 @@
                       type="date"/>
         </q-field>
 
+        <q-field icon="fas fa-calendar" helper="생산을 시작할 수 있는 준비 완료 예정일을 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.estimatedPreparedDate"
+                 :error-label="model.$errors.estimatedPreparedDate">
+          <q-datetime float-label="준비완료예정일시" v-model="model.estimatedPreparedDate"
+                      :readonly="!updatable" :hide-underline="!updatable"
+                      type="datetime"/>
+        </q-field>
+
+        <q-field icon="fas fa-calendar" helper="생산 준비가 완료된 시간입니다"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.preparedDate" :error-label="model.$errors.preparedDate">
+          <q-datetime float-label="준비완료일시" v-model="model.preparedDate"
+                      readonly hide-underline
+                      type="datetime"/>
+        </q-field>
 
         <q-field icon="account_box" helper="지시자 입니다"
                  class="col-xs-12 col-md-6 col-lg-4 col-xl-3"

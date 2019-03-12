@@ -56,6 +56,10 @@
                         :cell-renderer-params="{array:statusLabelArray, valueField:'value', labelField: 'label'}"/>
         <ag-grid-column field="receiver.name" header-name="인수사" :width="120" suppress-sorting/>
         <ag-grid-column field="orderer.name" header-name="지시자" :width="120" suppress-sorting/>
+
+        <ag-grid-column field="estimatedPreparedDate" header-name="준비완료 예정일시" :width="120"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
         <ag-grid-column field="dueDate" header-name="만기일" :width="120"
                         cell-renderer-framework="ag-grid-date-renderer"
                         :cell-renderer-params="{ago:true}"/>
@@ -64,6 +68,9 @@
                         :cell-renderer-params="{ago:true}"/>
         <ag-grid-column field="accepter.name" header-name="접수자" :width="120"/>
         <ag-grid-column field="acceptedDate" header-name="접수일시" :width="170"
+                        cell-renderer-framework="ag-grid-datetime-renderer"
+                        :cell-renderer-params="{ago:true}"/>
+        <ag-grid-column field="preparedDate" header-name="준비완료일시" :width="120"
                         cell-renderer-framework="ag-grid-datetime-renderer"
                         :cell-renderer-params="{ago:true}"/>
         <ag-grid-column field="completedDate" header-name="완료일시" :width="170"

@@ -25,7 +25,8 @@ export class ProductionOrderModel extends Model {
       itemId: null,
       itemSpecCode: null,
       quantity: 0,
-      spareQuantity: 0
+      spareQuantity: 0,
+      estimatedPreparedDate: null
     }
   }
 
@@ -213,6 +214,14 @@ export class ProductionOrderModel extends Model {
         presence: true
       },
       dueDate: {
+        presence: true,
+        datetime: {
+          parse: (date) => moment(date),
+          format: (date) => moment(date).format('YYYY-MM-DD'),
+          earliest: new Date()
+        }
+      },
+      estimatedPreparedDate: {
         presence: true,
         datetime: {
           parse: (date) => moment(date),
