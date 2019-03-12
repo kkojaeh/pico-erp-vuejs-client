@@ -163,7 +163,8 @@
                    :error="!!editing.detail.$errors.quantity"
                    :error-label="editing.detail.$errors.quantity">
             <q-input type="number" float-label="수량" v-model="editing.detail.quantity" align="right"
-                     :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"/>
+                     :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
+                     :suffix="detailUnitLabel"/>
             <q-tooltip>
               {{$number.words(model.quantity)}}
             </q-tooltip>
@@ -173,10 +174,12 @@
                    class="col-xs-12 col-md-6 col-lg-6 col-xl-6"
                    :error="!!editing.detail.$errors.spareQuantity"
                    :error-label="editing.detail.$errors.spareQuantity">
-            <q-input type="number" float-label="여분 수량" v-model="model.spareQuantity" align="right"
-                     :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"/>
+            <q-input type="number" float-label="여분 수량" v-model="editing.detail.spareQuantity"
+                     align="right"
+                     :readonly="!detailUpdatable" :hide-underline="!detailUpdatable"
+                     :suffix="detailUnitLabel"/>
             <q-tooltip>
-              {{$number.words(model.spareQuantity)}}
+              {{$number.words(editing.detail.spareQuantity)}}
             </q-tooltip>
           </q-field>
 
@@ -676,6 +679,12 @@
       },
       detailActorDisabled() {
         return this.editing.detail.progressType == 'PRODUCE'
+      },
+
+      detailUnitLabel() {
+        const unit = this.editing.detail.unit
+        const found = this.unitLabelArray.find(e => e.value == unit) || {}
+        return found.label || ''
       }
     },
     watch: {
