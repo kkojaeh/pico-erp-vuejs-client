@@ -71,6 +71,12 @@ export class ProductionPlanDetailModel extends Model {
     return this.hasChanged("id")
   }
 
+  get determinable() {
+    return this.status == 'CREATED' && this.actorId != null && this.progressType
+        != null
+        && this.receiverId != null;
+  }
+
   async getLinkedUrl() {
     const mediator = await ProductionPlanDetailMediatorModel.get(this.id)
     return _.template(progressTypeUrlTemplates[this.progressType])({
@@ -78,7 +84,15 @@ export class ProductionPlanDetailModel extends Model {
     })
   }
 
-
+  static async get(id, cacheable) {
+    if (!id) {
+      return new ProductionPlanDetailModel()
+    }
+    const response = await api.get(
+        `/production-plan/details/${id}${cacheable ? '' : '?cb='
+            + Date.now()}`)
+    return new ProductionPlanDetailModel(response.data)
+  }
 
 
   async fetchReference() {
@@ -93,19 +107,19 @@ export class ProductionPlanDetailModel extends Model {
     const planId = this.planId
     if (this.phantom) {
       const response = await api.post(
-          `/production-plan/plans/${planId}/details`,
+          `/production-plan/details`,
           this)
       this.assign(response.data)
     } else {
       await api.put(
-          `/production-plan/plans/${planId}/details/${this.id}`,
+          `/production-plan/details/${this.id}`,
           this)
     }
   }
 
   async determine() {
     await api.put(
-        `/production-plan/plans/${this.planId}/details/${this.id}/determine`,
+        `/production-plan/details/${this.id}/determine`,
         this)
   }
 
@@ -185,7 +199,7 @@ export class ProductionPlanDetailModel extends Model {
 
   async delete() {
     await api.delete(
-        `/production-plan/plans/${this.planId}/details/${this.id}`,
+        `/production-plan/details/${this.id}`,
         {})
   }
 }

@@ -444,11 +444,15 @@
       },
 
       async onDetailDetermine() {
-        let valid = await this.editing.detail.validateDetermine()
+        let valid = ![
+          await this.editing.detail.validate(),
+          await this.editing.detail.validateDetermine()
+        ].includes(false)
 
         if (valid) {
           const ok = await this.$alert.confirm('확정 하시겠습니까?')
           if (ok) {
+            await this.editing.detail.save()
             await this.editing.detail.determine()
             this.$alert.positive('확정 되었습니다')
             this.detailEditing = false
@@ -472,7 +476,9 @@
 
       async onGanttSelect(event) {
         const data = event.target
-        const detail = this.detailArray.find(e => e.id == data.id)
+
+        const detail = await ProductionPlanDetailModel.get(data.id)
+        await detail.fetchReference()
         //console.log(await detail.getLinkedUrl())
         const id = detail.id;
         const allowedProgressTypes = detail.allowedProgressTypes
