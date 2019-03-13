@@ -10,7 +10,7 @@ export class DeliveryModel extends Model {
 
   get defaults() {
     return {
-      method: 'MAIL',
+      method: 'FAX',
       faxNumber: null,
       mail: null
     }
