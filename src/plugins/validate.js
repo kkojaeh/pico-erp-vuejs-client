@@ -1,6 +1,6 @@
 import validate from 'validate.js'
 import {PhoneNumberUtil} from 'google-libphonenumber'
-import message from 'src/i18n/Validation.js'
+import message from 'src/i18n/validation.js'
 import * as _ from 'lodash'
 
 // leave the export, even if you don't use it
