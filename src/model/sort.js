@@ -28,7 +28,7 @@ export default class Sort {
         sort = new Sort(key, value)
       })
       return sort
-    })
+    }).filter(s => !s)
   }
 
   static createSort (field, dir) {
