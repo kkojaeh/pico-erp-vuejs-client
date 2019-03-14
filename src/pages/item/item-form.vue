@@ -6,7 +6,8 @@
 
       <q-card-title>
         품목 정보
-        <span slot="right" v-if="!!model.code">{{model.code}}
+        <span slot="right" v-if="!!model.code">
+          {{statusLabel}} - {{model.code}}
             <q-btn icon="content_copy" v-clipboard:copy="model.code" v-clipboard-notify
                    flat></q-btn>
           </span>
@@ -23,15 +24,15 @@
                  :error-label="model.$errors.name">
           <q-input v-model="model.name" float-label="이름" class="ime-mode-active"
                    :readonly="!updatable" :hide-underline="!updatable">
-            <q-btn icon="content_copy" v-clipboard:copy="model.name" v-clipboard-notify slot="after"
-                   flat></q-btn>
           </q-input>
         </q-field>
 
-        <q-field icon="fas fa-comment" helper="품목의 상태를 선택하세요"
-                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-          <q-select float-label="상태" v-model="model.status"
-                    :options="statusLabelArray" readonly hide-underline></q-select>
+        <q-field icon="perm_identity" helper="품목을 식별하는 코드를 입력하세요"
+                 class="col-xs-12 col-md-6 col-lg-4 col-xl-3"
+                 :error="!!model.$errors.code" :error-label="model.$errors.code">
+          <q-input v-model="model.code" float-label="코드" :readonly="!phantom"
+                   upper-case
+                   class="ime-mode-disabled" :hide-underline="!phantom"/>
         </q-field>
 
         <q-field icon="fas fa-comment" helper="품목의 유형을 선택하세요"
@@ -331,6 +332,14 @@
       }
     },
     methods: {
+      async closeOrReload() {
+        if (this.closable && this.closeConfirmed) {
+          this.$closeOverlay()
+        } else {
+          await this.load(this.id || this.model.id)
+          this.$redrawGrids()
+        }
+      },
       async onCustomerSearch(keyword) {
         await this.companyLabelArray.fetch(keyword)
       },
@@ -347,7 +356,10 @@
         })
       },
       async show() {
-        this.model = await ItemModel.get(this.id)
+        this.load(this.id)
+      },
+      async load(id) {
+        this.model = await ItemModel.get(id)
       },
       async onSaveClick() {
         let valid = await this.model.validate()
@@ -356,12 +368,7 @@
           if (ok) {
             await this.save()
             this.$alert.positive('저장 되었습니다')
-            if (this.closable && !this.closeConfirmed) {
-              const close = await this.$alert.confirm('화면을 닫으시겠습니까?')
-              if (close) {
-                this.$closeOverlay()
-              }
-            }
+            this.closeOrReload()
           }
         } else {
           this.$alert.warning('입력이 유효하지 않습니다')
@@ -372,7 +379,7 @@
         if (ok) {
           await this.model.activate()
           this.$alert.positive('활성화 되었습니다')
-          this.show()
+          this.closeOrReload()
         }
       },
       async onDeactivate() {
@@ -380,7 +387,7 @@
         if (ok) {
           await this.model.deactivate()
           this.$alert.positive('비활성화 되었습니다')
-          this.show()
+          this.closeOrReload()
         }
       },
       async onShowProcess() {
@@ -416,6 +423,11 @@
       },
       updatable() {
         return this.$authorized.itemManager
+      },
+      statusLabel() {
+        const status = this.model.status
+        const found = this.statusLabelArray.find(e => e.value == status) || {}
+        return found.label || ''
       }
     },
     watch: {

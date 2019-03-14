@@ -61,6 +61,10 @@ export class ItemModel extends Model {
     return new ItemModel(response.data)
   }
 
+  static async existsByCode(code) {
+    return exists(api, `/item/codes/${code}`)
+  }
+
   static async exists(id) {
     return await exists(api, `/item/items/${id}`)
   }
@@ -103,10 +107,24 @@ export class ItemModel extends Model {
   }
 
   async validate() {
+    const phantom = this.phantom
     let constraints = {
       name: {
         presence: true,
         length: {minimum: 2, maximum: 100}
+      },
+      code: {
+        exists: async (value) => {
+          if (!value) {
+            return
+          }
+          if (!phantom) {
+            return
+          }
+          return await ItemModel.existsByCode(value)
+        },
+        presence: true,
+        length: {minimum: 2, maximum: 20}
       },
       externalCode: {
         presence: false,

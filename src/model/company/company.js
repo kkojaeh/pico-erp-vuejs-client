@@ -106,8 +106,7 @@ export class CompanyModel extends Model {
           if (!phantom) {
             return
           }
-          let result = await CompanyModel.exists(value)
-          return result
+          return await CompanyModel.exists(value)
         }
       },
       name: {
