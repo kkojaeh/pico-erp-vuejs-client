@@ -11,7 +11,6 @@
                       :float-label="floatLabel" :disable="disable"
                       :hide-underline="hideUnderline"
                       :readonly="readonly">
-        <slot></slot>
       </c-cleave-input>
     </div>
   </div>
