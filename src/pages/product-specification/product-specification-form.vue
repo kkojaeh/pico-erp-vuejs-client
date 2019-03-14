@@ -54,6 +54,7 @@
 
           <c-attachment ref="imageAttachment" v-model="content.imageId"
                         category="product-specification-image"
+                        :max-file-size="5"
                         :allowed-content-types="['image/*']"
                         multiple :readonly="!updatable"></c-attachment>
         </q-field>
@@ -63,6 +64,7 @@
                  class="col-xs-12 col-md-6 col-xl-6">
 
           <c-attachment ref="bluePrintAttachment" v-model="content.bluePrintId"
+                        :max-file-size="5"
                         :allowed-content-types="['image/*']"
                         category="product-specification-blue-print"
                         multiple :readonly="!updatable"></c-attachment>
@@ -226,7 +228,7 @@
             await this.save()
             await this.model.commit()
             this.$alert.positive('제출 되었습니다')
-            await this.$await(1000)
+            await this.$await(2000)
             await this.reload()
             this.editing = false
           }
