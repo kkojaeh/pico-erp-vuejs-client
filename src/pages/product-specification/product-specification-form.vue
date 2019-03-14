@@ -27,19 +27,10 @@
         <q-field icon="fas fa-comment" helper="설명을 입력하세요"
                  class="col-xs-12 col-md-11 col-lg-11 col-xl-11"
                  orientation="vertical" label="설명"
-                 v-show="editing"
                  :error="!!content.$errors.description"
                  :error-label="content.$errors.description">
           <q-input type="textarea" v-model="content.description"
-                   rows="10"/>
-        </q-field>
-
-
-        <q-field icon="fas fa-comment"
-                 class="col-xs-12 col-md-11 col-lg-11 col-xl-11"
-                 orientation="vertical" label="설명"
-                 v-show="!editing">
-          <div v-html="content.description"></div>
+                   rows="10" :readonly="!editing"/>
         </q-field>
 
         <div v-for="(process, index) in processes" ref="processes" :key="process.id"
