@@ -181,7 +181,6 @@
         const model = await OutsourcingInvoiceModel.get(id)
         const itemArray = new OutsourcingInvoiceItemArray(model)
         await itemArray.fetch()
-        console.log(itemArray)
         this.model = model
         this.itemArray = itemArray
       },

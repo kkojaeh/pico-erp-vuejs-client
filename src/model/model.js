@@ -34,7 +34,7 @@ export class Model {
         _.keys(e).forEach((key) => {
           _.set(errors, key, e[key].join('\n'))
         })
-        console.log(errors)
+        console.error(errors)
         _.keys(errors).forEach((key) => {
           Vue.set(this.$errors, key, errors[key])
         })

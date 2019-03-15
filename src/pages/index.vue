@@ -29,9 +29,9 @@
 </style>
 
 <script>
-  import { GridItem, GridLayout } from 'vue-grid-layout'
-  import { authenticate } from 'src/plugins/auth'
-  import { portlets } from 'src/model/portlet'
+  import {GridItem, GridLayout} from 'vue-grid-layout'
+  import {authenticate} from 'src/plugins/auth'
+  import {portlets} from 'src/model/portlet'
 
   export default {
     name: 'PageIndex',
@@ -82,7 +82,7 @@
           }
         })
         localStorage.setItem('INDEX/PORTLETS', JSON.stringify(positions))
-        console.log(localStorage.getItem('INDEX/PORTLETS'))
+        //console.log(localStorage.getItem('INDEX/PORTLETS'))
       }
     },
     computed: {},

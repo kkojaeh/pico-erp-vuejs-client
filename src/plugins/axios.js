@@ -14,6 +14,15 @@ let apiRequests = 0
 let analyticsHandlerId
 const analytics = {}
 
+const loadingStarts = [function () {
+  Loading.show({
+    delay: 0
+  })
+}]
+const loadingStops = [function () {
+  Loading.hide()
+}]
+
 const configRequest = function (config) {
   // data 가 존재하지 않으면 Content-Type 이 삭제 되는 문제 수정
   config.data = config.data || {}
@@ -29,9 +38,7 @@ const configRequest = function (config) {
 
 const loadingRequest = function (config) {
   if (apiRequests == 0) {
-    Loading.show({
-      delay: 0
-    })
+    loadingStarts.forEach(fn => fn())
   }
   apiRequests++
   return config
@@ -63,7 +70,7 @@ const loadingResponse = function (response) {
   setTimeout(() => {
     apiRequests--
     if (apiRequests == 0) {
-      Loading.hide()
+      loadingStops.forEach(fn => fn())
     }
   }, 200)
   if (response instanceof Error) {

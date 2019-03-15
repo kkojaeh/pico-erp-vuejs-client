@@ -34,7 +34,6 @@
         })
       },
       onShow() {
-        console.log('onShow')
       }
     },
     computed: {

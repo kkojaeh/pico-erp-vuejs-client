@@ -185,7 +185,6 @@
         }
       },
       async departmentFilter(keyword, done) {
-        console.log(keyword, done)
         await this.labels.departments.fetch(keyword)
       },
       async create() {

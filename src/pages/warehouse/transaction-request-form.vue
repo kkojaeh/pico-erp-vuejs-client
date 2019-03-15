@@ -425,7 +425,6 @@
       },
       'model.transactionCompanyId': async function (to) {
         this.transactionCompanyModel = await CompanyModel.get(to, true)
-        console.log('transactionCompanyModel', !this.ownerRelated)
         if (!this.ownerRelated) {
           this.model.stationId = null
         }

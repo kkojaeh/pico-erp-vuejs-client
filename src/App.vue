@@ -1,11 +1,12 @@
 <template>
   <div id="q-app">
+    <q-ajax-bar ref="ajaxBar"/>
     <router-view/>
   </div>
 </template>
 
 <script>
-  import { authenticate } from 'src/plugins/auth'
+  import {authenticate} from 'src/plugins/auth'
 
   export default {
     name: 'App',

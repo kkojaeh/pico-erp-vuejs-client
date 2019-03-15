@@ -145,7 +145,8 @@ module.exports = function (ctx) {
         'QDatetimePicker',
         'QAlert',
         'QSearch',
-        'QRadio'
+        'QRadio',
+        'QAjaxBar'
       ],
       directives: [
         'Ripple',

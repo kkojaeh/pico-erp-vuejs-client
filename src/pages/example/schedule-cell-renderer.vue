@@ -15,9 +15,6 @@
       value() {
         const field = this.params.colDef.field
         const schedules = this.params.data.schedules
-        schedules.forEach(schedule => {
-          console.log(schedule)
-        })
       },
 
       hours() {
