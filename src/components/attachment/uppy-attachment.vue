@@ -23,7 +23,7 @@
   import Uppy from 'src/components/uppy/uppy.vue'
   import {AttachmentFileModel} from 'src/model/attachment/attachment'
   import Viewer from 'viewerjs/dist/viewer'
-  import Plyr from 'plyr'
+  import Plyr from 'plyr/dist/plyr.polyfilled'
   import 'plyr/dist/plyr.css'
 
   export default {
