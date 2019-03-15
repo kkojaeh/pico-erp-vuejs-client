@@ -170,6 +170,13 @@
                           cell-editor-framework="ag-grid-input-editor"
                           :cell-editor-params="{ type: 'number', align: 'right' }"
                           :editable="itemEditableFn"/>
+          <ag-grid-column field="spareQuantity" header-name="예비 수량" :width="120"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number', align: 'right' }"
+                          :editable="itemEditableFn"/>
           <ag-grid-column field="receivedQuantity" header-name="받은수량" :width="120"
                           :hide="!receivable"
                           :cell-style="{textAlign: 'right'}"

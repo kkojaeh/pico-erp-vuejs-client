@@ -68,7 +68,13 @@
           <ag-grid-column field="orderItem.item.code" header-name="품목 코드" :width="100"/>
           <ag-grid-column field="orderItem.item.name" header-name="품목 이름" :width="200"/>
           <ag-grid-column field="orderItem.itemSpec.summary" header-name="스펙" :width="160"/>
-          <ag-grid-column field="orderItem.quantity" header-name="발주수량" :width="120"
+          <ag-grid-column field="orderItem.quantity" header-name="수량" :width="120"
+                          :cell-style="{textAlign: 'right'}"
+                          cell-renderer-framework="ag-grid-number-renderer"
+                          :cell-renderer-params="{format:'#,##0.00', words:true}"
+                          cell-editor-framework="ag-grid-input-editor"
+                          :cell-editor-params="{ type: 'number', align: 'right' }"/>
+          <ag-grid-column field="orderItem.spareQuantity" header-name="예비수량" :width="120"
                           :cell-style="{textAlign: 'right'}"
                           cell-renderer-framework="ag-grid-number-renderer"
                           :cell-renderer-params="{format:'#,##0.00', words:true}"
