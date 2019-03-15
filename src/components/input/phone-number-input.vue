@@ -1,18 +1,24 @@
 <template>
-  <div class="container" style="position:relative;">
-    <img class="flag-display" :src="`statics/flags/${region.toLowerCase()}.svg`"></img>
-    <div class="no-wrap row justify-between">
-      <q-select v-model="region" :options="regions" filter
-                class="col-1 no-padding"
-                style="min-width:50px;" :disable="disable || readonly"
-                :display-value="` `" :hide-underline="hideUnderline"></q-select>
-      <c-cleave-input class="col-10" type="tel" v-model="model" ref="input"
-                      :cleave-options="cleaveOptions" :stack-label="stackLabel"
-                      :float-label="floatLabel" :disable="disable"
-                      :hide-underline="hideUnderline"
-                      :readonly="readonly">
-      </c-cleave-input>
+  <div class="no-wrap row">
+    <div>
+      <q-popover v-model="selectorShowing">
+        <q-list separator link>
+          <q-item v-for="row in regions" :key="row.value"
+                  @click.native="region = row.value" v-close-overlay>
+            <q-item-side icon=" " :class="`flag-icon-${row.value}`"/>
+            <q-item-main :label="row.label"/>
+          </q-item>
+        </q-list>
+      </q-popover>
     </div>
+    <c-cleave-input class="col-10" type="tel" v-model="model" ref="input"
+                    :cleave-options="cleaveOptions" :stack-label="stackLabel"
+                    :float-label="floatLabel" :disable="disable"
+                    :hide-underline="hideUnderline"
+                    :before="[{icon: ' ', class:`flag-icon-${region}`, disable:disable || readonly, handler: onSelect}]"
+                    :readonly="readonly">
+    </c-cleave-input>
+
   </div>
 </template>
 
@@ -41,13 +47,12 @@
         default: () => ['KR', 'US']
       }
     },
-    data () {
+    data() {
       let regions = (this.availableRegions || _.keys(phoneRegions)).map((region) => {
         region = region.toLowerCase()
         let info = phoneRegions[region]
         return {
           label: info.name,
-          avatar: `statics/flags/${info.code}.svg`,
           value: info.code.toUpperCase()
         }
       })
@@ -58,15 +63,23 @@
           phoneRegionCode: this.defaultRegion
         },
         region: this.defaultRegion,
-        flagClass: this.defaultRegion.toLowerCase(),
         model: '',
         regions: regions,
-        cleave: null
+        cleave: null,
+        selectorShowing: false
       }
     },
-    computed: {},
+    computed: {
+      flag() {
+        const region = this.regions.find(r => r.value == this.region) || {}
+        return region.avatar
+      }
+    },
     methods: {
-      _parseValue (value) {
+      async onSelect(e) {
+        this.selectorShowing = true
+      },
+      _parseValue(value) {
         if (value) {
           try {
             const parsed = phoneNumberUtil.parse(value, this.region)
@@ -85,10 +98,10 @@
       }
     },
     watch: {
-      value (to) {
+      value(to) {
         this._parseValue(to)
       },
-      model (to) {
+      model(to) {
         let value = to
         if (value) {
           try {
@@ -101,21 +114,12 @@
         }
         this.$emit('input', value)
       },
-      region (to) {
+      region(to) {
         this.cleaveOptions.phoneRegionCode = to
-        this.flagClass = to.toLowerCase()
       }
     },
-    mounted () {
+    mounted() {
       this._parseValue(this.value)
     }
   }
 </script>
-<style scoped>
-  .flag-display {
-    bottom: 5px;
-    position: absolute;
-    width: 30px;
-
-  }
-</style>
