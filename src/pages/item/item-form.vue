@@ -107,6 +107,16 @@
           </q-input>
         </q-field>
 
+        <q-field icon="description" helper="품목의 설명을 입력하세요"
+                 class="col-xs-12 col-md-10 col-xl-8"
+                 :error="!!model.$errors.description"
+                 :error-label="model.$errors.description"
+                 :count="200">
+          <q-input type="textarea" v-model="model.description" float-label="설명"
+                   rows="5" :readonly="!updatable" :hide-underline="!updatable"
+                   max-length="200"/>
+        </q-field>
+
       </q-card-main>
 
     </q-card>
